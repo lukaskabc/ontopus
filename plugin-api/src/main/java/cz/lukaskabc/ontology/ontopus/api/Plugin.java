@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api;
 
+import java.util.List;
+
 /**
  * Discoverable plugin service for OntoPuS server.
  *
@@ -8,7 +10,6 @@ package cz.lukaskabc.ontology.ontopus.api;
  *  <li>have a public no-arg constructor</li>
  *  <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin}</li>
  * </ul>
- * @implNote The package of the implementation class is used as the base package for component scanning.
  */
 public interface Plugin {
     /**
@@ -17,4 +18,14 @@ public interface Plugin {
      * @return the name of the plugin
      */
     String getName();
+
+    /**
+     * List of base packages used for component scanning by Spring.
+     *
+     * @return list of base packages
+     */
+    default List<String> getBasePackages() {
+        String thisPackage = this.getClass().getPackage().getName();
+        return List.of(thisPackage);
+    }
 }

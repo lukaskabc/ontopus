@@ -1,0 +1,64 @@
+package cz.lukaskabc.ontology.ontopus.core.config;
+
+import cz.cvut.kbss.jopa.Persistence;
+import cz.cvut.kbss.jopa.model.EntityManagerFactory;
+import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
+import cz.cvut.kbss.jopa.model.JOPAPersistenceProvider;
+import cz.cvut.kbss.ontodriver.config.OntoDriverProperties;
+import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.*;
+
+@Configuration
+public class PersistenceFactoryConfig {
+
+    private EntityManagerFactory factory;
+    private final ServerConfig serverConfig;
+
+    public PersistenceFactoryConfig(ServerConfig serverConfig) {
+        this.serverConfig = serverConfig;
+    }
+
+    @Bean
+    @Primary
+    public EntityManagerFactory entityManagerFactory() {
+        return factory;
+    }
+
+    @PostConstruct
+    private void init() {
+        final ServerConfig.Database dbConfig = serverConfig.getDatabase();
+        final Map<String, String> properties = new HashMap<>();
+        properties.put(SCAN_PACKAGE, "*");
+        properties.put(JPA_PERSISTENCE_PROVIDER, JOPAPersistenceProvider.class.getName());
+
+        properties.put(ONTOLOGY_PHYSICAL_URI_KEY, dbConfig.getUrl());
+        properties.put(DATA_SOURCE_CLASS, dbConfig.getDriver());
+        properties.put(LANG, dbConfig.getLanguage());
+        properties.put(PREFER_MULTILINGUAL_STRING, Boolean.TRUE.toString());
+
+        if (dbConfig.getUsername() != null) {
+            properties.put(OntoDriverProperties.DATA_SOURCE_USERNAME, dbConfig.getUsername());
+            properties.put(OntoDriverProperties.DATA_SOURCE_PASSWORD, dbConfig.getPassword());
+        }
+        // OPTIMIZATION: Always use statement retrieval with unbound property. Should spare repository queries
+        properties.put(Rdf4jOntoDriverProperties.LOAD_ALL_THRESHOLD, "1");
+        properties.put(JOPAPersistenceProperties.LRU_CACHE_CAPACITY, "32768");
+        this.factory = Persistence.createEntityManagerFactory("ontopusPersistenceUnit", properties);
+    }
+
+    @PreDestroy
+    private void close() {
+        if (factory.isOpen()) {
+            factory.close();
+        }
+    }
+}

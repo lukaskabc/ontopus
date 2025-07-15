@@ -29,8 +29,7 @@ public class PluginRegistryApplicationInitializer implements ApplicationContextI
 
         for (Plugin plugin : plugins) {
             LOG.info("Loaded plugin: {}", plugin.getName());
-            final String basePackage = plugin.getClass().getPackage().getName();
-            applicationContext.scan(basePackage);
+            plugin.getBasePackages().forEach(applicationContext::scan);
             applicationContext.getBeanFactory().registerSingleton(plugin.getName(), plugin);
         }
     }

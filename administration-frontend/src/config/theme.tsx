@@ -1,7 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import { red } from '@mui/material/colors'
-import Logo from './assets/logo.svg?react'
-import './theme.scss'
+import Logo from '@/assets/logo.svg?react'
 
 // Create a theme instance.
 const mdTheme = createTheme({

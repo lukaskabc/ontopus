@@ -10,4 +10,10 @@ svg {
 
 svg.logo {
   color: var(--mui-palette-primary-main);
+  max-height: 100%;
+  width: auto;
+}
+
+.MuiDrawer-root nav.MuiBox-root li {
+  margin-bottom: 5px;
 }

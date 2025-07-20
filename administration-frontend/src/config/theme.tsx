@@ -1,6 +1,9 @@
 import { createTheme } from '@mui/material/styles'
 import { red } from '@mui/material/colors'
 import Logo from '@/assets/logo.svg?react'
+import i18n from '@/config/i18n.ts'
+
+const { t } = i18n
 
 // Create a theme instance.
 const mdTheme = createTheme({
@@ -26,7 +29,9 @@ const mdTheme = createTheme({
 
 export const Branding = {
   logo: <Logo class={'logo'} />,
-  title: 'OntoPuS',
+  title: t('title'),
+  subtitle: t('subtitle'),
+  homeUrl: '/dashboard',
 }
 
 export default mdTheme

@@ -11,7 +11,8 @@ export default function LoginForm() {
 
   const credentialsProvider = { id: 'credentials', name: 'Provider name' }
   const locale = {
-    signInTitle: t('login.title'),
+    signInTitle: Branding.title,
+    signInSubtitle: Branding.subtitle,
     providerSignInTitle: (_: any) => t('login.button.submit'),
     email: t('login.field.username.title'),
     password: t('login.field.password.title'),
@@ -38,7 +39,6 @@ export default function LoginForm() {
         slots={{
           passwordField: PasswordField,
           emailField: UsernameField,
-          subtitle: () => <></>,
         }}
         slotProps={{
           form: {

@@ -21,7 +21,8 @@
     "preact": "^10.26.9",
     "preact-iso": "^2.9.2",
     "react-i18next": "^15.6.0",
-    "sass": "^1.89.2"
+    "sass": "^1.89.2",
+    "wouter-preact": "^3.7.1"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",

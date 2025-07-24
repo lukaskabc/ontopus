@@ -31,7 +31,7 @@ export const Branding = {
   logo: <Logo class={'logo'} />,
   title: t('title'),
   subtitle: t('subtitle'),
-  homeUrl: '/dashboard',
+  homeUrl: '/',
 }
 
 export default mdTheme

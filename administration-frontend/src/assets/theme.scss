@@ -17,3 +17,11 @@ svg.logo {
 .MuiDrawer-root nav.MuiBox-root li {
   margin-bottom: 5px;
 }
+
+.paper-transparent {
+  position: fixed;
+  z-index: -10;
+  opacity: 0.75;
+  width: 100%;
+  height: 100%;
+}

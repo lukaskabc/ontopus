@@ -1,39 +1,60 @@
 import '@/config/i18n.ts'
 import '@/assets/theme.scss'
-import { AppProvider, type Navigation } from '@toolpad/core/AppProvider'
+import { type Navigation } from '@toolpad/core/AppProvider'
 import mdTheme, { Branding } from '@/config/theme.tsx'
 import lazy, { ErrorBoundary } from 'preact-iso/lazy'
 import { Redirect, Route, Switch } from 'wouter-preact'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import DashboardIcon from '@mui/icons-material/Dashboard'
+import PublicIcon from '@mui/icons-material/Public'
+import ExtensionIcon from '@mui/icons-material/Extension'
+import { useTranslation, type UseTranslationResponse } from 'react-i18next'
+import { useMemo } from 'preact/hooks'
+import WouterAppProvider from '@/components/WouterAppProvider.tsx'
 
-const Login = lazy(() => import('@/screens/login/LoginForm'))
-const Dashboard = lazy(() => import('@/screens/dashboard/Dashboard'))
+const Login = lazy(() => import('@/login/LoginForm'))
+const Dashboard = lazy(() => import('@/dashboard/Dashboard'))
 
-const NAVIGATION: Navigation = [
+const navigationProvider = ({
+  t,
+}: UseTranslationResponse<any, any>): Navigation => [
   {
-    segment: '/',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
+    segment: 'plugins',
+    title: t('dashboard.menu.plugins'),
+    icon: <ExtensionIcon />,
+    children: [
+      {
+        segment: 'github',
+        title: 'github',
+      },
+    ],
   },
   {
-    segment: '/orders',
-    title: 'Orders',
-    icon: <ShoppingCartIcon />,
+    segment: 'ontologies',
+    title: t('dashboard.menu.ontologies'),
+    icon: <PublicIcon />,
   },
 ]
 
 export function App() {
+  const translation = useTranslation()
+  const navigation = useMemo(() => {
+    console.debug('reloading navigation')
+    return navigationProvider(translation)
+  }, [translation])
+
   return (
-    <AppProvider theme={mdTheme} branding={Branding} navigation={NAVIGATION}>
+    <WouterAppProvider
+      theme={mdTheme}
+      branding={Branding}
+      navigation={navigation}
+    >
       <ErrorBoundary>
         <Switch>
           <Route path={'/login'} component={Login} />
-          <Route path={'/dashboard'} component={Dashboard} nest />
+          <Route path={'/'} component={Dashboard} nest />
           {/* Default route: redirect to dashboard, keep as last item*/}
-          <Redirect to={'/dashboard'} />
+          <Redirect to={'/'} />
         </Switch>
       </ErrorBoundary>
-    </AppProvider>
+    </WouterAppProvider>
   )
 }

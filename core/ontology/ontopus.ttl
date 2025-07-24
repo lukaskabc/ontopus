@@ -32,6 +32,10 @@
 ###  http://purl.org/vocab/vann/preferredNamespaceUri
 <http://purl.org/vocab/vann/preferredNamespaceUri> rdf:type owl:AnnotationProperty .
 
+owl:versionInfo rdf:type owl:AnnotationProperty .
+
+owl:versionIRI rdf:type owl:OntologyProperty .
+
 
 #################################################################
 #    Data properties

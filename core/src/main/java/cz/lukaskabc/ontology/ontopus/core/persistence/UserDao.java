@@ -30,12 +30,9 @@ public class UserDao extends BaseDao<User> {
     }
 
     public boolean userAccountExists(@Nullable String username) {
-        final var userMeta = em.getMetamodel().entity(User.class);
         final var query = em.createNativeQuery("ASK { ?user a ?userType; ?hasUsername ?username }", Boolean.class)
-                .setParameter("userType", userMeta.getIRI().toURI())
-                .setParameter(
-                        "hasUsername",
-                        userMeta.getAttribute("username").getIRI().toURI());
+                .setParameter("userType", User.Meta.TYPE)
+                .setParameter("hasUsername", User.Meta.USERNAME);
 
         if (username != null) {
             query.setParameter("username", username);

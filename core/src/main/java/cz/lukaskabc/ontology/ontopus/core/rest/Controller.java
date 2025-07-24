@@ -1,35 +1,16 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
-import cz.lukaskabc.ontology.ontopus.api.Plugin;
-import cz.lukaskabc.ontology.ontopus.core.model.Ontology;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.util.List;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
 class Controller {
-    @Autowired(required = false)
-    private List<Plugin> plugins = List.of();
-
-    @GetMapping(produces = "application/rdf+xml")
-    public ResponseEntity<String> getOntology() {
-        final var v = new Ontology()
-                .setIri(URI.create("http://ontology.lukaskabc.cz/Ontology_test#instance123456"))
-                .setVersionInfo("Version Info text")
-                .setVersionIri(URI.create("http://ontology.lukaskabc.cz/Ontology_test#instance123456/1.0/"));
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/rdf+xml"))
-                .body(v.toString());
-    }
 
     @PostMapping("/git")
     public void importGitRepository(@RequestBody URI repositoryUri) throws GitAPIException, IOException {

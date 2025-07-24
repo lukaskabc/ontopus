@@ -15,9 +15,10 @@ import jakarta.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-// @Configuration
+@Configuration
 public class PersistenceFactoryConfig {
 
     private EntityManagerFactory factory;

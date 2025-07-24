@@ -8,6 +8,9 @@ spring:
 springdoc:
   api-docs:
     enabled: false
+#  show-login-endpoint: true
+
+server.servlet.session.timeout: 1m
 
 ontopus:
   database:

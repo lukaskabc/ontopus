@@ -6,10 +6,11 @@ import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
 import cz.cvut.kbss.jopa.model.JOPAPersistenceProvider;
 import cz.cvut.kbss.ontodriver.config.OntoDriverProperties;
 import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
+import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.generated.Vocabulary;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.*;
 
-@Configuration
+//@Configuration
 public class PersistenceFactoryConfig {
 
     private EntityManagerFactory factory;
@@ -37,9 +38,10 @@ public class PersistenceFactoryConfig {
     private void init() {
         final ServerConfig.Database dbConfig = serverConfig.getDatabase();
         final Map<String, String> properties = new HashMap<>();
-        properties.put(SCAN_PACKAGE, "*");
+        properties.put(SCAN_PACKAGE, PersistenceEntity.class.getPackageName());
         properties.put(JPA_PERSISTENCE_PROVIDER, JOPAPersistenceProvider.class.getName());
 
+        properties.put(ONTOLOGY_URI_KEY, Vocabulary.ONTOLOGY_IRI_ONTOPUS);
         properties.put(ONTOLOGY_PHYSICAL_URI_KEY, dbConfig.getUrl());
         properties.put(DATA_SOURCE_CLASS, dbConfig.getDriver());
         properties.put(LANG, dbConfig.getLanguage());

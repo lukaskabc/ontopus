@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core;
+package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import org.jspecify.annotations.NonNull;

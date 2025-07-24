@@ -20,6 +20,9 @@
     <properties>
         <spring.boot.version>3.5.3</spring.boot.version>
         <lombok.version>1.18.38</lombok.version>
+        <jopa.version>2.4.4</jopa.version>
+        <project.build.generated-source.directory>${project.build.directory}/generated-sources
+        </project.build.generated-source.directory>
         <spring.profiles.active></spring.profiles.active>
     </properties>
 
@@ -47,12 +50,12 @@
         <dependency>
             <groupId>cz.cvut.kbss.jopa</groupId>
             <artifactId>jopa-impl</artifactId>
-            <version>2.4.3</version>
+            <version>${jopa.version}</version>
         </dependency>
         <dependency>
             <groupId>cz.cvut.kbss.jopa</groupId>
             <artifactId>ontodriver-rdf4j</artifactId>
-            <version>2.4.3</version>
+            <version>${jopa.version}</version>
         </dependency>
         <!-- Spring declarative transactions with JOPA -->
         <dependency>
@@ -73,6 +76,32 @@
             <version>3.18.0</version> <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
         </dependency>
 
+        <!-- Git API -->
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>7.3.0.202506031305-r</version>
+        </dependency>
+
+        <!-- Serialization -->
+        <!-- JSON -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <!-- XML -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+
+        <!-- For RDF/XML export -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-rio-rdfxml</artifactId>
+            <version>5.0.2</version>
+        </dependency>
+
         <!-- Spring Boot dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -81,6 +110,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <!-- Development dependencies -->
@@ -159,6 +192,7 @@
                 <version>3.3.1</version>
                 <configuration>
                     <delimiters>
+                        <!-- process resources for maven properties replacement -->
                         <delimiter>@</delimiter>
                     </delimiters>
                     <useDefaultDelimiters>false</useDefaultDelimiters>
@@ -194,6 +228,52 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Generate entity classes from OWL integrity constraints -->
+                <groupId>cz.cvut.kbss.jopa</groupId>
+                <artifactId>jopa-maven-plugin</artifactId>
+                <version>${jopa.version}</version>
+                <configuration>
+                    <!-- owl2java -->
+                    <package>${project.groupId}.generated</package>
+                    <output-directory>${project.build.directory}/generated-sources</output-directory>
+                    <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
+                    <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
+                    <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
+                    <vocabulary-only>true</vocabulary-only>
+                    <!-- modelgen -->
+                    <source-package>${project.groupId}.core.model</source-package>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>owl2java-transform</goal>
+                            <goal>modelgen</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Add generated sources to classpath -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.generated-source.directory}</source>
+                            </sources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

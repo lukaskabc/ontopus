@@ -1,0 +1,1 @@
+http://ontology.lukaskabc.cz/application/ontopus > ./ontopus.ttl

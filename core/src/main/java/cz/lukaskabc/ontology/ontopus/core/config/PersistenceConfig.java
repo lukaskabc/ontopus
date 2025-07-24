@@ -5,9 +5,11 @@ import com.github.ledsoft.jopa.spring.transaction.JopaTransactionManager;
 import cz.cvut.kbss.jopa.model.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+@Import(PersistenceFactoryConfig.class)
 @Configuration
 @EnableTransactionManagement
 public class PersistenceConfig {
@@ -17,8 +19,7 @@ public class PersistenceConfig {
     }
 
     @Bean(name = "txManager")
-    PlatformTransactionManager transactionManager(EntityManagerFactory emf, DelegatingEntityManager emProxy) {
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf, DelegatingEntityManager emProxy) {
         return new JopaTransactionManager(emf, emProxy);
-
     }
 }

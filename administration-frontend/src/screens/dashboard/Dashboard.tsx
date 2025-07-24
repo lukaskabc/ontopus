@@ -72,6 +72,9 @@ export default function Dashboard() {
     []
   )
 
+  // TODO: replace header with wouter link
+  // https://mui.com/toolpad/core/react-dashboard-layout/#slots
+
   return (
     <div id={'dashboard-wrapper'}>
       <DashboardLayout

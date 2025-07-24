@@ -2,23 +2,16 @@ package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.util.PluginRegistryApplicationInitializer;
+import java.util.ServiceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-import java.util.ServiceLoader;
-
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableConfigurationProperties
 public class OntoPuSApplication {
-
-    public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(OntoPuSApplication.class);
-        addPluginRegistryInitializer(app);
-        app.run(args);
-    }
 
     /**
      * Adds an {@link PluginRegistryApplicationInitializer} to the application context.
@@ -30,4 +23,9 @@ public class OntoPuSApplication {
         app.addInitializers(new PluginRegistryApplicationInitializer(loader));
     }
 
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(OntoPuSApplication.class);
+        addPluginRegistryInitializer(app);
+        app.run(args);
+    }
 }

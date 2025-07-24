@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.persistence.UserDao;
 import lombok.extern.log4j.Log4j2;
@@ -10,14 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
-
 @Log4j2
 @Component
 @Scope(SCOPE_PROTOTYPE)
 public class AdminAccountInitializationService implements InitService {
-    private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    private final UserDao userDao;
 
     @Autowired
     public AdminAccountInitializationService(UserDao userDao, PasswordEncoder passwordEncoder) {
@@ -38,6 +38,8 @@ public class AdminAccountInitializationService implements InitService {
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode(password));
         userDao.persist(admin);
-        log.warn("\n\n\nNo user account found. Generated new account: admin, password: {}\nMake sure to change the password after the first login!\n", password);
+        log.warn(
+                "\n\n\nNo user account found. Generated new account: admin, password: {}\nMake sure to change the password after the first login!\n",
+                password);
     }
 }

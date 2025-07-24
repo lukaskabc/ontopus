@@ -2,6 +2,10 @@ package cz.lukaskabc.ontology.ontopus.core.rest;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.model.Ontology;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.util.List;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -9,11 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -27,7 +26,9 @@ class Controller {
                 .setIri(URI.create("http://ontology.lukaskabc.cz/Ontology_test#instance123456"))
                 .setVersionInfo("Version Info text")
                 .setVersionIri(URI.create("http://ontology.lukaskabc.cz/Ontology_test#instance123456/1.0/"));
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/rdf+xml")).body(v.toString());
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/rdf+xml"))
+                .body(v.toString());
     }
 
     @PostMapping("/git")
@@ -42,25 +43,23 @@ class Controller {
                 .setNoTags();
         try (final var git = cmd.call()) {
             final var walk = new TreeWalk(git.getRepository());
-
         }
-
 
         System.out.println("Git repository: " + repositoryUri.toString());
     }
 
-//    @GetMapping("plugins")
-//    public ResponseEntity<?> getPlugins() {
-//        if (plugins.isEmpty()) {
-//            return ResponseEntity.noContent().build();
-//        }
-//        return ResponseEntity.ok(plugins.stream()
-//                .map(Plugin::getName)
-//                .toList());
-//    }
+    // @GetMapping("plugins")
+    // public ResponseEntity<?> getPlugins() {
+    // if (plugins.isEmpty()) {
+    // return ResponseEntity.noContent().build();
+    // }
+    // return ResponseEntity.ok(plugins.stream()
+    // .map(Plugin::getName)
+    // .toList());
+    // }
 
-//    @GetMapping("core")
-//    public ResponseEntity<?> get() {
-//        return ResponseEntity.ok("Core module is running");
-//    }
+    // @GetMapping("core")
+    // public ResponseEntity<?> get() {
+    // return ResponseEntity.ok("Core module is running");
+    // }
 }

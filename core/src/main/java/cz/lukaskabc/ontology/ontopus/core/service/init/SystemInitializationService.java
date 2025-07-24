@@ -1,11 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
+import java.util.Set;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 @Order(Ordered.LOWEST_PRECEDENCE)

@@ -8,17 +8,16 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebSe
 import org.springframework.context.ApplicationContextInitializer;
 
 /**
- * Scans each plugin's base package for Spring components and registers them in the application context.
- * Main plugin classes are also registered in the application context under their names.
+ * Scans each plugin's base package for Spring components and registers them in the application context. Main plugin
+ * classes are also registered in the application context under their names.
  */
-public class PluginRegistryApplicationInitializer implements ApplicationContextInitializer<AnnotationConfigServletWebServerApplicationContext> {
+public class PluginRegistryApplicationInitializer
+        implements ApplicationContextInitializer<AnnotationConfigServletWebServerApplicationContext> {
     private static final Logger LOG = LoggerFactory.getLogger(PluginRegistryApplicationInitializer.class);
 
     private final Iterable<Plugin> plugins;
 
-    /**
-     * @param plugins Plugins to register in the application context.
-     */
+    /** @param plugins Plugins to register in the application context. */
     public PluginRegistryApplicationInitializer(Iterable<Plugin> plugins) {
         this.plugins = plugins;
     }
@@ -33,5 +32,4 @@ public class PluginRegistryApplicationInitializer implements ApplicationContextI
             applicationContext.getBeanFactory().registerSingleton(plugin.getName(), plugin);
         }
     }
-
 }

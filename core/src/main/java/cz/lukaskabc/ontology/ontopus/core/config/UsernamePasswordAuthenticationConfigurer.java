@@ -11,13 +11,14 @@ import org.springframework.security.web.authentication.ui.DefaultLoginPageGenera
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * Basically alternative implementation to {@link FormLoginConfigurer}
- * but without the default login page ({@link DefaultLoginPageGeneratingFilter})
+ * Basically alternative implementation to {@link FormLoginConfigurer} but without the default login page
+ * ({@link DefaultLoginPageGeneratingFilter})
  *
  * @param <H>
  */
-public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuilder<H>> extends
-        AbstractAuthenticationFilterConfigurer<H, FormLoginConfigurer<H>, UsernamePasswordAuthenticationFilter> {
+public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuilder<H>>
+        extends AbstractAuthenticationFilterConfigurer<
+                H, FormLoginConfigurer<H>, UsernamePasswordAuthenticationFilter> {
 
     public UsernamePasswordAuthenticationConfigurer() {
         super(new UsernamePasswordAuthenticationFilter(), null);
@@ -25,9 +26,7 @@ public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuil
         successHandler(LoginController::onSuccess);
     }
 
-    /**
-     * @see FormLoginConfigurer#createLoginProcessingUrlMatcher(String)
-     */
+    /** @see FormLoginConfigurer#createLoginProcessingUrlMatcher(String) */
     @Override
     protected RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
         return RequestMatcherFactory.matcher(HttpMethod.POST, loginProcessingUrl);
@@ -37,5 +36,4 @@ public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuil
     public void init(H http) throws Exception {
         super.init(http);
     }
-
 }

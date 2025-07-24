@@ -14,22 +14,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    /**
-     * Only for documentation purposes.
-     * The authentication is configured by
-     * {@link cz.lukaskabc.ontology.ontopus.core.config.UsernamePasswordAuthenticationConfigurer UsernamePasswordAuthenticationConfigurer}
-     */
-    @PostMapping(path = "login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void login(@RequestParam(name = "username") String username, @RequestParam(name = "password") String password) {
+    public static void onFailure(
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 
-
-    public static void onSuccess(HttpServletRequest request, HttpServletResponse httpServletResponse, Authentication authentication) {
+    public static void onSuccess(
+            HttpServletRequest request, HttpServletResponse httpServletResponse, Authentication authentication) {
         log.info("User {} logged in successfully", authentication.getName());
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
     }
 
-    public static void onFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-    }
+    /**
+     * Only for documentation purposes. The authentication is configured by
+     * {@link cz.lukaskabc.ontology.ontopus.core.config.UsernamePasswordAuthenticationConfigurer
+     * UsernamePasswordAuthenticationConfigurer}
+     */
+    @PostMapping(path = "login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void login(
+            @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) {}
 }

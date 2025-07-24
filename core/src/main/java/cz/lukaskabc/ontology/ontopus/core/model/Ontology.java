@@ -5,11 +5,10 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.vocabulary.OWL;
 import cz.lukaskabc.ontology.ontopus.core.util.OWLVocabulary;
+import java.net.URI;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import java.net.URI;
 
 @Getter
 @Setter
@@ -18,8 +17,10 @@ import java.net.URI;
 public class Ontology {
     @Id
     private URI iri;
-    @OWLDataProperty(iri = OWLVocabulary.VERSION_IRI)
-    private URI versionIri;
+
     @OWLDataProperty(iri = OWLVocabulary.VERSION_INFO)
     private String versionInfo;
+
+    @OWLDataProperty(iri = OWLVocabulary.VERSION_IRI)
+    private URI versionIri;
 }

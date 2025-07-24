@@ -12,21 +12,19 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "ontopus")
 public class ServerConfig {
-    @Valid
-    private Database database;
+    @Valid private Database database;
 
     @Getter
     @Setter
     public static class Database {
-        @NotNull
-        private String url;
-        @NotNull
-        private String driver;
-        @NotNull
-        private String language;
+        @NotNull private String driver;
 
-        private String username;
+        @NotNull private String language;
 
         private String password;
+
+        @NotNull private String url;
+
+        private String username;
     }
 }

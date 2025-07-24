@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -18,12 +17,11 @@
     <description>Ontology Publication Server Core</description>
 
     <properties>
-        <spring.boot.version>3.5.3</spring.boot.version>
-        <lombok.version>1.18.38</lombok.version>
         <jopa.version>2.4.4</jopa.version>
-        <project.build.generated-source.directory>${project.build.directory}/generated-sources
-        </project.build.generated-source.directory>
-        <spring.profiles.active></spring.profiles.active>
+        <lombok.version>1.18.38</lombok.version>
+        <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
+        <spring.boot.version>3.5.3</spring.boot.version>
+        <spring.profiles.active/>
     </properties>
 
     <dependencyManagement>
@@ -73,7 +71,8 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version> <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
+            <version>3.18.0</version>
+            <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
         </dependency>
 
         <!-- Git API -->
@@ -143,46 +142,12 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>configuration-doc</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <proc>only</proc>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                    <version>${lombok.version}</version>
-                                </path>
-                                <path>
-                                    <groupId>cz.lukaskabc.cvut.processor</groupId>
-                                    <artifactId>spring-boot-configuration-docgen-processor</artifactId>
-                                    <version>1.1</version>
-                                </path>
-                            </annotationProcessorPaths>
-                            <compilerArgs>
-                                <arg>-Aconfigurationdoc.output_file=${project.basedir}/springboot-configuration.md</arg>
-                            </compilerArgs>
-                            <source>${java.version}</source>
-                            <target>${java.version}</target>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <build>
         <!-- Allows properties expanding to application.yml and similar -->
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <plugins>
@@ -249,11 +214,11 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>generate-sources</phase>
                         <goals>
                             <goal>owl2java-transform</goal>
                             <goal>modelgen</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -265,10 +230,10 @@
                 <executions>
                     <execution>
                         <id>add-source</id>
-                        <phase>generate-sources</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <sources>
                                 <source>${project.build.generated-source.directory}</source>
@@ -279,5 +244,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>configuration-doc</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <proc>only</proc>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>${lombok.version}</version>
+                                </path>
+                                <path>
+                                    <groupId>cz.lukaskabc.cvut.processor</groupId>
+                                    <artifactId>spring-boot-configuration-docgen-processor</artifactId>
+                                    <version>1.1</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <compilerArgs>
+                                <arg>-Aconfigurationdoc.output_file=${project.basedir}/springboot-configuration.md</arg>
+                            </compilerArgs>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

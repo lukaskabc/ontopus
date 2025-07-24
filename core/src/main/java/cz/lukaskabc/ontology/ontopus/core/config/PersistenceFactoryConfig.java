@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.config;
 
+import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.*;
+
 import cz.cvut.kbss.jopa.Persistence;
 import cz.cvut.kbss.jopa.model.EntityManagerFactory;
 import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
@@ -10,15 +12,12 @@ import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.generated.Vocabulary;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.*;
-
-//@Configuration
+// @Configuration
 public class PersistenceFactoryConfig {
 
     private EntityManagerFactory factory;
@@ -26,6 +25,13 @@ public class PersistenceFactoryConfig {
 
     public PersistenceFactoryConfig(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
+    }
+
+    @PreDestroy
+    private void close() {
+        if (factory.isOpen()) {
+            factory.close();
+        }
     }
 
     @Bean
@@ -51,16 +57,10 @@ public class PersistenceFactoryConfig {
             properties.put(OntoDriverProperties.DATA_SOURCE_USERNAME, dbConfig.getUsername());
             properties.put(OntoDriverProperties.DATA_SOURCE_PASSWORD, dbConfig.getPassword());
         }
-        // OPTIMIZATION: Always use statement retrieval with unbound property. Should spare repository queries
+        // OPTIMIZATION: Always use statement retrieval with unbound property. Should
+        // spare repository queries
         properties.put(Rdf4jOntoDriverProperties.LOAD_ALL_THRESHOLD, "1");
         properties.put(JOPAPersistenceProperties.LRU_CACHE_CAPACITY, "32768");
         this.factory = Persistence.createEntityManagerFactory("ontopusPersistenceUnit", properties);
-    }
-
-    @PreDestroy
-    private void close() {
-        if (factory.isOpen()) {
-            factory.close();
-        }
     }
 }

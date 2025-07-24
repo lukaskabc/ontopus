@@ -6,19 +6,12 @@ import java.util.List;
  * Discoverable plugin service for OntoPuS server.
  *
  * @implSpec Implementations must:
- * <ul>
- *  <li>have a public no-arg constructor</li>
- *  <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin}</li>
- * </ul>
+ *     <ul>
+ *       <li>have a public no-arg constructor
+ *       <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin}
+ *     </ul>
  */
 public interface Plugin {
-    /**
-     * Unique name of the plugin used for identification.
-     *
-     * @return the name of the plugin
-     */
-    String getName();
-
     /**
      * List of base packages used for component scanning by Spring.
      *
@@ -28,4 +21,11 @@ public interface Plugin {
         String thisPackage = this.getClass().getPackage().getName();
         return List.of(thisPackage);
     }
+
+    /**
+     * Unique name of the plugin used for identification.
+     *
+     * @return the name of the plugin
+     */
+    String getName();
 }

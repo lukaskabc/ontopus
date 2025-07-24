@@ -20,38 +20,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable) // disable csrf
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
-                .logout(LogoutConfigurer::permitAll)
-                .authenticationManager(authenticationManager)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
-                .with(new UsernamePasswordAuthenticationConfigurer<>(), AbstractAuthenticationFilterConfigurer::permitAll)
-                .authorizeHttpRequests(req -> req
-                        .requestMatchers(
-                                "/login",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                );
-        return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(
-            UserService userService,
-            PasswordEncoder passwordEncoder) {
+    public AuthenticationManager authenticationManager(UserService userService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userService);
         authenticationProvider.setPasswordEncoder(passwordEncoder);
 
@@ -59,8 +28,33 @@ public class SecurityConfig {
     }
 
     @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager)
+            throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable) // disable csrf
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .logout(LogoutConfigurer::permitAll)
+                .authenticationManager(authenticationManager)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .with(
+                        new UsernamePasswordAuthenticationConfigurer<>(),
+                        AbstractAuthenticationFilterConfigurer::permitAll)
+                .authorizeHttpRequests(
+                        req -> req.requestMatchers("/login", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated());
+        return http.build();
+    }
+
+    @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

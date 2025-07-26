@@ -33,7 +33,8 @@ public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuil
     }
 
     @Override
-    public void init(H http) throws Exception {
-        super.init(http);
+    public void init(H http) {
+        updateAuthenticationDefaults();
+        updateAccessDefaults(http);
     }
 }

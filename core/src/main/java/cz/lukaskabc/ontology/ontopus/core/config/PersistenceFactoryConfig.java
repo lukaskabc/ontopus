@@ -45,6 +45,13 @@ public class PersistenceFactoryConfig {
         return factory;
     }
 
+    /**
+     * Packages are collected in {@link cz.lukaskabc.ontology.ontopus.core.util.PluginRegistryApplicationInitializer
+     * PluginRegistryApplicationInitializer} and passed to Spring context as {@link JopaEntityPackagesHolder}. The
+     * {@link JopaEntityPackagesHolder} bean is removed from the context after the packages are retrieved.
+     *
+     * @return set of packages to scan for JOPA entities
+     */
     private Set<String> getPackagesForEntityScan() {
         final JopaEntityPackagesHolder holder = defaultListableBeanFactory.getBean(JopaEntityPackagesHolder.class);
         defaultListableBeanFactory.destroySingleton(JopaEntityPackagesHolder.BEAN_NAME); // not needed anymore

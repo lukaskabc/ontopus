@@ -3,7 +3,6 @@ package cz.lukaskabc.ontology.ontopus.core.model;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
-import cz.cvut.kbss.jopa.vocabulary.DC;
 import cz.lukaskabc.ontology.ontopus.generated.Vocabulary;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,27 +11,28 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Getter
+@Getter(onMethod_ = {@Override})
 @Setter
 @Accessors(chain = true)
 @OWLClass(iri = Ontology.Meta.s_TYPE)
-public class Ontology extends PersistenceEntity {
-    @NotEmpty @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = DC.Terms.TITLE, simpleLiteral = true)
-    private String name;
+public class Ontology extends PersistenceEntity implements cz.lukaskabc.ontology.ontopus.api.model.Ontology {
+    @ParticipationConstraints(nonEmpty = true)
+    @OWLDataProperty(iri = Meta.s_NAME, simpleLiteral = true)
+    @NotEmpty private String name;
 
-    @NotNull @ParticipationConstraints(nonEmpty = true)
+    @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Meta.s_ONTOLOGY_URI, simpleLiteral = true)
-    private URI ontologyUri;
+    @NotNull private URI ontologyUri;
 
-    @NotEmpty @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = Meta.s_VERSION_INFO)
-    private String versionInfo;
+    @ParticipationConstraints(nonEmpty = true)
+    @OWLDataProperty(iri = Meta.s_VERSION_INFO, simpleLiteral = true)
+    @NotEmpty private String versionInfo;
 
-    @NotNull @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = Meta.s_VERSION_IRI)
-    private URI versionIri;
+    @ParticipationConstraints(nonEmpty = true)
+    @OWLDataProperty(iri = Meta.s_VERSION_IRI, simpleLiteral = true)
+    @NotNull private URI versionIri;
 
+    // TODO: remove MOD ontology as it is only a draft and make own
     public static class Meta {
         public static final String s_TYPE = Vocabulary.s_c_mod_SemanticArtefact;
         public static final URI TYPE = URI.create(s_TYPE);

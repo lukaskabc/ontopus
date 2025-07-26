@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.util;
 
-import cz.lukaskabc.ontology.ontopus.api.OntologyImporter;
+import cz.lukaskabc.ontology.ontopus.api.service.OntologyImporter;
 import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Set;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class PluginRegistry {
-    private final Set<OntologyImporter> ontologyImporters;
+    private final Set<OntologyImporter<?>> ontologyImporters;
 
     @Autowired
-    public PluginRegistry(Set<OntologyImporter> ontologyImporters) {
+    public PluginRegistry(Set<OntologyImporter<?>> ontologyImporters) {
         this.ontologyImporters = Collections.unmodifiableSet(ontologyImporters);
     }
 

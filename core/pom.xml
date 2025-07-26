@@ -17,8 +17,6 @@
     <description>Ontology Publication Server Core</description>
 
     <properties>
-        <jopa.version>2.4.4</jopa.version>
-        <lombok.version>1.18.38</lombok.version>
         <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
         <spring.boot.version>3.5.3</spring.boot.version>
         <spring.profiles.active/>
@@ -87,11 +85,6 @@
         </dependency>
 
         <!-- Serialization -->
-        <!-- JSON -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
         <!-- XML -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -118,10 +111,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-json</artifactId>
-        </dependency>
 
         <!-- Development dependencies -->
         <dependency>
@@ -134,12 +123,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
@@ -255,6 +238,17 @@
     </build>
 
     <profiles>
+        <profile>
+            <!-- Used for running Spring directly with intellij to add plugin modules to classpath -->
+            <id>with-plugins</id>
+            <dependencies>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>git-plugin</artifactId>
+                    <version>${ontopus.plugin.git.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>configuration-doc</id>
             <build>

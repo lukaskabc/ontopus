@@ -8,12 +8,14 @@ import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
 import cz.cvut.kbss.jopa.model.JOPAPersistenceProvider;
 import cz.cvut.kbss.ontodriver.config.OntoDriverProperties;
 import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
-import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.generated.Vocabulary;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -23,9 +25,11 @@ public class PersistenceFactoryConfig {
 
     private EntityManagerFactory factory;
     private final ServerConfig serverConfig;
+    private final DefaultListableBeanFactory defaultListableBeanFactory;
 
-    public PersistenceFactoryConfig(ServerConfig serverConfig) {
+    public PersistenceFactoryConfig(ServerConfig serverConfig, DefaultListableBeanFactory defaultListableBeanFactory) {
         this.serverConfig = serverConfig;
+        this.defaultListableBeanFactory = defaultListableBeanFactory;
     }
 
     @PreDestroy
@@ -41,11 +45,20 @@ public class PersistenceFactoryConfig {
         return factory;
     }
 
+    private Set<String> getPackagesForEntityScan() {
+        final JopaEntityPackagesHolder holder = defaultListableBeanFactory.getBean(JopaEntityPackagesHolder.class);
+        defaultListableBeanFactory.destroySingleton(JopaEntityPackagesHolder.BEAN_NAME); // not needed anymore
+        return holder.packagesToScan();
+    }
+
     @PostConstruct
     private void init() {
         final ServerConfig.Database dbConfig = serverConfig.getDatabase();
         final Map<String, String> properties = new HashMap<>();
-        properties.put(SCAN_PACKAGE, PersistenceEntity.class.getPackageName());
+
+        final String packagesToScan = String.join(",", getPackagesForEntityScan());
+
+        properties.put(SCAN_PACKAGE, packagesToScan);
         properties.put(JPA_PERSISTENCE_PROVIDER, JOPAPersistenceProvider.class.getName());
 
         properties.put(ONTOLOGY_URI_KEY, Vocabulary.ONTOLOGY_IRI_ONTOPUS);

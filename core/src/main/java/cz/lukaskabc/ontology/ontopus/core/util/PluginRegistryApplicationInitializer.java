@@ -1,6 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
+import java.util.HashSet;
+import java.util.Set;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +28,25 @@ public class PluginRegistryApplicationInitializer
     public void initialize(@NonNull AnnotationConfigServletWebServerApplicationContext applicationContext) {
         LOG.info("Initializing plugins");
 
+        Set<String> packagesForJopaScan = new HashSet<>();
+
+        int pluginCount = 0;
         for (Plugin plugin : plugins) {
-            LOG.info("Loaded plugin: {}", plugin.getName());
-            plugin.getBasePackages().forEach(applicationContext::scan);
-            applicationContext.getBeanFactory().registerSingleton(plugin.getName(), plugin);
+            LOG.info("Loading plugin: {}", plugin.getClass().getName());
+            packagesForJopaScan.addAll(plugin.getJopaScanPackages());
+            plugin.getSpringScanPackages().forEach(applicationContext::scan);
+            pluginCount++;
         }
+
+        if (packagesForJopaScan.isEmpty()) {
+            throw new IllegalStateException("No packages for JOPA entity scan found!");
+        }
+
+        applicationContext
+                .getBeanFactory()
+                .registerSingleton(
+                        JopaEntityPackagesHolder.BEAN_NAME, new JopaEntityPackagesHolder(packagesForJopaScan));
+
+        LOG.info("Loaded {} plugins", pluginCount);
     }
 }

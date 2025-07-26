@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api;
 
 import java.util.List;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Discoverable plugin service for OntoPuS server.
@@ -9,25 +8,27 @@ import org.jspecify.annotations.NullMarked;
  * @implSpec Implementations must:
  *     <ul>
  *       <li>have a public no-arg constructor
- *       <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin}
+ *       <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin} file
  *     </ul>
  */
-@NullMarked
 public interface Plugin {
     /**
-     * List of base packages used for component scanning by Spring.
+     * List of packages that should be scanned by JOPA for entity declarations.
      *
-     * @return list of base packages
+     * @return list of packages to scan for JOPA entities.
      */
-    default List<String> getBasePackages() {
-        String thisPackage = this.getClass().getPackage().getName();
-        return List.of(thisPackage);
+    default List<String> getJopaScanPackages() {
+        return List.of();
     }
 
     /**
-     * Unique name of the plugin used for identification.
+     * List of base packages used for component scanning by Spring on system startup. By default, the base package of
+     * the Plugin concrete class is used, which also includes all sub-packages.
      *
-     * @return the name of the plugin
+     * @return list of base packages to scan for Spring components
      */
-    String getName();
+    default List<String> getSpringScanPackages() {
+        String thisPackage = this.getClass().getPackage().getName();
+        return List.of(thisPackage);
+    }
 }

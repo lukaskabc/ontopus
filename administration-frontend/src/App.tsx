@@ -22,8 +22,8 @@ const navigationProvider = ({
     icon: <ExtensionIcon />,
     children: [
       {
-        segment: 'github',
-        title: 'github',
+        segment: 'git',
+        title: 'git',
       },
     ],
   },
@@ -50,9 +50,9 @@ export function App() {
       <ErrorBoundary>
         <Switch>
           <Route path={'/login'} component={Login} />
-          <Route path={'/'} component={Dashboard} nest />
+          <Route path={'/ontologies'} component={Dashboard} nest />
           {/* Default route: redirect to dashboard, keep as last item*/}
-          <Redirect to={'/'} />
+          <Redirect to={'/ontologies'} />
         </Switch>
       </ErrorBoundary>
     </WouterAppProvider>

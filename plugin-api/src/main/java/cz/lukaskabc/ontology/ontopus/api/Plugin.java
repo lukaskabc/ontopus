@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api;
 
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Discoverable plugin service for OntoPuS server.
@@ -11,6 +12,7 @@ import java.util.List;
  *       <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin}
  *     </ul>
  */
+@NullMarked
 public interface Plugin {
     /**
      * List of base packages used for component scanning by Spring.

@@ -1,4 +1,5 @@
 @prefix : <http://ontology.lukaskabc.cz/application/ontopus#> .
+@prefix mod: <https://w3id.org/mod#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
@@ -9,7 +10,8 @@
 
 <http://ontology.lukaskabc.cz/application/ontopus> rdf:type owl:Ontology ;
                                                     owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0-dev> ;
-                                                    owl:imports <http://rdfs.org/sioc/ns#> ;
+                                                    owl:imports <http://rdfs.org/sioc/ns> ,
+                                                                <https://w3id.org/mod/2.0> ;
                                                     <http://purl.org/dc/elements/1.1/creator> "Lukáš Kaňka" ;
                                                     <http://purl.org/vocab/vann/preferredNamespacePrefix> "ontopus" ;
                                                     <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus#" ;
@@ -32,9 +34,13 @@
 ###  http://purl.org/vocab/vann/preferredNamespaceUri
 <http://purl.org/vocab/vann/preferredNamespaceUri> rdf:type owl:AnnotationProperty .
 
-owl:versionInfo rdf:type owl:AnnotationProperty .
 
-owl:versionIRI rdf:type owl:OntologyProperty .
+###  http://www.w3.org/2002/07/owl#versionIRI
+owl:versionIRI rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2002/07/owl#versionInfo
+owl:versionInfo rdf:type owl:AnnotationProperty .
 
 
 #################################################################

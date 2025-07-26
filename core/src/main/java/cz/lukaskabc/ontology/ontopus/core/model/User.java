@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(chain = true)
-@OWLClass(iri = User.Meta.s_STRING)
+@OWLClass(iri = User.Meta.s_TYPE)
 public class User extends PersistenceEntity {
 
     @NotNull @NotEmpty @ParticipationConstraints(nonEmpty = true)
@@ -28,8 +28,8 @@ public class User extends PersistenceEntity {
     public static class Meta {
         public static final String s_PASSWORD = Vocabulary.s_p_password;
         public static final URI PASSWORD = URI.create(s_PASSWORD);
-        public static final String s_STRING = Vocabulary.s_c_UserAccount;
-        public static final URI TYPE = URI.create(s_STRING);
+        public static final String s_TYPE = Vocabulary.s_c_UserAccount;
+        public static final URI TYPE = URI.create(s_TYPE);
         public static final String s_USERNAME = Vocabulary.s_p_org_name;
         public static final URI USERNAME = URI.create(s_USERNAME);
 

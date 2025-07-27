@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.api;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Discoverable plugin service for OntoPuS server.
@@ -13,6 +14,7 @@ import java.util.Map;
  *       <li>be registered in {@code META-INF/services/cz.lukaskabc.ontology.ontopus.api.Plugin} file
  *     </ul>
  */
+@NullMarked
 public interface Plugin {
     /**
      * List of packages that should be scanned by JOPA for entity declarations.
@@ -35,8 +37,8 @@ public interface Plugin {
     }
 
     /**
-     * Load language translations in i18n JSON format. Note that every translation key must be unique for the
-     * application including all plugins.
+     * Load language translations in i18n JSON format. Every translation key must be unique for the application
+     * including all plugins.
      *
      * <p>Expected JSON format: <code><pre>
      * {
@@ -52,13 +54,12 @@ public interface Plugin {
      * </pre></code>
      *
      * @return Map of language codes to stream of the translations file.
-     * @implNote Note that all plugins are loaded with the same class loader so resources with matching names and paths
-     *     will clash. If the plugin defines the language in {@code language/en.json}, it will be loaded automatically
-     *     and an empty map can be returned here.
+     * @implNote Note that all plugins are loaded with the same class loader so resources with matching paths will
+     *     clash. If the plugin defines translations in {@code /language/} directory ({@code /language/en.json}), it
+     *     will be loaded automatically by the core and an empty map should be returned here. Otherwise, a unique folder
+     *     should be used for all plugin's resources (e.g. use plugin's package).
      */
     default Map<String, InputStream> getTranslations() {
-        // TODO: use Java modules and so the resources will be split and can be loaded
-        // separately
         return Map.of();
     }
 }

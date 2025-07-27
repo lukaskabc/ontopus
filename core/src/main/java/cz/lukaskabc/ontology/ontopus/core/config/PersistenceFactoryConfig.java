@@ -1,24 +1,26 @@
 package cz.lukaskabc.ontology.ontopus.core.config;
 
-import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.*;
-
 import cz.cvut.kbss.jopa.Persistence;
 import cz.cvut.kbss.jopa.model.EntityManagerFactory;
 import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
 import cz.cvut.kbss.jopa.model.JOPAPersistenceProvider;
 import cz.cvut.kbss.ontodriver.config.OntoDriverProperties;
 import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
+import cz.lukaskabc.ontology.ontopus.core.PluginRegistryApplicationInitializer;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.generated.Vocabulary;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import static cz.cvut.kbss.jopa.model.JOPAPersistenceProperties.*;
 
 @Configuration
 public class PersistenceFactoryConfig {
@@ -46,7 +48,7 @@ public class PersistenceFactoryConfig {
     }
 
     /**
-     * Packages are collected in {@link cz.lukaskabc.ontology.ontopus.core.util.PluginRegistryApplicationInitializer
+     * Packages are collected in {@link PluginRegistryApplicationInitializer
      * PluginRegistryApplicationInitializer} and passed to Spring context as {@link JopaEntityPackagesHolder}. The
      * {@link JopaEntityPackagesHolder} bean is removed from the context after the packages are retrieved.
      *

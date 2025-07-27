@@ -2,12 +2,14 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.Ontology;
 import java.io.InputStream;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Object capable of importing a new Ontology from a supported source to the GraphDB
  *
- * @param <I> The type of data object to which result of import
+ * @param <I> The type of data object to which result of import form should be deserialized.
  */
+@NullMarked
 public interface OntologyImporter<I> {
     /**
      * Provides a class to which data from filled import data should be deserialized.

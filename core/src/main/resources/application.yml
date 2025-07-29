@@ -10,7 +10,7 @@ springdoc:
     enabled: false
 #  show-login-endpoint: true
 
-server.servlet.session.timeout: 1m
+server.servlet.session.timeout: 10m
 
 ontopus:
   database:

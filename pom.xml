@@ -30,6 +30,7 @@
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.boot.version>3.5.3</spring.boot.version>
     </properties>
 
     <dependencyManagement>
@@ -39,6 +40,14 @@
                 <artifactId>plugin-api</artifactId>
                 <version>${ontopus.plugin.api.version}</version>
             </dependency>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -47,6 +56,10 @@
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
         <!-- Jopa -->
         <dependency>
@@ -75,23 +88,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-        <!-- JSON schema -->
-        <dependency>
-            <groupId>com.kjetland</groupId>
-            <artifactId>mbknor-jackson-jsonschema_2.13</artifactId>
-            <version>1.0.39</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>2.13.9</version>
-            <!-- resolves mbknor-jackson-jsonschema_2.13 CWE -->
-        </dependency>
-        <dependency>
-            <groupId>io.github.classgraph</groupId>
-            <artifactId>classgraph</artifactId>
-            <version>4.8.149</version>
         </dependency>
 
         <!-- Development -->

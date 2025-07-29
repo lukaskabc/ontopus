@@ -2,7 +2,7 @@ import { Button } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
 export default function CustomButton() {
-  const { t } = useTranslation()
+  const { t } = useTranslation('local')
   return (
     <Button
       type="submit"

@@ -2,7 +2,7 @@ import { FormControl, InputLabel, OutlinedInput } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 
 export default function () {
-  const { t } = useTranslation()
+  const { t } = useTranslation('local')
   const label = t('login.field.username.title')
   return (
     <FormControl sx={{ my: 2 }} fullWidth variant="outlined">
@@ -16,6 +16,7 @@ export default function () {
         size="small"
         required={true}
         label={label}
+        value={'admin'} // TODO remove
       />
     </FormControl>
   )

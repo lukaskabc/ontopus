@@ -1,8 +1,18 @@
 {
   "title": "OntoPuS",
   "subtitle": "Ontology Publication Server",
-  "login.button.submit": "Login",
-  "login.field.password.title": "Password",
-  "login.field.username.title": "Username",
-  "login.title": "OntoPuS"
+  "login": {
+    "button.submit": "Login",
+    "field": {
+      "password.title": "Password",
+      "username.title": "Username"
+    }
+  },
+  "publish": {
+    "step": {
+      "import": "Load and import",
+      "process": "Process and edit",
+      "publish": "Generate and publish"
+    }
+  }
 }

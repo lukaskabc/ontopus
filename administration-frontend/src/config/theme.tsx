@@ -29,8 +29,8 @@ const mdTheme = createTheme({
 
 export const Branding = {
   logo: <Logo class={'logo'} />,
-  title: t('title'),
-  subtitle: t('subtitle'),
+  title: t('local:title'),
+  subtitle: t('local:subtitle'),
   homeUrl: '/',
 }
 

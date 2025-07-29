@@ -13,4 +13,12 @@
     <version>${ontopus.plugin.api.version}</version>
     <packaging>jar</packaging>
 
+    <dependencies>
+        <!-- Spring dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

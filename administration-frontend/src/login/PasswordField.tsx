@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 export default function () {
   const [showPassword, setShowPassword] = useState(false)
-  const { t } = useTranslation()
+  const { t } = useTranslation('local')
   const label = t('login.field.password.title')
 
   return (
@@ -27,6 +27,7 @@ export default function () {
         label={label}
         size="small"
         required={true}
+        value={'abeceda'} // TODO remove
         endAdornment={
           <InputAdornment position="end">
             <IconButton

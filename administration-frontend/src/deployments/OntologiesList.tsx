@@ -13,6 +13,7 @@ import type { OntologyEntity } from '@/model/OntologyEntity.ts'
 import { OntologyDataSource } from '@/deployments/OntologyDataSource.ts'
 import { DataGrid } from '@mui/x-data-grid'
 import OntologyPublishSourceSelectDialog from '@/deployments/OntologyPublishSourceSelectDialog.tsx'
+import PublishStepper from '@/publish/PublishStepper.tsx'
 
 const notesCache = new DataSourceCache()
 
@@ -24,7 +25,7 @@ function CrudList() {
       initialPageSize={10}
       onRowClick={(id) => navigate(`/${id}`)}
       onCreateClick={async () =>
-        await dialogs.open(OntologyPublishSourceSelectDialog, 'payload')
+        await dialogs.open(OntologyPublishSourceSelectDialog)
       }
       onEditClick={(id) => navigate(`/${id}/edit`)}
       slots={{
@@ -91,7 +92,8 @@ export default function OntologiesList() {
       dataSourceCache={notesCache}
     >
       <Switch>
-        <Route path={'/publish'} component={CrudCreate} />
+        {/*<Route path={'/publish'} component={CrudCreate} />*/}
+        <Route path={'/publish'} component={PublishStepper} />
         <Route path={'/:noteId/edit'} component={CrudEdit} />
         <Route path={'/:noteId'} component={CrudShow} />
         <Route path={'/'} component={CrudList} />

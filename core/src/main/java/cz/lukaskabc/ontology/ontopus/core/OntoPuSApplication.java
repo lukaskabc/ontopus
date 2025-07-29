@@ -1,20 +1,21 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
+import java.util.ServiceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-import java.util.ServiceLoader;
-
+@EnableAsync
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableConfigurationProperties
 public class OntoPuSApplication {
 
     /**
-     * Adds an {@link PluginRegistryApplicationInitializer} to the application context.
+     * Adds the {@link PluginRegistryApplicationInitializer} to the application context.
      *
      * @param app Spring application to add the initializer to.
      */

@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyImporter;
-import jakarta.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Set;
 import lombok.Getter;
@@ -18,10 +17,5 @@ public class PluginRegistry {
     @Autowired
     public PluginRegistry(Set<OntologyImporter<?>> ontologyImporters) {
         this.ontologyImporters = Collections.unmodifiableSet(ontologyImporters);
-    }
-
-    @PostConstruct
-    public void init() {
-        System.out.println(ontologyImporters.size());
     }
 }

@@ -1,3 +1,16 @@
 {
-  "plugin.git.name": "Git"
+  "ontopus.plugin.git": {
+    "sourceName": "Remote git repository",
+    "importForm": {
+      "description": "Specify the remote repository to clone",
+      "fields": {
+        "repositoryUrl.title": "Repository URL",
+        "repositoryUrl.description": "e.g. https://github.com/lukaskabc/ontopus.git",
+        "username.title": "Username",
+        "password.title": "Password",
+        "authText.title": "Authentication",
+        "authText.description": "(optional)"
+      }
+    }
+  }
 }

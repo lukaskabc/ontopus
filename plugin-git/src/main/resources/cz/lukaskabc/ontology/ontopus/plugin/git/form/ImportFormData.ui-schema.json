@@ -1,0 +1,12 @@
+{
+  "password": {
+    "ui:inputType": "password"
+  },
+  "authText": {
+    "ui:widget": "headingWidget",
+    "ui:options": {
+      "variant": "h5",
+      "component": "h2"
+    }
+  }
+}

@@ -6,16 +6,15 @@ import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.model.LocalizationProvider;
 import cz.lukaskabc.ontology.ontopus.core.util.Constants;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
 
 /**
  * Scans each plugin's base package for Spring components and registers them in the application context. Main plugin
@@ -28,9 +27,7 @@ public class PluginRegistryApplicationInitializer
     private final Iterable<Plugin> plugins;
     private final ObjectMapper objectMapper;
 
-    /**
-     * @param plugins Plugins to load.
-     */
+    /** @param plugins Plugins to load. */
     public PluginRegistryApplicationInitializer(Iterable<Plugin> plugins) {
         this.plugins = plugins;
         this.objectMapper = new ObjectMapper();
@@ -62,8 +59,8 @@ public class PluginRegistryApplicationInitializer
      * </code>
      *
      * @param jsonNode Json object to flatten.
-     * @param prefix   Key prefix for the current nested level.
-     * @param map      The map to fill.
+     * @param prefix Key prefix for the current nested level.
+     * @param map The map to fill.
      * @throws IllegalStateException when a duplicate key is found
      */
     private void flattenTranslations(JsonNode jsonNode, String prefix, Map<String, String> map) {
@@ -129,7 +126,7 @@ public class PluginRegistryApplicationInitializer
                 while (files.hasMoreElements()) {
                     final URL url = files.nextElement();
                     final Map<String, String> language = localization.computeIfAbsent(lang, k -> new HashMap<>());
-                    flattenTranslations(objectMapper.readTree(url), lang, language);
+                    flattenTranslations(objectMapper.readTree(url), "", language);
                 }
             }
         } catch (IOException e) {

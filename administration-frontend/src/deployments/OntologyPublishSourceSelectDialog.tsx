@@ -1,111 +1,60 @@
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import type { DialogProps } from '@toolpad/core'
-import Form from '@rjsf/mui'
-import type { RJSFSchema, UiSchema } from '@rjsf/utils'
-import validator from '@rjsf/validator-ajv8'
+import { type DialogProps } from '@toolpad/core'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import { DialogContent, ListItemText } from '@mui/material'
+import { useTranslation } from 'react-i18next'
+import { useCallback, useEffect, useState } from 'preact/hooks'
+import { PromiseArea } from '@/components/PromiseArea.tsx'
+import { trackPromise } from 'react-promise-tracker'
+import { fetchImportSources } from '@/deployments/actions.ts'
+import { useLocation } from 'wouter-preact'
 
-const schema: RJSFSchema = {
-  type: 'object',
-  properties: {
-    person: {
-      title: 'Person Info',
-      type: 'object',
-      properties: {
-        first: {
-          title: 'First Name',
-          minLength: 1,
-          maxLength: 200,
-          type: 'string',
-        },
-        middle: {
-          title: 'Middle Name',
-          minLength: 1,
-          maxLength: 200,
-          type: 'string',
-        },
-        last: {
-          title: 'Last Name',
-          minLength: 1,
-          maxLength: 200,
-          type: 'string',
-        },
-      },
-      required: ['first', 'last'],
-    },
-  },
-}
-const uiSchema: UiSchema = {
-  'ui:field': 'LayoutGridField',
-  'ui:layoutGrid': {
-    'ui:row': {
-      className: 'row',
-      children: [
-        {
-          'ui:row': [
-            {
-              'ui:col': {
-                className: 'col-xs-12',
-                children: ['person'],
-              },
-            },
-          ],
-        },
-        {
-          'ui:row': [
-            {
-              'ui:col': {
-                className: 'col-xs-4',
-                children: [
-                  {
-                    name: 'person.first',
-                  },
-                ],
-              },
-            },
-            {
-              'ui:col': {
-                className: 'col-xs-4',
-                children: [
-                  {
-                    name: 'person.middle',
-                  },
-                ],
-              },
-            },
-            {
-              'ui:col': {
-                className: 'col-xs-4',
-                children: [
-                  {
-                    name: 'person.last',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    },
-  },
-  person: {
-    'ui:field': 'LayoutHeaderField',
-  },
-}
+const IMPORT_SOURCES_PROMISE_AREA =
+  'OntologyPublishSourceSelectDialog_fetchImportSources'
 
 export default function OntologyPublishSourceSelectDialog({
-  payload,
   open,
   onClose,
-}: DialogProps<string>) {
+}: DialogProps) {
+  const { t } = useTranslation()
+  const [_, navigate] = useLocation()
+  const [importSources, setImportSources] = useState<string[]>([])
+
+  useEffect(() => {
+    trackPromise(fetchImportSources(), IMPORT_SOURCES_PROMISE_AREA)
+      .then(setImportSources)
+      .catch(console.error)
+  }, [])
+
+  const onSourceSelect = useCallback((source: string) => {
+    onClose().then(() =>
+      navigate('/publish', { state: { importSource: source } })
+    )
+  }, [])
+
   return (
     <Dialog open={open} onClose={() => onClose()}>
       <DialogTitle>Select Ontology source</DialogTitle>
       <DialogContent>
-        <Form schema={schema} uiSchema={uiSchema} validator={validator} />
+        <PromiseArea area={IMPORT_SOURCES_PROMISE_AREA}>
+          <List>
+            {importSources.map((source) => (
+              <ListItem key={'SourceNameListItem' + source} disablePadding>
+                <ListItemButton
+                  component={'a'}
+                  onClick={() => onSourceSelect(source)}
+                >
+                  <ListItemText primary={t(source)} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </PromiseArea>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => onClose()}>Close me</Button>

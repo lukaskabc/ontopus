@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class PluginRegistry {
-    private final Set<OntologyImporter<?>> ontologyImporters;
+    private final Set<OntologyImporter> ontologyImporters;
 
     @Autowired
-    public PluginRegistry(Set<OntologyImporter<?>> ontologyImporters) {
+    public PluginRegistry(Set<OntologyImporter> ontologyImporters) {
         this.ontologyImporters = Collections.unmodifiableSet(ontologyImporters);
     }
 }

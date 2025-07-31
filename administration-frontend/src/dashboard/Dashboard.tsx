@@ -1,4 +1,3 @@
-import '@/config/i18n.ts'
 import { DashboardLayout, DialogsProvider } from '@toolpad/core'
 import OntologiesList from '@/deployments/OntologiesList.tsx'
 import TransparentPaper from '@/components/TransparentPaper.tsx'

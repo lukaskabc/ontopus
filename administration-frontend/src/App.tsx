@@ -1,4 +1,5 @@
 import '@/assets/theme.scss'
+import '@/config/i18n.ts'
 import mdTheme, { Branding } from '@/config/theme.tsx'
 import lazy, { ErrorBoundary } from 'preact-iso/lazy'
 import { Redirect, Route, Switch, useLocation } from 'wouter-preact'

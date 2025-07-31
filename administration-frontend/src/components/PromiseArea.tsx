@@ -5,7 +5,7 @@ import { CircularProgress, LinearProgress, type LinearProgressProps } from '@mui
 
 export interface PromiseAreaProps {
   area: string
-  children: ComponentChildren
+  children?: ComponentChildren
   useCircleLoading?: boolean
   circularProps?: CircularProgressProps
   linearProps?: LinearProgressProps

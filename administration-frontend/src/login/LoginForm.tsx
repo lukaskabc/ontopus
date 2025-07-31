@@ -1,4 +1,3 @@
-import '@/config/i18n.ts'
 import { useTranslation } from 'react-i18next'
 import { AppProvider } from '@toolpad/core/AppProvider'
 import mdTheme, { Branding } from '@/config/theme.tsx'
@@ -14,7 +13,7 @@ import { useLocation } from 'wouter-preact'
 const credentialsProvider = { id: 'credentials', name: 'Provider name' }
 
 export default function LoginForm() {
-  const { t, i18n } = useTranslation('local')
+  const { t } = useTranslation('local')
   const [_, navigate] = useLocation()
 
   const locale = useMemo(

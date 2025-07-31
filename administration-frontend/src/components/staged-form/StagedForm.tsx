@@ -3,13 +3,15 @@ import Form from '@rjsf/mui'
 import type { FunctionComponent } from 'preact'
 import type StagedJsonForm from '@/model/JsonForm.ts'
 import validator from '@rjsf/validator-ajv8'
-import { useCallback, useMemo, useState } from 'preact/hooks'
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
 import type { FormEvent } from 'react'
-import type { IChangeEvent } from '@rjsf/core'
 import { useTranslation } from 'react-i18next'
 import intlSchema from '@/components/staged-form/intlSchema.ts'
 import type { RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
+import { loadNextForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/components/staged-form/actions.ts'
+import { trackPromise } from 'react-promise-tracker'
+import type { IChangeEvent } from '@rjsf/core'
 
 export interface StagedFormData {
   initialForm: StagedJsonForm
@@ -17,6 +19,14 @@ export interface StagedFormData {
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
+}
+
+function compileDataForRequest(formData: any): string | FormData {
+  const data = new FormData()
+  Object.keys(formData).forEach((key: string) => {
+    data.append(key, formData[key])
+  })
+  return data
 }
 
 /**
@@ -28,27 +38,58 @@ const WIDGETS: RegistryWidgetsType = {
  */
 export const StagedForm: FunctionComponent<StagedFormData> = ({ initialForm }) => {
   const { i18n } = useTranslation()
-  const [currentSchema, setCurrentSchema] = useState<StrictRJSFSchema>(initialForm.jsonSchema)
-  const [currentUiSchema, setCurrentUiSchema] = useState<UiSchema | undefined>(initialForm.uiSchema)
-  const [submitUrl, setSubmitUrl] = useState<string>(initialForm.submitPath)
-  const [nextFormUrl, setNextFormUrl] = useState<string | undefined>(initialForm.nextPath)
+  const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>(initialForm.jsonSchema)
+  const [uiSchema, setUiSchema] = useState<UiSchema | undefined>(initialForm.uiSchema || undefined)
+  const [submitPath, setSubmitPath] = useState<string>(initialForm.submitPath)
+  const [nextFormUrl, setNextFormUrl] = useState<string | undefined>(initialForm.nextPath || undefined)
+  const [doLoadNext, setDoLoadNext] = useState(false)
+  const [initialFormData, setInitialFormData] = useState(initialForm.formData || undefined)
+  const [isDisabled, setIsDisabled] = useState<boolean>(false)
 
-  const onSubmit = useCallback(({ formData }: IChangeEvent, e: FormEvent<any>) => {}, [])
-  const localizedSchema = useMemo(() => intlSchema(form.jsonSchema, i18n), [form.jsonSchema])
+  useEffect(() => {
+    if (!doLoadNext || !nextFormUrl) {
+      return
+    }
+    console.debug('loading next form')
+    const { promise, cleanup } = loadNextForm(nextFormUrl)
+    trackPromise(promise, STAGED_FORM_PROMISE_AREA)
+      .then((nextForm) => {
+        console.debug('next form received', nextForm)
+        setIsDisabled(false)
+      })
+      .catch(console.error)
+    return cleanup
+  }, [doLoadNext, nextFormUrl])
+
+  const onSubmit = useCallback(
+    ({ formData }: IChangeEvent, e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      setIsDisabled(true)
+      const data = compileDataForRequest(formData)
+      trackPromise(submitForm(data, submitPath), STAGED_FORM_PROMISE_AREA)
+        .then(() => setDoLoadNext(true))
+        .catch((e) => {
+          setIsDisabled(false)
+          console.error(e)
+        }) // TODO handle and show errors
+    },
+    [submitPath, nextFormUrl]
+  )
+  const localizedSchema = useMemo(() => intlSchema(jsonSchema, i18n), [jsonSchema])
 
   return (
-    // TODO register custom widgets https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/form-props#widgets
-    <PromiseArea area={'stagedForm'}>
+    <>
       <Form
         schema={localizedSchema}
-        uiSchema={form.uiSchema || undefined}
+        uiSchema={uiSchema}
+        formData={initialFormData}
         validator={validator}
-        method={'POST'}
-        action={form.submitPath}
         liveValidate={true}
         onSubmit={onSubmit}
         widgets={WIDGETS}
+        disabled={isDisabled}
       />
-    </PromiseArea>
+      <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
+    </>
   )
 }

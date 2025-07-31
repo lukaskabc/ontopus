@@ -1,32 +1,25 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Map;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Object capable of importing a new Ontology from a supported source to the GraphDB.
  *
- * @param <I> The type of data object to which result of import form should be deserialized.
  * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Component @Component}
  *     annotation)
  */
 @NullMarked
-public interface OntologyImporter<I> {
-    /**
-     * Provides a class to which data from filled import data should be deserialized.
-     *
-     * @return Class of an object to which data should be deserialized.
-     * @see #getImportFormSchema()
-     */
-    Class<I> getImportFormDataClass();
+public interface OntologyImporter {
 
     /**
      * Provides input form shown to the user to enter data required for importing an ontology.
      *
      * @return JSON schema for the import form.
      * @see #getImportFormUiSchema()
-     * @see #getImportFormDataClass()
      * @see <a href= "https://rjsf-team.github.io/react-jsonschema-form/docs/json-schema/">RJSF JSON schema</a>
      * @see <a href= "https://json-schema.org/draft-07/json-schema-release-notes">JSON schema Draft 7</a>
      */
@@ -67,11 +60,11 @@ public interface OntologyImporter<I> {
      * publish {@link cz.lukaskabc.ontology.ontopus.api.event.OntologyImportFinished OntologyImportFinished} event once
      * the import is finished.
      *
-     * @param importFormResult The result of import form.
+     * @param formData The result of import form.
      * @implNote The plugin can access jopa's {@link cz.cvut.kbss.jopa.model.EntityManager EntityManager} with Springs
      *     dependency injection.
      *     <p>Also note that a previous version of the same ontology could already be in the database, so it should be
      *     saved in a unique graph
      */
-    void importOntology(I importFormResult);
+    void importOntology(Map<String, String[]> formData, Map<String, MultipartFile> files);
 }

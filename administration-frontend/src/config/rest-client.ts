@@ -18,16 +18,15 @@ const request = (
       },
       options
     )
-  ).then((response) => {
+  ).then((response): Promise<Response> => {
     if (response.status === 403) {
       console.debug('Not logged in')
       navigate('/login', { replace: true })
-      return null
     }
     if (response.status !== 200) {
-      throw new Error(response)
+      return Promise.reject(response)
     }
-    return response
+    return Promise.resolve(response)
   })
 
 export default request

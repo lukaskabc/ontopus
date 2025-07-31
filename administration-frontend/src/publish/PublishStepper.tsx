@@ -10,6 +10,18 @@ import type StagedJsonForm from '@/model/JsonForm.ts'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
+// function injectImportSource(form: StagedJsonForm | null, importSource: string): StagedJsonForm | null {
+//   if (form) {
+//     const copy = Object.assign({}, form, { formData: { ontopusImportSource: importSource } })
+//     copy.jsonSchema.properties = Object.assign({}, form.jsonSchema.properties, {
+//       ontopusImportSource: { type: 'string' },
+//     })
+//     copy.uiSchema = Object.assign({}, form.uiSchema, { ontopusImportSource: { 'ui:widget': 'hidden' } })
+//     return copy
+//   }
+//   return form
+// }
+
 export default function PublishStepper() {
   const { t } = useTranslation()
   const [_, navigate] = useLocation()

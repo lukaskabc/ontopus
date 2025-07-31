@@ -17,3 +17,6 @@ ontopus:
     url: http://localhost:7200/repositories/ontopus
     driver: cz.cvut.kbss.ontodriver.rdf4j.Rdf4jDataSource
     language: en
+logging:
+  level:
+    web: debug

@@ -3,16 +3,16 @@ import Form from '@rjsf/mui'
 import type { FunctionComponent } from 'preact'
 import type StagedJsonForm from '@/model/JsonForm.ts'
 import validator from '@rjsf/validator-ajv8'
-import { useCallback, useMemo } from 'preact/hooks'
+import { useCallback, useMemo, useState } from 'preact/hooks'
 import type { FormEvent } from 'react'
 import type { IChangeEvent } from '@rjsf/core'
 import { useTranslation } from 'react-i18next'
 import intlSchema from '@/components/staged-form/intlSchema.ts'
-import type { RegistryWidgetsType } from '@rjsf/utils'
+import type { RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
 
 export interface StagedFormData {
-  form: StagedJsonForm
+  initialForm: StagedJsonForm
 }
 
 const WIDGETS: RegistryWidgetsType = {
@@ -26,19 +26,16 @@ const WIDGETS: RegistryWidgetsType = {
  * @implNote Surround with suspense
  * @constructor
  */
-export const StagedForm: FunctionComponent<StagedFormData> = ({ form }) => {
+export const StagedForm: FunctionComponent<StagedFormData> = ({ initialForm }) => {
   const { i18n } = useTranslation()
-  const onSubmit = useCallback(
-    ({ formData }: IChangeEvent, e: FormEvent<any>) => {
-      console.debug('The form was submitted', formData, e)
-    },
-    []
-  )
-  const localizedSchema = useMemo(
-    () => intlSchema(form.jsonSchema, i18n),
-    [form.jsonSchema]
-  )
-  
+  const [currentSchema, setCurrentSchema] = useState<StrictRJSFSchema>(initialForm.jsonSchema)
+  const [currentUiSchema, setCurrentUiSchema] = useState<UiSchema | undefined>(initialForm.uiSchema)
+  const [submitUrl, setSubmitUrl] = useState<string>(initialForm.submitPath)
+  const [nextFormUrl, setNextFormUrl] = useState<string | undefined>(initialForm.nextPath)
+
+  const onSubmit = useCallback(({ formData }: IChangeEvent, e: FormEvent<any>) => {}, [])
+  const localizedSchema = useMemo(() => intlSchema(form.jsonSchema, i18n), [form.jsonSchema])
+
   return (
     // TODO register custom widgets https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/form-props#widgets
     <PromiseArea area={'stagedForm'}>

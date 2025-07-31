@@ -14,27 +14,19 @@ import { trackPromise } from 'react-promise-tracker'
 import { fetchImportSources } from '@/deployments/actions.ts'
 import { useLocation } from 'wouter-preact'
 
-const IMPORT_SOURCES_PROMISE_AREA =
-  'OntologyPublishSourceSelectDialog_fetchImportSources'
+const IMPORT_SOURCES_PROMISE_AREA = 'OntologyPublishSourceSelectDialog_fetchImportSources'
 
-export default function OntologyPublishSourceSelectDialog({
-  open,
-  onClose,
-}: DialogProps) {
+export default function OntologyPublishSourceSelectDialog({ open, onClose }: DialogProps) {
   const { t } = useTranslation()
   const [_, navigate] = useLocation()
   const [importSources, setImportSources] = useState<string[]>([])
 
   useEffect(() => {
-    trackPromise(fetchImportSources(), IMPORT_SOURCES_PROMISE_AREA)
-      .then(setImportSources)
-      .catch(console.error)
+    trackPromise(fetchImportSources(), IMPORT_SOURCES_PROMISE_AREA).then(setImportSources).catch(console.error)
   }, [])
 
   const onSourceSelect = useCallback((source: string) => {
-    onClose().then(() =>
-      navigate('/publish', { state: { importSource: source } })
-    )
+    onClose().then(() => navigate('/publish', { state: { importSource: source } }))
   }, [])
 
   return (
@@ -45,10 +37,7 @@ export default function OntologyPublishSourceSelectDialog({
           <List>
             {importSources.map((source) => (
               <ListItem key={'SourceNameListItem' + source} disablePadding>
-                <ListItemButton
-                  component={'a'}
-                  onClick={() => onSourceSelect(source)}
-                >
+                <ListItemButton component={'a'} onClick={() => onSourceSelect(source)}>
                   <ListItemText primary={t(source)} />
                 </ListItemButton>
               </ListItem>

@@ -61,19 +61,13 @@ export const OntologyDataSource: DataSource<OntologyEntity> = {
 
           switch (operator) {
             case 'contains':
-              return String(noteValue)
-                .toLowerCase()
-                .includes(String(value).toLowerCase())
+              return String(noteValue).toLowerCase().includes(String(value).toLowerCase())
             case 'equals':
               return noteValue === value
             case 'startsWith':
-              return String(noteValue)
-                .toLowerCase()
-                .startsWith(String(value).toLowerCase())
+              return String(noteValue).toLowerCase().startsWith(String(value).toLowerCase())
             case 'endsWith':
-              return String(noteValue)
-                .toLowerCase()
-                .endsWith(String(value).toLowerCase())
+              return String(noteValue).toLowerCase().endsWith(String(value).toLowerCase())
             case '>':
               return (noteValue as number) > value
             case '<':

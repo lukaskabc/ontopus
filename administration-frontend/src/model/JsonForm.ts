@@ -1,4 +1,4 @@
-import type { RJSFSchema, UiSchema } from '@rjsf/utils'
+import type { StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 
 export default interface StagedJsonForm extends JsonForm {
   submitPath: string
@@ -6,6 +6,6 @@ export default interface StagedJsonForm extends JsonForm {
 }
 
 export interface JsonForm {
-  jsonSchema: RJSFSchema
+  jsonSchema: StrictRJSFSchema
   uiSchema?: UiSchema
 }

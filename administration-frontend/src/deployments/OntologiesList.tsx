@@ -1,12 +1,4 @@
-import {
-  Create,
-  CrudProvider,
-  DataSourceCache,
-  Edit,
-  List,
-  Show,
-  useDialogs,
-} from '@toolpad/core'
+import { Create, CrudProvider, DataSourceCache, Edit, List, Show, useDialogs } from '@toolpad/core'
 
 import { Route, Switch, useLocation, useRoute } from 'wouter-preact'
 import type { OntologyEntity } from '@/model/OntologyEntity.ts'
@@ -24,9 +16,7 @@ function CrudList() {
     <List<OntologyEntity>
       initialPageSize={10}
       onRowClick={(id) => navigate(`/${id}`)}
-      onCreateClick={async () =>
-        await dialogs.open(OntologyPublishSourceSelectDialog)
-      }
+      onCreateClick={async () => await dialogs.open(OntologyPublishSourceSelectDialog)}
       onEditClick={(id) => navigate(`/${id}/edit`)}
       slots={{
         dataGrid: (p) => <DataGrid {...p} />,
@@ -87,10 +77,7 @@ export default function OntologiesList() {
     //     show: `Note ${showNoteId}`,
     //   }}
     // />
-    <CrudProvider<OntologyEntity>
-      dataSource={OntologyDataSource}
-      dataSourceCache={notesCache}
-    >
+    <CrudProvider<OntologyEntity> dataSource={OntologyDataSource} dataSourceCache={notesCache}>
       <Switch>
         {/*<Route path={'/publish'} component={CrudCreate} />*/}
         <Route path={'/publish'} component={PublishStepper} />

@@ -1,11 +1,7 @@
 import type { ComponentChildren, FunctionComponent } from 'preact'
 import { usePromiseTracker } from 'react-promise-tracker'
 import type { CircularProgressProps } from '@mui/material'
-import {
-  CircularProgress,
-  LinearProgress,
-  type LinearProgressProps,
-} from '@mui/material'
+import { CircularProgress, LinearProgress, type LinearProgressProps } from '@mui/material'
 
 export interface PromiseAreaProps {
   area: string

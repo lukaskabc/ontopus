@@ -2,9 +2,7 @@ import i18n from 'i18next'
 import FetchBackend, { type FetchOptions } from 'i18next-fetch-backend'
 import { initReactI18next } from 'react-i18next'
 import en_lang from '@/language/en.json'
-import I18NextChainedBackend, {
-  type ChainedBackendOptions,
-} from 'i18next-chained-backend'
+import I18NextChainedBackend, { type ChainedBackendOptions } from 'i18next-chained-backend'
 import resourceToBackend from 'i18next-resources-to-backend'
 import Constants from '@/Constants.ts'
 
@@ -36,9 +34,7 @@ await i18n
       backends: [FetchBackend, resourceToBackend(bundledTranslations)],
       backendOptions: [
         {
-          loadPath:
-            new URL('locale', Constants.BACKEND_URL.toString()).toString() +
-            '/{{ns}}/{{lng}}.json',
+          loadPath: new URL('locale', Constants.BACKEND_URL.toString()).toString() + '/{{ns}}/{{lng}}.json',
           allowMultiLoading: false,
           // requestOptions: {
           //   mode: 'cors',

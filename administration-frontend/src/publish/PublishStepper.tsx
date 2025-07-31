@@ -1,12 +1,5 @@
 import { useLocation } from 'wouter-preact'
-import {
-  Container,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  Typography,
-} from '@mui/material'
+import { Container, Paper, Step, StepLabel, Stepper, Typography } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { StagedForm } from '@/components/staged-form/StagedForm.tsx'
 import { loadSourceForm } from '@/publish/actions.ts'
@@ -15,14 +8,12 @@ import { trackPromise } from 'react-promise-tracker'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import type StagedJsonForm from '@/model/JsonForm.ts'
 
-const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA =
-  'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
+const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
 export default function PublishStepper() {
   const { t } = useTranslation()
   const [_, navigate] = useLocation()
-  const [sourceImportForm, setSourceImportForm] =
-    useState<StagedJsonForm | null>(null)
+  const [sourceImportForm, setSourceImportForm] = useState<StagedJsonForm | null>(null)
   const importSource = history.state.importSource
 
   useEffect(() => {
@@ -48,9 +39,7 @@ export default function PublishStepper() {
     return <></>
   }
 
-  const steps = ['import', 'process', 'publish'].map((s) =>
-    t(`local:publish.step.${s}`)
-  )
+  const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
 
   return (
     <Container maxWidth="lg" sx={{ mt: 2 }}>
@@ -70,7 +59,7 @@ export default function PublishStepper() {
           {t(importSource)}
         </Typography>
         <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>
-          {sourceImportForm && <StagedForm form={sourceImportForm} />}
+          {sourceImportForm && <StagedForm initialForm={sourceImportForm} />}
         </PromiseArea>
       </Paper>
     </Container>

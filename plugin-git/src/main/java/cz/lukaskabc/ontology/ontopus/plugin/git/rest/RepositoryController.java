@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,15 +26,16 @@ public class RepositoryController {
     public static final String REPOSITORY_FILE_SELECT_FORM_PATH = BASE_PATH + "/files/";
 
     private final RepositoryRegistry repositoryRegistry;
-    private final List<FileImporter> fileImporters;
+    private final ApplicationContext applicationContext;
 
-    public RepositoryController(RepositoryRegistry repositoryRegistry, List<FileImporter> fileImporters) {
+    public RepositoryController(RepositoryRegistry repositoryRegistry, ApplicationContext applicationContext) {
         this.repositoryRegistry = repositoryRegistry;
-        this.fileImporters = fileImporters;
+        this.applicationContext = applicationContext;
     }
 
     private void includeFileIfSupported(
             List<String> files, File file, String rootDir, Set<String> supportedFileExtensions) {
+        // TODO: use type probe? Files.probeContentType(file.toPath())
         int dotIndex = file.getName().lastIndexOf('.');
         if (dotIndex < 0) {
             return;
@@ -44,8 +46,18 @@ public class RepositoryController {
         }
     }
 
+    private List<FileImporter> getFileImporters() {
+        // allows importers to be prototypes
+        final String[] names = applicationContext.getBeanNamesForType(FileImporter.class);
+        List<FileImporter> importers = new ArrayList<>(names.length);
+        for (String name : names) {
+            importers.add(applicationContext.getBean(name, FileImporter.class));
+        }
+        return Collections.unmodifiableList(importers);
+    }
+
     private Set<String> getSupportedFileExtensions() {
-        return fileImporters.stream()
+        return getFileImporters().stream()
                 .map(FileImporter::getSupportedFileExtensions)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
@@ -116,12 +128,55 @@ public class RepositoryController {
         };
     }
 
+    private static String getExtension(String fileName) {
+        int i = fileName.lastIndexOf('.');
+        if (i < 0) {
+            return fileName;
+        }
+        return fileName.substring(i + 1);
+    }
+
+    private String requireAllFilesSameFormat(File[] files) {
+        if (files.length == 0) {
+            return "";
+        }
+        final String firstFormat = getExtension(files[0].getName());
+        long differCount = Arrays.stream(files)
+                .map(File::getName)
+                .map(RepositoryController::getExtension)
+                .filter(s -> !s.equals(firstFormat))
+                .count();
+        if (differCount > 0) {
+            throw new IllegalStateException("The files have different formats"); // TODO exception
+        }
+        return firstFormat;
+    }
+
     @PostMapping(REPOSITORY_FILE_SELECT_FORM_PATH + "{repository}")
     public ResponseEntity<?> importRepositoryFiles(
             @PathVariable("repository") UUID repositoryId, HttpServletRequest request) {
+        final Future<File> future = repositoryRegistry.lookup(repositoryId);
+        Objects.requireNonNull(future); // TODO proper exception for 404
         Map<String, String[]> parameters = request.getParameterMap();
-        List<String> filesToImport =
-                parameters.values().stream().flatMap(Arrays::stream).toList();
+        File[] filesToImport = parameters.values().stream()
+                .flatMap(Arrays::stream)
+                .map(name -> new File(future.resultNow(), name))
+                .toArray(File[]::new);
+
+        final String fileFormat = requireAllFilesSameFormat(filesToImport);
+
+        List<FileImporter> importers = getFileImporters().stream()
+                .filter(importer -> importer.getSupportedFileExtensions().contains(fileFormat))
+                .toList();
+
+        for (FileImporter importer : importers) {
+            try {
+                importer.importFiles(filesToImport);
+                break; // all imported
+            } catch (Exception e) {
+                throw new RuntimeException(e); // TODO exception
+            }
+        }
 
         return ResponseEntity.ok().build();
     }

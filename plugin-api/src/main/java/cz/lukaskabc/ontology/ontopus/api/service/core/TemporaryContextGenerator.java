@@ -1,0 +1,11 @@
+package cz.lukaskabc.ontology.ontopus.api.service.core;
+
+import java.net.URI;
+
+/**
+ * Generates an IRI that should be used for a temporary database GRAPH while importing a new ontology. The context is
+ * only valid until the server is restarted.
+ */
+public interface TemporaryContextGenerator {
+    URI generate();
+}

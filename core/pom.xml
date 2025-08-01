@@ -70,13 +70,6 @@
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
 
-        <!-- For RDF/XML export -->
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-rdfxml</artifactId>
-            <version>5.0.2</version>
-        </dependency>
-
         <!-- Spring Boot dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -185,9 +178,6 @@
                     <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
                     <with-owlapi>true</with-owlapi>
                     <!--                    <vocabulary-only>true</vocabulary-only>-->
-                    <!-- modelgen -->
-                    <!-- TODO: remove if unused -->
-                    <source-package>${project.groupId}.core.model</source-package>
                 </configuration>
                 <executions>
                     <execution>
@@ -230,6 +220,11 @@
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>git-plugin</artifactId>
                     <version>${ontopus.plugin.git.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
+                    <artifactId>file-plugin</artifactId>
+                    <version>${ontopus.plugin.file.version}</version>
                 </dependency>
             </dependencies>
         </profile>

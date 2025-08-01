@@ -84,6 +84,7 @@ public class PluginRegistryApplicationInitializer
     public void initialize(@NonNull AnnotationConfigServletWebServerApplicationContext applicationContext) {
         LOG.info("Initializing plugins");
 
+        Set<String> packagesForSpringScan = new HashSet<>();
         Set<String> packagesForJopaScan = new HashSet<>();
         Map<String, Map<String, String>> localization = new HashMap<>();
         loadGlobalLocalizations(localization);
@@ -93,9 +94,11 @@ public class PluginRegistryApplicationInitializer
             LOG.info("Loading plugin: {}", plugin.getClass().getName());
             packagesForJopaScan.addAll(plugin.getJopaScanPackages());
             loadPluginLocalization(localization, plugin.getTranslations());
-            plugin.getSpringScanPackages().forEach(applicationContext::scan);
+            packagesForSpringScan.addAll(plugin.getSpringScanPackages());
             pluginCount++;
         }
+
+        applicationContext.scan(packagesForSpringScan.toArray(String[]::new));
 
         if (packagesForJopaScan.isEmpty()) {
             throw new IllegalStateException("No packages for JOPA entity scan found!");

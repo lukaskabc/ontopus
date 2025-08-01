@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
 
@@ -20,10 +21,11 @@ public interface FileImporter {
     List<String> getSupportedFileExtensions();
 
     /**
-     * Imports the provided file into the database.
+     * Imports the provided files into the database. All the files will have the same format.
      *
-     * @param file The local file to import.
+     * @param files The files to import
      * @implSpec The caller is responsible for invoking this method asynchronously.
      */
-    void importFile(File file); // TODO add context parameter
+    void importFiles(File[] files) throws IOException; // TODO add context parameter
+    // TODO custom exception
 }

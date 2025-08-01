@@ -14,6 +14,7 @@
         <module>core</module>
         <module>plugin-api</module>
         <module>plugin-git</module>
+        <module>plugin-file</module>
     </modules>
 
     <properties>
@@ -27,6 +28,7 @@
         <ontopus.core.version>1.0-SNAPSHOT</ontopus.core.version>
         <ontopus.plugin.api.version>1.0-SNAPSHOT</ontopus.plugin.api.version>
         <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
+        <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -88,6 +90,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
 
         <!-- Development -->

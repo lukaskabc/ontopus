@@ -56,9 +56,10 @@ public interface OntologyImporter {
     String getSourceName();
 
     /**
-     * Imports a new ontology version into the database. The method is executed asynchronously by the core and should
-     * publish {@link cz.lukaskabc.ontology.ontopus.api.event.OntologyImportFinished OntologyImportFinished} event once
-     * the import is finished.
+     * Imports a new ontology version into the database. The method should publish
+     * {@link cz.lukaskabc.ontology.ontopus.api.event.OntologyImportFinished OntologyImportFinished} event once the
+     * import is finished. The path to the next form (or null) should be returned as soon as possible and any
+     * time-consuming processing should be executed asynchronously.
      *
      * @param formData The result of import form.
      * @implNote The plugin can access jopa's {@link cz.cvut.kbss.jopa.model.EntityManager EntityManager} with Springs
@@ -66,5 +67,5 @@ public interface OntologyImporter {
      *     <p>Also note that a previous version of the same ontology could already be in the database, so it should be
      *     saved in a unique graph
      */
-    void importOntology(Map<String, String[]> formData, Map<String, MultipartFile> files);
+    @Nullable String importOntology(Map<String, String[]> formData, Map<String, MultipartFile> files);
 }

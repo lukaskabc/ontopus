@@ -6,6 +6,8 @@
       "fields": {
         "repositoryUrl.title": "Repository URL",
         "repositoryUrl.description": "e.g. https://github.com/lukaskabc/ontopus.git",
+        "branch.title": "Branch or Tag",
+        "branch.description": "(optional) Enter the exact branch or tag to clone or leave empty to clone the default branch",
         "username.title": "Username",
         "password.title": "Password",
         "authText.title": "Authentication",

@@ -12,6 +12,9 @@ import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
 import { loadNextForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/components/staged-form/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
 import type { IChangeEvent } from '@rjsf/core'
+import { Box } from '@mui/material'
+
+const ONTOPUS_NEXT_FORM_URL_HEADER = 'ONTOPUS-Next-Form-Location'
 
 export interface StagedFormData {
   initialForm: StagedJsonForm
@@ -50,14 +53,20 @@ export const StagedForm: FunctionComponent<StagedFormData> = ({ initialForm }) =
     if (!doLoadNext || !nextFormUrl) {
       return
     }
-    console.debug('loading next form')
+    setInitialFormData(undefined)
     const { promise, cleanup } = loadNextForm(nextFormUrl)
     trackPromise(promise, STAGED_FORM_PROMISE_AREA)
       .then((nextForm) => {
-        console.debug('next form received', nextForm)
+        setJsonSchema(nextForm.jsonSchema)
+        setUiSchema(nextForm.uiSchema)
+        setSubmitPath(nextForm.submitPath)
+        setNextFormUrl(nextForm.nextPath)
+      })
+      .catch(console.error) // TODO: show error
+      .finally(() => {
+        setDoLoadNext(false)
         setIsDisabled(false)
       })
-      .catch(console.error)
     return cleanup
   }, [doLoadNext, nextFormUrl])
 
@@ -67,6 +76,11 @@ export const StagedForm: FunctionComponent<StagedFormData> = ({ initialForm }) =
       setIsDisabled(true)
       const data = compileDataForRequest(formData)
       trackPromise(submitForm(data, submitPath), STAGED_FORM_PROMISE_AREA)
+        .then((res) => {
+          if (res.headers) {
+            setNextFormUrl(res.headers.get(ONTOPUS_NEXT_FORM_URL_HEADER) || nextFormUrl)
+          }
+        })
         .then(() => setDoLoadNext(true))
         .catch((e) => {
           setIsDisabled(false)
@@ -89,7 +103,9 @@ export const StagedForm: FunctionComponent<StagedFormData> = ({ initialForm }) =
         widgets={WIDGETS}
         disabled={isDisabled}
       />
-      <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
+      <Box sx={{ mt: 4 }}>
+        <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
+      </Box>
     </>
   )
 }

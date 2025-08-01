@@ -36,6 +36,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080")); // TODO
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("ONTOPUS-Next-Form-Location")); // TODO use constants
         configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE", "PUT"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -61,7 +62,13 @@ public class SecurityConfig {
                                 .requestMatchers("/locale/**")
                                 .permitAll()
                                 .anyRequest()
-                                .authenticated());
+                                .permitAll()); // TODO:
+        // only
+        // for
+        // dev,
+        // replace
+        // with
+        // authenticated!
         return http.build();
     }
 

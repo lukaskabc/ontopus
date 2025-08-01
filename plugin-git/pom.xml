@@ -41,6 +41,12 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>7.3.0.202506031305-r</version>
         </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

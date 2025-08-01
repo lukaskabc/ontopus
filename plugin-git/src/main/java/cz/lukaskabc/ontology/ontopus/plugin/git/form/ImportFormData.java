@@ -10,6 +10,8 @@ import org.jspecify.annotations.Nullable;
 public class ImportFormData {
     @NotEmpty private String repositoryUrl;
 
+    @Nullable private String branch;
+
     @Nullable private String username;
 
     @Nullable private String password;

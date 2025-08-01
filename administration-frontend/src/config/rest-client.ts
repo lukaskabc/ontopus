@@ -7,6 +7,7 @@ const request = (
   method: RESTMethod,
   path: string,
   options: RequestInit = {},
+  expectedStatus: number[] = [200],
   base = Constants.BACKEND_URL
 ): Promise<Response> =>
   fetch(
@@ -23,7 +24,7 @@ const request = (
       console.debug('Not logged in')
       navigate('/login', { replace: true })
     }
-    if (response.status !== 200) {
+    if (!expectedStatus.includes(response.status)) {
       return Promise.reject(response)
     }
     return Promise.resolve(response)

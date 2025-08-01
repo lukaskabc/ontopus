@@ -9,7 +9,7 @@ import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriUtils;
@@ -34,14 +34,14 @@ public class ImportController {
         }
     }
 
-    @GetMapping("/source/{source}/form")
-    public StagedJsonForm getOntologyImportFormScheme(@PathVariable("source") String importName) {
+    @GetMapping("/source/{importSource}")
+    public StagedJsonForm getOntologyImportForm(@PathVariable("importSource") String importSource) {
         for (OntologyImporter ontologyImporter : ontologyImporters) {
-            if (importName.equals(ontologyImporter.getSourceName())) {
+            if (importSource.equals(ontologyImporter.getSourceName())) {
                 return new StagedJsonForm(
                         ontologyImporter.getImportFormSchema(),
                         ontologyImporter.getImportFormUiSchema(),
-                        IMPORT_FORM_SUBMIT_ENDPOINT + "/" + UriUtils.encodePath(importName, StandardCharsets.UTF_8),
+                        IMPORT_FORM_SUBMIT_ENDPOINT + "/" + UriUtils.encodePath(importSource, StandardCharsets.UTF_8),
                         ontologyImporter.getNextImportFormPath());
             }
         }
@@ -58,21 +58,28 @@ public class ImportController {
         return names;
     }
 
-    private OntologyImporter resolveImporter(String importName) {
+    private OntologyImporter resolveImporter(String importSource) {
         for (OntologyImporter ontologyImporter : ontologyImporters) {
-            if (importName.equals(ontologyImporter.getSourceName())) {
+            if (importSource.equals(ontologyImporter.getSourceName())) {
                 return ontologyImporter;
             }
         }
         throw new IllegalStateException("Ontology importer name not found"); // TODO
     }
 
-    @Async
-    @PostMapping(value = "/source/{importName}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void startImport(@PathVariable("importName") String importName, MultipartHttpServletRequest request) {
-        log.info("Starting import from {}", importName);
+    @PostMapping(value = "/source/{importSource}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> startImport(
+            @PathVariable("importSource") String importSource, MultipartHttpServletRequest request) {
+        log.info("Starting import from {}", importSource);
 
-        final OntologyImporter importer = resolveImporter(importName);
-        importer.importOntology(request.getParameterMap(), request.getFileMap());
+        final OntologyImporter importer = resolveImporter(importSource);
+        final String nextUrl = importer.importOntology(request.getParameterMap(), request.getFileMap());
+
+        final ResponseEntity.BodyBuilder builder = ResponseEntity.accepted();
+        if (nextUrl != null) {
+            builder.header("ONTOPUS-Next-Form-Location", nextUrl); // TODO use constant
+        }
+
+        return builder.build();
     }
 }

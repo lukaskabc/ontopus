@@ -4,6 +4,9 @@ spring:
   application:
     name: OntoPuS
     version: "@ontopus.core.version@"
+  threads:
+    virtual:
+      enabled: true # enables virtual threads
 # use Spring "swagger" profile to enable Swagger
 springdoc:
   api-docs:

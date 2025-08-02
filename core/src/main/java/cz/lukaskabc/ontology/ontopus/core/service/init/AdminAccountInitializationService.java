@@ -1,20 +1,16 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
-
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.persistence.UserDao;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Component
-@Scope(SCOPE_PROTOTYPE)
 public class AdminAccountInitializationService implements InitService {
     private final PasswordEncoder passwordEncoder;
     private final UserDao userDao;

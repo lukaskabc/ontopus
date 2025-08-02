@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
-import cz.lukaskabc.ontology.ontopus.core.model.LocalizationProvider;
+import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
-import cz.lukaskabc.ontology.ontopus.core.model.LocalizationProvider;
+import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
 import cz.lukaskabc.ontology.ontopus.core.util.Constants;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import java.io.IOException;

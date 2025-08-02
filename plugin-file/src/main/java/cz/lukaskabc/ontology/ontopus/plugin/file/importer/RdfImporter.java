@@ -8,9 +8,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
@@ -42,14 +39,6 @@ public class RdfImporter implements FileImporter {
     public RdfImporter(TemporaryContextGenerator contextGenerator, EntityManager em) {
         this.contextGenerator = contextGenerator;
         this.em = em;
-    }
-
-    @Override
-    public List<String> getSupportedFileExtensions() {
-        return Stream.of(RDFFormat.RDFXML, RDFFormat.TURTLE)
-                .map(RDFFormat::getFileExtensions)
-                .flatMap(Collection::stream)
-                .toList();
     }
 
     @Transactional
@@ -92,5 +81,14 @@ public class RdfImporter implements FileImporter {
             format = Rio.getParserFormatForFileName(file.getName()).orElse(null);
         }
         return format;
+    }
+
+    @Override
+    public boolean supports(File file) {
+        try {
+            return resolveFormat(file) != null;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

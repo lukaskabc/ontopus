@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.model;
+package cz.lukaskabc.ontology.ontopus.core.service;
 
 import java.util.Map;
 

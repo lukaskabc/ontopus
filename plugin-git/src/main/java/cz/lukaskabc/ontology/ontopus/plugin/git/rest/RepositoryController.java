@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -33,15 +32,9 @@ public class RepositoryController {
         this.applicationContext = applicationContext;
     }
 
-    private void includeFileIfSupported(
-            List<String> files, File file, String rootDir, Set<String> supportedFileExtensions) {
-        // TODO: use type probe? Files.probeContentType(file.toPath())
-        int dotIndex = file.getName().lastIndexOf('.');
-        if (dotIndex < 0) {
-            return;
-        }
-        String extension = file.getName().substring(dotIndex + 1);
-        if (supportedFileExtensions.contains(extension)) {
+    private static void includeFileIfSupported(
+            List<String> files, File file, String rootDir, List<FileImporter> fileImporters) {
+        if (fileImporters.stream().anyMatch(fileImporter -> fileImporter.supports(file))) {
             files.add(file.getAbsolutePath().replace(rootDir, ""));
         }
     }
@@ -56,15 +49,8 @@ public class RepositoryController {
         return Collections.unmodifiableList(importers);
     }
 
-    private Set<String> getSupportedFileExtensions() {
-        return getFileImporters().stream()
-                .map(FileImporter::getSupportedFileExtensions)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-    }
-
     private List<String> listAllFiles(File directory) {
-        final Set<String> supportedFileExtensions = getSupportedFileExtensions();
+        final List<FileImporter> loadedImporters = getFileImporters();
         final String rootDir = directory.getAbsolutePath();
         List<String> allFiles = new ArrayList<>();
         Stack<File> directories = new Stack<>();
@@ -82,7 +68,7 @@ public class RepositoryController {
                         directories.push(file);
                     }
                 } else {
-                    includeFileIfSupported(allFiles, file, rootDir, supportedFileExtensions);
+                    includeFileIfSupported(allFiles, file, rootDir, loadedImporters);
                 }
             }
         }
@@ -163,10 +149,12 @@ public class RepositoryController {
                 .map(name -> new File(future.resultNow(), name))
                 .toArray(File[]::new);
 
-        final String fileFormat = requireAllFilesSameFormat(filesToImport);
+        if (filesToImport.length == 0) {
+            return ResponseEntity.badRequest().build(); // TODO error
+        }
 
         List<FileImporter> importers = getFileImporters().stream()
-                .filter(importer -> importer.getSupportedFileExtensions().contains(fileFormat))
+                .filter(importer -> importer.supports(filesToImport[0]))
                 .toList();
 
         for (FileImporter importer : importers) {

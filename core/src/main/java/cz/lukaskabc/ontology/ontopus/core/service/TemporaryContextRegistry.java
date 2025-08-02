@@ -22,19 +22,15 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     }
 
     @Transactional
-    public void clearAllTemporaryContexts() { // TODO call on init?
-        em.createQuery("SELECT c.uri FROM TemporaryContext c", URI.class)
+    public void clearAllTemporaryContexts() {
+        log.debug("Clearing all temporary contexts from database");
+        em.createQuery("SELECT c FROM TemporaryContext c", URI.class)
                 .getResultStream()
                 .forEach(context -> {
                     try {
-                        em.createNativeQuery(
-                                        """
-						DROP GRAPH ?context .
-						DELETE WHERE {
-						    ?context ?subject ?object .
-						}
-						""")
-                                .setParameter("context", Objects.requireNonNull(context))
+                        Objects.requireNonNull(context);
+                        em.createNativeQuery("DROP GRAPH ?context; DELETE WHERE { ?context ?predicate ?object . } ")
+                                .setParameter("context", context)
                                 .executeUpdate();
                     } catch (Exception e) {
                         log.error("Failed to drop temporary context {}", context, e);

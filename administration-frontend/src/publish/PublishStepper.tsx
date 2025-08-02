@@ -10,18 +10,6 @@ import type StagedJsonForm from '@/model/JsonForm.ts'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
-// function injectImportSource(form: StagedJsonForm | null, importSource: string): StagedJsonForm | null {
-//   if (form) {
-//     const copy = Object.assign({}, form, { formData: { ontopusImportSource: importSource } })
-//     copy.jsonSchema.properties = Object.assign({}, form.jsonSchema.properties, {
-//       ontopusImportSource: { type: 'string' },
-//     })
-//     copy.uiSchema = Object.assign({}, form.uiSchema, { ontopusImportSource: { 'ui:widget': 'hidden' } })
-//     return copy
-//   }
-//   return form
-// }
-
 export default function PublishStepper() {
   const { t } = useTranslation()
   const [_, navigate] = useLocation()
@@ -29,6 +17,10 @@ export default function PublishStepper() {
   const importSource = history.state.importSource
 
   useEffect(() => {
+    if (!importSource) {
+      navigate('/')
+      return
+    }
     trackPromise(
       loadSourceForm(importSource).then(
         (data): Promise<StagedJsonForm | null> =>
@@ -45,11 +37,6 @@ export default function PublishStepper() {
       .then(setSourceImportForm)
       .catch(console.error)
   }, [importSource])
-
-  if (!history.state?.importSource) {
-    navigate('/', { replace: true })
-    return <></>
-  }
 
   const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
 

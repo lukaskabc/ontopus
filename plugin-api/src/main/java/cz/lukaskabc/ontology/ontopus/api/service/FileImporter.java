@@ -2,7 +2,6 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -14,13 +13,6 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public interface FileImporter {
     /**
-     * Provides supported file extensions by this importer.
-     *
-     * @return The list of file extensions.
-     */
-    List<String> getSupportedFileExtensions();
-
-    /**
      * Imports the provided files into the database. All the files will have the same format.
      *
      * @param files The files to import
@@ -28,4 +20,12 @@ public interface FileImporter {
      */
     void importFiles(File[] files) throws IOException; // TODO add context parameter
     // TODO custom exception
+
+    /**
+     * Checks whether the importer is able to import the format of the specified file.
+     *
+     * @param file the file of which format to check
+     * @return {@code true} when the importer is able to import the file, {@code false} otherwise
+     */
+    boolean supports(File file);
 }

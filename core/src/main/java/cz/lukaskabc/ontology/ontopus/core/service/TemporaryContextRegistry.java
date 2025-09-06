@@ -6,14 +6,15 @@ import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Objects;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Log4j2
 @Component
 public class TemporaryContextRegistry implements TemporaryContextGenerator {
+    private static final Logger log = LogManager.getLogger(TemporaryContextRegistry.class);
     private final EntityManager em;
 
     @Autowired

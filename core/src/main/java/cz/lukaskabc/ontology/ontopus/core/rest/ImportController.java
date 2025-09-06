@@ -6,7 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.UriUtils;
 
-@Log4j2
 @RestController
 @RequestMapping(path = ImportController.PREFIX)
 public class ImportController {
+    private static final Logger log = LogManager.getLogger(ImportController.class);
     static final String PREFIX = "/import";
     private static final String IMPORT_FORM_SUBMIT_ENDPOINT = PREFIX + "/source";
     private final List<OntologyImporter> ontologyImporters;

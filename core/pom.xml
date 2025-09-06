@@ -87,12 +87,6 @@
         <!-- Development dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
@@ -137,11 +131,6 @@
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        <path>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
                         </path>
@@ -176,13 +165,15 @@
                     <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
                     <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
                     <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
-                    <with-owlapi>true</with-owlapi>
-                    <!--                    <vocabulary-only>true</vocabulary-only>-->
+                    <with-java-uris>true</with-java-uris>
+                    <!-- modelgen -->
+                    <source-package>${project.groupId}.core.model</source-package>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>owl2java-transform</goal>
+                            <goal>modelgen</goal>
                         </goals>
                         <phase>generate-sources</phase>
                     </execution>
@@ -238,11 +229,6 @@
                         <configuration>
                             <proc>only</proc>
                             <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.projectlombok</groupId>
-                                    <artifactId>lombok</artifactId>
-                                    <version>${lombok.version}</version>
-                                </path>
                                 <path>
                                     <groupId>cz.lukaskabc.cvut.processor</groupId>
                                     <artifactId>spring-boot-configuration-docgen-processor</artifactId>

@@ -8,7 +8,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
@@ -27,10 +28,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @NullMarked
-@Log4j2
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RdfImporter implements FileImporter {
+    private static final Logger log = LogManager.getLogger(RdfImporter.class);
     private final Model model = new LinkedHashModel();
     private final TemporaryContextGenerator contextGenerator;
     private final EntityManager em;

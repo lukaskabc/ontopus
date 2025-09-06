@@ -15,7 +15,8 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -28,10 +29,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
-@Log4j2
 @Component
 @NullMarked
 public class GitOntologyImporter implements OntologyImporter {
+    private static final Logger log = LogManager.getLogger(GitOntologyImporter.class);
     private static final String NON_ALPHANUMERIC_MATCHER = "[^a-zA-Z0-9]";
 
     private static Git cloneRepository(ImportFormData importFormData) {

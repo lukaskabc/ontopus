@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import java.util.List;
-import lombok.Getter;
 
-@Getter
 public class RepositoryFileSelectFormSchema {
     public static JsonNode loadUiSchema() {
         return JsonResourceLoader.loadUiSchema(GitPlugin.FORM_RESOURCE_PATH, "RepositoryFileSelectForm");
@@ -22,7 +20,18 @@ public class RepositoryFileSelectFormSchema {
         this.items = new ArrayItems(files);
     }
 
-    @Getter
+    public ArrayItems getItems() {
+        return items;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isUniqueItems() {
+        return uniqueItems;
+    }
+
     public static class ArrayItems {
         private final String type = "string";
 
@@ -31,6 +40,14 @@ public class RepositoryFileSelectFormSchema {
 
         public ArrayItems(List<String> enumList) {
             this.enumList = enumList;
+        }
+
+        public List<String> getEnumList() {
+            return enumList;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }

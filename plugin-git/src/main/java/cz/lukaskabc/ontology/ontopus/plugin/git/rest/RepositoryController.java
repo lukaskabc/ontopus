@@ -9,7 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.Future;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Log4j2
 @RestController
 public class RepositoryController {
+    private static final Logger log = LogManager.getLogger(RepositoryController.class);
     private static final String BASE_PATH = "/plugins/git/repository";
     public static final String REPOSITORY_FILE_SELECT_FORM_PATH = BASE_PATH + "/files/";
 

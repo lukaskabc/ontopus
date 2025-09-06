@@ -1,11 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Getter;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@Getter
 @NullMarked
 public class JsonForm {
 
@@ -17,5 +15,13 @@ public class JsonForm {
     public JsonForm(JsonNode jsonSchema, @Nullable JsonNode uiSchema) {
         this.jsonSchema = jsonSchema;
         this.uiSchema = uiSchema;
+    }
+
+    public JsonNode getJsonSchema() {
+        return jsonSchema;
+    }
+
+    public @Nullable JsonNode getUiSchema() {
+        return uiSchema;
     }
 }

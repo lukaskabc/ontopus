@@ -14,4 +14,14 @@ public interface Ontology {
     String getVersionInfo();
 
     URI getVersionIri();
+
+    void setName(String name);
+
+    void setOntologyUri(URI ontologyUri);
+
+    void setUri(URI uri);
+
+    void setVersionInfo(String versionInfo);
+
+    void setVersionIri(URI versionIri);
 }

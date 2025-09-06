@@ -5,7 +5,8 @@ import static cz.lukaskabc.ontology.ontopus.core.util.SecurityConstants.DEFAULT_
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.persistence.UserDao;
 import cz.lukaskabc.ontology.ontopus.core.util.UserDetailsDelegate;
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-@Log4j2
 @Service
 public class UserService implements UserDetailsService {
+    private static final Logger log = LogManager.getLogger(UserService.class);
 
     private final UserDao userDao;
 

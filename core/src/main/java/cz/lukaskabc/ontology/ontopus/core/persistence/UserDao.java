@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.persistence;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.User;
+import cz.lukaskabc.ontology.ontopus.core.model.User_;
 import java.net.URI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +25,15 @@ public class UserDao extends BaseDao<User> {
 				}
 				""",
                         User.class)
-                .setParameter("userType", User.Meta.TYPE)
-                .setParameter("withUsername", User.Meta.USERNAME)
+                .setParameter("userType", User_.entityClassIRI)
+                .setParameter("withUsername", User_.username.getIRI())
                 .setParameter("username", username)::getSingleResult);
     }
 
     public boolean userAccountExists(@Nullable String username) {
         final var query = em.createNativeQuery("ASK { ?user a ?userType; ?hasUsername ?username }", Boolean.class)
-                .setParameter("userType", User.Meta.TYPE)
-                .setParameter("hasUsername", User.Meta.USERNAME);
+                .setParameter("userType", User_.entityClassIRI)
+                .setParameter("hasUsername", User_.username.getIRI());
 
         if (username != null) {
             query.setParameter("username", username);

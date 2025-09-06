@@ -3,11 +3,9 @@ package cz.lukaskabc.ontology.ontopus.api.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@Getter
 @NullMarked
 public class StagedJsonForm extends JsonForm {
     private static final String ABSOLUTE_REST_PATH_REGEX = "(\\/[A-Za-z0-9_.\\~-]+)+";
@@ -21,5 +19,13 @@ public class StagedJsonForm extends JsonForm {
         super(jsonSchema, uiSchema);
         this.submitPath = submitPath;
         this.nextFormPath = nextFormPath;
+    }
+
+    public @Nullable String getNextFormPath() {
+        return nextFormPath;
+    }
+
+    public String getSubmitPath() {
+        return submitPath;
     }
 }

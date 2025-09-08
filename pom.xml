@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cz.lukaskabc.ontology.ontopus</groupId>
@@ -15,6 +16,7 @@
         <module>plugin-api</module>
         <module>plugin-git</module>
         <module>plugin-file</module>
+        <module>core-model</module>
     </modules>
 
     <properties>
@@ -42,12 +44,34 @@
                 <version>${ontopus.plugin.api.version}</version>
             </dependency>
             <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.core</groupId>
+                <artifactId>model</artifactId>
+                <version>${ontopus.core.version}</version>
+            </dependency>
+            <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ledsoft</groupId>
+                <artifactId>jopa-spring-transaction</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+            <!-- Open Api documentation -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>2.8.9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.18.0</version>
+                <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
             </dependency>
         </dependencies>
     </dependencyManagement>

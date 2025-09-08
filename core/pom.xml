@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -17,7 +18,8 @@
     <description>Ontology Publication Server Core</description>
 
     <properties>
-        <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
+        <project.build.generated-source.directory>${project.build.directory}/generated-sources
+        </project.build.generated-source.directory>
         <spring.profiles.active/>
     </properties>
 
@@ -25,6 +27,10 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus.core</groupId>
+            <artifactId>model</artifactId>
         </dependency>
 
         <!-- Database dependencies -->
@@ -47,19 +53,16 @@
         <dependency>
             <groupId>com.github.ledsoft</groupId>
             <artifactId>jopa-spring-transaction</artifactId>
-            <version>0.4.0</version>
         </dependency>
 
         <!-- Open Api documentation -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.8.9</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
             <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
         </dependency>
 
@@ -150,52 +153,6 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <!-- Generate entity classes from OWL integrity constraints -->
-                <groupId>cz.cvut.kbss.jopa</groupId>
-                <artifactId>jopa-maven-plugin</artifactId>
-                <version>${jopa.version}</version>
-                <configuration>
-                    <!-- owl2java -->
-                    <package>${project.groupId}.generated</package>
-                    <output-directory>${project.build.directory}/generated-sources</output-directory>
-                    <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
-                    <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
-                    <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
-                    <with-java-uris>true</with-java-uris>
-                    <!-- modelgen -->
-                    <source-package>${project.groupId}.core.model</source-package>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>owl2java-transform</goal>
-                            <goal>modelgen</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Add generated sources to classpath -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.1</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.generated-source.directory}</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -1,9 +1,9 @@
 @prefix : <http://ontology.lukaskabc.cz/application/ontopus#> .
-@prefix mod: <https://w3id.org/mod#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus#> .
 @base <http://ontology.lukaskabc.cz/application/ontopus#> .
@@ -11,7 +11,7 @@
 <http://ontology.lukaskabc.cz/application/ontopus> rdf:type owl:Ontology ;
                                                     owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0-dev> ;
                                                     owl:imports <http://rdfs.org/sioc/ns> ,
-                                                                <https://w3id.org/mod/2.0> ;
+                                                                <https://www.w3.org/ns/dcat3> ;
                                                     <http://purl.org/dc/elements/1.1/creator> "Lukáš Kaňka" ;
                                                     <http://purl.org/vocab/vann/preferredNamespacePrefix> "ontopus" ;
                                                     <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus#" ;
@@ -44,6 +44,26 @@ owl:versionInfo rdf:type owl:AnnotationProperty .
 
 
 #################################################################
+#    Object Properties
+#################################################################
+
+###  http://ontology.lukaskabc.cz/application/ontopus#containsOntologyArtifact
+ontopus:containsOntologyArtifact rdf:type owl:ObjectProperty ;
+                                   rdfs:subPropertyOf dcat:dataset ;
+                                   rdfs:domain ontopus:OntologyArtifactCatalog ;
+                                   rdfs:range ontopus:OntologyArtifact ;
+                                   rdfs:comment "An ontology artifact that is listed in the catalog"@en ;
+                                   rdfs:label "contains ontology artifact"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#hasOntologyDistribution
+ontopus:hasOntologyDistribution rdf:type owl:ObjectProperty ;
+                                rdfs:subPropertyOf dcat:distribution ;
+                                rdfs:domain ontopus:OntologyArtifact ;
+                                rdfs:range ontopus:OntologyDistribution .
+
+
+#################################################################
 #    Data properties
 #################################################################
 
@@ -58,6 +78,26 @@ ontopus:password rdf:type owl:DatatypeProperty ;
 #################################################################
 #    Classes
 #################################################################
+
+###  http://ontology.lukaskabc.cz/application/ontopus#OntologyArtifact
+ontopus:OntologyArtifact rdf:type owl:Class ;
+                         rdfs:subClassOf dcat:Dataset ;
+                         rdfs:comment "An ontology artifact"@en ;
+                         rdfs:label "Ontology artifact"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#OntologyArtifactCatalog
+ontopus:OntologyArtifactCatalog rdf:type owl:Class ;
+                                rdfs:subClassOf dcat:Catalog ;
+                                rdfs:comment "A catalog of ontology artifacts served by the ontopus instance"@en ;
+                                rdfs:label "Ontology artifact catalog"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#OntologyDistribution
+ontopus:OntologyDistribution rdf:type owl:Class ;
+                             rdfs:subClassOf dcat:Distribution ;
+                             rdfs:label "Ontology distribution"@en .
+
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#TemporaryContext
 ontopus:TemporaryContext rdf:type owl:Class ;

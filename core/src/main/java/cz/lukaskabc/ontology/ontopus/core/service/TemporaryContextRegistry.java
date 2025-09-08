@@ -3,14 +3,15 @@ package cz.lukaskabc.ontology.ontopus.core.service;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
 import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext;
-import java.net.URI;
-import java.time.Instant;
-import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.net.URI;
+import java.time.Instant;
+import java.util.Objects;
 
 @Component
 public class TemporaryContextRegistry implements TemporaryContextGenerator {
@@ -26,17 +27,17 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     public void clearAllTemporaryContexts() {
         log.debug("Clearing all temporary contexts from database");
         em.createQuery("SELECT c FROM TemporaryContext c", URI.class)
-                .getResultStream()
-                .forEach(context -> {
-                    try {
-                        Objects.requireNonNull(context);
-                        em.createNativeQuery("DROP GRAPH ?context; DELETE WHERE { ?context ?predicate ?object . } ")
-                                .setParameter("context", context)
-                                .executeUpdate();
-                    } catch (Exception e) {
-                        log.error("Failed to drop temporary context {}", context, e);
-                    }
-                });
+            .getResultStream()
+            .forEach(context -> {
+                try {
+                    Objects.requireNonNull(context);
+                    em.createNativeQuery("DROP GRAPH ?context; DELETE WHERE { ?context ?predicate ?object . } ")
+                        .setParameter("context", context)
+                        .executeUpdate();
+                } catch (Exception e) {
+                    log.error("Failed to drop temporary context {}", context, e);
+                }
+            });
     }
 
     @Transactional

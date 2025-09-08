@@ -36,7 +36,7 @@ public class AdminAccountInitializationService implements InitService {
         admin.setPassword(passwordEncoder.encode(password));
         userDao.persist(admin);
         log.warn(
-                "\n\n\nNo user account found. Generated new account: admin, password: {}\nMake sure to change the password after the first login!\n",
-                password);
+            "\n\n\nNo user account found. Generated new account: admin, password: {}\nMake sure to change the password after the first login!\n",
+            password);
     }
 }

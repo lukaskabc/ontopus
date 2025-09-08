@@ -5,10 +5,11 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
-import java.net.URI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.function.ThrowingSupplier;
 import org.springframework.validation.Validator;
+
+import java.net.URI;
 
 public abstract class BaseDao<T extends PersistenceEntity> {
     protected final EntityManager em;
@@ -23,7 +24,8 @@ public abstract class BaseDao<T extends PersistenceEntity> {
         this.validator = validator;
     }
 
-    @Nullable public T find(URI uri) {
+    @Nullable
+    public T find(URI uri) {
         try {
             return em.<@Nullable T>find(entityClass, uri);
         } catch (RuntimeException e) {
@@ -31,7 +33,8 @@ public abstract class BaseDao<T extends PersistenceEntity> {
         }
     }
 
-    @Nullable protected <E> E handleExceptions(ThrowingSupplier<E> supplier) {
+    @Nullable
+    protected <E> E handleExceptions(ThrowingSupplier<E> supplier) {
         try {
             return supplier.get(PersistenceException::new);
         } catch (NoResultException e) {
@@ -47,7 +50,8 @@ public abstract class BaseDao<T extends PersistenceEntity> {
         em.persist(validated(entity));
     }
 
-    @Nullable protected T validated(@Nullable T entity) {
+    @Nullable
+    protected T validated(@Nullable T entity) {
         if (entity != null) {
             validator.validateObject(entity).failOnError(ValidationException::new);
         }

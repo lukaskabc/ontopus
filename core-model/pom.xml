@@ -47,7 +47,7 @@
                     <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
                     <with-java-uris>true</with-java-uris>
                     <!-- modelgen -->
-                    <source-package>${project.groupId}.generated.model</source-package>
+                    <source-package>${project.groupId}.model</source-package>
                 </configuration>
                 <executions>
                     <execution>

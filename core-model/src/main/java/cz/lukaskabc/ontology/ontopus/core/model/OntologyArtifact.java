@@ -4,7 +4,6 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
-
 import java.util.List;
 
 @OWLClass(iri = Vocabulary.s_c_OntologyArtifact)

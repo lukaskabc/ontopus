@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
+import static cz.lukaskabc.ontology.ontopus.core.util.SecurityConstants.DEFAULT_AUTHORITIES;
+
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.persistence.UserDao;
 import cz.lukaskabc.ontology.ontopus.core.util.UserDetailsDelegate;
@@ -11,8 +13,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import static cz.lukaskabc.ontology.ontopus.core.util.SecurityConstants.DEFAULT_AUTHORITIES;
 
 @Service
 public class UserService implements UserDetailsService {

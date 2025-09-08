@@ -2,9 +2,8 @@ package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
-import org.jspecify.annotations.NullMarked;
-
 import java.util.List;
+import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 public class CorePlugin implements Plugin {

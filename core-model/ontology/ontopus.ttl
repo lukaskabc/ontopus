@@ -49,11 +49,11 @@ owl:versionInfo rdf:type owl:AnnotationProperty .
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#containsOntologyArtifact
 ontopus:containsOntologyArtifact rdf:type owl:ObjectProperty ;
-                                   rdfs:subPropertyOf dcat:dataset ;
-                                   rdfs:domain ontopus:OntologyArtifactCatalog ;
-                                   rdfs:range ontopus:OntologyArtifact ;
-                                   rdfs:comment "An ontology artifact that is listed in the catalog"@en ;
-                                   rdfs:label "contains ontology artifact"@en .
+                                 rdfs:subPropertyOf dcat:dataset ;
+                                 rdfs:domain ontopus:OntologyArtifactCatalog ;
+                                 rdfs:range ontopus:OntologyArtifact ;
+                                 rdfs:comment "An ontology artifact that is listed in the catalog"@en ;
+                                 rdfs:label "contains ontology artifact"@en .
 
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#hasOntologyDistribution
@@ -81,14 +81,14 @@ ontopus:password rdf:type owl:DatatypeProperty ;
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#OntologyArtifact
 ontopus:OntologyArtifact rdf:type owl:Class ;
-                         rdfs:subClassOf dcat:Dataset ;
-                         rdfs:comment "An ontology artifact"@en ;
+                         rdfs:subClassOf dcat:Resource ;
+                         rdfs:comment "An ontology artifact containing a single ontology release"@en ;
                          rdfs:label "Ontology artifact"@en .
 
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#OntologyArtifactCatalog
 ontopus:OntologyArtifactCatalog rdf:type owl:Class ;
-                                rdfs:subClassOf dcat:Catalog ;
+                                rdfs:subClassOf dcat:Dataset ;
                                 rdfs:comment "A catalog of ontology artifacts served by the ontopus instance"@en ;
                                 rdfs:label "Ontology artifact catalog"@en .
 
@@ -96,6 +96,7 @@ ontopus:OntologyArtifactCatalog rdf:type owl:Class ;
 ###  http://ontology.lukaskabc.cz/application/ontopus#OntologyDistribution
 ontopus:OntologyDistribution rdf:type owl:Class ;
                              rdfs:subClassOf dcat:Distribution ;
+                             rdfs:comment "A specific representation of an ontology artifact. An artifact might be available in multiple serializations that may differ in various ways, including natural language, media-type or format, schematic organization, temporal and spatial resolution, level of detail or profiles (which might specify any or all of the above)."@en ;
                              rdfs:label "Ontology distribution"@en .
 
 

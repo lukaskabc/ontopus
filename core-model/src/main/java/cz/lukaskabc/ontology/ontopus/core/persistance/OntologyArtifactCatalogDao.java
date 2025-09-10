@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.persistance;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog_;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
@@ -12,5 +13,13 @@ public class OntologyArtifactCatalogDao extends AbstractDao<OntologyArtifactCata
     @Autowired
     public OntologyArtifactCatalogDao(EntityManager em, Validator validator) {
         super(OntologyArtifactCatalog.class, OntologyArtifactCatalog_.entityClassIRI.toURI(), em, validator);
+    }
+
+    public boolean catalogExists(URI uri) {
+        final var query = em.createNativeQuery("ASK { ?catalog a ?catalogType }", Boolean.class)
+                .setParameter("catalog", uri)
+                .setParameter("catalogType", OntologyArtifactCatalog_.entityClassIRI);
+
+        return Boolean.TRUE.equals(resultOrNull(query::getSingleResult));
     }
 }

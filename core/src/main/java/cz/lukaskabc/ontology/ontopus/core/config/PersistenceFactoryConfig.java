@@ -25,10 +25,10 @@ import org.springframework.context.annotation.Primary;
 public class PersistenceFactoryConfig {
 
     private EntityManagerFactory factory;
-    private final ServerConfig serverConfig;
+    private final OntopusConfig serverConfig;
     private final DefaultListableBeanFactory defaultListableBeanFactory;
 
-    public PersistenceFactoryConfig(ServerConfig serverConfig, DefaultListableBeanFactory defaultListableBeanFactory) {
+    public PersistenceFactoryConfig(OntopusConfig serverConfig, DefaultListableBeanFactory defaultListableBeanFactory) {
         this.serverConfig = serverConfig;
         this.defaultListableBeanFactory = defaultListableBeanFactory;
     }
@@ -61,7 +61,7 @@ public class PersistenceFactoryConfig {
 
     @PostConstruct
     private void init() {
-        final ServerConfig.Database dbConfig = serverConfig.getDatabase();
+        final OntopusConfig.Database dbConfig = serverConfig.getDatabase();
         final Map<String, String> properties = new HashMap<>();
 
         final String packagesToScan = String.join(",", getPackagesForEntityScan());

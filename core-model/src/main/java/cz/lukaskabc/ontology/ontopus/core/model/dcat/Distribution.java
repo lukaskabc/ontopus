@@ -5,7 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
-import cz.lukaskabc.ontology.ontopus.core.model.utils.DocumentedOWLClass;
+import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
 import jakarta.validation.constraints.NotNull;
 import java.net.URL;
 import java.time.Instant;

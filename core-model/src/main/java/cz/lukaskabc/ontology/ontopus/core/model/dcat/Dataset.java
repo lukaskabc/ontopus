@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.model.dcat;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core.model.utils.DocumentedOWLClass;
+import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
 import java.net.URI;
 import java.util.Set;
 

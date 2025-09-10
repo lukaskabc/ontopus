@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.util;
+package cz.lukaskabc.ontology.ontopus.core.model.util;
 
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import java.util.Set;

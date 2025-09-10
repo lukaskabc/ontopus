@@ -1,23 +1,22 @@
-package cz.lukaskabc.ontology.ontopus.core.persistence;
+package cz.lukaskabc.ontology.ontopus.core.persistance;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.model.User_;
-import java.net.URI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 
 @Component
-public class UserDao extends BaseDao<User> {
+public class UserDao extends AbstractDao<User> {
     @Autowired
     public UserDao(EntityManager em, Validator validator) {
-        super(User.class, URI.create("ontology/system-user"), em, validator);
+        super(User.class, User_.entityClassIRI.toURI(), em, validator);
     }
 
     @Nullable public User findByUsername(String username) {
-        return handleExceptions(em.createNativeQuery(
+        return resultOrNull(em.createNativeQuery(
                         """
 				SELECT ?user WHERE {
 				    ?user a ?userType ;
@@ -39,6 +38,6 @@ public class UserDao extends BaseDao<User> {
             query.setParameter("username", username);
         }
 
-        return Boolean.TRUE.equals(handleExceptions(query::getSingleResult));
+        return Boolean.TRUE.equals(resultOrNull(query::getSingleResult));
     }
 }

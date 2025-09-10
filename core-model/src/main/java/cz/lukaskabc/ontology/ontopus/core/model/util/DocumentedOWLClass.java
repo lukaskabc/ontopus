@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.model.utils;
+package cz.lukaskabc.ontology.ontopus.core.model.util;
 
 import java.lang.annotation.*;
 

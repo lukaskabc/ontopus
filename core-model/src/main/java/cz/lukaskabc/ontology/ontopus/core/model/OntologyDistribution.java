@@ -14,7 +14,7 @@ import org.springframework.util.MimeType;
  * and spatial resolution, level of detail or profiles (which might specify any or all of the above).
  */
 @OWLClass(iri = Vocabulary.s_c_OntologyDistribution)
-public abstract class OntologyDistribution extends Distribution {
+public class OntologyDistribution extends Distribution {
     public OntologyDistribution(
             MultilingualString title,
             MultilingualString description,

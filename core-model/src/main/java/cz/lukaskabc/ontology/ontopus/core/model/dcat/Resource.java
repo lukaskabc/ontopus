@@ -6,6 +6,8 @@ import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core.model.utils.DocumentedOWLClass;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Set;
@@ -20,13 +22,13 @@ public abstract class Resource extends PersistenceEntity {
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_description)
     private MultilingualString description;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_title)
+    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_dcat_title)
     private MultilingualString title;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
     private Instant releaseDate;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
     private Instant modifiedDate;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_language)
@@ -34,7 +36,7 @@ public abstract class Resource extends PersistenceEntity {
     /*
      * Skipping publisher
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier)
     private URI identifier;
     /*
      * Skipping theme/category, type/genre, relation, qualified attribution,
@@ -45,20 +47,115 @@ public abstract class Resource extends PersistenceEntity {
     /*
      * Skipping has policy, is referenced by
      */
+
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_previousVersion)
     private URI previousVersion;
     /*
      * Skipping has version
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
     private URI currentVersion;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_replaces)
     private URI replaces;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_version)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version)
     private String version;
     /*
      * Skipping status, first, last, previous
      */
+
+    public URI getCurrentVersion() {
+        return currentVersion;
+    }
+
+    public MultilingualString getDescription() {
+        return description;
+    }
+
+    public Set<URI> getHasParts() {
+        return hasParts;
+    }
+
+    public URI getIdentifier() {
+        return identifier;
+    }
+
+    public Set<String> getLanguages() {
+        return languages;
+    }
+
+    public Instant getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public URI getPreviousVersion() {
+        return previousVersion;
+    }
+
+    public Instant getReleaseDate() {
+        return releaseDate;
+    }
+
+    public URI getReplaces() {
+        return replaces;
+    }
+
+    public MultilingualString getTitle() {
+        return title;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setCurrentVersion(URI currentVersion) {
+        this.currentVersion = currentVersion;
+    }
+
+    public void setDescription(MultilingualString description) {
+        this.description = description;
+    }
+
+    public void setHasParts(Set<URI> hasParts) {
+        this.hasParts = hasParts;
+    }
+
+    public void setIdentifier(URI identifier) {
+        this.identifier = identifier;
+    }
+
+    public void setLanguages(Set<String> languages) {
+        this.languages = languages;
+    }
+
+    public void setModifiedDate(Instant modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public void setPreviousVersion(URI previousVersion) {
+        this.previousVersion = previousVersion;
+    }
+
+    public void setReleaseDate(Instant releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setReplaces(URI replaces) {
+        this.replaces = replaces;
+    }
+
+    public void setTitle(MultilingualString title) {
+        this.title = title;
+    }
+
+    @Override
+    public void setUri(URI uri) {
+        super.setUri(uri);
+        setIdentifier(uri);
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }

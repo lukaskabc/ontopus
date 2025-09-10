@@ -67,6 +67,15 @@ ontopus:hasOntologyDistribution rdf:type owl:ObjectProperty ;
 #    Data properties
 #################################################################
 
+###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
+ontopus:ontologyIdentifier rdf:type owl:DatatypeProperty ;
+                           rdfs:subPropertyOf <http://purl.org/dc/terms/identifier> ;
+                           rdfs:domain ontopus:OntologyArtifact ;
+                           rdfs:range rdfs:Literal ;
+                           rdfs:comment "Identifier of the ontology published in the artifact"@en ;
+                           rdfs:label "Ontology identifier"@en .
+
+
 ###  http://ontology.lukaskabc.cz/application/ontopus#password
 ontopus:password rdf:type owl:DatatypeProperty ;
                  rdfs:domain ontopus:UserAccount ;

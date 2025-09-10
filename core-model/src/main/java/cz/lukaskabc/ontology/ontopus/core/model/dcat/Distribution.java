@@ -6,6 +6,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core.model.utils.DocumentedOWLClass;
+import jakarta.validation.constraints.NotNull;
 import java.net.URL;
 import java.time.Instant;
 import org.springframework.util.MimeType;
@@ -24,23 +25,23 @@ public abstract class Distribution extends PersistenceEntity {
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_description)
     private MultilingualString description;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
     private Instant releaseDate;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
     private Instant modifiedDate;
     /*
      * Skipping license, access right, rights, has policy
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_accessURL)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_accessURL)
     private URL accessURL;
     /*
      * Skipping access service
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_downloadURL)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_downloadURL)
     private URL downloadURL;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_byteSize)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_byteSize)
     private Long byteSize;
     /*
      * Skipping spatial resolution in meters, temporal resolution, conforms to
@@ -125,5 +126,49 @@ public abstract class Distribution extends PersistenceEntity {
 
     public MultilingualString getTitle() {
         return title;
+    }
+
+    public void setAccessURL(URL accessURL) {
+        this.accessURL = accessURL;
+    }
+
+    public void setByteSize(Long byteSize) {
+        this.byteSize = byteSize;
+    }
+
+    public void setCompressFormat(MimeType compressFormat) {
+        this.compressFormat = compressFormat;
+    }
+
+    public void setDescription(MultilingualString description) {
+        this.description = description;
+    }
+
+    public void setDownloadURL(URL downloadURL) {
+        this.downloadURL = downloadURL;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public void setMediaType(MimeType mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    public void setModifiedDate(Instant modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public void setPackageFormat(MimeType packageFormat) {
+        this.packageFormat = packageFormat;
+    }
+
+    public void setReleaseDate(Instant releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setTitle(MultilingualString title) {
+        this.title = title;
     }
 }

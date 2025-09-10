@@ -20,10 +20,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
-            <artifactId>plugin-api</artifactId>
-        </dependency>
         <!-- Spring declarative transactions with JOPA -->
         <dependency>
             <groupId>com.github.ledsoft</groupId>

@@ -10,12 +10,10 @@ import org.jspecify.annotations.Nullable;
 public class StagedJsonForm extends JsonForm {
     private static final String ABSOLUTE_REST_PATH_REGEX = "(\\/[A-Za-z0-9_.\\~-]+)+";
 
-    @Pattern(regexp = ABSOLUTE_REST_PATH_REGEX)
-    @NotEmpty
-    private final String submitPath;
+    @Pattern(regexp = ABSOLUTE_REST_PATH_REGEX) @NotEmpty private final String submitPath;
 
     public StagedJsonForm(
-        JsonNode jsonSchema, @Nullable JsonNode uiSchema, String submitPath, @Nullable String nextFormPath) {
+            JsonNode jsonSchema, @Nullable JsonNode uiSchema, String submitPath, @Nullable String nextFormPath) {
         super(jsonSchema, uiSchema);
         this.submitPath = submitPath;
     }

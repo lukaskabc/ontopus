@@ -11,22 +11,19 @@ import org.jspecify.annotations.Nullable;
  * OntologyArtifact} either from user input or from the Ontology data in database.
  *
  * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
- * annotation)
+ *     annotation)
  */
 public interface OntologyArtifactBuildingService {
     /**
      * Sets (some) data to partially built ontology artifact.
      *
-     * @param formResult              The result of the submitted form
+     * @param formResult The result of the submitted form
      * @param partialOntologyArtifact The object to fill the data with
-     * @param context                 The context of importing process
+     * @param context The context of importing process
      * @return The path of the next form to show to the user
      */
-    @Nullable
-    String buildArtifact(
-        @Nullable FormResult formResult,
-        OntologyArtifact partialOntologyArtifact,
-        ImportProcessContext context);
+    @Nullable String buildArtifact(
+            @Nullable FormResult formResult, OntologyArtifact partialOntologyArtifact, ImportProcessContext context);
 
     /**
      * Provides form schema shown to the user to enter data required for building the ontology artifact.
@@ -36,8 +33,7 @@ public interface OntologyArtifactBuildingService {
      * @see <a href= "https://rjsf-team.github.io/react-jsonschema-form/docs/json-schema/">RJSF JSON schema</a>
      * @see <a href= "https://json-schema.org/draft-07/json-schema-release-notes">JSON schema Draft 7</a>
      */
-    @Nullable
-    default JsonNode getFormSchema() {
+    @Nullable default JsonNode getFormSchema() {
         return null;
     }
 
@@ -48,8 +44,7 @@ public interface OntologyArtifactBuildingService {
      * @see #getFormSchema()
      * @see <a href= "https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema">RJSF UI Schema</a>
      */
-    @Nullable
-    default JsonNode getUiSchema() {
+    @Nullable default JsonNode getUiSchema() {
         return null;
     }
 }

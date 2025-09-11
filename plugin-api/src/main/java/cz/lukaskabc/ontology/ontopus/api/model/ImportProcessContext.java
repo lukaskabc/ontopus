@@ -1,41 +1,59 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ImportProcessContext {
-    private final UUID uuid = UUID.randomUUID();
+    private final UUID uuid;
     private final URI databaseContext;
-    private final Set<File> folders = new HashSet<>();
-    private final Map<Object, Object> additionalProperties = new HashMap<>();
+    private final Path tempFolder;
+    private final Map<Object, Object> additionalProperties;
 
-    public ImportProcessContext(URI databaseContext) {
-        this.databaseContext = databaseContext;
-    }
-
-    public void addFolder(File folder) {
-        if (folder.isDirectory()) {
-            folders.add(folder);
-        } else {
-            throw new IllegalArgumentException("Not a directory");
+    public static ImportProcessContext create(URI databaseContext) {
+        final UUID uuid = UUID.randomUUID();
+        try {
+            final Path folder = Files.createTempDirectory("OntoPuS-import-process-" + uuid + "_");
+            folder.toFile().deleteOnExit();
+            return new ImportProcessContext(uuid, databaseContext, folder);
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO exception
         }
     }
 
-    public UUID getUuid() {
-        return uuid;
+    protected ImportProcessContext(UUID uuid, URI databaseContext, Path tempFolder) {
+        this.uuid = uuid;
+        this.databaseContext = databaseContext;
+        this.tempFolder = tempFolder;
+        this.additionalProperties = new HashMap<>();
     }
 
-    public Set<File> getFolders() {
-        return Collections.unmodifiableSet(folders);
+    public Path getTempFolder(Path relativePath) {
+        try {
+            return Files.createDirectory(tempFolder.resolve(relativePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO exception
+        }
+    }
+
+    public Object getAdditionalProperty(Object key) {
+        return additionalProperties.get(key);
     }
 
     public URI getDatabaseContext() {
         return databaseContext;
     }
 
-    public Object getAdditionalProperty(Object key) {
-        return additionalProperties.get(key);
+    public Path getTempFolder() {
+        return tempFolder;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public void setAdditionalProperty(Object key, Object value) {

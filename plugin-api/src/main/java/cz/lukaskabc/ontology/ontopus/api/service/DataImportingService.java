@@ -18,7 +18,7 @@ public interface DataImportingService {
      *
      * @param files   The files to import for which {@link #supports(File)} returned true
      * @param context The context of importing process
-     * @implSpec The caller is responsible for invoking this method asynchronously.
+     * @implSpec The caller is responsible for invoking this method asynchronously if necessary.
      */
     void importFiles(File[] files, ImportProcessContext context) throws IOException;
 

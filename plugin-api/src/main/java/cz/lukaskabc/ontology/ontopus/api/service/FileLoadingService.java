@@ -42,7 +42,7 @@ public interface FileLoadingService {
      * @param formResult The result of the submitted form
      * @param context    The context of importing process
      * @return the result of the operation
-     * @implSpec The caller is responsible for invoking this method asynchronously.
+     * @implSpec The caller is responsible for invoking this method asynchronously if necessary.
      */
     Result loadFiles(FormResult formResult, ImportProcessContext context);
 

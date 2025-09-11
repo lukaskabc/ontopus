@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
+import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -9,11 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ImportProcessContext {
-    private final UUID uuid;
-    private final URI databaseContext;
-    private final Path tempFolder;
-    private final Map<Object, Object> additionalProperties;
-
     public static ImportProcessContext create(URI databaseContext) {
         final UUID uuid = UUID.randomUUID();
         try {
@@ -25,19 +21,19 @@ public class ImportProcessContext {
         }
     }
 
+    private final UUID uuid;
+    private final URI databaseContext;
+    private final Path tempFolder;
+    private final OntologyArtifact ontologyArtifact;
+
+    private final Map<Object, Object> additionalProperties;
+
     protected ImportProcessContext(UUID uuid, URI databaseContext, Path tempFolder) {
         this.uuid = uuid;
         this.databaseContext = databaseContext;
         this.tempFolder = tempFolder;
+        this.ontologyArtifact = new OntologyArtifact();
         this.additionalProperties = new HashMap<>();
-    }
-
-    public Path getTempFolder(Path relativePath) {
-        try {
-            return Files.createDirectory(tempFolder.resolve(relativePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO exception
-        }
     }
 
     public Object getAdditionalProperty(Object key) {
@@ -48,8 +44,20 @@ public class ImportProcessContext {
         return databaseContext;
     }
 
+    public OntologyArtifact getOntologyArtifact() {
+        return ontologyArtifact;
+    }
+
     public Path getTempFolder() {
         return tempFolder;
+    }
+
+    public Path getTempFolder(Path relativePath) {
+        try {
+            return Files.createDirectory(tempFolder.resolve(relativePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO exception
+        }
     }
 
     public UUID getUuid() {

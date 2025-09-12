@@ -21,7 +21,7 @@ public class OntologyArtifactCatalogDao extends AbstractDao<OntologyArtifactCata
     }
 
     public boolean catalogExists(URI uri) {
-        final var query = em.createNativeQuery("ASK FROM NAMED ?graph { ?catalog a ?catalogType }", Boolean.class)
+        final var query = em.createNativeQuery("ASK FROM ?graph { ?catalog a ?catalogType }", Boolean.class)
                 .setParameter("catalog", uri)
                 .setParameter("catalogType", OntologyArtifactCatalog_.entityClassIRI)
                 .setParameter("graph", entityGraphContext);

@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.model.dcat;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
@@ -36,30 +37,30 @@ public abstract class Resource extends PersistenceEntity {
     /*
      * Skipping publisher
      */
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private URI identifier;
     /*
      * Skipping theme/category, type/genre, relation, qualified attribution,
      * license, rights
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_org_hasPart)
+    @OWLObjectProperty(iri = Vocabulary.s_p_org_hasPart)
     private Set<URI> hasParts;
     /*
      * Skipping has policy, is referenced by
      */
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_previousVersion)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_previousVersion)
     private URI previousVersion;
     /*
      * Skipping has version
      */
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
     private URI currentVersion;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_replaces)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_replaces)
     private URI replaces;
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version, simpleLiteral = true)
     private String version;
     /*
      * Skipping status, first, last, previous
@@ -121,10 +122,6 @@ public abstract class Resource extends PersistenceEntity {
         this.hasParts = hasParts;
     }
 
-    public void setIdentifier(URI identifier) {
-        this.identifier = identifier;
-    }
-
     public void setLanguages(Set<String> languages) {
         this.languages = languages;
     }
@@ -152,7 +149,7 @@ public abstract class Resource extends PersistenceEntity {
     @Override
     public void setUri(URI uri) {
         super.setUri(uri);
-        setIdentifier(uri);
+        this.identifier = uri;
     }
 
     public void setVersion(String version) {

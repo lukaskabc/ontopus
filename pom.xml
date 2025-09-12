@@ -13,8 +13,8 @@
     <modules>
         <module>core</module>
         <module>plugin-api</module>
-        <module>plugin-git</module>
-        <module>plugin-file</module>
+        <!--        <module>plugin-git</module>-->
+        <!--        <module>plugin-file</module>-->
         <module>core-model</module>
     </modules>
 

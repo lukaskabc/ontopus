@@ -18,7 +18,7 @@ public class UserDao extends AbstractDao<User> {
     @Nullable public User findByUsername(String username) {
         return resultOrNull(em.createNativeQuery(
                         """
-				SELECT ?user FROM NAMED ?graph WHERE {
+				SELECT ?user FROM ?graph WHERE {
 				    ?user a ?userType ;
 				        ?withUsername ?username .
 				}
@@ -33,7 +33,7 @@ public class UserDao extends AbstractDao<User> {
     public boolean userAccountExists(@Nullable String username) {
         final var query = em.createNativeQuery(
                         """
-				ASK FROM NAMED ?graph {
+				ASK FROM ?graph {
 				    ?user a ?userType;
 				        ?hasUsername ?username .
 				}

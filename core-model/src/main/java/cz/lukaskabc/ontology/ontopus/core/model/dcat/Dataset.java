@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.model.dcat;
 
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
-import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
 import java.net.URI;
@@ -14,7 +14,7 @@ import java.util.Set;
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Dataset)
 public abstract class Dataset extends Resource {
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_distribution)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution)
     private Set<URI> distributions;
     /*
      * Skipping frequency, in series, spatial/geographical coverage, spatial

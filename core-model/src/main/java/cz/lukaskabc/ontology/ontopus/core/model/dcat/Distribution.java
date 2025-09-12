@@ -59,6 +59,8 @@ public abstract class Distribution extends PersistenceEntity {
     private MimeType packageFormat;
     // skipping checksum
 
+    public Distribution() {}
+
     public Distribution(
             MultilingualString title,
             MultilingualString description,

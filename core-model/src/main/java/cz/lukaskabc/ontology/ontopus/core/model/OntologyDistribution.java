@@ -15,6 +15,10 @@ import org.springframework.util.MimeType;
  */
 @OWLClass(iri = Vocabulary.s_c_OntologyDistribution)
 public class OntologyDistribution extends Distribution {
+    public OntologyDistribution() {
+        super();
+    }
+
     public OntologyDistribution(
             MultilingualString title,
             MultilingualString description,

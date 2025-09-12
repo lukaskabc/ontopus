@@ -4,12 +4,13 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
 import cz.lukaskabc.ontology.ontopus.core.persistance.OntologyArtifactCatalogDao;
-import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 @Component
 public class CatalogInitializationService implements InitService {
@@ -31,12 +32,12 @@ public class CatalogInitializationService implements InitService {
         }
 
         final OntologyArtifactCatalog catalog = new OntologyArtifactCatalog();
+        catalog.setUri(config.getUri());
         // resource
-        catalog.setDescription(MultilingualString.create(config.getDescription(), ""));
-        catalog.setTitle(MultilingualString.create(config.getTitle(), ""));
+        catalog.setDescription(MultilingualString.create(config.getDescription(), null));
+        catalog.setTitle(MultilingualString.create(config.getTitle(), null));
         catalog.setReleaseDate(Instant.now());
         catalog.setModifiedDate(catalog.getReleaseDate());
-        catalog.setIdentifier(config.getUri());
         catalog.setCurrentVersion(config.getUri());
         catalog.setVersion("latest");
         // dataset

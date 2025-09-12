@@ -1,3 +1,12 @@
 {
-  "ontopus.core.title": "OntoPuS"
+  "ontopus.core": {
+    "title": "OntoPuS",
+    "service": {
+      "ImportProcessingService": {
+        "ImportProcessNextServiceSelector": {
+          "name": "Options selector"
+        }
+      }
+    }
+  }
 }

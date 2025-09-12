@@ -10,9 +10,9 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
-    @Valid private Database database;
+    @Valid private Database database = new Database();
 
-    @Valid private DcatCatalog dcatCatalog;
+    @Valid private DcatCatalog dcatCatalog = new DcatCatalog();
 
     public Database getDatabase() {
         return database;
@@ -93,7 +93,9 @@ public class OntopusConfig {
 
     public static class DcatCatalog {
         private URI uri = URI.create("http://localhost/ontopus/catalog");
+        /** Description of the catalog */
         private String description = "Catalog of published ontologies on this OntoPuS instance";
+        /** Title of the catalog */
         private String title = "OntoPuS Ontology Catalog";
 
         public String getDescription() {

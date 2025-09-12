@@ -98,7 +98,9 @@ public class PluginRegistryApplicationInitializer
             pluginCount++;
         }
 
-        applicationContext.scan(packagesForSpringScan.toArray(String[]::new));
+        if (!packagesForSpringScan.isEmpty()) {
+            applicationContext.scan(packagesForSpringScan.toArray(String[]::new));
+        }
 
         if (packagesForJopaScan.isEmpty()) {
             throw new IllegalStateException("No packages for JOPA entity scan found!");

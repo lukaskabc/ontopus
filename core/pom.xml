@@ -111,7 +111,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
                 <configuration>
                     <delimiters>
                         <!-- process resources for maven properties replacement -->
@@ -135,6 +134,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.5.3</version>
                 <!-- Will use PropertiesLauncher as default class when running the jar -->
                 <!-- allowing to modify the classpath with loader.properties -->
                 <configuration>

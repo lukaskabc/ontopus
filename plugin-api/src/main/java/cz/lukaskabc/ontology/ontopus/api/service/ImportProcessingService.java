@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import org.jspecify.annotations.Nullable;
 
 // TODO: Design pattern Strategy
@@ -17,28 +17,11 @@ public interface ImportProcessingService<R> {
     String getServiceName();
 
     /**
-     * Provides form schema shown to the user to enter data.
+     * Provides a JSON form which will be shown to the user.
      *
-     * @return JSON schema of the form
-     * @see #getUiSchema()
-     * @see <a href= "https://rjsf-team.github.io/react-jsonschema-form/docs/json-schema/">RJSF JSON schema</a>
-     * @see <a href= "https://json-schema.org/draft-07/json-schema-release-notes">JSON schema Draft 7</a>
+     * @return Form with JSON scheme and an optional UI Scheme
      */
-    @Nullable default JsonNode getFormSchema() {
-        return null;
-    }
-    ;
-
-    /**
-     * Provides UI Schema of the form shown to the user.
-     *
-     * @return UI schema of the form
-     * @see #getFormSchema()
-     * @see <a href= "https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema">RJSF UI Schema</a>
-     */
-    @Nullable default JsonNode getUiSchema() {
-        return null;
-    }
+    @Nullable JsonForm getJsonForm();
 
     /**
      * Accepts and handles the result of submitted form.

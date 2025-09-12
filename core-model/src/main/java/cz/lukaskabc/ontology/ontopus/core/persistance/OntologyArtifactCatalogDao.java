@@ -11,14 +11,20 @@ import org.springframework.validation.Validator;
 @Component
 public class OntologyArtifactCatalogDao extends AbstractDao<OntologyArtifactCatalog> {
     @Autowired
-    public OntologyArtifactCatalogDao(EntityManager em, Validator validator) {
-        super(OntologyArtifactCatalog.class, OntologyArtifactCatalog_.entityClassIRI.toURI(), em, validator);
+    public OntologyArtifactCatalogDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
+        super(
+                OntologyArtifactCatalog.class,
+                OntologyArtifactCatalog_.entityClassIRI.toURI(),
+                em,
+                validator,
+                descriptorFactory.ontologyArtifactCatalog());
     }
 
     public boolean catalogExists(URI uri) {
-        final var query = em.createNativeQuery("ASK { ?catalog a ?catalogType }", Boolean.class)
+        final var query = em.createNativeQuery("ASK FROM NAMED ?graph { ?catalog a ?catalogType }", Boolean.class)
                 .setParameter("catalog", uri)
-                .setParameter("catalogType", OntologyArtifactCatalog_.entityClassIRI);
+                .setParameter("catalogType", OntologyArtifactCatalog_.entityClassIRI)
+                .setParameter("graph", entityGraphContext);
 
         return Boolean.TRUE.equals(resultOrNull(query::getSingleResult));
     }

@@ -10,17 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ImportProcessContext {
-    public static ImportProcessContext create(URI databaseContext) {
-        final UUID uuid = UUID.randomUUID();
-        try {
-            final Path folder = Files.createTempDirectory("OntoPuS-import-process-" + uuid + "_");
-            folder.toFile().deleteOnExit();
-            return new ImportProcessContext(uuid, databaseContext, folder);
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO exception
-        }
-    }
-
     private final UUID uuid;
     private final URI databaseContext;
     private final Path tempFolder;
@@ -28,11 +17,11 @@ public class ImportProcessContext {
 
     private final Map<Object, Object> additionalProperties;
 
-    protected ImportProcessContext(UUID uuid, URI databaseContext, Path tempFolder) {
+    public ImportProcessContext(UUID uuid, URI databaseContext, Path tempFolder, OntologyArtifact ontologyArtifact) {
         this.uuid = uuid;
         this.databaseContext = databaseContext;
         this.tempFolder = tempFolder;
-        this.ontologyArtifact = new OntologyArtifact();
+        this.ontologyArtifact = ontologyArtifact;
         this.additionalProperties = new HashMap<>();
     }
 

@@ -11,26 +11,35 @@ import org.springframework.validation.Validator;
 @Component
 public class UserDao extends AbstractDao<User> {
     @Autowired
-    public UserDao(EntityManager em, Validator validator) {
-        super(User.class, User_.entityClassIRI.toURI(), em, validator);
+    public UserDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
+        super(User.class, User_.entityClassIRI.toURI(), em, validator, descriptorFactory.user());
     }
 
     @Nullable public User findByUsername(String username) {
         return resultOrNull(em.createNativeQuery(
                         """
-				SELECT ?user WHERE {
+				SELECT ?user FROM NAMED ?graph WHERE {
 				    ?user a ?userType ;
 				        ?withUsername ?username .
 				}
 				""",
                         User.class)
+                .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
                 .setParameter("withUsername", User_.username.getIRI())
                 .setParameter("username", username)::getSingleResult);
     }
 
     public boolean userAccountExists(@Nullable String username) {
-        final var query = em.createNativeQuery("ASK { ?user a ?userType; ?hasUsername ?username }", Boolean.class)
+        final var query = em.createNativeQuery(
+                        """
+				ASK FROM NAMED ?graph {
+				    ?user a ?userType;
+				        ?hasUsername ?username .
+				}
+				""",
+                        Boolean.class)
+                .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
                 .setParameter("hasUsername", User_.username.getIRI());
 

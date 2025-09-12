@@ -10,7 +10,12 @@ import org.springframework.validation.Validator;
 @Component
 public class OntologyArtifactDao extends AbstractDao<OntologyArtifact> {
     @Autowired
-    public OntologyArtifactDao(EntityManager em, Validator validator) {
-        super(OntologyArtifact.class, OntologyArtifact_.entityClassIRI.toURI(), em, validator);
+    public OntologyArtifactDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
+        super(
+                OntologyArtifact.class,
+                OntologyArtifact_.entityClassIRI.toURI(),
+                em,
+                validator,
+                descriptorFactory.ontologyArtifact());
     }
 }

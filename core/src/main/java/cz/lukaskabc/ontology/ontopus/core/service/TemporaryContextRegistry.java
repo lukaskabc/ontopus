@@ -6,15 +6,14 @@ import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
 import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext_;
 import cz.lukaskabc.ontology.ontopus.core.persistance.DescriptorFactory;
+import java.net.URI;
+import java.time.Instant;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.net.URI;
-import java.time.Instant;
-import java.util.Objects;
 
 @Component
 public class TemporaryContextRegistry implements TemporaryContextGenerator {
@@ -34,13 +33,15 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     public void clearAllTemporaryContexts() {
         log.debug("Clearing all temporary contexts from database");
         // TODO change to SELECT FROM ?graph
-        em.createNativeQuery("""
+        em.createNativeQuery(
+                        """
 				SELECT ?id WHERE {
 				    GRAPH ?graph {
 				        ?id a ?type .
 				    }
 				}
-				""", URI.class)
+				""",
+                        URI.class)
                 .setParameter("graph", temporaryContextGraph)
                 .setParameter("type", TemporaryContext_.entityClassIRI)
                 .getResultStream()

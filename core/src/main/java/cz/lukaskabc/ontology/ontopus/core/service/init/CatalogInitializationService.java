@@ -4,13 +4,12 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
 import cz.lukaskabc.ontology.ontopus.core.persistance.OntologyArtifactCatalogDao;
+import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
 
 @Component
 public class CatalogInitializationService implements InitService {

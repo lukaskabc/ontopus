@@ -18,6 +18,7 @@ public class ImportProcessNextServiceSelectorFactory {
     }
 
     public <T extends ImportProcessingService<?>> ImportProcessNextServiceSelector<T> forService(Class<T> clazz) {
-        return new ImportProcessNextServiceSelector<>(beanFactory.getBeansOfType(clazz).values());
+        return new ImportProcessNextServiceSelector<>(
+                beanFactory.getBeansOfType(clazz).values());
     }
 }

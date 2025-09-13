@@ -29,6 +29,8 @@ public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuil
     /** @see FormLoginConfigurer#createLoginProcessingUrlMatcher(String) */
     @Override
     protected RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
+        // Deprecated note: Future spring version should provide
+        // getRequestMatcherBuilder().matcher(HttpMethod.POST, loginProcessingUrl);
         return RequestMatcherFactory.matcher(HttpMethod.POST, loginProcessingUrl);
     }
 

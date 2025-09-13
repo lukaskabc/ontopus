@@ -11,10 +11,12 @@ import java.time.Instant;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@NullMarked
 @Component
 public class TemporaryContextRegistry implements TemporaryContextGenerator {
     private static final Logger log = LogManager.getLogger(TemporaryContextRegistry.class);

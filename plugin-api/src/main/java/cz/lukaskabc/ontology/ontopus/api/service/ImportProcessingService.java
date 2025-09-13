@@ -9,6 +9,14 @@ import org.jspecify.annotations.Nullable;
 
 /** A service that is a part of the ontology importing process */
 public interface ImportProcessingService<R> {
+
+    /**
+     * Called once this service was inserted at the top of the stack.
+     *
+     * @param context The process context with service stack with this service at the top.
+     */
+    default void afterStackPush(ImportProcessContext context) {}
+
     /**
      * Provides the name of the Service shown in the UI
      *
@@ -37,7 +45,8 @@ public interface ImportProcessingService<R> {
      * A result of a {@link ImportProcessingService} action
      *
      * @param value The result value
-     * @param nextService The next processing service to call
+     * @param nextService The next processing service to call (taking priority over popping the next service from the
+     *     service stack)
      * @param <R> The type of the resulting value
      */
     record Result<R>(@Nullable R value, @Nullable ImportProcessingService<?> nextService) {}

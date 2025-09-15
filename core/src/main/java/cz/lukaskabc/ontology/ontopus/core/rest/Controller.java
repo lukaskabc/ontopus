@@ -1,11 +1,27 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
+import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
 class Controller {
+
+    private final ImportProcessContextHolder holder;
+
+    Controller(@Lazy ImportProcessContextHolder holder) {
+        this.holder = holder;
+    }
+
+    @GetMapping
+    public String ping() {
+        holder.getSessionImportProcessContext();
+        return "pong";
+    }
+
     //
     // @PostMapping("/git")
     // public void importGitRepository(@RequestBody URI repositoryUri) throws

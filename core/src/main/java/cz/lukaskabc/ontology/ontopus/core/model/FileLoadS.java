@@ -3,13 +3,16 @@ package cz.lukaskabc.ontology.ontopus.core.model;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.api.service.FileLoadingService;
+import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import java.nio.file.Path;
 import org.jspecify.annotations.Nullable;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FileLoadS implements FileLoadingService {
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class FileLoadS implements OrderedImportPipelineService<Path> {
     @Override
     public @Nullable JsonForm getJsonForm() {
         return null;

@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
+import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
 import java.io.IOException;
 import java.net.URI;
@@ -7,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.UUID;
 
 public class ImportProcessContext {
@@ -14,6 +16,7 @@ public class ImportProcessContext {
     private final URI databaseContext;
     private final Path tempFolder;
     private final OntologyArtifact ontologyArtifact;
+    private final Stack<ImportProcessingService<?>> serviceStack;
 
     private final Map<Object, Object> additionalProperties;
 
@@ -23,6 +26,7 @@ public class ImportProcessContext {
         this.tempFolder = tempFolder;
         this.ontologyArtifact = ontologyArtifact;
         this.additionalProperties = new HashMap<>();
+        this.serviceStack = new Stack<>();
     }
 
     public Object getAdditionalProperty(Object key) {
@@ -35,6 +39,10 @@ public class ImportProcessContext {
 
     public OntologyArtifact getOntologyArtifact() {
         return ontologyArtifact;
+    }
+
+    public Stack<ImportProcessingService<?>> getServiceStack() {
+        return serviceStack;
     }
 
     public Path getTempFolder() {

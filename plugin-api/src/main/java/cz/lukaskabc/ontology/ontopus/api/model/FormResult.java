@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.api.model;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 /**
  * Result of submitted form.
@@ -11,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
  * @param submittedFiles Files submitted along the form
  */
 public record FormResult(Map<String, String[]> formData, Map<String, MultipartFile> submittedFiles) {
+    public FormResult(MultipartHttpServletRequest request) {
+        this(request.getParameterMap(), request.getFileMap());
+    }
     /**
      * Resolves a single string value from {@link #formData}.
      *

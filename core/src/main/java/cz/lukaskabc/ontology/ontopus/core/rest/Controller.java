@@ -18,7 +18,7 @@ class Controller {
 
     @GetMapping
     public String ping() {
-        holder.getSessionImportProcessContext();
+
         return "pong";
     }
 

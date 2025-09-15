@@ -10,6 +10,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class ImportProcessContextHolder {
     private ImportProcessContext instance;
     private final TemporaryContextGenerator contextGenerator;
     private final ListableBeanFactory beanFactory;
+    private final ReentrantLock lock = new ReentrantLock();
 
     @Autowired
     public ImportProcessContextHolder(TemporaryContextGenerator contextGenerator, ListableBeanFactory beanFactory) {
@@ -63,14 +65,15 @@ public class ImportProcessContextHolder {
     }
 
     private void createServiceStack(ImportProcessContext context) {
-        beanFactory.getBeansOfType(OrderedImportPipelineService.class).values().forEach(service -> {
-            context.getServiceStack().push(service);
-            service.afterStackPush(context);
-        });
+        beanFactory.getBeansOfType(OrderedImportPipelineService.class).values().forEach(context::pushService);
     }
 
-    public ImportProcessContext getSessionImportProcessContext() {
+    public ImportProcessContext getImportProcessContext() {
         return instance;
+    }
+
+    public ReentrantLock getLock() {
+        return lock;
     }
 
     public void resetSessionImportProcess() {

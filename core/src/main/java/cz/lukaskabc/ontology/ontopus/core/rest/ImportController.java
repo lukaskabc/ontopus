@@ -1,16 +1,74 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
+import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
+import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
+import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-@RestController
+@RestController("/import")
 @RequestMapping(path = ImportController.PREFIX)
 public class ImportController {
     private static final Logger log = LogManager.getLogger(ImportController.class);
     static final String PREFIX = "/import";
     private static final String IMPORT_FORM_SUBMIT_ENDPOINT = PREFIX + "/source";
+    private final ImportProcessContextHolder contextHolder;
+
+    public ImportController(ImportProcessContextHolder contextHolder) {
+        this.contextHolder = contextHolder;
+    }
+
+    private ImportProcessContext context() {
+        return contextHolder.getImportProcessContext();
+    }
+
+    @Nullable @GetMapping
+    public JsonForm getJsonForm() {
+        return withLock(() -> {
+            if (context().getPendingServicesStack().isEmpty()) {
+                return null; // TODO: null? change to some HTTP repsonse code?
+            }
+            return context().peekService().getJsonForm();
+        });
+    }
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void onFormSubmit(MultipartHttpServletRequest request) {
+        withLock(() -> {
+            if (context().getPendingServicesStack().isEmpty()) {
+                return; // TODO error
+            }
+            context().handleResult(new FormResult(request));
+        });
+    }
+
+    private void withLock(Runnable lambda) {
+        contextHolder.getLock().lock();
+        try {
+            lambda.run();
+        } finally {
+            contextHolder.getLock().unlock();
+        }
+    }
+
+    private <T> T withLock(Supplier<T> lambda) {
+        contextHolder.getLock().lock();
+        try {
+            return lambda.get();
+        } finally {
+            contextHolder.getLock().unlock();
+        }
+    }
+
     /*
      * private final List<OntologyImporter> ontologyImporters;
      *

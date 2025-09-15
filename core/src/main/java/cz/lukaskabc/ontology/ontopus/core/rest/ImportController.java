@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
+import cz.lukaskabc.ontology.ontopus.core.service.ImportFinalizingService;
 import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,16 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-@RestController("/import")
-@RequestMapping(path = ImportController.PREFIX)
+@RestController
+@RequestMapping(path = "/import")
 public class ImportController {
     private static final Logger log = LogManager.getLogger(ImportController.class);
-    static final String PREFIX = "/import";
-    private static final String IMPORT_FORM_SUBMIT_ENDPOINT = PREFIX + "/source";
     private final ImportProcessContextHolder contextHolder;
+    private final ImportFinalizingService importFinalizingService;
 
-    public ImportController(ImportProcessContextHolder contextHolder) {
+    public ImportController(ImportProcessContextHolder contextHolder, ImportFinalizingService importFinalizingService) {
         this.contextHolder = contextHolder;
+        this.importFinalizingService = importFinalizingService;
     }
 
     private ImportProcessContext context() {
@@ -43,12 +44,23 @@ public class ImportController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void onFormSubmit(MultipartHttpServletRequest request) {
+        // TODO: this stuff should be in a service
         withLock(() -> {
             if (context().getPendingServicesStack().isEmpty()) {
                 return; // TODO error
             }
             context().handleResult(new FormResult(request));
+            postFormSubmit();
         });
+    }
+
+    private void postFormSubmit() {
+        if (!context().getPendingServicesStack().isEmpty()) {
+            return;
+        }
+        // no more pending services on stack
+        importFinalizingService.finalize(context());
+        contextHolder.resetSessionImportProcess();
     }
 
     private void withLock(Runnable lambda) {

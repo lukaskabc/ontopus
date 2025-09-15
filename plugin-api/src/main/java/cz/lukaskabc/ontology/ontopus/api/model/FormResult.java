@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
+import java.io.Serializable;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,7 +12,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
  * @param formData Data submitted in the form
  * @param submittedFiles Files submitted along the form
  */
-public record FormResult(Map<String, String[]> formData, Map<String, MultipartFile> submittedFiles) {
+public record FormResult(Map<String, String[]> formData, Map<String, MultipartFile> submittedFiles)
+        implements Serializable {
     public FormResult(MultipartHttpServletRequest request) {
         this(request.getParameterMap(), request.getFileMap());
     }

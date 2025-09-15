@@ -15,7 +15,7 @@ public class ImportProcessContext {
     private final OntologyArtifact ontologyArtifact;
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
-    private final ArrayList<ImportProcessingService.Result<?>> processedResults;
+    private final ArrayList<FormResult> processedResults;
 
     private final Map<Object, Object> additionalProperties;
 
@@ -76,8 +76,8 @@ public class ImportProcessContext {
      * @param formResult the form result to handle
      */
     public void handleResult(FormResult formResult) {
-        ImportProcessingService.Result<?> result = popService().handleSubmit(formResult, this);
-        processedResults.add(result);
+        processedResults.add(formResult);
+        popService().handleSubmit(formResult, this);
     }
 
     /**

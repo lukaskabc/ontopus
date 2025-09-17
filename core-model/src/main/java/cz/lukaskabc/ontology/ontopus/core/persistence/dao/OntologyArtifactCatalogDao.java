@@ -1,8 +1,9 @@
-package cz.lukaskabc.ontology.ontopus.core.persistance;
+package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog_;
+import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

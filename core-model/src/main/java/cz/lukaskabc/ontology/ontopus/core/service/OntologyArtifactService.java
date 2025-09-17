@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
-import cz.lukaskabc.ontology.ontopus.core.persistance.OntologyArtifactDao;
+import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntologyArtifactDao;
 import org.springframework.stereotype.Service;
 
 @Service

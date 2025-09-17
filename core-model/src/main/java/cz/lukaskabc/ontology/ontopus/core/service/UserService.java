@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.model.util.UserDetailsDelegate;
-import cz.lukaskabc.ontology.ontopus.core.persistance.UserDao;
+import cz.lukaskabc.ontology.ontopus.core.persistence.dao.UserDao;
 import cz.lukaskabc.ontology.ontopus.core.util.SecurityConstants;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

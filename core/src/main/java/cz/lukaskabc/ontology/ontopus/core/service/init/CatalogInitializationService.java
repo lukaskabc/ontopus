@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.init;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
-import cz.lukaskabc.ontology.ontopus.core.persistance.OntologyArtifactCatalogDao;
+import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntologyArtifactCatalogDao;
 import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

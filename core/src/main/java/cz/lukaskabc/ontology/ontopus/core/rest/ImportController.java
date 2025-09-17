@@ -42,6 +42,9 @@ public class ImportController {
         });
     }
 
+    @PostMapping(path = "combined")
+    public void onCombinedFormSubmit(MultipartHttpServletRequest request) {}
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void onFormSubmit(MultipartHttpServletRequest request) {
         // TODO: this stuff should be in a service

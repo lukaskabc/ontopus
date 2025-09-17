@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.config;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
+import java.nio.file.Path;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,6 +15,8 @@ public class OntopusConfig {
 
     @Valid private DcatCatalog dcatCatalog = new DcatCatalog();
 
+    @Valid private Files files = new Files();
+
     public Database getDatabase() {
         return database;
     }
@@ -22,12 +25,20 @@ public class OntopusConfig {
         return dcatCatalog;
     }
 
+    public Files getFiles() {
+        return files;
+    }
+
     public void setDatabase(Database database) {
         this.database = database;
     }
 
     public void setDcatCatalog(DcatCatalog dcatCatalog) {
         this.dcatCatalog = dcatCatalog;
+    }
+
+    public void setFiles(Files files) {
+        this.files = files;
     }
 
     public static class Database {
@@ -120,6 +131,19 @@ public class OntopusConfig {
 
         public void setUri(URI uri) {
             this.uri = uri;
+        }
+    }
+
+    public static class Files {
+        /** Directory for storing files used with ontology importing. */
+        private Path importFilesDirectory = Path.of("./");
+
+        public Path getImportFilesDirectory() {
+            return importFilesDirectory;
+        }
+
+        public void setImportFilesDirectory(Path importFilesDirectory) {
+            this.importFilesDirectory = importFilesDirectory;
         }
     }
 }

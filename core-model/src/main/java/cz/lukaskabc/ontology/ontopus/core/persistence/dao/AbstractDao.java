@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.persistance;
+package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.exceptions.NoResultException;
 import cz.cvut.kbss.jopa.model.EntityManager;

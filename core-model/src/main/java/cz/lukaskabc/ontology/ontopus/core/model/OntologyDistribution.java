@@ -4,6 +4,7 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.Distribution;
+import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
 import java.net.URL;
 import java.time.Instant;
 import org.springframework.util.MimeType;
@@ -14,7 +15,7 @@ import org.springframework.util.MimeType;
  * and spatial resolution, level of detail or profiles (which might specify any or all of the above).
  */
 @OWLClass(iri = Vocabulary.s_c_OntologyDistribution)
-public class OntologyDistribution extends Distribution {
+public class OntologyDistribution extends Distribution<DistributionURI> {
     public OntologyDistribution() {
         super();
     }

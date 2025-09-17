@@ -4,10 +4,11 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
+import cz.lukaskabc.ontology.ontopus.core.model.id.UserURI;
 import jakarta.validation.constraints.NotEmpty;
 
 @OWLClass(iri = Vocabulary.s_c_UserAccount)
-public class User extends PersistenceEntity {
+public class User extends PersistenceEntity<UserURI> {
 
     @NotEmpty @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_password, simpleLiteral = true)

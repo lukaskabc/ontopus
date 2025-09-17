@@ -2,28 +2,41 @@ package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.util.OntologyArtifactVersionSeries;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import org.jspecify.annotations.NullMarked;
 
+/** State of the import process */
+@NullMarked
 public class ImportProcessContext {
-    private final UUID uuid;
+    /** Series of ontology versions of a single ontology */
+    private final OntologyArtifactVersionSeries ontologyArtifactVersionSeries;
+    /** Temporary database context TODO: when we will transfer data from temporary context to persistent? */
     private final URI databaseContext;
+
     private final Path tempFolder;
-    private final OntologyArtifact ontologyArtifact;
+    /** A new ontology version */
+    private final OntologyArtifact ontologyVersionArtifact;
+
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
     private final ArrayList<FormResult> processedResults;
 
     private final Map<Object, Object> additionalProperties;
 
-    public ImportProcessContext(UUID uuid, URI databaseContext, Path tempFolder, OntologyArtifact ontologyArtifact) {
-        this.uuid = uuid;
+    public ImportProcessContext(
+            OntologyArtifactVersionSeries ontologyArtifactVersionSeries,
+            URI databaseContext,
+            Path tempFolder,
+            OntologyArtifact ontologyVersionArtifact) {
+        this.ontologyArtifactVersionSeries = ontologyArtifactVersionSeries;
         this.databaseContext = databaseContext;
         this.tempFolder = tempFolder;
-        this.ontologyArtifact = ontologyArtifact;
+        this.ontologyVersionArtifact = ontologyVersionArtifact;
         this.additionalProperties = new HashMap<>();
         this.pendingServicesStack = new ArrayList<>();
         this.processedServices = new ArrayList<>();
@@ -42,12 +55,20 @@ public class ImportProcessContext {
         return databaseContext;
     }
 
-    public OntologyArtifact getOntologyArtifact() {
-        return ontologyArtifact;
+    public OntologyArtifactVersionSeries getOntologyArtifactVersionSeries() {
+        return ontologyArtifactVersionSeries;
+    }
+
+    public OntologyArtifact getOntologyVersionArtifact() {
+        return ontologyVersionArtifact;
     }
 
     public List<ImportProcessingService<?>> getPendingServicesStack() {
         return pendingServicesStack;
+    }
+
+    public ArrayList<FormResult> getProcessedResults() {
+        return processedResults;
     }
 
     public List<ImportProcessingService<?>> getProcessedServices() {
@@ -64,10 +85,6 @@ public class ImportProcessContext {
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO exception
         }
-    }
-
-    public UUID getUuid() {
-        return uuid;
     }
 
     /**

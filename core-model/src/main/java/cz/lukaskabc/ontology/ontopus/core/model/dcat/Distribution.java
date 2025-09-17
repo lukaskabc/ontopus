@@ -5,6 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core.model.id.EntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
 import jakarta.validation.constraints.NotNull;
 import java.net.URL;
@@ -18,7 +19,7 @@ import org.springframework.util.MimeType;
  */
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Distribution)
-public abstract class Distribution extends PersistenceEntity {
+public abstract class Distribution<ID extends EntityIdentifier> extends PersistenceEntity<ID> {
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_title)
     private MultilingualString title;
 

@@ -6,6 +6,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core.model.id.EntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ import java.util.Set;
 /** Resource published or curated by a single agent. */
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Resource_A)
-public abstract class Resource extends PersistenceEntity {
+public abstract class Resource<ID extends EntityIdentifier> extends PersistenceEntity<ID> {
     /*
      * skipping access rights, conforms to, contact point, creator
      */
@@ -52,23 +53,14 @@ public abstract class Resource extends PersistenceEntity {
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_previousVersion)
     private URI previousVersion;
     /*
-     * Skipping has version
+     * Skipping has version, current version and replaces
      */
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
-    private URI currentVersion;
-
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_replaces)
-    private URI replaces;
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version, simpleLiteral = true)
     private String version;
     /*
      * Skipping status, first, last, previous
      */
-
-    public URI getCurrentVersion() {
-        return currentVersion;
-    }
 
     public MultilingualString getDescription() {
         return description;
@@ -98,20 +90,12 @@ public abstract class Resource extends PersistenceEntity {
         return releaseDate;
     }
 
-    public URI getReplaces() {
-        return replaces;
-    }
-
     public MultilingualString getTitle() {
         return title;
     }
 
     public String getVersion() {
         return version;
-    }
-
-    public void setCurrentVersion(URI currentVersion) {
-        this.currentVersion = currentVersion;
     }
 
     public void setDescription(MultilingualString description) {
@@ -138,18 +122,8 @@ public abstract class Resource extends PersistenceEntity {
         this.releaseDate = releaseDate;
     }
 
-    public void setReplaces(URI replaces) {
-        this.replaces = replaces;
-    }
-
     public void setTitle(MultilingualString title) {
         this.title = title;
-    }
-
-    @Override
-    public void setUri(URI uri) {
-        super.setUri(uri);
-        this.identifier = uri;
     }
 
     public void setVersion(String version) {

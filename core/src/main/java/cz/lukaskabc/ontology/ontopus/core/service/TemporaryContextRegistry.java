@@ -5,6 +5,7 @@ import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
 import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext_;
+import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
 import java.time.Instant;
@@ -66,10 +67,10 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
 
     @Transactional
     @Override
-    public URI generate() {
+    public TemporaryContextURI generate() {
         TemporaryContext tmp = new TemporaryContext();
         tmp.setCreatedAt(Instant.now());
         em.persist(tmp, temporaryContextDescriptor);
-        return Objects.requireNonNull(tmp.getUri());
+        return Objects.requireNonNull(tmp.getIdentifier());
     }
 }

@@ -4,9 +4,9 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -56,10 +56,13 @@ public class ImportProcessContextHolder {
     private ImportProcessContext create() {
         final UUID uuid = UUID.randomUUID();
         final Path tempFolder = createTempFolder(uuid);
-        final URI databaseContext = this.contextGenerator.generate();
+        final TemporaryContextURI databaseContext = this.contextGenerator.generate();
         final OntologyArtifact artifact = new OntologyArtifact();
 
-        final ImportProcessContext context = new ImportProcessContext(uuid, databaseContext, tempFolder, artifact);
+        // TODO: null series needs to be derived from the start of the import process
+        // either by specifying an existing ontology and publishing a new version
+        // or creating a brand new one
+        final ImportProcessContext context = new ImportProcessContext(null, databaseContext, tempFolder, artifact);
         createServiceStack(context);
         return context;
     }

@@ -2,9 +2,11 @@ package cz.lukaskabc.ontology.ontopus.core.model;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.Distribution;
 import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
+import jakarta.validation.constraints.NotNull;
 import java.net.URL;
 import java.time.Instant;
 import org.springframework.util.MimeType;
@@ -16,6 +18,9 @@ import org.springframework.util.MimeType;
  */
 @OWLClass(iri = Vocabulary.s_c_OntologyDistribution)
 public class OntologyDistribution extends Distribution<DistributionURI> {
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
+    private DistributionURI identifier;
+
     public OntologyDistribution() {
         super();
     }
@@ -44,5 +49,15 @@ public class OntologyDistribution extends Distribution<DistributionURI> {
                 format,
                 compressFormat,
                 packageFormat);
+    }
+
+    @Override
+    public DistributionURI getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public void setIdentifier(DistributionURI identifier) {
+        this.identifier = identifier;
     }
 }

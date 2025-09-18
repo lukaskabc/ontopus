@@ -3,13 +3,14 @@ package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyDistribution;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyDistribution_;
+import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 
 @Component
-public class OntologyDistributionDao extends AbstractDao<OntologyDistribution> {
+public class OntologyDistributionDao extends AbstractDao<DistributionURI, OntologyDistribution> {
     @Autowired
     public OntologyDistributionDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
         super(
@@ -17,6 +18,7 @@ public class OntologyDistributionDao extends AbstractDao<OntologyDistribution> {
                 OntologyDistribution_.entityClassIRI.toURI(),
                 em,
                 validator,
-                descriptorFactory.ontologyDistribution());
+                descriptorFactory.ontologyDistribution(),
+                null);
     }
 }

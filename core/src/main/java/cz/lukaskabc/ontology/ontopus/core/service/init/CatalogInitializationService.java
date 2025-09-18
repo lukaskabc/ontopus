@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.init;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
+import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntologyArtifactCatalogDao;
 import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
@@ -31,15 +32,19 @@ public class CatalogInitializationService implements InitService {
         }
 
         final OntologyArtifactCatalog catalog = new OntologyArtifactCatalog();
-        catalog.setUri(config.getUri());
+        catalog.setIdentifier(new ArtifactCatalogURI(config.getUri()));
+
         // resource
         catalog.setDescription(MultilingualString.create(config.getDescription(), null));
         catalog.setTitle(MultilingualString.create(config.getTitle(), null));
         catalog.setReleaseDate(Instant.now());
         catalog.setModifiedDate(catalog.getReleaseDate());
-        catalog.setCurrentVersion(config.getUri());
         catalog.setVersion("latest");
+
         // dataset
+        // TODO catalog distributions
+        // some distribution generator? must be connected to plugins somehow
+
         // catalog
         catalog.setHomepage(config.getUri());
 

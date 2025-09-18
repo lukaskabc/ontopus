@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact_;
+import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
 import org.jspecify.annotations.Nullable;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 
 @Component
-public class OntologyArtifactDao extends AbstractDao<OntologyArtifact> {
+public class OntologyArtifactDao extends AbstractDao<ArtifactURI, OntologyArtifact> {
     @Autowired
     public OntologyArtifactDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
         super(
@@ -19,7 +20,8 @@ public class OntologyArtifactDao extends AbstractDao<OntologyArtifact> {
                 OntologyArtifact_.entityClassIRI.toURI(),
                 em,
                 validator,
-                descriptorFactory.ontologyArtifact());
+                descriptorFactory.ontologyArtifact(),
+                null);
     }
 
     @Nullable public OntologyArtifact findLatestArtifact(URI artifactURI) {

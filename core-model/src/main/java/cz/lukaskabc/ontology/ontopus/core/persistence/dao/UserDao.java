@@ -3,17 +3,20 @@ package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.model.User_;
+import cz.lukaskabc.ontology.ontopus.core.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
+import cz.lukaskabc.ontology.ontopus.core.persistence.identifier.UserUriGenerator;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 
 @Component
-public class UserDao extends AbstractDao<User> {
+public class UserDao extends AbstractDao<UserURI, User> {
     @Autowired
-    public UserDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
-        super(User.class, User_.entityClassIRI.toURI(), em, validator, descriptorFactory.user());
+    public UserDao(
+            EntityManager em, Validator validator, DescriptorFactory descriptorFactory, UserUriGenerator uriGenerator) {
+        super(User.class, User_.entityClassIRI.toURI(), em, validator, descriptorFactory.user(), uriGenerator);
     }
 
     @Nullable public User findByUsername(String username) {

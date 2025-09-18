@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service.core;
 
-import java.net.URI;
+import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
 import org.jspecify.annotations.NullMarked;
 
 /**
@@ -9,5 +9,5 @@ import org.jspecify.annotations.NullMarked;
  */
 @NullMarked
 public interface TemporaryContextGenerator {
-    URI generate();
+    TemporaryContextURI generate();
 }

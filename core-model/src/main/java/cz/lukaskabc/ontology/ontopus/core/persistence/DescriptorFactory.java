@@ -20,8 +20,6 @@ public class DescriptorFactory {
         ontologyDistribution = new EntityDescriptor(OntologyDistribution_.entityClassIRI.toURI());
         temporaryContext = new EntityDescriptor(TemporaryContext_.entityClassIRI.toURI());
         user = new EntityDescriptor(User_.entityClassIRI.toURI());
-
-        ontologyArtifact.addAttributeDescriptor(OntologyArtifact_.distributions, ontologyDistribution);
     }
 
     public EntityDescriptor ontologyArtifact() {

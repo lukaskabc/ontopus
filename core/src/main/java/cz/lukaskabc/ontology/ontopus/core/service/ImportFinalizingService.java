@@ -6,7 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core.model.util.UploadedFile;
-import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntologyArtifactVersionSeriesDao;
+import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntologyVersionSeriesDao;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -87,13 +87,13 @@ public class ImportFinalizingService {
 
     private final EntityManager em;
 
-    private final OntologyArtifactVersionSeriesDao ontologyArtifactVersionSeriesDao;
+    private final OntologyVersionSeriesDao ontologyArtifactVersionSeriesDao;
 
     private final OntologyFileService fileService;
 
     public ImportFinalizingService(
             EntityManager em,
-            OntologyArtifactVersionSeriesDao ontologyArtifactVersionSeriesDao,
+            OntologyVersionSeriesDao ontologyArtifactVersionSeriesDao,
             OntologyFileService fileService) {
         this.em = em;
 

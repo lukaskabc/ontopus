@@ -2,9 +2,9 @@ package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
-import cz.lukaskabc.ontology.ontopus.core.model.util.OntologyArtifactVersionSeries;
+import cz.lukaskabc.ontology.ontopus.core.model.OntologyVersionSeries;
+import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -14,9 +14,9 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class ImportProcessContext {
     /** Series of ontology versions of a single ontology */
-    private final OntologyArtifactVersionSeries ontologyArtifactVersionSeries;
+    private final OntologyVersionSeries ontologyArtifactVersionSeries;
     /** Temporary database context TODO: when we will transfer data from temporary context to persistent? */
-    private final URI databaseContext;
+    private final TemporaryContextURI databaseContext;
 
     private final Path tempFolder;
     /** A new ontology version */
@@ -29,8 +29,8 @@ public class ImportProcessContext {
     private final Map<Object, Object> additionalProperties;
 
     public ImportProcessContext(
-            OntologyArtifactVersionSeries ontologyArtifactVersionSeries,
-            URI databaseContext,
+            OntologyVersionSeries ontologyArtifactVersionSeries,
+            TemporaryContextURI databaseContext,
             Path tempFolder,
             OntologyArtifact ontologyVersionArtifact) {
         this.ontologyArtifactVersionSeries = ontologyArtifactVersionSeries;
@@ -51,11 +51,11 @@ public class ImportProcessContext {
         return additionalProperties.get(key);
     }
 
-    public URI getDatabaseContext() {
+    public TemporaryContextURI getDatabaseContext() {
         return databaseContext;
     }
 
-    public OntologyArtifactVersionSeries getOntologyArtifactVersionSeries() {
+    public OntologyVersionSeries getOntologyArtifactVersionSeries() {
         return ontologyArtifactVersionSeries;
     }
 

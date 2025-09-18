@@ -13,4 +13,12 @@ import java.net.URI;
 public abstract class Catalog<ID extends EntityIdentifier> extends Dataset<ID> {
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_homepage)
     private URI homepage;
+
+    public URI homepage() {
+        return homepage;
+    }
+
+    public void setHomepage(URI homepage) {
+        this.homepage = homepage;
+    }
 }

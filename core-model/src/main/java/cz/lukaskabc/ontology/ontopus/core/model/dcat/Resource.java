@@ -37,9 +37,9 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
     private Set<String> languages;
     /*
      * Skipping publisher
+     *
+     * identifier implemented in persistence entity
      */
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
-    private URI identifier;
     /*
      * Skipping theme/category, type/genre, relation, qualified attribution,
      * license, rights
@@ -68,10 +68,6 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
 
     public Set<URI> getHasParts() {
         return hasParts;
-    }
-
-    public URI getIdentifier() {
-        return identifier;
     }
 
     public Set<String> getLanguages() {

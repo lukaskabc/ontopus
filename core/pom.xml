@@ -159,12 +159,10 @@
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>git-plugin</artifactId>
-                    <version>${ontopus.plugin.git.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
                     <artifactId>file-plugin</artifactId>
-                    <version>${ontopus.plugin.file.version}</version>
                 </dependency>
             </dependencies>
         </profile>

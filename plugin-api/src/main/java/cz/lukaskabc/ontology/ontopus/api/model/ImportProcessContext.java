@@ -88,13 +88,18 @@ public class ImportProcessContext {
     }
 
     /**
-     * Submits the form result to the service at the top of the stack and pops the service.
+     * Submits the form result to the service at the top of the stack and pops the service. The submitted form result is
+     * stored.
      *
      * @param formResult the form result to handle
      */
     public void handleResult(FormResult formResult) {
         processedResults.add(formResult);
         popService().handleSubmit(formResult, this);
+    }
+
+    public boolean hasUnprocessedService() {
+        return !pendingServicesStack.isEmpty();
     }
 
     /**

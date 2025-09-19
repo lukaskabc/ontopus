@@ -1,15 +1,16 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
-import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
-import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportFinalizingService;
-import java.util.function.Supplier;
+import cz.lukaskabc.ontology.ontopus.core.service.ImportProcessMediator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,24 +23,36 @@ public class ImportController {
     private static final Logger log = LogManager.getLogger(ImportController.class);
     private final ImportProcessContextHolder contextHolder;
     private final ImportFinalizingService importFinalizingService;
+    private final ImportProcessMediator mediator;
 
-    public ImportController(ImportProcessContextHolder contextHolder, ImportFinalizingService importFinalizingService) {
+    public ImportController(
+            ImportProcessContextHolder contextHolder,
+            ImportFinalizingService importFinalizingService,
+            ImportProcessMediator mediator) {
         this.contextHolder = contextHolder;
         this.importFinalizingService = importFinalizingService;
+        this.mediator = mediator;
     }
 
-    private ImportProcessContext context() {
-        return contextHolder.getImportProcessContext();
-    }
-
-    @Nullable @GetMapping
-    public JsonForm getJsonForm() {
-        return withLock(() -> {
-            if (context().getPendingServicesStack().isEmpty()) {
-                return null; // TODO: null? change to some HTTP repsonse code?
+    private <T> ResponseEntity<T> handleFuture(Future<T> future) throws ExecutionException, InterruptedException {
+        return switch (future.state()) {
+            case SUCCESS -> {
+                T value = future.get();
+                if (value != null) {
+                    yield ResponseEntity.ok(value);
+                }
+                yield ResponseEntity.noContent().build();
             }
-            return context().peekService().getJsonForm();
-        });
+            case FAILED -> ResponseEntity.internalServerError().build();
+            case RUNNING, CANCELLED ->
+                ResponseEntity.status(HttpStatus.CONFLICT).build();
+        };
+    }
+
+    @GetMapping
+    public ResponseEntity<JsonForm> getJsonForm() throws ExecutionException, InterruptedException {
+        Future<JsonForm> future = mediator.getCurrentForm();
+        return handleFuture(future);
     }
 
     @PostMapping(path = "combined")
@@ -48,40 +61,22 @@ public class ImportController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void onFormSubmit(MultipartHttpServletRequest request) {
         // TODO: this stuff should be in a service
-        withLock(() -> {
-            if (context().getPendingServicesStack().isEmpty()) {
-                return; // TODO error
-            }
-            context().handleResult(new FormResult(request));
-            postFormSubmit();
-        });
+        // withLock(() -> {
+        // if (context().getPendingServicesStack().isEmpty()) {
+        // return; // TODO error
+        // }
+        // context().handleResult(new FormResult(request));
+        // postFormSubmit();
+        // });
     }
 
     private void postFormSubmit() {
-        if (!context().getPendingServicesStack().isEmpty()) {
-            return;
-        }
-        // no more pending services on stack
-        importFinalizingService.finalize(context());
-        contextHolder.resetSessionImportProcess();
-    }
-
-    private void withLock(Runnable lambda) {
-        contextHolder.getLock().lock();
-        try {
-            lambda.run();
-        } finally {
-            contextHolder.getLock().unlock();
-        }
-    }
-
-    private <T> T withLock(Supplier<T> lambda) {
-        contextHolder.getLock().lock();
-        try {
-            return lambda.get();
-        } finally {
-            contextHolder.getLock().unlock();
-        }
+        // if (!context().getPendingServicesStack().isEmpty()) {
+        // return;
+        // }
+        // // no more pending services on stack
+        // importFinalizingService.finalize(context());
+        // contextHolder.resetSessionImportProcess();
     }
 
     /*

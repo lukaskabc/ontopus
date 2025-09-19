@@ -61,7 +61,8 @@ public class ImportFinalizingService {
                 }));
 
         // TODO: create a mechanism that will clear files for old artifacts
-        // perhaps at the end of saving a new artifact, delete the old files
+        // perhaps at the end of saving a new artifact, delete the old files (after
+        // successful transaction)
     }
 
     private static SerializableImportProcessContext persistImportContext(ImportProcessContext context, Path filesPath) {
@@ -103,9 +104,8 @@ public class ImportFinalizingService {
 
     @Transactional
     public void finalize(ImportProcessContext context) {
-        // context.getOntologyVersionArtifact()
-        //
-        //
+        context.getOntologyVersionArtifact();
+
         //
         //
         // final URI ontologyGraph =

@@ -1,9 +1,15 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
-import cz.lukaskabc.ontology.ontopus.core.service.ImportFinalizingService;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportProcessMediator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
@@ -11,27 +17,27 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 @RestController
 @RequestMapping(path = "/import")
 public class ImportController {
     private static final Logger log = LogManager.getLogger(ImportController.class);
-    private final ImportProcessContextHolder contextHolder;
-    private final ImportFinalizingService importFinalizingService;
     private final ImportProcessMediator mediator;
+    private final StandardServletMultipartResolver multipartResolver;
+    private final ObjectMapper objectMapper;
 
     public ImportController(
-            ImportProcessContextHolder contextHolder,
-            ImportFinalizingService importFinalizingService,
-            ImportProcessMediator mediator) {
-        this.contextHolder = contextHolder;
-        this.importFinalizingService = importFinalizingService;
+            ImportProcessMediator mediator,
+            StandardServletMultipartResolver multipartResolver,
+            ObjectMapper objectMapper) {
         this.mediator = mediator;
+        this.multipartResolver = multipartResolver;
+        this.objectMapper = objectMapper;
     }
 
     private <T> ResponseEntity<T> handleFuture(Future<T> future) throws ExecutionException, InterruptedException {
@@ -55,19 +61,79 @@ public class ImportController {
         return handleFuture(future);
     }
 
-    @PostMapping(path = "combined")
-    public void onCombinedFormSubmit(MultipartHttpServletRequest request) {}
+    private JsonNode readStringValues(String[] values) {
+        if (values.length > 1) {
+            ArrayNode node = objectMapper.createArrayNode();
+            for (String value : values) {
+                node.add(value);
+            }
+            return node;
+        } else {
+            return TextNode.valueOf(values[0]);
+        }
+    }
+
+    private JsonNode readJsonValues(String[] values) {
+        try {
+            if (values.length > 1) {
+                ArrayNode node = objectMapper.createArrayNode();
+
+                for (String value : values) {
+                    node.add(objectMapper.readTree(value));
+                }
+                return node;
+            } else {
+                return objectMapper.readTree(values[0]);
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, JsonNode> parseData(MultipartHttpServletRequest request) {
+        Map<String, JsonNode> result = new HashMap<>();
+        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+            if (entry.getValue().length == 0) {
+                continue;
+            }
+            if (MediaType.APPLICATION_JSON_VALUE.equals(request.getMultipartContentType(entry.getKey()))) {
+                result.put(entry.getKey(), readJsonValues(entry.getValue()));
+            } else {
+                result.put(entry.getKey(), readStringValues(entry.getValue()));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * // TODO replace with open api docs Expects several JSONs with form data separated into parts, each for a single
+     * service in the pipeline.
+     *
+     * <p>// TODO what if two provided files have matching name? but the name is the name of the parameter, not the file
+     * // so what if two parameters from different services matches? the name could be prefixed with full service class
+     * // name
+     *
+     * @param request
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request)
+            throws ExecutionException, InterruptedException {
+
+        Map<String, JsonNode> combinedData = parseData(request);
+        MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
+
+        return handleFuture(mediator.submitCombinedFormResult(new FormResult(combinedData, files)));
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void onFormSubmit(MultipartHttpServletRequest request) {
-        // TODO: this stuff should be in a service
-        // withLock(() -> {
-        // if (context().getPendingServicesStack().isEmpty()) {
-        // return; // TODO error
-        // }
-        // context().handleResult(new FormResult(request));
-        // postFormSubmit();
-        // });
+    public ResponseEntity<?> onFormSubmit(
+            @RequestParam Map<String, JsonNode> data,
+            @RequestParam(required = false) MultiValueMap<String, MultipartFile> files)
+            throws ExecutionException, InterruptedException {
+        return handleFuture(mediator.submitFormResult(new FormResult(data, files)));
     }
 
     private void postFormSubmit() {

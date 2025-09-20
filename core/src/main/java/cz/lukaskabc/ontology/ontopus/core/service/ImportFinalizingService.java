@@ -26,15 +26,19 @@ public class ImportFinalizingService {
     private static @NonNull Map<String, UploadedFile> getUploadedFileMap(FormResult result) {
         Map<String, UploadedFile> reusableFiles =
                 new HashMap<>(result.submittedFiles().size());
-        for (Map.Entry<String, MultipartFile> entry : result.submittedFiles().entrySet()) {
-            String fileName = entry.getValue().getOriginalFilename();
-            if (fileName == null) {
-                fileName = entry.getValue().getName();
+
+        for (List<MultipartFile> files : result.submittedFiles().values()) {
+            for (MultipartFile file : files) {
+                String fileName = file.getOriginalFilename();
+                if (fileName == null) {
+                    fileName = file.getName();
+                }
+                // TODO review path here
+                UploadedFile uploadedFile = new UploadedFile(fileName, Path.of(file.getName()));
+                reusableFiles.put(fileName, uploadedFile);
             }
-            UploadedFile uploadedFile =
-                    new UploadedFile(fileName, Path.of(entry.getValue().getName()));
-            reusableFiles.put(entry.getKey(), uploadedFile);
         }
+
         return reusableFiles;
     }
     /** Copies the temporary directory and all uploaded files to a persistent one an */
@@ -50,15 +54,15 @@ public class ImportFinalizingService {
         }
 
         // copy all uploaded files
-        context.getProcessedResults()
-                .forEach(result -> result.submittedFiles().values().forEach(file -> {
-                    try {
-
-                        file.transferTo(targetPath.resolve(file.getName()));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e); // TODO: exception
-                    }
-                }));
+        // context.getProcessedResults()
+        // .forEach(result -> result.submittedFiles().values().forEach(file -> {
+        // try {
+        //
+        // file.transferTo(targetPath.resolve(file.getName()));
+        // } catch (IOException e) {
+        // throw new RuntimeException(e); // TODO: exception
+        // }
+        // }));
 
         // TODO: create a mechanism that will clear files for old artifacts
         // perhaps at the end of saving a new artifact, delete the old files (after
@@ -79,7 +83,9 @@ public class ImportFinalizingService {
                 new ArrayList<>(context.getProcessedResults().size());
         for (final FormResult result : context.getProcessedResults()) {
             Map<String, UploadedFile> reusableFiles = getUploadedFileMap(result);
-            formResults.add(new SerializableImportProcessContext.ReusableFormResult(result.formData(), reusableFiles));
+            // formResults.add(new
+            // SerializableImportProcessContext.ReusableFormResult(result.formData(),
+            // reusableFiles));
         }
         persistentContext.setFormResults(formResults);
 
@@ -106,8 +112,6 @@ public class ImportFinalizingService {
     public void finalize(ImportProcessContext context) {
         context.getOntologyVersionArtifact();
 
-        //
-        //
         // final URI ontologyGraph =
         // context.getOntologyVersionArtifact().getCurrentVersion();
         // Path artifactImportFolder = fileService.createArtifactImportFolder();

@@ -15,9 +15,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullUnmarked;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.SchedulingTaskExecutor;
@@ -104,7 +105,8 @@ public class ImportProcessContextHolder {
      *     otherwise
      * @param <R> the result type
      */
-    public <R extends @Nullable Object> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
+    @NullUnmarked
+    public <R> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
         lock.lock();
         try {
             if (future.isDone()) {
@@ -119,16 +121,16 @@ public class ImportProcessContextHolder {
     /**
      * Asynchronously executes the function when there is no other task scheduled or running.
      *
-     * @param function accepting the context and producing {@code <R>}
+     * @param consumer accepting the context
      * @return canceled future when there is already another task running or scheduled, future of the submitted task
      *     otherwise
-     * @param <R> the result type
      */
-    public <R> Future<R> scheduleWithContext(Function<ImportProcessContext, R> function) {
+    @NullUnmarked
+    public Future<?> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
         lock.lock();
         try {
             if (future.isDone()) {
-                final Future<R> result = executor.submit(() -> function.apply(instance));
+                final Future<?> result = executor.submit(() -> consumer.accept(instance));
                 future = result;
                 return result;
             }

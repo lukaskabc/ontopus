@@ -94,8 +94,12 @@ public class ImportProcessContext {
      * @param formResult the form result to handle
      */
     public void handleResult(FormResult formResult) {
-        processedResults.add(formResult);
-        popService().handleSubmit(formResult, this);
+        if (hasUnprocessedService()) {
+            popService().handleSubmit(formResult, this);
+            processedResults.add(formResult);
+        } else {
+            throw new IllegalStateException(); // TODO exception
+        }
     }
 
     public boolean hasUnprocessedService() {

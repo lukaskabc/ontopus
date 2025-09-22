@@ -2,14 +2,14 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
 
 /**
- * Service capable of publishing an {@link cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact OntologyArtifact}
- * via a public endpoint.
+ * Service capable of publishing an {@link VersionArtifact OntologyArtifact} via a public endpoint.
  *
- * <p>The service is triggered once {@link cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact OntologyArtifact}
- * is fully constructed. The service can request input from user and do any necessary pre-processing in order to publish
- * the artifact (e.g. generating static files).
+ * <p>The service is triggered once {@link VersionArtifact OntologyArtifact} is fully constructed. The service can
+ * request input from user and do any necessary pre-processing in order to publish the artifact (e.g. generating static
+ * files).
  *
  * <p>If a service does not need an input from the user, handling
  * {@link cz.lukaskabc.ontology.ontopus.api.event.OntologyArtifactCreated OntologyArtifactCreated} event can be used

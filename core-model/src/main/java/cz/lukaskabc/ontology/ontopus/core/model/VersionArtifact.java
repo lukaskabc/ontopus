@@ -5,21 +5,21 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core.model.converter.id.ArtifactUriConverter;
+import cz.lukaskabc.ontology.ontopus.core.model.converter.id.VersionArtifactUriConverter;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.Dataset;
-import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
+import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.Set;
 
-/** An ontology artifact containing a single ontology release */
+/** An ontology artifact containing a single ontology version release */
 @OWLClass(iri = Vocabulary.s_c_OntologyArtifact)
-public class OntologyArtifact extends Dataset<DistributionURI, ArtifactURI> {
+public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
 
-    @Convert(converter = ArtifactUriConverter.class)
+    @Convert(converter = VersionArtifactUriConverter.class)
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier)
-    private ArtifactURI identifier;
+    private VersionArtifactURI identifier;
 
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
     private URI ontologyIdentifier;
@@ -33,7 +33,7 @@ public class OntologyArtifact extends Dataset<DistributionURI, ArtifactURI> {
     }
 
     @Override
-    public ArtifactURI getIdentifier() {
+    public VersionArtifactURI getIdentifier() {
         return identifier;
     }
 
@@ -47,7 +47,7 @@ public class OntologyArtifact extends Dataset<DistributionURI, ArtifactURI> {
     }
 
     @Override
-    public void setIdentifier(ArtifactURI identifier) {
+    public void setIdentifier(VersionArtifactURI identifier) {
         this.identifier = identifier;
     }
 

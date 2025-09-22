@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyVersionSeries;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyVersionSeries_;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 
 @Component
-public class OntologyVersionSeriesDao extends AbstractDao<VersionSeriesURI, OntologyVersionSeries> {
+public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSeries> {
 
-    public OntologyVersionSeriesDao(EntityManager em, Validator validator, DescriptorFactory factory) {
+    public VersionSeriesDao(EntityManager em, Validator validator, DescriptorFactory factory) {
         super(
-                OntologyVersionSeries.class,
+                VersionSeries.class,
                 OntologyVersionSeries_.entityClassIRI.toURI(),
                 em,
                 validator,
@@ -23,7 +23,7 @@ public class OntologyVersionSeriesDao extends AbstractDao<VersionSeriesURI, Onto
                 null);
     }
 
-    @Nullable public OntologyVersionSeries findForArtifact(URI ontologyArtifact) {
+    @Nullable public VersionSeries findForArtifact(URI ontologyArtifact) {
         if (ontologyArtifact == null) {
             return null;
         }
@@ -32,7 +32,7 @@ public class OntologyVersionSeriesDao extends AbstractDao<VersionSeriesURI, Onto
 				SELECT series FROM OntologyVersionSeries series
 				WHERE :artifact MEMBER OF series.ontologyArtifacts
 				""",
-                        OntologyVersionSeries.class)
+                        VersionSeries.class)
                 .setParameter("artifact", ontologyArtifact)::getSingleResult);
     }
 }

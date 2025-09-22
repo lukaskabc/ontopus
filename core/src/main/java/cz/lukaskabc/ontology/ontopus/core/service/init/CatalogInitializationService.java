@@ -2,9 +2,9 @@ package cz.lukaskabc.ontology.ontopus.core.service.init;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog;
-import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactCatalogURI;
-import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntologyArtifactCatalogDao;
+import cz.lukaskabc.ontology.ontopus.core.model.OntopusCatalog;
+import cz.lukaskabc.ontology.ontopus.core.model.id.OntopusCatalogURI;
+import cz.lukaskabc.ontology.ontopus.core.persistence.dao.OntopusCatalogDao;
 import java.time.Instant;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class CatalogInitializationService implements InitService {
     private static final Logger log = LogManager.getLogger(CatalogInitializationService.class);
-    private final OntologyArtifactCatalogDao catalogDao;
+    private final OntopusCatalogDao catalogDao;
     private final OntopusConfig.DcatCatalog config;
 
     @Autowired
-    public CatalogInitializationService(OntologyArtifactCatalogDao catalogDao, OntopusConfig config) {
+    public CatalogInitializationService(OntopusCatalogDao catalogDao, OntopusConfig config) {
         this.catalogDao = catalogDao;
         this.config = config.getDcatCatalog();
     }
@@ -31,8 +31,8 @@ public class CatalogInitializationService implements InitService {
             return;
         }
 
-        final OntologyArtifactCatalog catalog = new OntologyArtifactCatalog();
-        catalog.setIdentifier(new ArtifactCatalogURI(config.getUri()));
+        final OntopusCatalog catalog = new OntopusCatalog();
+        catalog.setIdentifier(new OntopusCatalogURI(config.getUri()));
 
         // resource
         catalog.setDescription(MultilingualString.create(config.getDescription(), null));

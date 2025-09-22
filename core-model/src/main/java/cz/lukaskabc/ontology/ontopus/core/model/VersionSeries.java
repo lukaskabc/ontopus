@@ -6,15 +6,15 @@ import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.DatasetSeries;
-import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
+import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
 import jakarta.validation.constraints.NotNull;
 import java.util.Set;
 
 @OWLClass(iri = Vocabulary.s_c_OntologyVersionSeries)
-public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, DistributionURI, VersionSeriesURI> {
+public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
     @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
 
@@ -22,18 +22,18 @@ public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, Distributi
     private VersionSeriesURI identifier;
 
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion, cascade = CascadeType.MERGE)
-    private ArtifactURI currentVersion;
+    private VersionArtifactURI currentVersion;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_last)
-    private ArtifactURI last;
+    private VersionArtifactURI last;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_first)
-    private ArtifactURI first;
+    private VersionArtifactURI first;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_seriesMember)
-    private Set<ArtifactURI> members;
+    private Set<VersionArtifactURI> members;
 
-    public ArtifactURI getCurrentVersion() {
+    public VersionArtifactURI getCurrentVersion() {
         return currentVersion;
     }
 
@@ -43,7 +43,7 @@ public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, Distributi
     }
 
     @Override
-    public ArtifactURI getFirst() {
+    public VersionArtifactURI getFirst() {
         return first;
     }
 
@@ -53,12 +53,12 @@ public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, Distributi
     }
 
     @Override
-    public ArtifactURI getLast() {
+    public VersionArtifactURI getLast() {
         return last;
     }
 
     @Override
-    public Set<ArtifactURI> getMembers() {
+    public Set<VersionArtifactURI> getMembers() {
         return members;
     }
 
@@ -66,7 +66,7 @@ public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, Distributi
         return serializableImportProcessContext;
     }
 
-    public void setCurrentVersion(ArtifactURI currentVersion) {
+    public void setCurrentVersion(VersionArtifactURI currentVersion) {
         this.currentVersion = currentVersion;
     }
 
@@ -74,7 +74,7 @@ public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, Distributi
     public void setDistributions(Set<DistributionURI> distributions) {}
 
     @Override
-    public void setFirst(ArtifactURI first) {
+    public void setFirst(VersionArtifactURI first) {
         this.first = first;
     }
 
@@ -84,12 +84,12 @@ public class OntologyVersionSeries extends DatasetSeries<ArtifactURI, Distributi
     }
 
     @Override
-    public void setLast(ArtifactURI last) {
+    public void setLast(VersionArtifactURI last) {
         this.last = last;
     }
 
     @Override
-    public void setMembers(Set<ArtifactURI> members) {
+    public void setMembers(Set<VersionArtifactURI> members) {
         this.members = members;
     }
 

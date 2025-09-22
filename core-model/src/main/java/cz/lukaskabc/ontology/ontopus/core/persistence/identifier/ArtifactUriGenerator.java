@@ -2,22 +2,22 @@ package cz.lukaskabc.ontology.ontopus.core.persistence.identifier;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact_;
-import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
 import java.net.URI;
 import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ArtifactUriGenerator extends AbstractIdentifierGenerator<ArtifactURI, OntologyArtifact> {
+public class ArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArtifactURI, VersionArtifact> {
 
     public ArtifactUriGenerator(EntityManager entityManager, OntopusConfig config) {
         super(entityManager, config);
     }
 
     @Override
-    public ArtifactURI generate(OntologyArtifact entity) {
+    public VersionArtifactURI generate(VersionArtifact entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity::getTitle);
         String baseId = OntologyArtifact_.entityClassIRI + "_" + title;
@@ -27,7 +27,7 @@ public class ArtifactUriGenerator extends AbstractIdentifierGenerator<ArtifactUR
             URI generated = URI.create(baseId + (attempt > 0 ? attempt : ""));
 
             if (isUnique(generated)) {
-                return new ArtifactURI(generated);
+                return new VersionArtifactURI(generated);
             }
 
             attempt++;

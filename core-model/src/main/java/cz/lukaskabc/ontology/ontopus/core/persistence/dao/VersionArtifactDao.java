@@ -1,9 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
 import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact_;
-import cz.lukaskabc.ontology.ontopus.core.model.id.ArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
 import org.jspecify.annotations.Nullable;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Validator;
 
 @Component
-public class OntologyArtifactDao extends AbstractDao<ArtifactURI, OntologyArtifact> {
+public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionArtifact> {
     @Autowired
-    public OntologyArtifactDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
+    public VersionArtifactDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
         super(
-                OntologyArtifact.class,
+                VersionArtifact.class,
                 OntologyArtifact_.entityClassIRI.toURI(),
                 em,
                 validator,
@@ -24,7 +24,7 @@ public class OntologyArtifactDao extends AbstractDao<ArtifactURI, OntologyArtifa
                 null);
     }
 
-    @Nullable public OntologyArtifact findLatestArtifact(URI artifactURI) {
+    @Nullable public VersionArtifact findLatestArtifact(URI artifactURI) {
         return resultOrNull(this.em
                 .createNativeQuery(
                         """
@@ -33,12 +33,12 @@ public class OntologyArtifactDao extends AbstractDao<ArtifactURI, OntologyArtifa
 				    BIND(COALESCE(?artifact, ?prevArtifact) AS ?artifact)
 				}
 				""",
-                        OntologyArtifact.class)
+                        VersionArtifact.class)
                 .setParameter("hasPreviousVersion", OntologyArtifact_.previousVersion)
                 .setParameter("prevArtifact", artifactURI)::getSingleResult);
     }
 
-    @Nullable public OntologyArtifact findLatestArtifactFromOntologyIdentifier(URI ontologyIdentifier) {
+    @Nullable public VersionArtifact findLatestArtifactFromOntologyIdentifier(URI ontologyIdentifier) {
         return resultOrNull(this.em
                 .createNativeQuery(
                         """
@@ -48,7 +48,7 @@ public class OntologyArtifactDao extends AbstractDao<ArtifactURI, OntologyArtifa
 				    BIND(COALESCE(?artifact, ?prevArtifact) AS ?artifact)
 				}
 				""",
-                        OntologyArtifact.class)
+                        VersionArtifact.class)
                 .setParameter("ontologyArtifactType", OntologyArtifact_.entityClassIRI)
                 .setParameter("hasPreviousVersion", OntologyArtifact_.previousVersion)
                 .setParameter("hasOntologyIdentifier", OntologyArtifact_.ontologyIdentifier)

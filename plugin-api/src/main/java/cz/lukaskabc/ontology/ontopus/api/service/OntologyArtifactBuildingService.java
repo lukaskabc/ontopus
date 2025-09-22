@@ -2,10 +2,11 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
 
 /**
- * Service capable of (partially) building {@link cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact
- * OntologyArtifact} either from user input or from the Ontology data in database.
+ * Service capable of (partially) building {@link VersionArtifact OntologyArtifact} either from user input or from the
+ * Ontology data in database.
  *
  * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
  *     annotation)

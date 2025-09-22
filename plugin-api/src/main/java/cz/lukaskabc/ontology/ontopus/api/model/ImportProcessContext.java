@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyVersionSeries;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,13 +14,13 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class ImportProcessContext {
     /** Series of ontology versions of a single ontology */
-    private final OntologyVersionSeries ontologyArtifactVersionSeries;
+    private final VersionSeries ontologyArtifactVersionSeries;
     /** Temporary database context TODO: when we will transfer data from temporary context to persistent? */
     private final TemporaryContextURI databaseContext;
 
     private final Path tempFolder;
     /** A new ontology version */
-    private final OntologyArtifact ontologyVersionArtifact;
+    private final VersionArtifact ontologyVersionArtifact;
 
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
@@ -29,10 +29,10 @@ public class ImportProcessContext {
     private final Map<Object, Object> additionalProperties;
 
     public ImportProcessContext(
-            OntologyVersionSeries ontologyArtifactVersionSeries,
+            VersionSeries ontologyArtifactVersionSeries,
             TemporaryContextURI databaseContext,
             Path tempFolder,
-            OntologyArtifact ontologyVersionArtifact) {
+            VersionArtifact ontologyVersionArtifact) {
         this.ontologyArtifactVersionSeries = ontologyArtifactVersionSeries;
         this.databaseContext = databaseContext;
         this.tempFolder = tempFolder;
@@ -55,11 +55,11 @@ public class ImportProcessContext {
         return databaseContext;
     }
 
-    public OntologyVersionSeries getOntologyArtifactVersionSeries() {
+    public VersionSeries getOntologyArtifactVersionSeries() {
         return ontologyArtifactVersionSeries;
     }
 
-    public OntologyArtifact getOntologyVersionArtifact() {
+    public VersionArtifact getOntologyVersionArtifact() {
         return ontologyVersionArtifact;
     }
 

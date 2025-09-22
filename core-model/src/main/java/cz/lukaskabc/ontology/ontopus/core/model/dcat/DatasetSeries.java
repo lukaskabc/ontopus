@@ -1,47 +1,28 @@
 package cz.lukaskabc.ontology.ontopus.core.model.dcat;
 
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.id.EntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core.model.util.DocumentedOWLClass;
-import java.net.URI;
 import java.util.Set;
 
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_DatasetSeries)
-public abstract class DatasetSeries<ID extends EntityIdentifier> extends Dataset<ID> {
+public abstract class DatasetSeries<
+                MembersIdentifier extends EntityIdentifier,
+                SeriesDistributionIdentifier extends EntityIdentifier,
+                ID extends EntityIdentifier>
+        extends Dataset<SeriesDistributionIdentifier, ID> {
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_last)
-    private URI last;
+    public abstract MembersIdentifier getFirst();
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first)
-    private URI first;
+    public abstract MembersIdentifier getLast();
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember)
-    private Set<URI> members;
+    public abstract Set<MembersIdentifier> getMembers();
 
-    public URI getFirst() {
-        return first;
-    }
+    public abstract void setFirst(MembersIdentifier first);
 
-    public URI getLast() {
-        return last;
-    }
+    public abstract void setLast(MembersIdentifier last);
 
-    public Set<URI> getMembers() {
-        return members;
-    }
-
-    public void setFirst(URI first) {
-        this.first = first;
-    }
-
-    public void setLast(URI last) {
-        this.last = last;
-    }
-
-    public void setMembers(Set<URI> members) {
-        this.members = members;
-    }
+    public abstract void setMembers(Set<MembersIdentifier> members);
 }

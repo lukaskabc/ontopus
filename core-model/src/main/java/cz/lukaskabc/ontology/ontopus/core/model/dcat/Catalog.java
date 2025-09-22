@@ -10,11 +10,12 @@ import java.net.URI;
 
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Catalog)
-public abstract class Catalog<ID extends EntityIdentifier> extends Dataset<ID> {
+public abstract class Catalog<CatalogDistributionIdentifier extends EntityIdentifier, ID extends EntityIdentifier>
+        extends Dataset<CatalogDistributionIdentifier, ID> {
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_homepage)
     private URI homepage;
 
-    public URI homepage() {
+    public URI getHomepage() {
         return homepage;
     }
 

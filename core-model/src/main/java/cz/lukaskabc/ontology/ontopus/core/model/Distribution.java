@@ -15,7 +15,7 @@ import org.springframework.util.MimeType;
  * that may differ in various ways, including natural language, media-type or format, schematic organization, temporal
  * and spatial resolution, level of detail or profiles (which might specify any or all of the above).
  */
-@OWLClass(iri = Vocabulary.s_c_OntologyDistribution)
+@OWLClass(iri = Vocabulary.s_c_dcat_Distribution)
 public class Distribution extends cz.lukaskabc.ontology.ontopus.core.model.dcat.Distribution<DistributionURI> {
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private DistributionURI identifier;

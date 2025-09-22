@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.Set;
 
 /** An ontology artifact containing a single ontology version release */
-@OWLClass(iri = Vocabulary.s_c_OntologyArtifact)
+@OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
 
     @Convert(converter = VersionArtifactUriConverter.class)

@@ -13,7 +13,7 @@ import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessCo
 import jakarta.validation.constraints.NotNull;
 import java.util.Set;
 
-@OWLClass(iri = Vocabulary.s_c_OntologyVersionSeries)
+@OWLClass(iri = Vocabulary.s_c_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
     @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;

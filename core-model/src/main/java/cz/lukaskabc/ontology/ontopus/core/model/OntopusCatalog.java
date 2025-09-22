@@ -11,13 +11,13 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Set;
 
 /** A catalog of {@link VersionArtifact} served by the ontopus instance */
-@OWLClass(iri = Vocabulary.s_c_OntologyArtifactCatalog)
+@OWLClass(iri = Vocabulary.s_c_OntopusCatalog)
 // TODO replace distribution URI with catalog distribution URI
 public class OntopusCatalog extends Catalog<DistributionURI, OntopusCatalogURI> {
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private OntopusCatalogURI identifier;
     /// {@link VersionSeries}
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_dataset)
+    @OWLDataProperty(iri = Vocabulary.s_p_hasOntology)
     private Set<VersionSeriesURI> ontologySeries;
 
     @Override

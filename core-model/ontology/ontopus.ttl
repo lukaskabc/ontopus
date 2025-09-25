@@ -20,19 +20,6 @@
                                                     owl:versionInfo "Development version 0.0.1"@en .
 
 #################################################################
-#    Object Properties
-#################################################################
-
-###  http://ontology.lukaskabc.cz/application/ontopus#hasOntology
-ontopus:hasOntology rdf:type owl:ObjectProperty ;
-                    rdfs:subPropertyOf dcat:dataset ;
-                    rdfs:domain ontopus:OntopusCatalog ;
-                    rdfs:range ontopus:VersionSeries ;
-                    rdfs:comment "Indicates that the catalog contains an ontology version series"@en ;
-                    rdfs:label "has ontology"@en .
-
-
-#################################################################
 #    Data properties
 #################################################################
 

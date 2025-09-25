@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifactCatalog_;
 import cz.lukaskabc.ontology.ontopus.core.model.OntopusCatalog;
+import cz.lukaskabc.ontology.ontopus.core.model.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core.persistence.identifier.CatalogUriUriGenerator;
@@ -21,7 +21,7 @@ public class OntopusCatalogDao extends AbstractDao<OntopusCatalogURI, OntopusCat
             CatalogUriUriGenerator uriGenerator) {
         super(
                 OntopusCatalog.class,
-                OntologyArtifactCatalog_.entityClassIRI.toURI(),
+                OntopusCatalog_.entityClassIRI.toURI(),
                 em,
                 validator,
                 descriptorFactory.ontologyArtifactCatalog(),
@@ -31,7 +31,7 @@ public class OntopusCatalogDao extends AbstractDao<OntopusCatalogURI, OntopusCat
     public boolean catalogExists(URI uri) {
         final var query = em.createNativeQuery("ASK FROM ?graph { ?catalog a ?catalogType }", Boolean.class)
                 .setParameter("catalog", uri)
-                .setParameter("catalogType", OntologyArtifactCatalog_.entityClassIRI)
+                .setParameter("catalogType", OntopusCatalog_.entityClassIRI)
                 .setParameter("graph", entityGraphContext);
 
         return Boolean.TRUE.equals(resultOrNull(query::getSingleResult));

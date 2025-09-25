@@ -2,8 +2,8 @@ package cz.lukaskabc.ontology.ontopus.core.persistence.identifier;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyArtifact_;
 import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
 import java.net.URI;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class ArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArt
     public VersionArtifactURI generate(VersionArtifact entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity::getTitle);
-        String baseId = OntologyArtifact_.entityClassIRI + "_" + title;
+        String baseId = VersionArtifact_.entityClassIRI + "_" + title;
 
         int attempt = 0;
         while (attempt < MAX_GENERATION_ATTEMPTS) {

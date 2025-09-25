@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core.model.OntologyVersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core.model.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
@@ -16,7 +16,7 @@ public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSerie
     public VersionSeriesDao(EntityManager em, Validator validator, DescriptorFactory factory) {
         super(
                 VersionSeries.class,
-                OntologyVersionSeries_.entityClassIRI.toURI(),
+                VersionSeries_.entityClassIRI.toURI(),
                 em,
                 validator,
                 factory.ontologyVersionSeries(),

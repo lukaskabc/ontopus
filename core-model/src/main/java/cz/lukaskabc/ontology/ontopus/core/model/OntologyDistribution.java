@@ -16,15 +16,15 @@ import org.springframework.util.MimeType;
  * and spatial resolution, level of detail or profiles (which might specify any or all of the above).
  */
 @OWLClass(iri = Vocabulary.s_c_dcat_Distribution)
-public class Distribution extends cz.lukaskabc.ontology.ontopus.core.model.dcat.Distribution<DistributionURI> {
+public class OntologyDistribution extends cz.lukaskabc.ontology.ontopus.core.model.dcat.Distribution<DistributionURI> {
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private DistributionURI identifier;
 
-    public Distribution() {
+    public OntologyDistribution() {
         super();
     }
 
-    public Distribution(
+    public OntologyDistribution(
             MultilingualString title,
             MultilingualString description,
             Instant releaseDate,

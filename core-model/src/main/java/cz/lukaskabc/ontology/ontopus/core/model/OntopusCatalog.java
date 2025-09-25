@@ -17,7 +17,7 @@ public class OntopusCatalog extends Catalog<DistributionURI, OntopusCatalogURI> 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private OntopusCatalogURI identifier;
     /// {@link VersionSeries}
-    @OWLDataProperty(iri = Vocabulary.s_p_hasOntology)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcat_dataset)
     private Set<VersionSeriesURI> ontologySeries;
 
     @Override

@@ -14,9 +14,9 @@ public class DescriptorFactory {
     private final EntityDescriptor user;
 
     public DescriptorFactory() {
-        ontologyArtifact = new EntityDescriptor(OntologyArtifact_.entityClassIRI.toURI());
-        ontologyArtifactCatalog = new EntityDescriptor(OntologyArtifactCatalog_.entityClassIRI.toURI());
-        ontologyVersionSeries = new EntityDescriptor(OntologyVersionSeries_.entityClassIRI.toURI());
+        ontologyArtifact = new EntityDescriptor(VersionArtifact_.entityClassIRI.toURI());
+        ontologyArtifactCatalog = new EntityDescriptor(OntopusCatalog_.entityClassIRI.toURI());
+        ontologyVersionSeries = new EntityDescriptor(VersionSeries_.entityClassIRI.toURI());
         ontologyDistribution = new EntityDescriptor(OntologyDistribution_.entityClassIRI.toURI());
         temporaryContext = new EntityDescriptor(TemporaryContext_.entityClassIRI.toURI());
         user = new EntityDescriptor(User_.entityClassIRI.toURI());

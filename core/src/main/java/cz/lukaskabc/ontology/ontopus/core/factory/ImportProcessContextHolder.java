@@ -3,8 +3,12 @@ package cz.lukaskabc.ontology.ontopus.core.factory;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
+import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
 import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core.service.VersionSeriesService;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.SchedulingTaskExecutor;
@@ -55,10 +60,13 @@ public class ImportProcessContextHolder {
     }
 
     private Future<?> future;
-    private ImportProcessContext instance;
+
+    @Nullable private ImportProcessContext instance = null;
+
     private final TemporaryContextGenerator contextGenerator;
     private final ListableBeanFactory beanFactory;
     private final SchedulingTaskExecutor executor;
+    private final VersionSeriesService versionSeriesService;
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -66,26 +74,25 @@ public class ImportProcessContextHolder {
     public ImportProcessContextHolder(
             TemporaryContextGenerator contextGenerator,
             ListableBeanFactory beanFactory,
-            SchedulingTaskExecutor executor) {
+            SchedulingTaskExecutor executor,
+            VersionSeriesService versionSeriesService) {
         this.contextGenerator = contextGenerator;
         this.beanFactory = beanFactory;
         this.executor = executor;
-        this.future = CompletableFuture.completedFuture(null);
-        resetSessionImportProcess();
+        this.versionSeriesService = versionSeriesService;
+        this.future = cancelledFuture();
     }
 
     /** Creates a new import process with context. */
-    private ImportProcessContext create() {
+    private ImportProcessContext create(@Nullable VersionSeriesURI uri) {
         final UUID uuid = UUID.randomUUID();
         final Path tempFolder = createTempFolder(uuid);
         final TemporaryContextURI databaseContext = this.contextGenerator.generate();
         final VersionArtifact artifact = new VersionArtifact();
-
-        // TODO: null series needs to be derived from the start of the import process
-        // either by specifying an existing ontology and publishing a new version
-        // or creating a brand new one
-        final ImportProcessContext context = new ImportProcessContext(null, databaseContext, tempFolder, artifact);
+        final VersionSeries series = findOrBlank(uri);
+        final ImportProcessContext context = new ImportProcessContext(series, databaseContext, tempFolder, artifact);
         createServiceStack(context);
+        // TODO event
         return context;
     }
 
@@ -93,8 +100,27 @@ public class ImportProcessContextHolder {
         beanFactory.getBeansOfType(OrderedImportPipelineService.class).values().forEach(context::pushService);
     }
 
-    public void resetSessionImportProcess() {
-        this.instance = create();
+    private void ensureInitialized() {
+        if (instance == null) {
+            throw new ImportProcessNotInitializedException();
+        }
+    }
+
+    private VersionSeries findOrBlank(@Nullable VersionSeriesURI uri) {
+        VersionSeries series = versionSeriesService.find(uri);
+        if (series == null) {
+            return new VersionSeries();
+        }
+        return series;
+    }
+
+    public void resetSessionImportProcess(@Nullable VersionSeriesURI uri) {
+        lock.lock();
+        try {
+            this.instance = create(uri);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -109,6 +135,7 @@ public class ImportProcessContextHolder {
     public <R> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
         lock.lock();
         try {
+            ensureInitialized();
             if (future.isDone()) {
                 return CompletableFuture.completedFuture(function.apply(instance));
             }
@@ -129,6 +156,7 @@ public class ImportProcessContextHolder {
     public Future<?> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
         lock.lock();
         try {
+            ensureInitialized();
             if (future.isDone()) {
                 final Future<?> result = executor.submit(() -> consumer.accept(instance));
                 future = result;

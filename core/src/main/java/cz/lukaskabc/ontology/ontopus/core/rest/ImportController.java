@@ -7,56 +7,73 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessTaskConflictException;
+import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportProcessMediator;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 @RestController
 @RequestMapping(path = "/import")
 public class ImportController {
     private static final Logger log = LogManager.getLogger(ImportController.class);
     private final ImportProcessMediator mediator;
-    private final StandardServletMultipartResolver multipartResolver;
     private final ObjectMapper objectMapper;
 
-    public ImportController(
-            ImportProcessMediator mediator,
-            StandardServletMultipartResolver multipartResolver,
-            ObjectMapper objectMapper) {
+    public ImportController(ImportProcessMediator mediator, ObjectMapper objectMapper) {
         this.mediator = mediator;
-        this.multipartResolver = multipartResolver;
         this.objectMapper = objectMapper;
     }
 
-    private <T> ResponseEntity<T> handleFuture(Future<T> future) throws ExecutionException, InterruptedException {
+    /**
+     * Immediately returns a response entity based on the current future status.
+     *
+     * @param future the future to handle
+     * @return Response entity based on the future status.
+     * @param <T> The type of the result value
+     */
+    private <T> ResponseEntity<T> handleFuture(Future<T> future) throws Throwable {
         return switch (future.state()) {
             case SUCCESS -> {
-                T value = future.get();
+                T value = future.resultNow();
                 if (value != null) {
                     yield ResponseEntity.ok(value);
                 }
                 yield ResponseEntity.noContent().build();
             }
-            case FAILED -> ResponseEntity.internalServerError().build();
-            case RUNNING, CANCELLED ->
-                ResponseEntity.status(HttpStatus.CONFLICT).build();
+            case FAILED -> throw future.exceptionNow();
+            case RUNNING, CANCELLED -> throw new ImportProcessTaskConflictException();
         };
     }
 
+    /**
+     * Initializes a new import process. The ontology will be published as a version in existing version series when the
+     * identifier is supplied. New version series are created otherwise.
+     *
+     * @param versionSeries The identifier of existing version series for publishing a new version.
+     */
+    @PostMapping("initialize")
+    public void initialize(@Nullable @RequestParam(required = false) URI versionSeries) {
+        VersionSeriesURI uri = null;
+        if (versionSeries != null) {
+            uri = new VersionSeriesURI(versionSeries);
+        }
+        mediator.initialize(uri);
+    }
+
     @GetMapping
-    public ResponseEntity<JsonForm> getJsonForm() throws ExecutionException, InterruptedException {
+    public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
         Future<JsonForm> future = mediator.getCurrentForm();
         return handleFuture(future);
     }
@@ -106,21 +123,14 @@ public class ImportController {
     }
 
     /**
-     * // TODO replace with open api docs Expects several JSONs with form data separated into parts, each for a single
-     * service in the pipeline.
+     * // TODO replace with open api docs
      *
-     * <p>// TODO what if two provided files have matching name? but the name is the name of the parameter, not the file
-     * // so what if two parameters from different services matches? the name could be prefixed with full service class
-     * // name
+     * <p>Expects several JSONs with form data separated into parts, each for a single service in the pipeline.
      *
      * @param request
-     * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request)
-            throws ExecutionException, InterruptedException {
+    public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request) throws Throwable {
 
         Map<String, JsonNode> combinedData = parseData(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
@@ -132,68 +142,7 @@ public class ImportController {
     public ResponseEntity<?> onFormSubmit(
             @RequestParam Map<String, JsonNode> data,
             @RequestParam(required = false) MultiValueMap<String, MultipartFile> files)
-            throws ExecutionException, InterruptedException {
+            throws Throwable {
         return handleFuture(mediator.submitFormResult(new FormResult(data, files)));
     }
-
-    private void postFormSubmit() {
-        // if (!context().getPendingServicesStack().isEmpty()) {
-        // return;
-        // }
-        // // no more pending services on stack
-        // importFinalizingService.finalize(context());
-        // contextHolder.resetSessionImportProcess();
-    }
-
-    /*
-     * private final List<OntologyImporter> ontologyImporters;
-     *
-     * @Autowired public ImportController(List<OntologyImporter> ontologyImporters)
-     * { this.ontologyImporters = Collections.unmodifiableList(ontologyImporters);
-     * long uniqueImporters = ontologyImporters.stream()
-     * .map(OntologyImporter::getSourceName) .distinct() .count(); if
-     * (uniqueImporters != ontologyImporters.size()) { throw new
-     * IllegalStateException("Ontology importer name duplicated"); // TODO } }
-     *
-     * @GetMapping("/source/{importSource}") public StagedJsonForm
-     * getOntologyImportForm(@PathVariable("importSource") String importSource) {
-     * for (OntologyImporter ontologyImporter : ontologyImporters) { if
-     * (importSource.equals(ontologyImporter.getSourceName())) { return new
-     * StagedJsonForm( ontologyImporter.getImportFormSchema(),
-     * ontologyImporter.getImportFormUiSchema(), IMPORT_FORM_SUBMIT_ENDPOINT + "/" +
-     * UriUtils.encodePath(importSource, StandardCharsets.UTF_8),
-     * ontologyImporter.getNextImportFormPath()); } }
-     *
-     * throw new IllegalStateException("Ontology importer name not found"); // TODO
-     * }
-     *
-     * @GetMapping(value = "/source") public List<String> getOntologyImportSources()
-     * { List<String> names = new ArrayList<>(ontologyImporters.size()); for
-     * (OntologyImporter ontologyImporter : ontologyImporters) {
-     * names.add(ontologyImporter.getSourceName()); } return names; }
-     *
-     * private OntologyImporter resolveImporter(String importSource) { for
-     * (OntologyImporter ontologyImporter : ontologyImporters) { if
-     * (importSource.equals(ontologyImporter.getSourceName())) { return
-     * ontologyImporter; } } throw new
-     * IllegalStateException("Ontology importer name not found"); // TODO }
-     *
-     * @PostMapping(value = "/source/{importSource}", consumes =
-     * MediaType.MULTIPART_FORM_DATA_VALUE) public ResponseEntity<String>
-     * startImport(
-     *
-     * @PathVariable("importSource") String importSource,
-     * MultipartHttpServletRequest request) { log.info("Starting import from {}",
-     * importSource);
-     *
-     * final OntologyImporter importer = resolveImporter(importSource); final String
-     * nextUrl = importer.importOntology(request.getParameterMap(),
-     * request.getFileMap());
-     *
-     * final ResponseEntity.BodyBuilder builder = ResponseEntity.accepted(); if
-     * (nextUrl != null) { builder.header("ONTOPUS-Next-Form-Location", nextUrl); //
-     * TODO use constant }
-     *
-     * return builder.build(); }
-     */
 }

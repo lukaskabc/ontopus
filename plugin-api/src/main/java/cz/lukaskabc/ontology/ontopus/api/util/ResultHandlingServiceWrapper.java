@@ -34,6 +34,11 @@ public class ResultHandlingServiceWrapper<R> implements ImportProcessingService<
     }
 
     @Override
+    public String getUniqueIdentifier() {
+        return ResultHandlingServiceWrapper.class.getName() + "---" + processingService.getUniqueIdentifier();
+    }
+
+    @Override
     public Result<R> handleSubmit(FormResult formResult, ImportProcessContext context) {
         final Result<R> result = processingService.handleSubmit(formResult, context);
         resultConsumer.accept(result.value(), context);

@@ -10,17 +10,22 @@ import java.nio.file.Path;
 import java.util.*;
 import org.jspecify.annotations.NullMarked;
 
-/** State of the import process */
+/**
+ * State of the import process.
+ *
+ * <p>No expectations should be put onto contents of {@link #versionArtifact} and {@link #versionSeries}, they could be
+ * completely blank (e.g. when publishing a version of new ontology)
+ */
 @NullMarked
 public class ImportProcessContext {
     /** Series of ontology versions of a single ontology */
-    private final VersionSeries ontologyArtifactVersionSeries;
+    private final VersionSeries versionSeries;
     /** Temporary database context TODO: when we will transfer data from temporary context to persistent? */
     private final TemporaryContextURI databaseContext;
 
     private final Path tempFolder;
     /** A new ontology version */
-    private final VersionArtifact ontologyVersionArtifact;
+    private final VersionArtifact versionArtifact;
 
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
@@ -29,14 +34,14 @@ public class ImportProcessContext {
     private final Map<Object, Object> additionalProperties;
 
     public ImportProcessContext(
-            VersionSeries ontologyArtifactVersionSeries,
+            VersionSeries versionSeries,
             TemporaryContextURI databaseContext,
             Path tempFolder,
-            VersionArtifact ontologyVersionArtifact) {
-        this.ontologyArtifactVersionSeries = ontologyArtifactVersionSeries;
+            VersionArtifact versionArtifact) {
+        this.versionSeries = versionSeries;
         this.databaseContext = databaseContext;
         this.tempFolder = tempFolder;
-        this.ontologyVersionArtifact = ontologyVersionArtifact;
+        this.versionArtifact = versionArtifact;
         this.additionalProperties = new HashMap<>();
         this.pendingServicesStack = new ArrayList<>();
         this.processedServices = new ArrayList<>();
@@ -53,14 +58,6 @@ public class ImportProcessContext {
 
     public TemporaryContextURI getDatabaseContext() {
         return databaseContext;
-    }
-
-    public VersionSeries getOntologyArtifactVersionSeries() {
-        return ontologyArtifactVersionSeries;
-    }
-
-    public VersionArtifact getOntologyVersionArtifact() {
-        return ontologyVersionArtifact;
     }
 
     public List<ImportProcessingService<?>> getPendingServicesStack() {
@@ -87,16 +84,31 @@ public class ImportProcessContext {
         }
     }
 
+    public VersionArtifact getVersionArtifact() {
+        return versionArtifact;
+    }
+
+    public VersionSeries getVersionSeries() {
+        return versionSeries;
+    }
+
     /**
-     * Submits the form result to the service at the top of the stack and pops the service. The submitted form result is
-     * stored.
+     * Submits the form result to the service at the top of the stack. The service is popped and the submitted form
+     * result is stored when the service handled it without an exception and the same service remain on the stack. The
+     * service is kept on the stack and result discarded when an exception was thrown. No service is popped when the
+     * service at the top changes, the result is stored either way.
      *
      * @param formResult the form result to handle
+     * @throws IllegalStateException when there is no service on the stack
      */
     public void handleResult(FormResult formResult) {
         if (hasUnprocessedService()) {
-            popService().handleSubmit(formResult, this);
+            ImportProcessingService<?> service = peekService();
+            service.handleSubmit(formResult, this);
             processedResults.add(formResult);
+            if (service == peekService()) {
+                popService();
+            }
         } else {
             throw new IllegalStateException(); // TODO exception
         }

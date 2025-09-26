@@ -25,6 +25,15 @@ public interface ImportProcessingService<R> {
     String getServiceName();
 
     /**
+     * Provides a unique identifier of the service type (not instance).
+     *
+     * @return a unique identifier for the service type
+     */
+    default String getUniqueIdentifier() {
+        return this.getClass().getName();
+    }
+
+    /**
      * Provides a JSON form which will be shown to the user.
      *
      * @return Form with JSON scheme and an optional UI Scheme

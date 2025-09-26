@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core.model.util.UploadedFile;
 import cz.lukaskabc.ontology.ontopus.core.persistence.dao.VersionSeriesDao;
+import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -74,8 +75,9 @@ public class ImportFinalizingService {
         persistentContext.setFilesDirectory(filesPath.toString());
         final List<String> services =
                 new ArrayList<>(context.getProcessedServices().size());
+        int serviceIndex = 0;
         for (final ImportProcessingService<?> service : context.getProcessedServices()) {
-            services.add(service.getClass().getName());
+            services.add(ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex));
         }
         persistentContext.setServicesList(services);
 
@@ -108,7 +110,7 @@ public class ImportFinalizingService {
 
     @Transactional
     public void finalize(ImportProcessContext context) {
-        context.getOntologyVersionArtifact();
+        context.getVersionArtifact();
 
         // final URI ontologyGraph =
         // context.getOntologyVersionArtifact().getCurrentVersion();

@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core.model.TemporaryContext_;
 import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
+import cz.lukaskabc.ontology.ontopus.core.persistence.identifier.TemporaryContextUriGenerator;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Objects;
@@ -23,19 +24,23 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     private static final Logger log = LogManager.getLogger(TemporaryContextRegistry.class);
     private final EntityManager em;
     private final EntityDescriptor temporaryContextDescriptor;
+    private final TemporaryContextUriGenerator uriGenerator;
     private final URI temporaryContextGraph;
 
     @Autowired
-    public TemporaryContextRegistry(EntityManager entityManager, DescriptorFactory descriptorFactory) {
+    public TemporaryContextRegistry(
+            EntityManager entityManager,
+            DescriptorFactory descriptorFactory,
+            TemporaryContextUriGenerator uriGenerator) {
         this.em = entityManager;
         this.temporaryContextDescriptor = descriptorFactory.temporaryContext();
+        this.uriGenerator = uriGenerator;
         temporaryContextGraph = temporaryContextDescriptor.getSingleContext().orElseThrow();
     }
 
     @Transactional
     public void clearAllTemporaryContexts() {
         log.debug("Clearing all temporary contexts from database");
-        // TODO change to SELECT FROM ?graph
         em.createNativeQuery(
                         """
 				SELECT ?id WHERE {
@@ -69,6 +74,8 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     @Override
     public TemporaryContextURI generate() {
         TemporaryContext tmp = new TemporaryContext();
+        tmp.setIdentifier(uriGenerator.generate(tmp));
+        tmp.setUri(tmp.getIdentifier().toURI());
         tmp.setCreatedAt(Instant.now());
         em.persist(tmp, temporaryContextDescriptor);
         return Objects.requireNonNull(tmp.getIdentifier());

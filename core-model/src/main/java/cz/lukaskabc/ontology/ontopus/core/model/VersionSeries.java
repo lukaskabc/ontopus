@@ -1,9 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.model;
 
-import cz.cvut.kbss.jopa.model.annotations.CascadeType;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.DatasetSeries;
 import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
@@ -21,7 +19,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private VersionSeriesURI identifier;
 
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion, cascade = CascadeType.MERGE)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
     private VersionArtifactURI currentVersion;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_last)

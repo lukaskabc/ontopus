@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service;
+package cz.lukaskabc.ontology.ontopus.core.service.process;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;

@@ -8,19 +8,12 @@ import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
 import java.net.URI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.Validator;
 
 @Component
 public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSeries> {
 
-    public VersionSeriesDao(EntityManager em, Validator validator, DescriptorFactory factory) {
-        super(
-                VersionSeries.class,
-                VersionSeries_.entityClassIRI.toURI(),
-                em,
-                validator,
-                factory.ontologyVersionSeries(),
-                null);
+    public VersionSeriesDao(EntityManager em, DescriptorFactory factory) {
+        super(VersionSeries.class, VersionSeries_.entityClassIRI.toURI(), em, factory.ontologyVersionSeries());
     }
 
     @Nullable public VersionSeries findForArtifact(URI ontologyArtifact) {

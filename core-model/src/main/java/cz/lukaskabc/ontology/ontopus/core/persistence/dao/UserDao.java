@@ -5,21 +5,20 @@ import cz.lukaskabc.ontology.ontopus.core.model.User;
 import cz.lukaskabc.ontology.ontopus.core.model.User_;
 import cz.lukaskabc.ontology.ontopus.core.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
-import cz.lukaskabc.ontology.ontopus.core.persistence.identifier.UserUriGenerator;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.Validator;
 
 @Component
 public class UserDao extends AbstractDao<UserURI, User> {
     @Autowired
-    public UserDao(
-            EntityManager em, Validator validator, DescriptorFactory descriptorFactory, UserUriGenerator uriGenerator) {
-        super(User.class, User_.entityClassIRI.toURI(), em, validator, descriptorFactory.user(), uriGenerator);
+    public UserDao(EntityManager em, DescriptorFactory descriptorFactory) {
+        super(User.class, User_.entityClassIRI.toURI(), em, descriptorFactory.user());
     }
 
     @Nullable public User findByUsername(String username) {
+        Objects.requireNonNull(username);
         return resultOrNull(em.createNativeQuery(
                         """
 				SELECT ?user FROM ?graph WHERE {
@@ -34,6 +33,13 @@ public class UserDao extends AbstractDao<UserURI, User> {
                 .setParameter("username", username)::getSingleResult);
     }
 
+    /**
+     * Checks whether a user account with the given username exists. Checks whether any user account exists when no
+     * username is given.
+     *
+     * @param username The username or null
+     * @return whether an account with the given username exists
+     */
     public boolean userAccountExists(@Nullable String username) {
         final var query = em.createNativeQuery(
                         """

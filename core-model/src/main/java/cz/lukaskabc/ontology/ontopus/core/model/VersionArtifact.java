@@ -1,11 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core.model;
 
-import cz.cvut.kbss.jopa.model.annotations.Convert;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core.model.converter.id.VersionArtifactUriConverter;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.Dataset;
 import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
@@ -17,8 +15,7 @@ import java.util.Set;
 @OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
 
-    @Convert(converter = VersionArtifactUriConverter.class)
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private VersionArtifactURI identifier;
 
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)

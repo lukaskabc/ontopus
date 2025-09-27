@@ -33,6 +33,6 @@ public class ArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArt
             attempt++;
         }
 
-        throw new IllegalStateException("Unable to generate identifier for " + entity.toString());
+        throw new IllegalStateException("Unable to generate identifier for " + entity);
     }
 }

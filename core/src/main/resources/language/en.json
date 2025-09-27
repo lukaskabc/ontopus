@@ -6,6 +6,9 @@
         "ImportProcessNextServiceSelector": {
           "name": "Options selector"
         }
+      },
+      "OrderedImportPipelineService": {
+        "OntologyFileLoadingSelectionService.name": "Ontology source selection"
       }
     }
   }

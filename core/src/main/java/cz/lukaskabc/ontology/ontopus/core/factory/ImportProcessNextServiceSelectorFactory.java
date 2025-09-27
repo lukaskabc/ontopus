@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.factory;
 
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core.service.ImportProcessNextServiceSelector;
+import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessNextServiceSelector;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.stereotype.Service;
 

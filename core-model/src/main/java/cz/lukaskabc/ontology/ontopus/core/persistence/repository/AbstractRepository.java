@@ -11,7 +11,7 @@ import org.springframework.validation.Validator;
 
 public abstract class AbstractRepository<
         I extends EntityIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {
-    private final D dao;
+    protected final D dao;
     protected final Validator validator;
     protected final IdentifierGenerator<I, E> identifierGenerator;
 

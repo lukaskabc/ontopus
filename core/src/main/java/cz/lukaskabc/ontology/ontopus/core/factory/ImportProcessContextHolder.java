@@ -14,19 +14,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.SchedulingTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
@@ -35,6 +33,7 @@ import org.springframework.web.context.annotation.SessionScope;
 @Component
 public class ImportProcessContextHolder {
     private static final String TEMPORARY_FOLDER_PREFIX = "OntoPuS-import-process-";
+    private static final Logger log = LogManager.getLogger(ImportProcessContextHolder.class);
 
     @SuppressWarnings("unchecked")
     private static <R> Future<R> cancelledFuture() { // TODO move to external class
@@ -65,7 +64,7 @@ public class ImportProcessContextHolder {
 
     private final TemporaryContextGenerator contextGenerator;
     private final ListableBeanFactory beanFactory;
-    private final SchedulingTaskExecutor executor;
+    private final ExecutorService executor;
     private final VersionSeriesService versionSeriesService;
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -74,7 +73,7 @@ public class ImportProcessContextHolder {
     public ImportProcessContextHolder(
             TemporaryContextGenerator contextGenerator,
             ListableBeanFactory beanFactory,
-            SchedulingTaskExecutor executor,
+            ExecutorService executor,
             VersionSeriesService versionSeriesService) {
         this.contextGenerator = contextGenerator;
         this.beanFactory = beanFactory;
@@ -89,7 +88,7 @@ public class ImportProcessContextHolder {
         final Path tempFolder = createTempFolder(uuid);
         final TemporaryContextURI databaseContext = this.contextGenerator.generate();
         final VersionArtifact artifact = new VersionArtifact();
-        final VersionSeries series = findOrBlank(uri);
+        final VersionSeries series = findOrBlankSeries(uri);
         final ImportProcessContext context = new ImportProcessContext(series, databaseContext, tempFolder, artifact);
         createServiceStack(context);
         // TODO event
@@ -106,7 +105,7 @@ public class ImportProcessContextHolder {
         }
     }
 
-    private VersionSeries findOrBlank(@Nullable VersionSeriesURI uri) {
+    private VersionSeries findOrBlankSeries(@Nullable VersionSeriesURI uri) {
         VersionSeries series = versionSeriesService.find(uri);
         if (series == null) {
             return new VersionSeries();
@@ -117,6 +116,7 @@ public class ImportProcessContextHolder {
     public void resetSessionImportProcess(@Nullable VersionSeriesURI uri) {
         lock.lock();
         try {
+            log.trace("Resetting Session Import Process");
             this.instance = create(uri);
         } finally {
             lock.unlock();

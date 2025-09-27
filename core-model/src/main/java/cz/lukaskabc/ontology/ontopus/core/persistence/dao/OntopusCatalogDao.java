@@ -5,32 +5,26 @@ import cz.lukaskabc.ontology.ontopus.core.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core.model.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core.persistence.DescriptorFactory;
-import cz.lukaskabc.ontology.ontopus.core.persistence.identifier.CatalogUriUriGenerator;
-import java.net.URI;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.Validator;
 
 @Component
 public class OntopusCatalogDao extends AbstractDao<OntopusCatalogURI, OntopusCatalog> {
     @Autowired
-    public OntopusCatalogDao(
-            EntityManager em,
-            Validator validator,
-            DescriptorFactory descriptorFactory,
-            CatalogUriUriGenerator uriGenerator) {
+    public OntopusCatalogDao(EntityManager em, DescriptorFactory descriptorFactory) {
+
         super(
                 OntopusCatalog.class,
                 OntopusCatalog_.entityClassIRI.toURI(),
                 em,
-                validator,
-                descriptorFactory.ontologyArtifactCatalog(),
-                uriGenerator);
+                descriptorFactory.ontologyArtifactCatalog());
     }
 
-    public boolean catalogExists(URI uri) {
+    public boolean catalogExists(OntopusCatalogURI uri) {
+        Objects.requireNonNull(uri);
         final var query = em.createNativeQuery("ASK FROM ?graph { ?catalog a ?catalogType }", Boolean.class)
-                .setParameter("catalog", uri)
+                .setParameter("catalog", uri.toURI())
                 .setParameter("catalogType", OntopusCatalog_.entityClassIRI)
                 .setParameter("graph", entityGraphContext);
 

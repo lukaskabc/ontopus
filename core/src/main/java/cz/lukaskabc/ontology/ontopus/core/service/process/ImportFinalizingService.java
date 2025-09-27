@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service;
+package cz.lukaskabc.ontology.ontopus.core.service.process;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core.model.util.UploadedFile;
 import cz.lukaskabc.ontology.ontopus.core.persistence.dao.VersionSeriesDao;
+import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import java.io.IOException;
 import java.net.URI;

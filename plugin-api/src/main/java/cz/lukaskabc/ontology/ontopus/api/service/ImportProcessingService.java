@@ -7,7 +7,11 @@ import org.jspecify.annotations.Nullable;
 
 // TODO: Design pattern Strategy
 
-/** A service that is a part of the ontology importing process */
+/**
+ * A service that is a part of the ontology importing process
+ *
+ * <p>The implementation must be deterministic and execution with the same parameters must result in same effects.
+ */
 public interface ImportProcessingService<R> {
 
     /**

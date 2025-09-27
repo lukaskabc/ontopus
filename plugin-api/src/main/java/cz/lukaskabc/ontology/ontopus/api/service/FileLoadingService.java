@@ -3,6 +3,8 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import java.nio.file.Path;
+// TODO rename, first step is to load ontology into the database not explicitly stating files
+// file service should handle file copy and then database import
 
 /**
  * Service capable of copying files from a source to a local temporary folder.

@@ -9,7 +9,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessTaskConflictException;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core.service.ImportProcessMediator;
+import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +64,7 @@ public class ImportController {
      * @param versionSeries The identifier of existing version series for publishing a new version.
      */
     @PostMapping("initialize")
-    public void initialize(@Nullable @RequestParam(required = false) URI versionSeries) {
+    public void initialize(@Nullable @RequestParam(required = false, name = "versionSeries") URI versionSeries) {
         VersionSeriesURI uri = null;
         if (versionSeries != null) {
             uri = new VersionSeriesURI(versionSeries);

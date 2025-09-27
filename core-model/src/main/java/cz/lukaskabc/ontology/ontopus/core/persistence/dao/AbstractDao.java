@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core.model.id.EntityIdentifier;
 import java.net.URI;
+import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.function.ThrowingSupplier;
 
@@ -27,17 +28,20 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
 
     @Nullable public E find(I identifier) {
         try {
-            return em.<@Nullable E>find(entityClass, identifier, descriptor);
+            Objects.requireNonNull(identifier);
+            return em.<@Nullable E>find(entityClass, identifier.toURI(), descriptor);
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
     }
 
     public void merge(E entity) {
+        Objects.requireNonNull(entity);
         em.merge(entity, descriptor);
     }
 
     public void persist(E entity) {
+        Objects.requireNonNull(entity);
         em.persist(entity, descriptor);
     }
 

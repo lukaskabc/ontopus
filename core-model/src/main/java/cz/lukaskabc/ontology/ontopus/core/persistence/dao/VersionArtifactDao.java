@@ -9,19 +9,12 @@ import java.net.URI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.Validator;
 
 @Component
 public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionArtifact> {
     @Autowired
-    public VersionArtifactDao(EntityManager em, Validator validator, DescriptorFactory descriptorFactory) {
-        super(
-                VersionArtifact.class,
-                VersionArtifact_.entityClassIRI.toURI(),
-                em,
-                validator,
-                descriptorFactory.ontologyArtifact(),
-                null);
+    public VersionArtifactDao(EntityManager em, DescriptorFactory descriptorFactory) {
+        super(VersionArtifact.class, VersionArtifact_.entityClassIRI.toURI(), em, descriptorFactory.ontologyArtifact());
     }
 
     @Nullable public VersionArtifact findLatestArtifact(URI artifactURI) {

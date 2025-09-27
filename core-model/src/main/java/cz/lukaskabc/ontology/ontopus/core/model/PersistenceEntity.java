@@ -12,7 +12,7 @@ public abstract class PersistenceEntity<ID extends EntityIdentifier> {
     @Id
     @NotNull private URI uri;
 
-    @NotNull public abstract ID getIdentifier();
+    public abstract ID getIdentifier();
 
     public URI getUri() {
         return uri;

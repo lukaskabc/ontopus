@@ -24,13 +24,16 @@ public class JsonForm {
      */
     @Nullable private final JsonNode uiSchema;
 
+    @Nullable private final JsonNode formData;
+
     /**
      * @param jsonSchema Form JSON schema. See {@link #jsonSchema}
      * @param uiSchema Form UI Schema. See {@link #uiSchema}
      */
-    public JsonForm(JsonNode jsonSchema, @Nullable JsonNode uiSchema) {
+    public JsonForm(JsonNode jsonSchema, @Nullable JsonNode uiSchema, @Nullable JsonNode formData) {
         this.jsonSchema = jsonSchema;
         this.uiSchema = uiSchema;
+        this.formData = formData;
     }
 
     public JsonNode getJsonSchema() {

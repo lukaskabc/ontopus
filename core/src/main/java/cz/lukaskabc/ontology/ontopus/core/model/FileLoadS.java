@@ -17,11 +17,11 @@ public class FileLoadS implements FileLoadingService {
 
     @Override
     public String getServiceName() {
-        return "";
+        return "File load service";
     }
 
     @Override
-    public Result<Path> handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public Path handleSubmit(FormResult formResult, ImportProcessContext context) {
         return null;
     }
 }

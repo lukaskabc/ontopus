@@ -118,6 +118,7 @@ public class ImportProcessContextHolder {
         try {
             log.trace("Resetting Session Import Process");
             this.instance = create(uri);
+            this.future = cancelledFuture();
         } finally {
             lock.unlock();
         }
@@ -128,7 +129,7 @@ public class ImportProcessContextHolder {
      *
      * @param function accepting the context and producing {@code <R>}
      * @return canceled future when there is already another task running or scheduled, completed future with the result
-     *     otherwise
+     *     otherwise, failed future when the previous future failed.
      * @param <R> the result type
      */
     @NullUnmarked
@@ -136,8 +137,13 @@ public class ImportProcessContextHolder {
         lock.lock();
         try {
             ensureInitialized();
-            if (future.isDone()) {
-                return CompletableFuture.completedFuture(function.apply(instance));
+            switch (future.state()) {
+                case FAILED:
+                    Future<R> result = CompletableFuture.failedFuture(future.exceptionNow());
+                    future = cancelledFuture();
+                    return result;
+                case CANCELLED, SUCCESS:
+                    return CompletableFuture.completedFuture(function.apply(instance));
             }
             return cancelledFuture();
         } finally {
@@ -150,19 +156,27 @@ public class ImportProcessContextHolder {
      *
      * @param consumer accepting the context
      * @return canceled future when there is already another task running or scheduled, future of the submitted task
-     *     otherwise
+     *     otherwise, failed future when the previous future failed.
      */
     @NullUnmarked
     public Future<?> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
         lock.lock();
         try {
             ensureInitialized();
-            if (future.isDone()) {
-                final Future<?> result = executor.submit(() -> consumer.accept(instance));
-                future = result;
-                return result;
+            Future<?> result;
+            switch (future.state()) {
+                case FAILED:
+                    result = CompletableFuture.failedFuture(future.exceptionNow());
+                    future = cancelledFuture();
+                    return result;
+                case CANCELLED, SUCCESS:
+                    result = executor.submit(() -> consumer.accept(instance));
+                    future = result;
+                    return result;
+                default:
+                    result = cancelledFuture();
             }
-            return cancelledFuture();
+            return result;
         } finally {
             lock.unlock();
         }

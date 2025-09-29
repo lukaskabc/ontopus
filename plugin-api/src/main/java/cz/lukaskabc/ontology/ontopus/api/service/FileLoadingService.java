@@ -27,9 +27,9 @@ public interface FileLoadingService extends ImportProcessingService<Path> {
      *
      * @param formResult The result of the submitted form
      * @param context The context of importing process
-     * @return the result of the operation with path to the created folder
+     * @return the path to the created folder
      * @implSpec The caller is responsible for invoking this method asynchronously if blocking operation is not desired.
      */
     @Override
-    Result<Path> handleSubmit(FormResult formResult, ImportProcessContext context);
+    Path handleSubmit(FormResult formResult, ImportProcessContext context);
 }

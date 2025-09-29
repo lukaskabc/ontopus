@@ -39,9 +39,9 @@ public class ResultHandlingServiceWrapper<R> implements ImportProcessingService<
     }
 
     @Override
-    public Result<R> handleSubmit(FormResult formResult, ImportProcessContext context) {
-        final Result<R> result = processingService.handleSubmit(formResult, context);
-        resultConsumer.accept(result.value(), context);
+    public R handleSubmit(FormResult formResult, ImportProcessContext context) {
+        final R result = processingService.handleSubmit(formResult, context);
+        resultConsumer.accept(result, context);
         return result;
     }
 }

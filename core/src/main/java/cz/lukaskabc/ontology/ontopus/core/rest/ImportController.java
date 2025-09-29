@@ -49,8 +49,9 @@ public class ImportController {
                 }
                 yield ResponseEntity.noContent().build();
             }
+            case RUNNING -> ResponseEntity.accepted().build();
             case FAILED -> throw future.exceptionNow();
-            case RUNNING, CANCELLED -> throw new ImportProcessTaskConflictException();
+            case CANCELLED -> throw new ImportProcessTaskConflictException();
         };
     }
 
@@ -71,7 +72,8 @@ public class ImportController {
 
     @GetMapping
     public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
-        Future<JsonForm> future = mediator.getCurrentForm();
+        Future<JsonForm> future = mediator.getCurrentForm(); // TODO include form data when publishing new version of
+        // existing ontology
         return handleFuture(future);
     }
 
@@ -137,9 +139,15 @@ public class ImportController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> onFormSubmit(
-            @RequestParam Map<String, JsonNode> data,
+            @RequestParam Map<String, String> data,
             @RequestParam(required = false) MultiValueMap<String, MultipartFile> files)
             throws Throwable {
-        return handleFuture(mediator.submitFormResult(new FormResult(data, files)));
+
+        Map<String, JsonNode> jsonData = new HashMap<>(data.size());
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            jsonData.put(entry.getKey(), objectMapper.readTree(entry.getValue()));
+        }
+        return handleFuture(mediator.submitFormResult(new FormResult(jsonData, files))); // TODO how to pass async error
+        // back to the FE?
     }
 }

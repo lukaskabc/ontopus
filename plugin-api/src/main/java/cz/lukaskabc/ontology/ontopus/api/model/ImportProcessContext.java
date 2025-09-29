@@ -134,11 +134,10 @@ public class ImportProcessContext {
      * @return the removed service
      * @throws NoSuchElementException if the stack is empty
      */
-    private ImportProcessingService<?> popService() {
+    public void popService() {
         processedServices.ensureCapacity(processedServices.size() + pendingServicesStack.size());
         ImportProcessingService<?> last = pendingServicesStack.removeLast();
         processedServices.addLast(last);
-        return last;
     }
 
     /**

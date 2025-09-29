@@ -8,7 +8,10 @@
         }
       },
       "OrderedImportPipelineService": {
-        "OntologyFileLoadingSelectionService.name": "Ontology source selection"
+        "OntologyFileLoadingSelectionService": {
+          "name":"Ontology source selection" ,
+          "field.title": "Ontology data source"
+        }
       }
     }
   }

@@ -23,7 +23,7 @@ public class OntoBuilS implements OrderedImportPipelineService<Void> {
     }
 
     @Override
-    public Result<Void> handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
         return null;
     }
 }

@@ -31,5 +31,5 @@ public interface OntologyArtifactBuildingService extends ImportProcessingService
      * @implSpec The caller is responsible for invoking this method asynchronously if blocking operation is not desired.
      */
     @Override
-    Result<Void> handleSubmit(FormResult formResult, ImportProcessContext context);
+    Void handleSubmit(FormResult formResult, ImportProcessContext context);
 }

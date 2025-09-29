@@ -1,33 +1,66 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
-import java.util.Collection;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 
-public class ImportProcessNextServiceSelector<S extends ImportProcessingService<?>>
+public abstract class ImportProcessNextServiceSelector<S extends ImportProcessingService<?>>
         implements ImportProcessingService<S> {
 
-    private final Collection<S> services;
+    protected final List<S> services;
+    protected final ObjectMapper objectMapper;
+    protected final JsonForm jsonForm;
 
-    public ImportProcessNextServiceSelector(Collection<S> services) {
+    public ImportProcessNextServiceSelector(List<S> services, ObjectMapper objectMapper) {
+        if (services.isEmpty()) {
+            throw new IllegalStateException("No services found for service selection!"); // TODO exception
+        }
         this.services = services;
+        this.objectMapper = objectMapper;
+        this.jsonForm = makeForm();
     }
 
     @Override
     public @Nullable JsonForm getJsonForm() {
-        return null;
+        return jsonForm;
     }
 
     @Override
-    public String getServiceName() {
-        return "ontopus.core.service.ImportProcessingService.ImportProcessNextServiceSelector.name";
+    public S handleSubmit(FormResult formResult, ImportProcessContext context) {
+        JsonNode serviceIndex = formResult.formData().getOrDefault("service", objectMapper.nullNode());
+        if (serviceIndex.isNumber()) {
+            int index = serviceIndex.asInt();
+            if (index >= 0 && index < services.size()) {
+                return services.get(index);
+            }
+        }
+        throw new IllegalArgumentException("Invalid service index!"); // TODO exception and passing it to the FE
     }
 
-    @Override
-    public Result<S> handleSubmit(FormResult formResult, ImportProcessContext context) {
-        return null;
+    protected JsonForm makeForm() {
+        ObjectNode schema = objectMapper.createObjectNode();
+        schema.put("type", "object");
+        ObjectNode properties = schema.putObject("properties");
+        ObjectNode service = properties
+                .putObject("service")
+                .put("type", "number")
+                .put(
+                        "title",
+                        "ontopus.core.service.OrderedImportPipelineService.OntologyFileLoadingSelectionService.field.title");
+
+        ArrayNode items = service.putArray("oneOf");
+        for (int i = 0; i < services.size(); i++) {
+            items.addObject().put("const", i).put("title", services.get(i).getServiceName());
+        }
+
+        ObjectNode uiSchema = objectMapper.createObjectNode();
+        return new JsonForm(schema, uiSchema, null);
     }
 }

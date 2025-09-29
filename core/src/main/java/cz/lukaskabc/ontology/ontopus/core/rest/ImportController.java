@@ -14,8 +14,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @RestController
 @RequestMapping(path = "/import")
 public class ImportController {
-    private static final Logger log = LogManager.getLogger(ImportController.class);
     private final ImportProcessMediator mediator;
     private final ObjectMapper objectMapper;
 

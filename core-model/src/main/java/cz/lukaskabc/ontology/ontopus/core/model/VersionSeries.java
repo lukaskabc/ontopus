@@ -19,21 +19,16 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private VersionSeriesURI identifier;
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_hasCurrentVersion)
-    private VersionArtifactURI currentVersion;
-
+    /** The newest version of the ontology */
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_last)
     private VersionArtifactURI last;
 
+    /** The oldest version of the ontology */
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_first)
     private VersionArtifactURI first;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_seriesMember)
     private Set<VersionArtifactURI> members;
-
-    public VersionArtifactURI getCurrentVersion() {
-        return currentVersion;
-    }
 
     @Override
     public Set<DistributionURI> getDistributions() {
@@ -62,10 +57,6 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     public SerializableImportProcessContext getSerializableImportProcessContext() {
         return serializableImportProcessContext;
-    }
-
-    public void setCurrentVersion(VersionArtifactURI currentVersion) {
-        this.currentVersion = currentVersion;
     }
 
     @Override

@@ -1,7 +1,6 @@
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import Form from '@rjsf/mui'
 import type { FunctionComponent } from 'preact'
-import type { JsonForm } from '@/model/JsonForm.ts'
 import validator from '@rjsf/validator-ajv8'
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
 import type { FormEvent } from 'react'
@@ -12,14 +11,7 @@ import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
 import { loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/components/staged-form/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
 import type { IChangeEvent } from '@rjsf/core'
-import { Box } from '@mui/material'
-
-const ONTOPUS_NEXT_FORM_URL_HEADER = 'ONTOPUS-Next-Form-Location'
-
-export interface StagedFormData {
-  jsonForm: JsonForm
-  refreshForm: () => void
-}
+import { Box, Button } from '@mui/material'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
@@ -32,30 +24,44 @@ const WIDGETS: RegistryWidgetsType = {
  * @implNote Surround with suspense
  * @constructor
  */
-export const StagedForm: FunctionComponent<StagedFormData> = ({ jsonForm }) => {
-  const { i18n } = useTranslation()
-  const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>(jsonForm.jsonSchema)
-  const [uiSchema, setUiSchema] = useState<UiSchema | undefined>(jsonForm.uiSchema || undefined)
-  const [formData, setFormData] = useState<any | undefined>(jsonForm.formData || undefined)
-  const [doLoadNext, setDoLoadNext] = useState<boolean>(false)
+export const StagedForm: FunctionComponent<{}> = () => {
+  const { t, i18n } = useTranslation()
+  const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>()
+  const [uiSchema, setUiSchema] = useState<UiSchema>()
+  const [formData, setFormData] = useState<any>()
+  const [loadScheme, setLoadScheme] = useState<boolean>(true)
   const [isDisabled, setIsDisabled] = useState<boolean>(false)
+  /*
+  {
+    submitPath: '',
+    jsonSchema: JSON.parse(
+      '{"$schema": "http://json-schema.org/draft-07/schema#","type": "object","$translationRoot": "ontopus.plugin.git.importForm","properties": {"repositoryUrl": {"type": "string","format": "uri"},"branch": {"type": "string"},"authText": {"type": "string"},"username": {"type": "string"},"password": {"type": "string"}},"required": ["repositoryUrl"],"dependencies": {"password": ["username"],"username": ["password"]}}'
+    ),
+  }
+   */
 
+  // load JSON form when doLoadJsonForm is true
+  // if the endpoint returns 205, initialize new import process and set doLoadJsonForm to true again
   useEffect(() => {
-    if (!doLoadNext) {
+    if (!loadScheme) {
       return
     }
-    setDoLoadNext(false)
-    trackPromise(loadJsonForm(), STAGED_FORM_PROMISE_AREA)
-      .then((form) => {
-        setJsonSchema(form.jsonSchema)
-        setUiSchema(form.uiSchema)
-        setFormData(form.formData)
+
+    const { promise, cleanup } = loadJsonForm()
+
+    trackPromise(promise, STAGED_FORM_PROMISE_AREA)
+      .then((result) => {
+        setJsonSchema(result.jsonSchema)
+        setFormData(result.formData)
+        setUiSchema(result.uiSchema)
+        setFormData(result.formData)
       })
-      .catch((e) => {
-        setDoLoadNext(true)
-        console.error(e)
-      })
-  }, [doLoadNext])
+      .catch(console.error) // TODO handle error
+      .finally(() => setLoadScheme(false))
+    return cleanup
+  }, [loadScheme])
+
+  console.debug(jsonSchema, uiSchema, formData)
 
   const onSubmit = useCallback(({ formData }: IChangeEvent, e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -66,7 +72,7 @@ export const StagedForm: FunctionComponent<StagedFormData> = ({ jsonForm }) => {
       //     setNextFormUrl(res.headers.get(ONTOPUS_NEXT_FORM_URL_HEADER) || nextFormUrl)
       //   }
       // })
-      .then(() => setDoLoadNext(true))
+      .then(() => setLoadScheme(true))
       .catch((e) => {
         setIsDisabled(false)
         console.error(e)
@@ -77,19 +83,24 @@ export const StagedForm: FunctionComponent<StagedFormData> = ({ jsonForm }) => {
 
   return (
     <>
-      <Form
-        schema={localizedSchema}
-        uiSchema={uiSchema}
-        formData={formData}
-        validator={validator}
-        liveValidate={true}
-        onSubmit={onSubmit}
-        widgets={WIDGETS}
-        disabled={isDisabled}
-      />
-      <Box sx={{ mt: 4 }}>
+      {localizedSchema && (
+        <Form
+          schema={localizedSchema}
+          uiSchema={uiSchema}
+          formData={formData}
+          validator={validator}
+          liveValidate={true}
+          onSubmit={onSubmit}
+          widgets={WIDGETS}
+          disabled={isDisabled}
+        />
+      )}
+      <Box sx={{ my: 4 }}>
         <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
       </Box>
+      <Button variant={'outlined'} color={'error'} style={{ float: 'right' }}>
+        {t('publish.button.abort')}
+      </Button>
     </>
   )
 }

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -62,6 +63,7 @@ public class ImportController {
      * @param versionSeries The identifier of existing version series for publishing a new version.
      */
     @PostMapping("initialize")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void initialize(@Nullable @RequestParam(required = false, name = "versionSeries") URI versionSeries) {
         VersionSeriesURI uri = null;
         if (versionSeries != null) {

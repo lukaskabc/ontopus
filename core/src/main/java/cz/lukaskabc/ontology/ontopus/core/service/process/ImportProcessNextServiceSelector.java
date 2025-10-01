@@ -55,6 +55,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                         "title",
                         "ontopus.core.service.OrderedImportPipelineService.OntologyFileLoadingSelectionService.field.title");
 
+        schema.putArray("required").add("service");
         ArrayNode items = service.putArray("oneOf");
         for (int i = 0; i < services.size(); i++) {
             items.addObject().put("const", i).put("title", services.get(i).getServiceName());

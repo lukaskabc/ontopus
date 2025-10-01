@@ -9,6 +9,9 @@
     }
   },
   "publish": {
+    "button": {
+      "abort": "Abort and reset"
+    },
     "step": {
       "import": "Load and import",
       "process": "Process and edit",

@@ -50,6 +50,27 @@ export default function intlSchema(schema: RJSFSchema, i18n: i18n, scope?: strin
     )
   }
 
+  ;['oneOf', 'allOf', 'anyOf'].forEach((option) => {
+    if (!schema[option]) {
+      return
+    }
+
+    if (Array.isArray(schema[option])) {
+      newSchema[option] = []
+      schema[option].forEach((item: Object, i: number) => {
+        if (typeof item === 'object') {
+          newSchema[option].push(intlSchema(item, i18n, getPropScope(scope!, i?.toString())))
+        } else {
+          newSchema[option].push(item)
+        }
+      })
+    } else {
+      newSchema[option] = mapValues(schema[option], (propSchema, propName) =>
+        intlSchema(propSchema, i18n, getPropScope(scope!, propName))
+      )
+    }
+  })
+
   if (schema.items && schema.type === 'array') {
     if (schema.items.enum && !schema.items.enumNames) {
       newSchema.items = {

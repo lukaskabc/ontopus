@@ -55,6 +55,7 @@ export const StagedForm: FunctionComponent<{}> = () => {
         setFormData(result.formData)
         setUiSchema(result.uiSchema)
         setFormData(result.formData)
+        setIsDisabled(false)
       })
       .catch(console.error) // TODO handle error
       .finally(() => setLoadScheme(false))

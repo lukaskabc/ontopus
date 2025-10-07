@@ -141,7 +141,7 @@ public class ImportController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> onFormSubmit(
-            @RequestParam Map<String, String> data,
+            @RequestParam(required = false) Map<String, String> data,
             @RequestParam(required = false) MultiValueMap<String, MultipartFile> files)
             throws Throwable {
 

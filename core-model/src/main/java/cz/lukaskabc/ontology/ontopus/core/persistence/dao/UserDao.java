@@ -43,7 +43,7 @@ public class UserDao extends AbstractDao<UserURI, User> {
     public boolean userAccountExists(@Nullable String username) {
         final var query = em.createNativeQuery(
                         """
-				ASK FROM ?graph {
+				ASK FROM NAMED ?graph {
 				    ?user a ?userType;
 				        ?hasUsername ?username .
 				}

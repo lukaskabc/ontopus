@@ -10,7 +10,7 @@ import java.io.IOException;
  * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
  *     annotation)
  */
-public interface DataImportingService {
+public interface DataFileImportingService {
 
     /**
      * Imports the provided files into the database. All the files will have the same format.

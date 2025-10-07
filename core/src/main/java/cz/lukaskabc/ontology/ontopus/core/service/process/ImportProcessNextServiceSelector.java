@@ -48,12 +48,8 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         ObjectNode schema = objectMapper.createObjectNode();
         schema.put("type", "object");
         ObjectNode properties = schema.putObject("properties");
-        ObjectNode service = properties
-                .putObject("service")
-                .put("type", "number")
-                .put(
-                        "title",
-                        "ontopus.core.service.OrderedImportPipelineService.OntologyFileLoadingSelectionService.field.title");
+        ObjectNode service =
+                properties.putObject("service").put("type", "number").put("title", getServiceName());
 
         schema.putArray("required").add("service");
         ArrayNode items = service.putArray("oneOf");

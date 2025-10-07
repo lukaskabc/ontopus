@@ -41,10 +41,14 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
         ObjectNode properties = schema.putObject("properties");
         ObjectNode files = properties.putObject("files");
         files.put("type", "string");
-        files.put("format", "data-url");
+        // files.put("format", "data-url");
         files.put("multiple", true);
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
+        uiSchema.putObject("files")
+                .putObject("ui:options")
+                .put("widget", "htmlFileWidget")
+                .put("multiple", "true");
         return new JsonForm(schema, uiSchema, null);
     }
 }

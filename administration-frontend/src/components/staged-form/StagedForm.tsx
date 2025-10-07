@@ -12,9 +12,11 @@ import { loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/components
 import { trackPromise } from 'react-promise-tracker'
 import type { IChangeEvent } from '@rjsf/core'
 import { Box, Button } from '@mui/material'
+import ReusableFileWidget from '@/components/staged-form/ReusableFileWidget.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
+  htmlFileWidget: ReusableFileWidget,
 }
 
 /**

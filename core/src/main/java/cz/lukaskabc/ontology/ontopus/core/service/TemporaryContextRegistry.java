@@ -56,13 +56,13 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
                 .forEach(context -> {
                     try {
                         Objects.requireNonNull(context);
-                        em.createNativeQuery(
-                                        """
-								DROP GRAPH ?context;
-								DELETE WHERE { GRAPH ?tempContextGraph { ?context ?predicate ?object . }}
-								""")
+                        em.createNativeQuery("DROP GRAPH ?context")
                                 .setParameter("context", context)
+                                .executeUpdate();
+                        em.createNativeQuery(
+                                        "DELETE FROM ?tempContextGraph WHERE { ?context ?predicate ?object . }")
                                 .setParameter("tempContextGraph", temporaryContextGraph)
+                                .setParameter("context", context)
                                 .executeUpdate();
                     } catch (Exception e) {
                         log.error("Failed to drop temporary context {}", context, e);

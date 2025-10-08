@@ -5,7 +5,7 @@ import {
   type StrictRJSFSchema,
   type WidgetProps,
 } from '@rjsf/utils'
-import type { ChangeEvent } from 'preact'
+import type { ChangeEvent } from 'preact/compat'
 
 /**
  *  File widget allowing to reuse a file that is already cached on the server
@@ -18,8 +18,9 @@ function ReusableFileWidget<T = any, S extends StrictRJSFSchema = RJSFSchema, F 
   props.multiple = !!(props.multiple || props.options?.multiple)
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event?.target?.files) { // skip if there are is no files field
-      return;
+    if (!event?.target?.files) {
+      // skip if there are is no files field
+      return
     }
     // process files, perhaps serialize them to some JSON?
     // what about making an array of objects, each will have a tag whether it is a new file to upload

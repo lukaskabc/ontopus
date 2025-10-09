@@ -8,16 +8,31 @@ export function resetImportProcess(): Promise<Response> {
   return request('POST', '/import/initialize', {}, [204])
 }
 
-function compileDataForRequest(formData: any): string | FormData {
+function mapToJson(value: any) {
+  if (Array.isArray(value) || typeof value === 'object') {
+    return JSON.stringify(value)
+  }
+  return value
+}
+
+export interface FileWithFieldName {
+  name: string
+  file: File
+}
+
+function compileDataForRequest(formData: any, files: FileWithFieldName[]): string | FormData {
   const data = new FormData()
   Object.keys(formData).forEach((key: string) => {
-    data.append(key, formData[key])
+    data.append(key, mapToJson(formData[key]))
+  })
+  files.forEach((file) => {
+    data.append(file.name, file.file)
   })
   return data
 }
 
-export function submitForm(formData: any) {
-  return request('POST', '/import', { body: compileDataForRequest(formData) }, [204, 202, 200])
+export function submitForm(formData: any, files: FileWithFieldName[]) {
+  return request('POST', '/import', { body: compileDataForRequest(formData, files) }, [204, 202, 200])
 }
 
 /**

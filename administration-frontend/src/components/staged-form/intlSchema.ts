@@ -12,9 +12,12 @@ const tOrNull = (i18n: i18n, key?: string) => (key && i18n.exists(key) ? i18n.t(
 //   scope is path to root of form/type localised text in i18n object. eg 'forms.editUser'
 //   i18n is object containing localised text for schema
 //   name is default name for root property, leave undefined for root
-export default function intlSchema(schema: RJSFSchema, i18n: i18n, scope?: string) {
+export default function intlSchema(schema?: RJSFSchema, i18n?: i18n, scope?: string) {
   if (!schema) {
     return undefined
+  }
+  if (!i18n) {
+    return schema
   }
   if (scope == null) {
     if (schema['$translationRoot']) {

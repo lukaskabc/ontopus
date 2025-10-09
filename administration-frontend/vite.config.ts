@@ -10,4 +10,11 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  server: {
+    // required for dev auto-refresh in WSL
+    watch: {
+      ignored: ['/node_modules/**', '/dist/**'],
+      usePolling: true,
+    },
+  },
 })

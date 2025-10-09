@@ -31,24 +31,16 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     protected JsonForm makeForm() {
         ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
+        schema.put("type", "array");
         schema.put("title", getServiceName());
-        ObjectNode properties = schema.putObject("properties");
-        ObjectNode files = properties.putObject("files");
-        files.put("type", "string");
-        // files.put("format", "data-url");
-        files.put("multiple", true);
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
-        uiSchema.putObject("files")
-                .putObject("ui:options")
-                .put("widget", "htmlFileWidget")
-                .put("multiple", "true");
+        uiSchema.put("ui:field", "reusableFileField").put("multiple", true).put("directory", true);
         return new JsonForm(schema, uiSchema, null);
     }
 }

@@ -60,7 +60,7 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
                                 .setParameter("context", context)
                                 .executeUpdate();
                         em.createNativeQuery(
-                                        "DELETE FROM ?tempContextGraph WHERE { ?context ?predicate ?object . }")
+                                        "DELETE WHERE { GRAPH ?tempContextGraph { ?context ?predicate ?object . }}")
                                 .setParameter("tempContextGraph", temporaryContextGraph)
                                 .setParameter("context", context)
                                 .executeUpdate();

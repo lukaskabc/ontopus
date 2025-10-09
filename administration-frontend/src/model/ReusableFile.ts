@@ -18,6 +18,12 @@ export const ReusableFileType = makeEnum(
 )
 export type ReusableFileType = (typeof ReusableFileType)[keyof typeof ReusableFileType]
 
+function pathPrefixedFileName(file: File) {
+  // get path if there is one and strip all leading slashes
+  const path = (file?.webkitRelativePath || '').replace(/\/+$/, '')
+  return path.endsWith(file.name) ? path : `${path}/${file.name}`
+}
+
 /**
  * A file reference
  */
@@ -27,6 +33,9 @@ export class ReusableFile {
   constructor(type: ReusableFileType, fileName: string) {
     this.type = type
     this.fileName = fileName
+  }
+  static fromFile(file: File) {
+    return new ReusableFile(ReusableFileType.UPLOAD, pathPrefixedFileName(file))
   }
   static fromJSON(json: any): ReusableFile | null {
     if (json instanceof ReusableFile) {

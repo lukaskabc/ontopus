@@ -7,6 +7,10 @@ spring:
   threads:
     virtual:
       enabled: true # enables virtual threads
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
 # use Spring "swagger" profile to enable Swagger
 springdoc:
   api-docs:

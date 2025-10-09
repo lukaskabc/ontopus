@@ -1,22 +1,49 @@
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import Form from '@rjsf/mui'
-import type { FunctionComponent } from 'preact'
+import type { IChangeEvent } from '@rjsf/core'
+import RjsfForm from '@rjsf/core'
+import { createRef, type FunctionComponent, type RefObject } from 'preact'
 import validator from '@rjsf/validator-ajv8'
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
-import type { FormEvent } from 'react'
+import { type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import intlSchema from '@/components/staged-form/intlSchema.ts'
-import type { RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
+import type { RegistryFieldsType, RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
-import { loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/components/staged-form/actions.ts'
+import {
+  type FileWithFieldName,
+  loadJsonForm,
+  STAGED_FORM_PROMISE_AREA,
+  submitForm,
+} from '@/components/staged-form/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
-import type { IChangeEvent } from '@rjsf/core'
 import { Box, Button } from '@mui/material'
-import ReusableFileWidget from '@/components/staged-form/ReusableFileWidget.tsx'
+import ReusableFileField from '@/components/staged-form/ReusableFileField.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
-  htmlFileWidget: ReusableFileWidget,
+}
+
+const FIELDS: RegistryFieldsType = {
+  reusableFileField: ReusableFileField,
+}
+
+function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
+  const fileList: FileWithFieldName[] = []
+  const formElement = form?.formElement as RefObject<HTMLElement>
+  if (formElement?.current) {
+    const fileInputs = formElement.current.querySelectorAll('input[type="file"]')
+    fileInputs.forEach((input) => {
+      const name = input.getAttribute('name') || 'file'
+      const fInput = input as any
+      if (fInput?.files) {
+        for (const file of fInput.files as FileList) {
+          fileList.push({ name, file })
+        }
+      }
+    })
+  }
+  return fileList
 }
 
 /**
@@ -33,6 +60,8 @@ export const StagedForm: FunctionComponent<{}> = () => {
   const [formData, setFormData] = useState<any>()
   const [loadScheme, setLoadScheme] = useState<boolean>(true)
   const [isDisabled, setIsDisabled] = useState<boolean>(false)
+  const formRef = createRef<RjsfForm>()
+
   /*
   {
     submitPath: '',
@@ -66,21 +95,26 @@ export const StagedForm: FunctionComponent<{}> = () => {
 
   console.debug(jsonSchema, uiSchema, formData)
 
-  const onSubmit = useCallback(({ formData }: IChangeEvent, e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsDisabled(true)
-    trackPromise(submitForm(formData), STAGED_FORM_PROMISE_AREA)
-      // .then((res) => {
-      //   if (res.headers) {
-      //     setNextFormUrl(res.headers.get(ONTOPUS_NEXT_FORM_URL_HEADER) || nextFormUrl)
-      //   }
-      // })
-      .then(() => setLoadScheme(true))
-      .catch((e) => {
-        setIsDisabled(false)
-        console.error(e)
-      }) // TODO handle and show errors
-  }, [])
+  const onSubmit = useCallback(
+    ({ formData }: IChangeEvent, e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      setIsDisabled(true)
+      const fileList = resolveFiles(formRef.current)
+
+      trackPromise(submitForm(formData, fileList), STAGED_FORM_PROMISE_AREA)
+        // .then((res) => {
+        //   if (res.headers) {
+        //     setNextFormUrl(res.headers.get(ONTOPUS_NEXT_FORM_URL_HEADER) || nextFormUrl)
+        //   }
+        // })
+        .then(() => setLoadScheme(true))
+        .catch((e) => {
+          setIsDisabled(false)
+          console.error(e)
+        }) // TODO handle and show errors
+    },
+    [formRef]
+  )
 
   const localizedSchema = useMemo(() => intlSchema(jsonSchema, i18n), [jsonSchema])
 
@@ -88,6 +122,7 @@ export const StagedForm: FunctionComponent<{}> = () => {
     <>
       {localizedSchema && (
         <Form
+          ref={formRef}
           schema={localizedSchema}
           uiSchema={uiSchema}
           formData={formData}
@@ -95,6 +130,7 @@ export const StagedForm: FunctionComponent<{}> = () => {
           liveValidate={true}
           onSubmit={onSubmit}
           widgets={WIDGETS}
+          fields={FIELDS}
           disabled={isDisabled}
         />
       )}

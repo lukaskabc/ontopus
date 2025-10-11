@@ -2,24 +2,36 @@ package cz.lukaskabc.ontology.ontopus.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Result of submitted form.
  *
  * @param formData Data submitted in the form
- * @param submittedFiles Files submitted along the form
+ * @param reusableFiles Files submitted along the form or cached on the server mapped to their relative paths
  */
-public record FormResult(Map<String, JsonNode> formData, MultiValueMap<String, MultipartFile> submittedFiles)
+public record FormResult(Map<String, JsonNode> formData, Map<String, ReusableFile> reusableFiles)
         implements Serializable {
-    public FormResult(
-            @Nullable Map<String, JsonNode> formData, @Nullable MultiValueMap<String, MultipartFile> submittedFiles) {
-        this.formData = formData == null ? Map.of() : formData;
-        this.submittedFiles = submittedFiles == null ? MultiValueMap.fromSingleValue(Map.of()) : submittedFiles;
+    public FormResult(@Nullable Map<String, JsonNode> formData, @Nullable List<ReusableFile> reusableFiles) {
+        this(
+                formData == null ? Map.of() : formData,
+                reusableFiles == null ? Map.of() : mapReusableFiles(reusableFiles));
+    }
+
+    public FormResult(Map<String, JsonNode> formData, Map<String, ReusableFile> reusableFiles) {
+        this.formData = formData;
+        this.reusableFiles = reusableFiles;
+    }
+
+    private static Map<String, ReusableFile> mapReusableFiles(List<ReusableFile> reusableFiles) {
+        Map<String, ReusableFile> result = new HashMap<>(reusableFiles.size());
+        for (ReusableFile file : reusableFiles) {
+            result.put(file.getFileName(), file);
+        }
+        return result;
     }
 
     /**
@@ -34,15 +46,5 @@ public record FormResult(Map<String, JsonNode> formData, MultiValueMap<String, M
             return value.asText();
         }
         return null; // TODO consider optional
-    }
-
-    /**
-     * Resolves a single multipart file from {@link #submittedFiles} associated with the key.
-     *
-     * @param key The key to lookup
-     * @return The {@link List<MultipartFile> List&lt;MultipartFile&gt;} if present, {@code empty list} otherwise
-     */
-    public List<MultipartFile> getFiles(String key) {
-        return submittedFiles.getOrDefault(key, List.of());
     }
 }

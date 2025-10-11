@@ -28,14 +28,18 @@ function pathPrefixedFileName(file: File) {
  * A file reference
  */
 export class ReusableFile {
+  // used for backend class mapping
+  readonly class = 'ReusableFile'
   readonly type: ReusableFileType
   readonly fileName: string
-  constructor(type: ReusableFileType, fileName: string) {
+  readonly formFieldName: string
+  constructor(type: ReusableFileType, fileName: string, formFieldName: string) {
     this.type = type
     this.fileName = fileName
+    this.formFieldName = formFieldName
   }
-  static fromFile(file: File) {
-    return new ReusableFile(ReusableFileType.UPLOAD, pathPrefixedFileName(file))
+  static fromFile(file: File, formFieldName: string): ReusableFile {
+    return new ReusableFile(ReusableFileType.UPLOAD, pathPrefixedFileName(file), formFieldName)
   }
   static fromJSON(json: any): ReusableFile | null {
     if (json instanceof ReusableFile) {
@@ -44,8 +48,9 @@ export class ReusableFile {
     if (typeof json === 'object') {
       const type = ReusableFileType.from(json['type'] as string)
       const fileName = json['fileName'] as string
-      if (type && fileName) {
-        return new ReusableFile(type, fileName)
+      const formFieldName = json['formFieldName'] as string
+      if (type && fileName && formFieldName) {
+        return new ReusableFile(type, fileName, formFieldName)
       }
     }
     return null

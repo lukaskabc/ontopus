@@ -4,10 +4,10 @@ import { ReusableFile } from '@/model/ReusableFile.ts'
 import { useCallback } from 'preact/hooks'
 import type { ChangeEvent } from 'preact/compat'
 
-function processFiles(files: FileList): ReusableFile[] {
+function processFiles(files: FileList, formFieldName: string): ReusableFile[] {
   const result: ReusableFile[] = []
   for (let file of files) {
-    result.push(ReusableFile.fromFile(file))
+    result.push(ReusableFile.fromFile(file, formFieldName))
   }
   return result
 }
@@ -19,7 +19,9 @@ export default function ReusableFileWidget<
 >(props: WidgetProps<T, S, F>) {
   const { options } = props
 
-  const inputProps: any = {}
+  const inputProps: any = {
+    name: props.name || 'files',
+  }
 
   if (options.directory) {
     inputProps.directory = true
@@ -28,7 +30,7 @@ export default function ReusableFileWidget<
 
   const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const files = (e?.target as any).files
-    const result = processFiles(files)
+    const result = processFiles(files, inputProps.name)
     props.onChange(result)
   }, [])
 

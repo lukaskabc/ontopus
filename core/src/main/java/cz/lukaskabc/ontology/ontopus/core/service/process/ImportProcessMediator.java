@@ -13,35 +13,52 @@ import cz.lukaskabc.ontology.ontopus.core.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.Future;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImportProcessMediator {
     static final String FILE_SERVICE_PREFIX_SEPARATOR = ":";
 
+    private static ReusableFile copyFile(
+            ReusableFileDto dto, InputStreamSource streamSource, ImportProcessContext context) {
+        File file = copyFileToContext(streamSource, dto, context);
+        String relativePath = file.toPath().relativize(context.getTempFolder()).toString();
+        dto.setFileName(relativePath);
+        return dto.toReusableFile(file);
+    }
+
+    /**
+     * Copies the file from the {@code source} to the context directory. Uploaded files always overwrites existing
+     * files. Ensures the supplied file name with relative path is safe.
+     *
+     * @param source The source of the file
+     * @param fileDto The file information
+     * @param context The import process context
+     * @return File in the context temporary directory
+     * @throws IllegalStateException if the supplied file name is not safe (escapes the context directory)
+     */
     private static File copyFileToContext(
             InputStreamSource source, ReusableFileDto fileDto, ImportProcessContext context) {
         Objects.requireNonNull(context.getTempFolder());
         final Path safeDestination = FileUtils.resolvePath(context.getTempFolder(), Path.of(fileDto.getFileName()));
 
         try {
-            switch (fileDto.getType()) {
-                case SERVER -> {
-                    Files.copy(source.getInputStream(), safeDestination);
-                }
-                case UPLOAD -> {}
-                // TODO exception
-                default -> throw new IllegalStateException("Unknown ReusableFile type: " + fileDto.getType());
-            }
-            ;
+            CopyOption[] options =
+                    switch (fileDto.getType()) {
+                        case SERVER -> new CopyOption[0];
+                        case UPLOAD -> new CopyOption[] {StandardCopyOption.REPLACE_EXISTING};
+                        // TODO exception
+                        default -> throw new IllegalStateException("Unknown ReusableFile type: " + fileDto.getType());
+                    };
+            Files.copy(source.getInputStream(), safeDestination, options);
             final File safeTarget = safeDestination.toFile();
             if (!safeTarget.isFile()) {
                 throw new IllegalStateException("Copied file does not exist: " + safeDestination);
@@ -54,19 +71,20 @@ public class ImportProcessMediator {
     }
 
     /**
-     * Copies files to context directory
+     * Copies files to context directory and constructs {@link ReusableFile ReusableFiles} with the references to copied
+     * files.
      *
      * @param reusableFiles files to copy
      * @param context the import context
-     * @return Map of relative paths to the files
+     * @return Map of relative paths to the files in the context directory
      */
     private static Map<String, ReusableFile> copyFiles(
             Map<ReusableFileDto, InputStreamSource> reusableFiles, ImportProcessContext context) {
         final Map<String, ReusableFile> files = new HashMap<>(reusableFiles.size());
         for (Map.Entry<ReusableFileDto, InputStreamSource> entry : reusableFiles.entrySet()) {
             ReusableFileDto dto = entry.getKey();
-            File file = copyFileToContext(entry.getValue(), dto, context);
-            files.put(dto.getFileName(), dto.toReusableFile(file));
+            ReusableFile file = copyFile(dto, entry.getValue(), context);
+            files.put(file.getFileName(), file);
         }
         return files;
     }
@@ -75,20 +93,26 @@ public class ImportProcessMediator {
      * Extracts files from combined result and separate them by service class name prefixed to parameter names. The
      * parameter name is expected to have following format {@code full.service.class.Name:ParameterName}
      *
-     * @param combinedResult the combined result
-     * @return Map from service class name to map of parameter name and file list
+     * @param combinedReusableFiles reusable files with prefixed field names
+     * @return Map from service class name to map of file relative paths to the file
      */
-    private static Map<String, Map<String, List<MultipartFile>>> extractCombinedFiles(FormResult combinedResult) {
-        /// Map from service class names to uploaded files (param name, file list)
-        Map<String, Map<String, List<MultipartFile>>> files = new HashMap<>();
-        for (Map.Entry<String, List<MultipartFile>> entry :
-                combinedResult.reusableFiles().entrySet()) {
-            String[] names = entry.getKey().split(FILE_SERVICE_PREFIX_SEPARATOR, 2);
+    private static Map<String, Map<String, ReusableFile>> extractCombinedFiles(
+            Map<ReusableFileDto, InputStreamSource> combinedReusableFiles, ImportProcessContext context) {
+
+        // map from service names to map of relative file paths to the reusable file
+        Map<String, Map<String, ReusableFile>> files = new HashMap<>();
+
+        for (Map.Entry<ReusableFileDto, InputStreamSource> entry : combinedReusableFiles.entrySet()) {
+            final ReusableFileDto dto = entry.getKey();
+            final InputStreamSource streamSource = entry.getValue();
+            String[] names = dto.getFormFieldName().split(FILE_SERVICE_PREFIX_SEPARATOR, 2);
             String serviceClassName = names[0];
             String paramName = names[1];
-            files.putIfAbsent(serviceClassName, new HashMap<>());
-            files.get(serviceClassName).put(paramName, entry.getValue()); // TODO rework handling reusable files with
-            // service prefixed names
+            dto.setFormFieldName(paramName);
+
+            files.computeIfAbsent(serviceClassName, k -> new HashMap<>());
+            ReusableFile file = copyFile(dto, streamSource, context);
+            files.get(serviceClassName).put(file.getFileName(), file);
         }
         return files;
     }
@@ -117,8 +141,15 @@ public class ImportProcessMediator {
         this.finalizingService = finalizingService;
     }
 
+    /**
+     * Combines form data and reusable files mapped to service names to map of service names to form results.
+     *
+     * @param combinedFormData Map of service names to form data JSON
+     * @param filesMap Map of service names to map of relative file path to reusable file
+     * @return Map of service names to form result
+     */
     private Map<String, FormResult> extractFormResults(
-            Map<String, JsonNode> combinedFormData, Map<String, ReusableFile> filesMap) {
+            Map<String, JsonNode> combinedFormData, Map<String, Map<String, ReusableFile>> filesMap) {
         var paramMap = extractCombinedParams(combinedFormData);
         Map<String, FormResult> formResults = new HashMap<>(Math.max(filesMap.size(), paramMap.size()));
         Set<String> serviceClassNames = new HashSet<>(filesMap.keySet());
@@ -126,8 +157,8 @@ public class ImportProcessMediator {
 
         for (String serviceClassName : serviceClassNames) {
             Map<String, JsonNode> params = paramMap.get(serviceClassName);
-            Map<String, List<MultipartFile>> files = filesMap.get(serviceClassName);
-            formResults.put(serviceClassName, new FormResult(params, MultiValueMap.fromMultiValue(files)));
+            Map<String, ReusableFile> files = filesMap.get(serviceClassName);
+            formResults.put(serviceClassName, new FormResult(params, files));
         }
 
         return formResults;
@@ -186,16 +217,17 @@ public class ImportProcessMediator {
     }
 
     /**
-     * Submit all required form results combined and complete the import process in background.
+     * Submit all required form results combined to complete the import process in background.
      *
      * @param combinedJsonData combined results
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
     public Future<?> submitCombinedFormResult(
-            Map<String, JsonNode> combinedJsonData, Map<ReusableFileDto, InputStreamSource> reusableFiles) {
+            Map<String, JsonNode> combinedJsonData, Map<ReusableFileDto, InputStreamSource> combinedReusableFiles) {
         return holder.scheduleWithContext((context -> {
-            Map<String, ReusableFile> filesMap = copyFiles(reusableFiles, context);
-            Map<String, FormResult> formResults = extractFormResults(combinedJsonData, filesMap);
+            Map<String, Map<String, ReusableFile>> serviceNameToFilePathMap =
+                    extractCombinedFiles(combinedReusableFiles, context);
+            Map<String, FormResult> formResults = extractFormResults(combinedJsonData, serviceNameToFilePathMap);
             processAllResults(context, formResults);
         }));
     }

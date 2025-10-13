@@ -14,34 +14,34 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImportFinalizingService {
     private static @NonNull Map<String, UploadedFile> getUploadedFileMap(FormResult result) {
-        Map<String, UploadedFile> reusableFiles =
-                new HashMap<>(result.submittedFiles().size());
+        // Map<String, UploadedFile> reusableFiles =
+        // new HashMap<>(result.submittedFiles().size());
+        //
+        // for (List<MultipartFile> files : result.submittedFiles().values()) {
+        // for (MultipartFile file : files) {
+        // String fileName = file.getOriginalFilename();
+        // if (fileName == null) {
+        // fileName = file.getName();
+        // }
+        // // TODO review path here
+        // UploadedFile uploadedFile = new UploadedFile(fileName,
+        // Path.of(file.getName()));
+        // reusableFiles.put(fileName, uploadedFile);
+        // }
+        // }
 
-        for (List<MultipartFile> files : result.submittedFiles().values()) {
-            for (MultipartFile file : files) {
-                String fileName = file.getOriginalFilename();
-                if (fileName == null) {
-                    fileName = file.getName();
-                }
-                // TODO review path here
-                UploadedFile uploadedFile = new UploadedFile(fileName, Path.of(file.getName()));
-                reusableFiles.put(fileName, uploadedFile);
-            }
-        }
-
-        return reusableFiles;
+        // return reusableFiles;
+        return null; // TODO whole ImportFinalizingService needs to be redone
     }
     /** Copies the temporary directory and all uploaded files to a persistent one an */
     private static void persistFiles(ImportProcessContext context, Path targetPath) {

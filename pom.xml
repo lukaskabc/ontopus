@@ -14,13 +14,13 @@
         <module>core</module>
         <module>plugin-api</module>
         <!--        <module>plugin-git</module>-->
-        <!--        <module>plugin-file</module>-->
+        <module>plugin-file</module>
         <module>core-model</module>
     </modules>
 
     <properties>
         <jackson.version>2.19.2</jackson.version>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <jopa.version>2.6.3</jopa.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

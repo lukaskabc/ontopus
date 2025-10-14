@@ -1,20 +1,24 @@
-package cz.lukaskabc.ontology.ontopus.core.service.process;
+package cz.lukaskabc.ontology.ontopus.plugin.file;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
+import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyLoadingService;
+import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+/** {@link OntologyLoadingService} allowing to upload a local files to server. */
 @Service
-public class FileUploadOntologyLoadingService implements OntologyLoadingService {
+public class FileUploadProcessingService implements ImportProcessingService<Map<String, ReusableFile>> {
     private final JsonForm jsonForm;
     private final ObjectMapper objectMapper;
 
-    public FileUploadOntologyLoadingService(ObjectMapper objectMapper) {
+    public FileUploadProcessingService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.jsonForm = makeForm();
     }
@@ -26,12 +30,23 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
 
     @Override
     public String getServiceName() {
-        return "ontopus.core.service.OntologyLoadingService.FileUploadOntologyLoadingService.title";
+        return "ontopus.plugin.file_upload.serviceName";
     }
 
     @Override
-    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Map<String, ReusableFile> handleSubmit(FormResult formResult, ImportProcessContext context) {
+        // there is not much to do, the files were uploaded and placed in to the context
+        // temp directory
+        // we can just validate that they exist
+
+        for (ReusableFile file : formResult.reusableFiles().values()) {
+            if (!file.getFile().isFile()) {
+                throw new UploadedFileNotFoundException("The uploaded file was not found in file system: "
+                        + file.getFile().getAbsolutePath());
+            }
+        }
+
+        return formResult.reusableFiles();
     }
 
     protected JsonForm makeForm() {

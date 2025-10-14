@@ -12,11 +12,6 @@
           "name":"Ontology source selection" ,
           "field.title": "Ontology data source"
         }
-      },
-      "OntologyLoadingService": {
-        "FileUploadOntologyLoadingService": {
-          "title": "Upload files"
-        }
       }
     }
   }

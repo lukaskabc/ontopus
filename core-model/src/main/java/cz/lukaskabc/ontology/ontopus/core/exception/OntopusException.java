@@ -1,6 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.core.exception;
 
-public abstract class OntopusException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+/** Exception from the Ontology Publication Server */
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+public class OntopusException extends RuntimeException {
     public OntopusException(String message) {
         super(message);
     }

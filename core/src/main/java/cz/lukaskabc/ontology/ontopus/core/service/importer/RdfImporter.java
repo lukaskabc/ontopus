@@ -1,20 +1,18 @@
-package cz.lukaskabc.ontology.ontopus.plugin.file.importer;
+package cz.lukaskabc.ontology.ontopus.core.service.importer;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.api.service.FileImporter;
+import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
@@ -25,12 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @NullMarked
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class RdfImporter implements FileImporter {
+public class RdfImporter implements DataFileImportingService {
     private static final Logger log = LogManager.getLogger(RdfImporter.class);
     private final Model model = new LinkedHashModel();
     private final TemporaryContextGenerator contextGenerator;
@@ -42,20 +39,23 @@ public class RdfImporter implements FileImporter {
         this.em = em;
     }
 
-    @Transactional
+    // @Transactional
     @Override
-    public void importFiles(File[] files) throws IOException {
-        loadModel(files);
-        final URI tempContext = contextGenerator.generate();
-        // TODO: consider ejecting from jopa and using pure RDF4J
-        final Repository repository = em.unwrap(org.eclipse.rdf4j.repository.Repository.class);
-        try (final RepositoryConnection conn = repository.getConnection()) {
-            conn.begin();
-            final IRI context = repository.getValueFactory().createIRI(tempContext.toString());
-            log.debug("Importing ontology model into temporary context <{}>", tempContext);
-            conn.add(model, context);
-            conn.commit();
-        }
+    public void importFiles(List<File> files, ImportProcessContext context) throws IOException {
+        // loadModel(files);
+        // final URI tempContext = contextGenerator.generate();
+        // // TODO: consider ejecting from jopa and using pure RDF4J
+        // final Repository repository =
+        // em.unwrap(org.eclipse.rdf4j.repository.Repository.class);
+        // try (final RepositoryConnection conn = repository.getConnection()) {
+        // conn.begin();
+        // final IRI context =
+        // repository.getValueFactory().createIRI(tempContext.toString());
+        // log.debug("Importing ontology model into temporary context <{}>",
+        // tempContext);
+        // conn.add(model, context);
+        // conn.commit();
+        // }
     }
 
     private void loadModel(File[] files) throws IOException {

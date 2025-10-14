@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Service capable of importing data from local files into a database context
@@ -13,13 +14,13 @@ import java.io.IOException;
 public interface DataFileImportingService {
 
     /**
-     * Imports the provided files into the database. All the files will have the same format.
+     * Imports the provided files into the database.
      *
      * @param files The files to import for which {@link #supports(File)} returned true
      * @param context The context of importing process
      * @implSpec The caller is responsible for invoking this method asynchronously if necessary.
      */
-    void importFiles(File[] files, ImportProcessContext context) throws IOException;
+    void importFiles(List<File> files, ImportProcessContext context) throws IOException;
 
     /**
      * Checks whether the service is able to import the format of the specified file.

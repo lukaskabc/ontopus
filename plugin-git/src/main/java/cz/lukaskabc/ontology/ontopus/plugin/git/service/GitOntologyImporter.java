@@ -76,7 +76,8 @@ public class GitOntologyImporter implements OntologyImporter {
             tempDir.deleteOnExit();
             return tempDir;
         } catch (IOException e) {
-            throw new RuntimeException(e); // TODO
+            throw new RuntimeException(e);
+            // TODO exception
         }
     }
 

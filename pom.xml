@@ -16,6 +16,7 @@
         <!--        <module>plugin-git</module>-->
         <module>plugin-file</module>
         <module>core-model</module>
+        <module>plugin-rdf-importer</module>
     </modules>
 
     <properties>
@@ -30,6 +31,7 @@
         <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
+        <ontopus.plugin.rdfimport.version>1.0-SNAPSHOT</ontopus.plugin.rdfimport.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot.version>3.5.6</spring.boot.version>

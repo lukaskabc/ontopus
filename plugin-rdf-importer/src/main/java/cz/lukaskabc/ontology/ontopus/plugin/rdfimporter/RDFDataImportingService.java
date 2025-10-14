@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service.importer;
+package cz.lukaskabc.ontology.ontopus.plugin.rdfimporter;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;

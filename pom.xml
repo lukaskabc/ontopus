@@ -50,18 +50,51 @@
                 <version>${ontopus.core.version}</version>
             </dependency>
             <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
+                <artifactId>file-upload-plugin</artifactId>
+                <version>${ontopus.plugin.file.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin.rdfimporter</groupId>
+                <artifactId>rdf-importer-plugin</artifactId>
+                <version>${ontopus.plugin.rdfimport.version}</version>
+            </dependency>
+            <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-validation</artifactId>
+                <version>${spring.boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- Database dependencies -->
             <dependency>
                 <groupId>cz.cvut.kbss.jopa</groupId>
                 <artifactId>jopa-impl</artifactId>
                 <version>${jopa.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>cz.cvut.kbss.jopa</groupId>
@@ -103,6 +136,12 @@
             <groupId>cz.cvut.kbss.jopa</groupId>
             <artifactId>jopa-api</artifactId>
             <version>${jopa.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Serialization -->
         <!-- JSON -->

@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+    <groupId>cz.lukaskabc.ontology.ontopus.plugin.rdfimporter</groupId>
     <artifactId>rdf-importer-plugin</artifactId>
     <version>${ontopus.plugin.rdfimport.version}</version>
     <description>OntoPuS plugin allowing to import RDF files into the database.

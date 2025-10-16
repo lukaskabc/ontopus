@@ -40,11 +40,11 @@
             <groupId>cz.cvut.kbss.jopa</groupId>
             <artifactId>ontodriver-rdf4j</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-api</artifactId>
-            <version>5.5.1</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>net.sourceforge.owlapi</groupId>-->
+        <!--            <artifactId>owlapi-api</artifactId>-->
+        <!--            <version>5.5.1</version>-->
+        <!--        </dependency>-->
         <!-- Spring declarative transactions with JOPA -->
         <dependency>
             <groupId>com.github.ledsoft</groupId>
@@ -68,10 +68,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
         <!-- Development dependencies -->
@@ -154,12 +164,10 @@
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
                     <artifactId>file-upload-plugin</artifactId>
-                    <version>${ontopus.plugin.file.version}</version>
                 </dependency>
                 <dependency>
-                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin.rdfimporter</groupId>
                     <artifactId>rdf-importer-plugin</artifactId>
-                    <version>${ontopus.plugin.rdfimport.version}</version>
                 </dependency>
             </dependencies>
         </profile>

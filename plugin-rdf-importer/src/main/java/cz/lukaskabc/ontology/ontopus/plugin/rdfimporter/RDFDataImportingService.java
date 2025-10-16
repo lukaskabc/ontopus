@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RDFDataImportingService implements DataFileImportingService {
-    private static final Logger log = LogManager.getLogger(RDFDataImportingService.class);
+    private static final Logger LOG = LogManager.getLogger(RDFDataImportingService.class);
     private final EntityManager em;
 
     @Autowired
@@ -50,7 +50,7 @@ public class RDFDataImportingService implements DataFileImportingService {
         try (final RepositoryConnection conn = repository.getConnection()) {
             conn.begin();
             final IRI graphContext = repository.getValueFactory().createIRI(context.toString());
-            log.debug("Importing ontology model into temporary context <{}>", context.toString());
+            LOG.debug("Importing ontology model into temporary context <{}>", context.toString());
             conn.add(model, graphContext);
             conn.commit();
         }
@@ -86,7 +86,12 @@ public class RDFDataImportingService implements DataFileImportingService {
     @Override
     public boolean supports(File file) {
         try {
-            return resolveFormat(file) != null;
+            final RDFFormat format = resolveFormat(file);
+            if (format != null) {
+                LOG.debug("Resolved RDF format <{}> for file <{}>", format, file.getName());
+                return true;
+            }
+            return false;
         } catch (IOException e) {
             return false;
         }

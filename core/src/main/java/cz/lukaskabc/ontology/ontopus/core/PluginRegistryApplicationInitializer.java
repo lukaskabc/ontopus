@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 
@@ -22,7 +22,7 @@ import org.springframework.context.ApplicationContextInitializer;
  */
 public class PluginRegistryApplicationInitializer
         implements ApplicationContextInitializer<AnnotationConfigServletWebServerApplicationContext> {
-    private static final Logger LOG = LoggerFactory.getLogger(PluginRegistryApplicationInitializer.class);
+    private static final Logger LOG = LogManager.getLogger(PluginRegistryApplicationInitializer.class);
 
     private final Iterable<Plugin> plugins;
     private final ObjectMapper objectMapper;

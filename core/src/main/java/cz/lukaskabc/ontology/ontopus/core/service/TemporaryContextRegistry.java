@@ -53,21 +53,28 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
                 .setParameter("graph", temporaryContextGraph)
                 .setParameter("type", TemporaryContext_.entityClassIRI)
                 .getResultStream()
-                .forEach(context -> {
-                    try {
-                        Objects.requireNonNull(context);
-                        em.createNativeQuery("DROP GRAPH ?context")
-                                .setParameter("context", context)
-                                .executeUpdate();
-                        em.createNativeQuery(
-                                        "DELETE WHERE { GRAPH ?tempContextGraph { ?context ?predicate ?object . }}")
-                                .setParameter("tempContextGraph", temporaryContextGraph)
-                                .setParameter("context", context)
-                                .executeUpdate();
-                    } catch (Exception e) {
-                        log.error("Failed to drop temporary context {}", context, e);
-                    }
-                });
+                .forEach(this::delete);
+    }
+
+    @Transactional
+    public void delete(TemporaryContextURI contextURI) {
+        delete(contextURI.toURI());
+    }
+
+    private void delete(URI context) {
+        log.debug("Dropping temporary context: {}", context);
+        try {
+            Objects.requireNonNull(context);
+            em.createNativeQuery("DROP GRAPH ?context")
+                    .setParameter("context", context)
+                    .executeUpdate();
+            em.createNativeQuery("DELETE WHERE { GRAPH ?tempContextGraph { ?context ?predicate ?object . }}")
+                    .setParameter("tempContextGraph", temporaryContextGraph)
+                    .setParameter("context", context)
+                    .executeUpdate();
+        } catch (Exception e) {
+            log.atError().withThrowable(e).log("Failed to drop temporary context {}", context);
+        }
     }
 
     @Transactional

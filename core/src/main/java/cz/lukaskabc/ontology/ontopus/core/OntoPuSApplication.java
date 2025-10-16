@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
+import java.lang.ref.Cleaner;
 import java.util.ServiceLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ConfigurationPropertiesScan
 @EnableConfigurationProperties
 public class OntoPuSApplication {
+    public static final Cleaner CLEANER = Cleaner.create();
 
     /**
      * Adds the {@link PluginRegistryApplicationInitializer} to the application context.

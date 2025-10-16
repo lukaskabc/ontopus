@@ -13,6 +13,7 @@ import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,7 +31,7 @@ public class ImportProcessMediator {
     private static ReusableFile copyFile(
             ReusableFileDto dto, InputStreamSource streamSource, ImportProcessContext context) {
         File file = copyFileToContext(streamSource, dto, context);
-        String relativePath = file.toPath().relativize(context.getTempFolder()).toString();
+        String relativePath = context.getTempFolder().relativize(file.toPath()).toString();
         dto.setFileName(relativePath);
         return dto.toReusableFile(file);
     }
@@ -58,7 +59,10 @@ public class ImportProcessMediator {
                         // TODO exception
                         default -> throw new IllegalStateException("Unknown ReusableFile type: " + fileDto.getType());
                     };
-            Files.copy(source.getInputStream(), safeDestination, options);
+            Files.createDirectories(safeDestination.getParent());
+            try (InputStream is = source.getInputStream()) {
+                Files.copy(is, safeDestination, options);
+            }
             final File safeTarget = safeDestination.toFile();
             if (!safeTarget.isFile()) {
                 throw new IllegalStateException("Copied file does not exist: " + safeDestination);

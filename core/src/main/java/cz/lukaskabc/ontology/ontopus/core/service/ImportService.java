@@ -3,11 +3,15 @@ package cz.lukaskabc.ontology.ontopus.core.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.core.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
+import cz.lukaskabc.ontology.ontopus.core.util.ConsumableInputStreamSource;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.Future;
 import org.jspecify.annotations.Nullable;
@@ -20,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImportService {
+    private static final String UPLOAD_TEMP_FILE_PREFIX = "ontopus-uploaded-file_";
+
     private static MultipartFile findUploadedFile(
             MultiValueMap<String, MultipartFile> files, String formFieldName, String fileName) {
         List<MultipartFile> fieldFiles = files.get(formFieldName);
@@ -31,6 +37,16 @@ public class ImportService {
             }
         }
         throw new IllegalStateException("Could not find uploaded file for " + fileName);
+    }
+
+    private static InputStreamSource persistUploadedFile(MultipartFile uploadedFile) {
+        try {
+            File tempFile = Files.createTempFile(UPLOAD_TEMP_FILE_PREFIX, null).toFile();
+            uploadedFile.transferTo(tempFile);
+            return new ConsumableInputStreamSource(tempFile);
+        } catch (IOException e) {
+            throw new OntopusException(e); // TODO exception
+        }
     }
 
     private final ImportProcessMediator mediator;
@@ -93,8 +109,14 @@ public class ImportService {
         for (final ReusableFileDto reusableFile : reusableFiles) {
             InputStreamSource streamSource =
                     switch (reusableFile.getType()) {
-                        case UPLOAD ->
-                            findUploadedFile(files, reusableFile.getFormFieldName(), reusableFile.getFileName());
+                        case UPLOAD -> {
+                            MultipartFile multipartFile = findUploadedFile(
+                                    files, reusableFile.getFormFieldName(), reusableFile.getFileName());
+                            // since the processing will be asynchronous
+                            // we need to persist the file
+                            // so it won't be deleted once the synchronous request processing ends
+                            yield persistUploadedFile(multipartFile);
+                        }
                         case SERVER -> {
                             // TODO resolve server cached file
                             File cachedFile = null;

@@ -16,7 +16,7 @@ public class ReusableFileDto {
     public static boolean matches(JsonNode node) {
         if (node.isObject()) {
             final JsonNode clazz = node.get(CLASS_JSON_PROPERTY);
-            return ReusableFile.class.getSimpleName().equals(clazz.asText());
+            return ReusableFileDto.class.getSimpleName().equals(clazz.asText());
         }
         return false;
     }

@@ -29,7 +29,7 @@ function pathPrefixedFileName(file: File) {
  */
 export class ReusableFile {
   // used for backend class mapping
-  readonly class = 'ReusableFile'
+  readonly class = 'ReusableFileDto' // TODO replace DTOs with request and response objects according to REST API pitfalls
   readonly type: ReusableFileType
   readonly fileName: string
   readonly formFieldName: string

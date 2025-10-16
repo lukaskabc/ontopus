@@ -38,7 +38,7 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
 
     @Override
     public String getServiceName() {
-        return "ontopus.plugin.file_upload.serviceName";
+        return "ontopus.plugin.file.serviceName";
     }
 
     /**

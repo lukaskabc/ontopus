@@ -50,6 +50,7 @@ public class ImportController {
 
     @GetMapping
     public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
+        // TODO test and setup LOG4J2 logging
         return handleFuture(importService.getCurrentJsonForm());
     }
 

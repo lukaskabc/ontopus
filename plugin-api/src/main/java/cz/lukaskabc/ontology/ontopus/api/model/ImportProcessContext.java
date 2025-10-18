@@ -38,10 +38,10 @@ public class ImportProcessContext {
             TemporaryContextURI databaseContext,
             Path tempFolder,
             VersionArtifact versionArtifact) {
-        this.versionSeries = versionSeries;
-        this.databaseContext = databaseContext;
-        this.tempFolder = tempFolder;
-        this.versionArtifact = versionArtifact;
+        this.versionSeries = Objects.requireNonNull(versionSeries);
+        this.databaseContext = Objects.requireNonNull(databaseContext);
+        this.tempFolder = Objects.requireNonNull(tempFolder);
+        this.versionArtifact = Objects.requireNonNull(versionArtifact);
         this.additionalProperties = new HashMap<>();
         this.pendingServicesStack = new ArrayList<>();
         this.processedServices = new ArrayList<>();

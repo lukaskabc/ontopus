@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.model;
 
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core.model.dcat.DatasetSeries;
 import cz.lukaskabc.ontology.ontopus.core.model.id.DistributionURI;
@@ -9,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.Set;
 
 @OWLClass(iri = Vocabulary.s_c_VersionSeries)
@@ -18,6 +20,9 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private VersionSeriesURI identifier;
+
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
+    private URI ontologyIdentifier;
 
     /** The newest version of the ontology */
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_last)
@@ -55,6 +60,10 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
         return members;
     }
 
+    public URI getOntologyIdentifier() {
+        return ontologyIdentifier;
+    }
+
     public SerializableImportProcessContext getSerializableImportProcessContext() {
         return serializableImportProcessContext;
     }
@@ -80,6 +89,10 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @Override
     public void setMembers(Set<VersionArtifactURI> members) {
         this.members = members;
+    }
+
+    public void setOntologyIdentifier(URI ontologyIdentifier) {
+        this.ontologyIdentifier = ontologyIdentifier;
     }
 
     public void setSerializableImportProcessContext(SerializableImportProcessContext serializableImportProcessContext) {

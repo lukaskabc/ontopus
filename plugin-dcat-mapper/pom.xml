@@ -23,6 +23,10 @@
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+            <artifactId>model</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

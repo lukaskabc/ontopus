@@ -9,8 +9,10 @@
       },
       "OrderedImportPipelineService": {
         "OntologyLoadingSelectionService": {
-          "name":"Ontology source selection" ,
-          "field.title": "Ontology data source"
+          "name":"Ontology source selection"
+        },
+        "ArtifactBuildingSelectionService": {
+          "name":"Ontology source selection"
         }
       }
     }

@@ -220,6 +220,12 @@ public class ImportProcessMediator {
         finalize(context);
     }
 
+    private void processAutoServices(ImportProcessContext context) {
+        while (context.hasUnprocessedService() && context.peekService().getJsonForm() == null) {
+            context.handleResult(new FormResult(Map.of(), Map.of())); // submit empty form result
+        }
+    }
+
     /**
      * Submit all required form results combined to complete the import process in background.
      *
@@ -248,6 +254,7 @@ public class ImportProcessMediator {
             if (context.hasUnprocessedService()) {
                 Map<String, ReusableFile> filesMap = copyFiles(reusableFiles, context);
                 context.handleResult(new FormResult(jsonData, filesMap));
+                processAutoServices(context);
                 finalize(context);
             }
         });

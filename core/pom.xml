@@ -169,6 +169,10 @@
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>rdf-importer-plugin</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>dcat-mapper-plugin</artifactId>
+                </dependency>
             </dependencies>
         </profile>
         <profile>

@@ -45,7 +45,8 @@ public interface ImportProcessingService<R> {
     }
 
     /**
-     * Accepts and handles the result of submitted form.
+     * Accepts and handles the result of submitted form. If the service does not provide a form, it returns {@code null}
+     * from {@link #getJsonForm()} then this method will be called with an empty form result without users interaction.
      *
      * @param formResult The data submitted in the form
      * @param context The import process context

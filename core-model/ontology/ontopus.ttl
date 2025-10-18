@@ -26,9 +26,9 @@
 ###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
 ontopus:ontologyIdentifier rdf:type owl:DatatypeProperty ;
                            rdfs:subPropertyOf <http://purl.org/dc/terms/identifier> ;
-                           rdfs:domain ontopus:VersionArtifact ;
+                           rdfs:domain ontopus:VersionSeries ;
                            rdfs:range rdfs:Literal ;
-                           rdfs:comment "Identifier of the ontology published in the artifact"@en ;
+                           rdfs:comment "Identifier of the ontology published in the series"@en ;
                            rdfs:label "Ontology identifier"@en .
 
 

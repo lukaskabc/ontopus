@@ -1,0 +1,71 @@
+package cz.lukaskabc.ontology.ontopus.core.service.process;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
+import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core.exception.OntopusException;
+import java.net.URI;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
+
+public class OntologyIdentifierSelector implements ImportProcessingService<URI> {
+    private static final String ID_FIELD = "identifier";
+    private final JsonForm jsonForm;
+    private final ObjectMapper objectMapper;
+
+    public OntologyIdentifierSelector(ObjectMapper objectMapper, Set<URI> identifiers) {
+        this.objectMapper = objectMapper;
+        this.jsonForm = makeJsonForm(identifiers);
+    }
+
+    @Override
+    public @Nullable JsonForm getJsonForm() {
+        return jsonForm;
+    }
+
+    @Override
+    public String getServiceName() {
+        return "";
+    }
+
+    @Override
+    public URI handleSubmit(FormResult formResult, ImportProcessContext context) {
+        try {
+            String identifier = formResult.getStringValue(ID_FIELD);
+            Objects.requireNonNull(identifier);
+            return URI.create(identifier);
+        } catch (Exception e) {
+            throw new OntopusException(e); // TODO exception
+        }
+    }
+
+    protected JsonForm makeJsonForm(Set<URI> identifiers) {
+        List<String> stringIds =
+                identifiers.stream().map(URI::toString).sorted().toList();
+        Set<TextNode> examples = stringIds.stream().map(TextNode::valueOf).collect(Collectors.toSet());
+
+        ObjectNode scheme = objectMapper.createObjectNode();
+        scheme.put("type", "object");
+        ObjectNode properties = scheme.putObject("properties");
+        properties
+                .putObject(ID_FIELD)
+                .put("type", "string")
+                // not limiting the format to URI
+                // since the frontend URI validation may be too strict
+                .put(
+                        "title",
+                        "ontopus.core.service.ImportProcessingService.OntologyIdentifierSelector.field.identifier.title")
+                .put("default", stringIds.getFirst())
+                .putArray("examples")
+                .addAll(examples);
+
+        return new JsonForm(scheme, null, null);
+    }
+}

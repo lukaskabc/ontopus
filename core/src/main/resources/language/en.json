@@ -5,6 +5,9 @@
       "ImportProcessingService": {
         "ImportProcessNextServiceSelector": {
           "name": "Options selector"
+        },
+        "OntologyIdentifierSelector": {
+          "field.identifier.title": "Ontology identifier"
         }
       },
       "OrderedImportPipelineService": {

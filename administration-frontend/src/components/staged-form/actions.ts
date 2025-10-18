@@ -8,13 +8,6 @@ export function resetImportProcess(): Promise<Response> {
   return request('POST', '/import/initialize', {}, [204])
 }
 
-function mapToJson(value: any) {
-  if (Array.isArray(value) || typeof value === 'object') {
-    return JSON.stringify(value)
-  }
-  return value
-}
-
 export interface FileWithFieldName {
   name: string
   file: File
@@ -22,9 +15,13 @@ export interface FileWithFieldName {
 
 function compileDataForRequest(formData: any, files: FileWithFieldName[]): string | FormData {
   const data = new FormData()
-  Object.keys(formData).forEach((key: string) => {
-    data.append(key, mapToJson(formData[key]))
-  })
+  if (typeof formData === 'object') {
+    Object.keys(formData).forEach((key: string) => {
+      data.append(key, JSON.stringify(formData[key]))
+    })
+  } else {
+    data.append('data', formData)
+  }
   files.forEach((file) => {
     data.append(file.name, file.file)
   })

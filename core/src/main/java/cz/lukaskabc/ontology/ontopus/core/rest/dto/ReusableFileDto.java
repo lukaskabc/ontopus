@@ -14,9 +14,11 @@ public class ReusableFileDto {
     static final String CLASS_JSON_PROPERTY = "class";
 
     public static boolean matches(JsonNode node) {
-        if (node.isObject()) {
+        if (node != null && node.isObject()) {
             final JsonNode clazz = node.get(CLASS_JSON_PROPERTY);
-            return ReusableFileDto.class.getSimpleName().equals(clazz.asText());
+            if (clazz != null && clazz.isTextual()) {
+                return ReusableFileDto.class.getSimpleName().equals(clazz.asText());
+            }
         }
         return false;
     }

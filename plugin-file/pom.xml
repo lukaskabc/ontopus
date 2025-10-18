@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
+    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
     <artifactId>file-upload-plugin</artifactId>
     <version>${ontopus.plugin.file.version}</version>
     <description>OntoPuS plugin allowing user to upload local files.</description>

@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>core</artifactId>
-    <version>${ontopus.core.version}</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>OntoPuS core</name>
@@ -27,7 +27,7 @@
             <artifactId>plugin-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>cz.lukaskabc.ontology.ontopus.core</groupId>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>model</artifactId>
         </dependency>
 
@@ -162,11 +162,11 @@
             <id>with-plugins</id>
             <dependencies>
                 <dependency>
-                    <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>file-upload-plugin</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>cz.lukaskabc.ontology.ontopus.plugin.rdfimporter</groupId>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>rdf-importer-plugin</artifactId>
                 </dependency>
             </dependencies>

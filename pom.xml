@@ -17,6 +17,7 @@
         <module>plugin-file</module>
         <module>core-model</module>
         <module>plugin-rdf-importer</module>
+        <module>plugin-dcat-mapper</module>
     </modules>
 
     <properties>
@@ -28,6 +29,7 @@
 
         <ontopus.core.version>1.0-SNAPSHOT</ontopus.core.version>
         <ontopus.plugin.api.version>1.0-SNAPSHOT</ontopus.plugin.api.version>
+        <ontopus.plugin.dcatmapper.version>1.0-SNAPSHOT</ontopus.plugin.dcatmapper.version>
         <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
@@ -39,25 +41,31 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- OntoPuS plugins -->
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus</groupId>
                 <artifactId>plugin-api</artifactId>
                 <version>${ontopus.plugin.api.version}</version>
             </dependency>
             <dependency>
-                <groupId>cz.lukaskabc.ontology.ontopus.core</groupId>
+                <groupId>cz.lukaskabc.ontology.ontopus</groupId>
                 <artifactId>model</artifactId>
                 <version>${ontopus.core.version}</version>
             </dependency>
             <dependency>
-                <groupId>cz.lukaskabc.ontology.ontopus.plugin.file</groupId>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>file-upload-plugin</artifactId>
                 <version>${ontopus.plugin.file.version}</version>
             </dependency>
             <dependency>
-                <groupId>cz.lukaskabc.ontology.ontopus.plugin.rdfimporter</groupId>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>rdf-importer-plugin</artifactId>
                 <version>${ontopus.plugin.rdfimport.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                <artifactId>dcat-mapper-plugin</artifactId>
+                <version>${ontopus.plugin.dcatmapper.version}</version>
             </dependency>
             <dependency>
                 <!-- Import dependency management from Spring Boot -->

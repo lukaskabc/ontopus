@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>cz.lukaskabc.ontology.ontopus</groupId>
         <artifactId>parent</artifactId>
@@ -9,27 +8,20 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>plugin-api</artifactId>
-    <version>${ontopus.plugin.api.version}</version>
-    <packaging>jar</packaging>
+    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+    <artifactId>dcat-mapper-plugin</artifactId>
+    <version>${ontopus.plugin.dcatmapper.version}</version>
+
+    <properties>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
-            <artifactId>model</artifactId>
-        </dependency>
-        <!-- Spring dependencies -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
+            <artifactId>plugin-api</artifactId>
         </dependency>
     </dependencies>
 

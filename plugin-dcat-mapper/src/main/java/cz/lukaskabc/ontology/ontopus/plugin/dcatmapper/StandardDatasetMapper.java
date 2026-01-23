@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.dcatmapper;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.metamodel.Attribute;
+import cz.cvut.kbss.ontodriver.model.LangString;
 import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact_;
 import java.net.URI;
@@ -36,11 +37,14 @@ public class StandardDatasetMapper extends PropertyMapper {
     }
 
     protected void mapDescription() {
-        MultilingualString object =
-                findSingleProperty(property(VersionArtifact_.description), MultilingualString.class);
+        LangString object = findSingleProperty(property(VersionArtifact_.description), LangString.class);
         if (object != null) {
-            mergeMultilingualString(artifact::getDescription, artifact::setDescription, object);
+            mergeMultilingualString(artifact::getDescription, artifact::setDescription, mapLangString(object));
         }
+    }
+
+    protected MultilingualString mapLangString(LangString langString) {
+        return MultilingualString.create(langString.getLanguage().orElse(null), langString.getValue());
     }
 
     protected void mapLanguages() {
@@ -66,9 +70,9 @@ public class StandardDatasetMapper extends PropertyMapper {
     }
 
     protected void mapTitle() {
-        MultilingualString object = findSingleProperty(property(VersionArtifact_.title), MultilingualString.class);
+        LangString object = findSingleProperty(property(VersionArtifact_.title), LangString.class);
         if (object != null) {
-            mergeMultilingualString(artifact::getTitle, artifact::setTitle, object);
+            mergeMultilingualString(artifact::getTitle, artifact::setTitle, mapLangString(object));
         }
     }
 

@@ -30,6 +30,7 @@ function compileDataForRequest(formData: any, files: FileWithFieldName[]): strin
 
 export function submitForm(formData: any, files: FileWithFieldName[]) {
   return request('POST', '/import', { body: compileDataForRequest(formData, files) }, [204, 202, 200])
+  // TODO: handle conflict state 409
 }
 
 /**

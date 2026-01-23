@@ -18,6 +18,7 @@
         <module>core-model</module>
         <module>plugin-rdf-importer</module>
         <module>plugin-dcat-mapper</module>
+        <module>plugin-owl</module>
     </modules>
 
     <properties>

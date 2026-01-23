@@ -45,6 +45,6 @@ public record FormResult(Map<String, JsonNode> formData, Map<String, ReusableFil
         if (value != null && value.isTextual()) {
             return value.asText();
         }
-        return null; // TODO consider optional
+        return null;
     }
 }

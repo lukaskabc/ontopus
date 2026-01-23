@@ -20,12 +20,10 @@ public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSerie
         if (ontologyArtifact == null) {
             return null;
         }
-        return resultOrNull(em.createQuery(
-                        """
+        return resultOrNull(
+                em.createQuery("""
 				SELECT series FROM OntologyVersionSeries series
 				WHERE :artifact MEMBER OF series.ontologyArtifacts
-				""",
-                        VersionSeries.class)
-                .setParameter("artifact", ontologyArtifact)::getSingleResult);
+				""", VersionSeries.class).setParameter("artifact", ontologyArtifact)::getSingleResult);
     }
 }

@@ -21,13 +21,11 @@ public class OWLOntologyIdentifierResolvingService implements OntologyIdentifier
 
     private List<URI> findIdentifier(TemporaryContextURI databaseContext) {
         return entityManager
-                .createNativeQuery(
-                        """
+                .createNativeQuery("""
 				SELECT ?identifier FROM ?context WHERE {
 				    ?identifier a ?ontology .
 				}
-				""",
-                        URI.class)
+				""", URI.class)
                 .setParameter("context", databaseContext.toURI())
                 .setParameter("ontology", OWL_ONTOLOGY)
                 .getResultList();

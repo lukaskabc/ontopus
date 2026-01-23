@@ -1,9 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessTaskConflictException;
 import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
@@ -20,6 +17,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
 
 @RestController
 @RequestMapping(path = "/import")
@@ -125,12 +126,12 @@ public class ImportController {
             } else {
                 return objectMapper.readTree(values[0]);
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private JsonNode readStringValues(String[] values) throws JsonProcessingException {
+    private JsonNode readStringValues(String[] values) {
         if (values.length > 1) {
             ArrayNode node = objectMapper.createArrayNode();
             for (String value : values) {

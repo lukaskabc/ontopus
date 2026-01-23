@@ -1,10 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
+import tools.jackson.databind.JsonNode;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.SIMPLE_NAME,
@@ -16,8 +16,8 @@ public class ReusableFileDto {
     public static boolean matches(JsonNode node) {
         if (node != null && node.isObject()) {
             final JsonNode clazz = node.get(CLASS_JSON_PROPERTY);
-            if (clazz != null && clazz.isTextual()) {
-                return ReusableFileDto.class.getSimpleName().equals(clazz.asText());
+            if (clazz != null && clazz.isString()) {
+                return ReusableFileDto.class.getSimpleName().equals(clazz.asString());
             }
         }
         return false;

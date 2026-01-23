@@ -1,8 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
@@ -14,6 +11,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 public class OntologyIdentifierSelector implements ImportProcessingService<URI> {
     private static final String ID_FIELD = "identifier";
@@ -49,7 +49,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
     protected JsonForm makeJsonForm(Set<URI> identifiers) {
         List<String> stringIds =
                 identifiers.stream().map(URI::toString).sorted().toList();
-        Set<TextNode> examples = stringIds.stream().map(TextNode::valueOf).collect(Collectors.toSet());
+        Set<StringNode> examples = stringIds.stream().map(StringNode::valueOf).collect(Collectors.toSet());
 
         ObjectNode scheme = objectMapper.createObjectNode();
         scheme.put("type", "object");

@@ -17,8 +17,13 @@ springdoc:
     enabled: false
 #  show-login-endpoint: true
 
-server.servlet.session.timeout: 10m
-
 logging:
   level:
     web: debug
+
+server:
+  servlet:
+    session:
+      timeout: 10m
+  tomcat:
+    max-part-count: 30

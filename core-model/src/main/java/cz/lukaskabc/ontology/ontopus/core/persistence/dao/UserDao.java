@@ -19,14 +19,12 @@ public class UserDao extends AbstractDao<UserURI, User> {
 
     @Nullable public User findByUsername(String username) {
         Objects.requireNonNull(username);
-        return resultOrNull(em.createNativeQuery(
-                        """
+        return resultOrNull(em.createNativeQuery("""
 				SELECT ?user FROM ?graph WHERE {
 				    ?user a ?userType ;
 				        ?withUsername ?username .
 				}
-				""",
-                        User.class)
+				""", User.class)
                 .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
                 .setParameter("withUsername", User_.username.getIRI())
@@ -41,14 +39,12 @@ public class UserDao extends AbstractDao<UserURI, User> {
      * @return whether an account with the given username exists
      */
     public boolean userAccountExists(@Nullable String username) {
-        final var query = em.createNativeQuery(
-                        """
+        final var query = em.createNativeQuery("""
 				ASK FROM ?graph {
 				    ?user a ?userType;
 				        ?hasUsername ?username .
 				}
-				""",
-                        Boolean.class)
+				""", Boolean.class)
                 .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
                 .setParameter("hasUsername", User_.username.getIRI());

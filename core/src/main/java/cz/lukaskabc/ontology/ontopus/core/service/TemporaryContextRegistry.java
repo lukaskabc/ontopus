@@ -41,15 +41,13 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     @Transactional
     public void clearAllTemporaryContexts() {
         log.debug("Clearing all temporary contexts from database");
-        em.createNativeQuery(
-                        """
+        em.createNativeQuery("""
 				SELECT ?id WHERE {
 				    GRAPH ?graph {
 				        ?id a ?type .
 				    }
 				}
-				""",
-                        URI.class)
+				""", URI.class)
                 .setParameter("graph", temporaryContextGraph)
                 .setParameter("type", TemporaryContext_.entityClassIRI)
                 .getResultStream()

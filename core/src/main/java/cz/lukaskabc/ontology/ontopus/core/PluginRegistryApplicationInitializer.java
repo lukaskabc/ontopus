@@ -1,7 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
 import cz.lukaskabc.ontology.ontopus.core.util.Constants;
@@ -13,15 +11,18 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Scans each plugin's base package for Spring components and registers them in the application context. Main plugin
  * classes are also registered in the application context under their names.
  */
 public class PluginRegistryApplicationInitializer
-        implements ApplicationContextInitializer<AnnotationConfigServletWebServerApplicationContext> {
+        implements ApplicationContextInitializer<@NonNull AnnotationConfigServletWebServerApplicationContext> {
     private static final Logger LOG = LogManager.getLogger(PluginRegistryApplicationInitializer.class);
 
     private final Iterable<Plugin> plugins;
@@ -75,7 +76,7 @@ public class PluginRegistryApplicationInitializer
             if (map.containsKey(key)) {
                 throw new IllegalStateException("Duplicate translation key: " + key);
             } else {
-                map.put(key, jsonNode.asText());
+                map.put(key, jsonNode.asString());
             }
         }
     }
@@ -131,7 +132,7 @@ public class PluginRegistryApplicationInitializer
                 while (files.hasMoreElements()) {
                     final URL url = files.nextElement();
                     final Map<String, String> language = localization.computeIfAbsent(lang, k -> new HashMap<>());
-                    flattenTranslations(objectMapper.readTree(url), "", language);
+                    flattenTranslations(objectMapper.readTree(url.openStream()), "", language);
                 }
             }
         } catch (IOException e) {
@@ -146,7 +147,7 @@ public class PluginRegistryApplicationInitializer
             try {
                 final JsonNode jsonNode = objectMapper.readTree(inputStream);
                 flattenTranslations(jsonNode, "", language);
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 throw new RuntimeException("Exception while loading plugin localization:", e); // TODO
             }
         });

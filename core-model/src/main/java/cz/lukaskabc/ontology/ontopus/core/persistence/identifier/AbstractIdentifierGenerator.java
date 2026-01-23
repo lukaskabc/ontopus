@@ -50,8 +50,7 @@ public abstract class AbstractIdentifierGenerator<I extends EntityIdentifier, E 
     protected boolean isUnique(URI identifier) {
         Objects.requireNonNull(identifier);
         return !entityManager
-                .createNativeQuery(
-                        """
+                .createNativeQuery("""
 				ASK {
 				    {
 				        ?uri ?po ?o .
@@ -59,8 +58,7 @@ public abstract class AbstractIdentifierGenerator<I extends EntityIdentifier, E 
 				        ?s ?sp ?uri .
 				    }
 				}
-				""",
-                        Boolean.class)
+				""", Boolean.class)
                 .setParameter("uri", identifier)
                 .getSingleResult();
     }

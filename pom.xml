@@ -22,9 +22,10 @@
     </modules>
 
     <properties>
-        <jackson.version>2.19.2</jackson.version>
+        <jackson.annotations.version>2.21</jackson.annotations.version>
+        <jackson.version>3.0.3</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.6.3</jopa.version>
+        <jopa.version>2.7.2</jopa.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
@@ -37,7 +38,7 @@
         <ontopus.plugin.rdfimport.version>1.0-SNAPSHOT</ontopus.plugin.rdfimport.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.boot.version>3.5.6</spring.boot.version>
+        <spring.boot.version>4.0.2</spring.boot.version>
     </properties>
 
     <dependencyManagement>
@@ -113,18 +114,18 @@
             <dependency>
                 <groupId>com.github.ledsoft</groupId>
                 <artifactId>jopa-spring-transaction</artifactId>
-                <version>0.4.0</version>
+                <version>0.4.3</version>
             </dependency>
             <!-- Open Api documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>2.8.9</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.18.0</version>
+                <version>3.20.0</version>
                 <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
             </dependency>
         </dependencies>
@@ -157,22 +158,23 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.annotations.version}.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.annotations.version}.0</version>
+            <!--            TODO: fix jackson versions-->
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
+            <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.annotations.version}</version>
         </dependency>
 
         <!-- Logging -->
@@ -190,12 +192,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.14.0</version>
+                    <version>3.14.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.4.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -204,7 +206,7 @@
                 <!-- https://github.com/diffplug/spotless/tree/main/plugin-maven -->
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>2.46.1</version>
+                <version>3.1.0</version>
                 <configuration>
                     <formats>
                         <format>
@@ -219,14 +221,14 @@
                     <!-- language-specific format -->
                     <java>
                         <eclipse>
-                            <version>4.36</version>
+                            <version>4.38</version>
                             <sortMembersEnabled>true</sortMembersEnabled>
                             <sortMembersDoNotSortFields>true</sortMembersDoNotSortFields>
                             <sortMembersOrder>SF,SI,SM,F,I,C,M,T</sortMembersOrder>
                         </eclipse>
                         <!-- https://github.com/palantir/palantir-java-format -->
                         <palantirJavaFormat>
-                            <version>2.72.0</version>
+                            <version>2.85.0</version>
                             <style>PALANTIR</style>
                             <formatJavadoc>true</formatJavadoc>
                         </palantirJavaFormat>

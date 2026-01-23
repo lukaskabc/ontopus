@@ -1,7 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.plugin.file;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
@@ -11,6 +9,8 @@ import cz.lukaskabc.ontology.ontopus.api.service.OntologyLoadingService;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /** {@link OntologyLoadingService} allowing to upload a local files to server. */
 @Service

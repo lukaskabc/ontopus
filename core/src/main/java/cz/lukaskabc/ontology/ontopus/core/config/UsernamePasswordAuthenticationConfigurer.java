@@ -3,7 +3,6 @@ package cz.lukaskabc.ontology.ontopus.core.config;
 import cz.lukaskabc.ontology.ontopus.core.rest.LoginController;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
-import org.springframework.security.config.annotation.web.RequestMatcherFactory;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -29,9 +28,7 @@ public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuil
     /** @see FormLoginConfigurer#createLoginProcessingUrlMatcher(String) */
     @Override
     protected RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
-        // Deprecated note: Future spring version should provide
-        // getRequestMatcherBuilder().matcher(HttpMethod.POST, loginProcessingUrl);
-        return RequestMatcherFactory.matcher(HttpMethod.POST, loginProcessingUrl);
+        return getRequestMatcherBuilder().matcher(HttpMethod.POST, loginProcessingUrl);
     }
 
     @Override

@@ -1,13 +1,16 @@
 import type { ReusableFile } from '@/model/ReusableFile.ts'
 import { useMemo } from 'preact/hooks'
-import type { TreeViewBaseItem } from '@mui/x-tree-view/models'
+import type { TreeViewDefaultItemModelProperties } from '@mui/x-tree-view/models'
 import { RichTreeView } from '@mui/x-tree-view'
 
 export type ReusableFileListProps = {
   files?: ReusableFile[]
 }
 
-function findTreeRoot(label: string, tree: TreeViewBaseItem[]): TreeViewBaseItem | null {
+function findTreeRoot(
+  label: string,
+  tree: TreeViewDefaultItemModelProperties[]
+): TreeViewDefaultItemModelProperties | null {
   for (let rootNode of tree) {
     if (rootNode.label === label) {
       return rootNode
@@ -17,7 +20,10 @@ function findTreeRoot(label: string, tree: TreeViewBaseItem[]): TreeViewBaseItem
   return null
 }
 
-function findTreeNodeChild(label: string, node: TreeViewBaseItem): TreeViewBaseItem | null {
+function findTreeNodeChild(
+  label: string,
+  node: TreeViewDefaultItemModelProperties
+): TreeViewDefaultItemModelProperties | null {
   if (node && node.children) {
     for (let child of node.children) {
       if (child.label === label) {
@@ -28,7 +34,7 @@ function findTreeNodeChild(label: string, node: TreeViewBaseItem): TreeViewBaseI
   return null
 }
 
-function insertToTree(file: ReusableFile, tree: TreeViewBaseItem[]) {
+function insertToTree(file: ReusableFile, tree: TreeViewDefaultItemModelProperties[]) {
   const path = file.fileName?.split('/')
   if (!path || path.length === 0) {
     console.error('Unable to process file', file)
@@ -36,7 +42,7 @@ function insertToTree(file: ReusableFile, tree: TreeViewBaseItem[]) {
   }
 
   let currentPath = path[0]
-  let current: TreeViewBaseItem | null = findTreeRoot(path[0], tree)
+  let current: TreeViewDefaultItemModelProperties | null = findTreeRoot(path[0], tree)
   if (!current) {
     current = { id: path[0], label: path[0], children: [] }
     tree.push(current)
@@ -55,8 +61,8 @@ function insertToTree(file: ReusableFile, tree: TreeViewBaseItem[]) {
 }
 
 export default function ReusableFileList({ files }: ReusableFileListProps) {
-  const treeData: TreeViewBaseItem[] = useMemo(() => {
-    const result: TreeViewBaseItem[] = []
+  const treeData: TreeViewDefaultItemModelProperties[] = useMemo(() => {
+    const result: TreeViewDefaultItemModelProperties[] = []
     if (files) {
       for (let f of files) {
         insertToTree(f, result)

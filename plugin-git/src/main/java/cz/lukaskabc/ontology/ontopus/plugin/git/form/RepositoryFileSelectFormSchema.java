@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import java.util.List;

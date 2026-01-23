@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import cz.lukaskabc.ontology.ontopus.api.model.StagedJsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.FileImporter;
 import cz.lukaskabc.ontology.ontopus.plugin.git.form.RepositoryFileSelectFormSchema;

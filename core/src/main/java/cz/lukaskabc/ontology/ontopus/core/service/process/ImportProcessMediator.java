@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
@@ -23,6 +22,7 @@ import java.util.concurrent.Future;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 
 @Service
 public class ImportProcessMediator {

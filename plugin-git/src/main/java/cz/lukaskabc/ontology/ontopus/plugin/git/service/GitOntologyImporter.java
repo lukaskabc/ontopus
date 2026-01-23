@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.service;
 
 import static cz.lukaskabc.ontology.ontopus.api.util.DataHelper.getStringValue;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyImporter;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;

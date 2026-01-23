@@ -67,14 +67,12 @@ public class PropertyMapper {
 
     protected <T> TypedQuery<T> getPropertyQuery(Set<URI> propertiesToMatch, Class<T> resultClass) {
         final TypedQuery<T> query = entityManager
-                .createNativeQuery(
-                        """
+                .createNativeQuery("""
 				SELECT ?object FROM ?context WHERE {
 				    ?subject ?predicate ?object .
 				    FILTER(?predicate IN (?properties))
 				}
-				""",
-                        resultClass)
+				""", resultClass)
                 .setParameter("context", contextURI)
                 .setParameter("properties", propertiesToMatch);
         if (subjectURI != null) {

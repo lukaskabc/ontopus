@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 @NullMarked
 public class JsonForm {

@@ -2,7 +2,6 @@ import { type FieldProps, type FormContextType, type RJSFSchema, type StrictRJSF
 import { ReusableFile } from '@/model/ReusableFile.ts'
 import { useCallback, useState } from 'preact/hooks'
 import ReusableFileWidget from '@/components/staged-form/ReusableFileWidget.tsx'
-import ReusableFileList from '@/components/staged-form/ReusableFileList.tsx'
 
 /**
  *  File field holding an array of {@link ReusableFile ReusableFiles}
@@ -48,7 +47,7 @@ function ReusableFileField<
         placeholder={props.placeholder}
         rawErrors={props.rawErrors}
       />
-      <ReusableFileList files={value} />
+      {/*<ReusableFileList files={value} />*/}
     </>
   )
 }

@@ -1,11 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.api.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Objects;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class JsonResourceLoader {
     private static final ObjectMapper objectMapper = new ObjectMapper();

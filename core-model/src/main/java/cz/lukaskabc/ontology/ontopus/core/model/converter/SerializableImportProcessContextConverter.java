@@ -1,13 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core.model.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.cvut.kbss.jopa.model.AttributeConverter;
 import cz.cvut.kbss.jopa.model.annotations.Converter;
 import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
-import java.io.IOException;
 import java.util.Base64;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Converter(autoApply = true)
 public class SerializableImportProcessContextConverter
@@ -24,7 +23,7 @@ public class SerializableImportProcessContextConverter
         }
         try {
             return mapper.readValue(decoder.decode(s), SerializableImportProcessContext.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e); // TODO exception
         }
     }
@@ -36,7 +35,7 @@ public class SerializableImportProcessContextConverter
         }
         try {
             return encoder.encodeToString(mapper.writeValueAsBytes(serializableImportProcessContext));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e); // TODO exception
         }
     }

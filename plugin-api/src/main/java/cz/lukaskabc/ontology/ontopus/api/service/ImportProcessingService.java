@@ -29,7 +29,16 @@ public interface ImportProcessingService<R> {
     @Nullable JsonForm getJsonForm();
 
     /**
-     * Provides the name of the Service shown in the UI
+     * Provides the description of the Service shown in the UI.
+     *
+     * @return i18n translation key for the service description
+     */
+    default String getServiceDescription() {
+        return getServiceName() + ".description"; // TODO implement import service description
+    }
+
+    /**
+     * Provides the name of the Service shown in the UI.
      *
      * @return i18n translation key for the service name
      */

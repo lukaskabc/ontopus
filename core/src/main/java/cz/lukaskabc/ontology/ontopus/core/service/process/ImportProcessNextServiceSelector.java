@@ -48,13 +48,20 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         ObjectNode schema = objectMapper.createObjectNode();
         schema.put("type", "object");
         ObjectNode properties = schema.putObject("properties");
-        ObjectNode service =
-                properties.putObject("service").put("type", "number").put("title", getServiceName());
+        ObjectNode service = properties
+                .putObject("service")
+                .put("type", "number")
+                .put("title", getServiceName())
+                .put("description", getServiceDescription());
 
         schema.putArray("required").add("service");
         ArrayNode items = service.putArray("oneOf");
         for (int i = 0; i < services.size(); i++) {
-            items.addObject().put("const", i).put("title", services.get(i).getServiceName());
+            final ImportProcessingService<?> item = services.get(i);
+            items.addObject()
+                    .put("const", i)
+                    .put("title", item.getServiceName())
+                    .put("description", item.getServiceDescription());
         }
 
         ObjectNode uiSchema = objectMapper.createObjectNode();

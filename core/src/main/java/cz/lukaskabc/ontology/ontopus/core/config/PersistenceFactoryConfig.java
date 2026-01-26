@@ -21,8 +21,11 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 @Configuration
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class PersistenceFactoryConfig {
 
     private EntityManagerFactory factory;

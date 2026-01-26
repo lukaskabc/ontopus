@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
-import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core_model.CoreModel;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
 
@@ -9,11 +9,11 @@ import org.jspecify.annotations.NullMarked;
 public class CorePlugin implements Plugin {
     @Override
     public List<String> getJopaScanPackages() {
-        return List.of(PersistenceEntity.class.getPackageName());
+        return List.of(CoreModel.class.getPackageName());
     }
 
     @Override
     public List<String> getSpringScanPackages() {
-        return List.of(); // Core is the Spring application, no need for additional scan
+        return List.of(CoreModel.class.getPackageName());
     }
 }

@@ -139,7 +139,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>${spring.boot.version}</version>
                 <!-- Will use PropertiesLauncher as default class when running the jar -->
                 <!-- allowing to modify the classpath with loader.properties -->
                 <configuration>
@@ -172,6 +172,10 @@
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>dcat-mapper-plugin</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>versioning-plugin</artifactId>
                 </dependency>
             </dependencies>
         </profile>

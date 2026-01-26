@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import java.util.Objects;
+import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.validation.Validator;
 
@@ -26,6 +27,11 @@ public abstract class AbstractRepository<
             return null;
         }
         return dao.find(identifier);
+    }
+
+    public E findRequired(I identifier) {
+        Objects.requireNonNull(identifier);
+        return Optional.ofNullable(find(identifier)).orElseThrow();
     }
 
     public void persist(E entity) {

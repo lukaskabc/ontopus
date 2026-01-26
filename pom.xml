@@ -19,6 +19,7 @@
         <module>plugin-rdf-importer</module>
         <module>plugin-dcat-mapper</module>
         <module>plugin-owl</module>
+        <module>plugin-versioning</module>
     </modules>
 
     <properties>
@@ -36,6 +37,7 @@
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
         <ontopus.plugin.rdfimport.version>1.0-SNAPSHOT</ontopus.plugin.rdfimport.version>
+        <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.boot.version>4.0.2</spring.boot.version>
@@ -68,6 +70,11 @@
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>dcat-mapper-plugin</artifactId>
                 <version>${ontopus.plugin.dcatmapper.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                <artifactId>versioning-plugin</artifactId>
+                <version>${ontopus.plugin.versioning.version}</version>
             </dependency>
             <dependency>
                 <!-- Import dependency management from Spring Boot -->

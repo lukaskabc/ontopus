@@ -11,8 +11,14 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
-import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -21,17 +27,43 @@ import tools.jackson.databind.ObjectMapper;
  * Scans each plugin's base package for Spring components and registers them in the application context. Main plugin
  * classes are also registered in the application context under their names.
  */
-public class PluginRegistryApplicationInitializer
-        implements ApplicationContextInitializer<@NonNull AnnotationConfigServletWebServerApplicationContext> {
+@Component
+public class PluginRegistryApplicationInitializer implements BeanDefinitionRegistryPostProcessor {
     private static final Logger LOG = LogManager.getLogger(PluginRegistryApplicationInitializer.class);
 
+    private static void scanForSpringBeans(
+            Collection<String> basePackages, BeanDefinitionRegistry beanDefinitionRegistry) {
+        ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(beanDefinitionRegistry);
+        scanner.addExcludeFilter(new AnnotationTypeFilter(SpringBootApplication.class));
+        scanner.scan(basePackages.toArray(new String[0]));
+    }
+
+    private final Set<String> packagesForSpringScan = new HashSet<>();
+    private final Set<String> packagesForJopaScan = new HashSet<>();
+
+    private final Map<String, Map<String, String>> localization = new HashMap<>();
+
     private final Iterable<Plugin> plugins;
+
     private final ObjectMapper objectMapper;
 
-    /** @param plugins Plugins to load. */
-    public PluginRegistryApplicationInitializer(Iterable<Plugin> plugins) {
-        this.plugins = plugins;
+    public PluginRegistryApplicationInitializer() {
+        this.plugins = ServiceLoader.load(Plugin.class);
         this.objectMapper = new ObjectMapper();
+
+        LOG.info("Discovering plugins");
+        loadGlobalLocalizations(localization);
+
+        int pluginCount = 0;
+        for (Plugin plugin : plugins) {
+            LOG.info("Loading plugin: {}", plugin.getClass().getName());
+            packagesForJopaScan.addAll(plugin.getJopaScanPackages());
+            loadPluginLocalization(localization, plugin.getTranslations());
+            packagesForSpringScan.addAll(plugin.getSpringScanPackages());
+            pluginCount++;
+        }
+
+        LOG.info("Found {} plugins", pluginCount);
     }
 
     /**
@@ -81,43 +113,6 @@ public class PluginRegistryApplicationInitializer
         }
     }
 
-    @Override
-    public void initialize(@NonNull AnnotationConfigServletWebServerApplicationContext applicationContext) {
-        LOG.info("Initializing plugins");
-
-        Set<String> packagesForSpringScan = new HashSet<>();
-        Set<String> packagesForJopaScan = new HashSet<>();
-        Map<String, Map<String, String>> localization = new HashMap<>();
-        loadGlobalLocalizations(localization);
-
-        int pluginCount = 0;
-        for (Plugin plugin : plugins) {
-            LOG.info("Loading plugin: {}", plugin.getClass().getName());
-            packagesForJopaScan.addAll(plugin.getJopaScanPackages());
-            loadPluginLocalization(localization, plugin.getTranslations());
-            packagesForSpringScan.addAll(plugin.getSpringScanPackages());
-            pluginCount++;
-        }
-
-        if (!packagesForSpringScan.isEmpty()) {
-            applicationContext.scan(packagesForSpringScan.toArray(String[]::new));
-        }
-
-        if (packagesForJopaScan.isEmpty()) {
-            throw new IllegalStateException("No packages for JOPA entity scan found!");
-        }
-
-        applicationContext
-                .getBeanFactory()
-                .registerSingleton(
-                        JopaEntityPackagesHolder.BEAN_NAME, new JopaEntityPackagesHolder(packagesForJopaScan));
-        applicationContext
-                .getBeanFactory()
-                .registerSingleton("localizationProvider", new LocalizationProvider(localization));
-
-        LOG.info("Loaded {} plugins", pluginCount);
-    }
-
     /**
      * Loads localization resources from {@code /language/} directory. Only {@link Constants#LANGUAGES} are attempted to
      * load.
@@ -151,5 +146,23 @@ public class PluginRegistryApplicationInitializer
                 throw new RuntimeException("Exception while loading plugin localization:", e); // TODO
             }
         });
+    }
+
+    @Override
+    public void postProcessBeanDefinitionRegistry(@NonNull BeanDefinitionRegistry registry) throws BeansException {
+        if (!packagesForSpringScan.isEmpty()) {
+            scanForSpringBeans(packagesForSpringScan, registry);
+        }
+    }
+
+    @Override
+    public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        BeanDefinitionRegistryPostProcessor.super.postProcessBeanFactory(beanFactory);
+        if (packagesForJopaScan.isEmpty()) {
+            throw new IllegalStateException("No packages for JOPA entity scan found!");
+        }
+        beanFactory.registerSingleton(
+                JopaEntityPackagesHolder.BEAN_NAME, new JopaEntityPackagesHolder(packagesForJopaScan));
+        beanFactory.registerSingleton("localizationProvider", new LocalizationProvider(localization));
     }
 }

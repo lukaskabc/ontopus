@@ -7,9 +7,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 /**
  * Service capable of versioning an {@link VersionArtifact ontology artifact}.
  *
- * @implSpec The service is constructed with {@link OntologyVersioningServiceFactory} for each import process.
+ * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
+ *     annotation)
  */
-public interface OntologyVersioningService extends OntologyArtifactBuildingService {
+public interface OntologyVersioningService extends ImportProcessingService<Void> {
     /**
      * Provides information about actions of this service. How it versions the ontology.
      *

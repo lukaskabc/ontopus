@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.process;
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyIdentifierResolvingService;
-import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;

@@ -44,14 +44,14 @@
                 <version>${jopa.version}</version>
                 <configuration>
                     <!-- owl2java -->
-                    <package>${project.groupId}.core.generated</package>
+                    <package>${project.groupId}.core_model.generated</package>
                     <output-directory>${project.build.generated-source.directory}</output-directory>
                     <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
                     <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
                     <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
                     <with-java-uris>true</with-java-uris>
                     <!-- modelgen -->
-                    <source-package>${project.groupId}.core.model</source-package>
+                    <source-package>${project.groupId}.core_model.model</source-package>
                 </configuration>
                 <executions>
                     <execution>

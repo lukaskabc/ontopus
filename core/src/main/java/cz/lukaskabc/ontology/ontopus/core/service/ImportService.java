@@ -1,12 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.core.exception.OntopusException;
-import cz.lukaskabc.ontology.ontopus.core.exception.ValidationException;
-import cz.lukaskabc.ontology.ontopus.core.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.util.ConsumableInputStreamSource;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

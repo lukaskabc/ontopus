@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.config;
 
-import cz.lukaskabc.ontology.ontopus.core.service.UserService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.UserService;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

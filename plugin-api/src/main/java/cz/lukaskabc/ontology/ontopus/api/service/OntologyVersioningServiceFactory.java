@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
-import cz.lukaskabc.ontology.ontopus.core.model.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 
 /**
  * Factory capable of constructing an {@link OntologyVersioningService} instance for the given {@link VersionSeries}.

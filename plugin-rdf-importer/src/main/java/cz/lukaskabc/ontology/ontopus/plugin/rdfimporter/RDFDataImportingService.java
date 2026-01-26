@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.rdfimporter;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
-import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

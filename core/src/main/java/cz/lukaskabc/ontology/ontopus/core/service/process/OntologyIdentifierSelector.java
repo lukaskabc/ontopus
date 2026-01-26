@@ -4,7 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;

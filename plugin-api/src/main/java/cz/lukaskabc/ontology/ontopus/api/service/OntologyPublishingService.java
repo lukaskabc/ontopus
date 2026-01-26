@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.core.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 
 /**
  * Service capable of publishing an {@link VersionArtifact OntologyArtifact} via a public endpoint.

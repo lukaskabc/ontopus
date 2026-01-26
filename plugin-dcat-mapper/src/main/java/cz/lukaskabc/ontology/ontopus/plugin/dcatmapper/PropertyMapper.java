@@ -4,7 +4,7 @@ import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
-import cz.lukaskabc.ontology.ontopus.core.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;

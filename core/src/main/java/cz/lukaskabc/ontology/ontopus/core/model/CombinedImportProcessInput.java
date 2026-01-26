@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.model;
 
-import cz.lukaskabc.ontology.ontopus.core.model.util.SerializableImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 

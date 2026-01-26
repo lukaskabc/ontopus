@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
-import cz.lukaskabc.ontology.ontopus.core.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import java.nio.file.Path;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

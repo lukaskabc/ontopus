@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
-import cz.lukaskabc.ontology.ontopus.core.service.UserService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

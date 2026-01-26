@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service.core;
 
-import cz.lukaskabc.ontology.ontopus.core.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import org.jspecify.annotations.NullMarked;
 
 /**

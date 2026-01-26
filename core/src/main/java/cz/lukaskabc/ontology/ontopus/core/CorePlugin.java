@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
-import cz.lukaskabc.ontology.ontopus.core.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
 

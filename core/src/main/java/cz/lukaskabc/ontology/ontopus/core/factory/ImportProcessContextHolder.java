@@ -28,6 +28,7 @@ import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
@@ -37,11 +38,6 @@ import org.springframework.web.context.annotation.SessionScope;
 public class ImportProcessContextHolder implements AutoCloseable {
     private static final String TEMPORARY_FOLDER_PREFIX = "OntoPuS-import-process-";
     private static final Logger log = LogManager.getLogger(ImportProcessContextHolder.class);
-
-    @SuppressWarnings("unchecked")
-    private static <R> Future<R> cancelledFuture() { // TODO move to external class
-        return (Future<R>) CancelledFuture.instance;
-    }
 
     private Future<?> future;
 
@@ -65,7 +61,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
         this.beanFactory = beanFactory;
         this.executor = executor;
         this.versionSeriesService = versionSeriesService;
-        this.future = cancelledFuture();
+        this.future = CancelledFuture.getInstance();
     }
 
     @Override
@@ -102,7 +98,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
     }
 
     private void createServiceStack(ImportProcessContext context) {
-        beanFactory.getBeansOfType(OrderedImportPipelineService.class).values().forEach(context::pushService);
+        beanFactory.getBeansOfType(OrderedImportPipelineService.class).values().stream()
+                .sorted(AnnotationAwareOrderComparator.INSTANCE.reversed())
+                .forEach(context::pushService);
     }
 
     /**
@@ -142,7 +140,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
             log.trace("Resetting Session Import Process");
             this.close();
             this.instance = create(uri);
-            this.future = cancelledFuture();
+            this.future = CancelledFuture.getInstance();
         } finally {
             lock.unlock();
         }
@@ -164,12 +162,12 @@ public class ImportProcessContextHolder implements AutoCloseable {
             switch (future.state()) {
                 case FAILED:
                     Future<R> result = CompletableFuture.failedFuture(future.exceptionNow());
-                    future = cancelledFuture();
+                    future = CancelledFuture.getInstance();
                     return result;
                 case CANCELLED, SUCCESS:
                     return CompletableFuture.completedFuture(function.apply(instance));
             }
-            return cancelledFuture();
+            return CancelledFuture.getInstance();
         } finally {
             lock.unlock();
         }
@@ -191,14 +189,14 @@ public class ImportProcessContextHolder implements AutoCloseable {
             switch (future.state()) {
                 case FAILED:
                     result = CompletableFuture.failedFuture(future.exceptionNow());
-                    future = cancelledFuture();
+                    future = CancelledFuture.getInstance();
                     return result;
                 case CANCELLED, SUCCESS:
                     result = executor.submit(() -> consumer.accept(instance));
                     future = result;
                     return result;
                 default:
-                    result = cancelledFuture();
+                    result = CancelledFuture.getInstance();
             }
             return result;
         } finally {
@@ -206,8 +204,15 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
     }
 
-    private static final class CancelledFuture implements Future<Void> {
-        private static final CancelledFuture instance = new CancelledFuture();
+    private static final class CancelledFuture<T> implements Future<T> {
+        private static final CancelledFuture<?> instance = new CancelledFuture<Void>();
+
+        @SuppressWarnings("unchecked")
+        public static <T> CancelledFuture<T> getInstance() {
+            return (CancelledFuture<T>) instance;
+        }
+
+        private CancelledFuture() {}
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
@@ -215,12 +220,12 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
 
         @Override
-        public Void get() {
+        public T get() {
             throw new CancellationException();
         }
 
         @Override
-        public Void get(long timeout, TimeUnit unit) {
+        public T get(long timeout, TimeUnit unit) {
             throw new CancellationException();
         }
 

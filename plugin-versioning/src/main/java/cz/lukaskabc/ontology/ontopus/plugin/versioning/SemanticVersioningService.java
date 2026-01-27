@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.versioning.general;
+package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
@@ -14,13 +14,13 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 @Service
-public class GeneralVersioningService implements OntologyVersioningService {
+public class SemanticVersioningService implements OntologyVersioningService {
     static final String VERSION_FIELD = "version";
     private JsonForm jsonForm;
     private final ObjectMapper objectMapper;
     private final VersionArtifactRepository artifactRepository;
 
-    public GeneralVersioningService(ObjectMapper objectMapper, VersionArtifactRepository artifactRepository) {
+    public SemanticVersioningService(ObjectMapper objectMapper, VersionArtifactRepository artifactRepository) {
         this.objectMapper = objectMapper;
         this.artifactRepository = artifactRepository;
     }
@@ -42,11 +42,12 @@ public class GeneralVersioningService implements OntologyVersioningService {
 
     @Override
     public String getServiceName() {
-        return "ontopus.core.service.OntologyVersioningService.GeneralVersioningService.name";
+        return "ontopus.core.service.OntologyVersioningService.SemanticVersioningService.name";
     }
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+        // TODO: semantic versioning validation?
         try {
             String version = formResult.getStringValue(VERSION_FIELD);
             Objects.requireNonNull(version);
@@ -67,6 +68,7 @@ public class GeneralVersioningService implements OntologyVersioningService {
                 .put(
                         "title",
                         "ontopus.core.service.OntologyVersioningService.GeneralVersioningService.field.version.title")
+                .put("default", previousVersion)
                 .putArray("examples")
                 .add(previousVersion);
 

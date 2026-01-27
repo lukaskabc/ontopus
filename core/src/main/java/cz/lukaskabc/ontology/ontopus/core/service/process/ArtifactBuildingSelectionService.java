@@ -26,11 +26,9 @@ public class ArtifactBuildingSelectionService extends ImportProcessNextServiceSe
     public OntologyArtifactBuildingService handleSubmit(FormResult formResult, ImportProcessContext context) {
         OntologyArtifactBuildingService service = super.handleSubmit(formResult, context);
         assert context.peekService() == this;
-        // keeping self on stack to allow next selection
+        context.popService(); // pop self
+        // TODO: maybe there should be an option to apply more than one service
         context.pushService(service);
-
-        // TODO implement option to stop building the artifact
-        // and pop this service from the stack
         return service;
     }
 }

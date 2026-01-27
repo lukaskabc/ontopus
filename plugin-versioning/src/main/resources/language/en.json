@@ -1,0 +1,16 @@
+{
+  "ontopus.core.service.OntologyVersioningService": {
+    "SemanticVersioningService": {
+      "name": "Semantic version",
+      "description": "Versions the ontology with semantic versioning scheme (e.g. 3.5.1)."
+    },
+    "GeneralVersioningService": {
+      "name": "User defined version",
+      "description": "Accepts user defined text as version."
+    },
+    "DateVersioningService": {
+      "name": "Date based version",
+      "description": "Uses current date as the version (YYYY-MM-DD)."
+    }
+  }
+}

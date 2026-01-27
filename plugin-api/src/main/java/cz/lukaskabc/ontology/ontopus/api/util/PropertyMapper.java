@@ -1,15 +1,22 @@
-package cz.lukaskabc.ontology.ontopus.plugin.dcatmapper;
+package cz.lukaskabc.ontology.ontopus.api.util;
 
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jopa.model.EntityManager;
+import cz.cvut.kbss.jopa.model.IRI;
 import cz.cvut.kbss.jopa.model.MultilingualString;
+import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
+import cz.cvut.kbss.ontodriver.model.LangString;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 
 public class PropertyMapper {
@@ -17,12 +24,22 @@ public class PropertyMapper {
 
     @Nullable protected final URI subjectURI;
 
-    protected final URI contextURI;
+    protected final AbstractEntityIdentifier contextURI;
 
-    public PropertyMapper(EntityManager entityManager, @Nullable URI subjectURI, URI contextURI) {
+    public PropertyMapper(EntityManager entityManager, @Nullable URI subjectURI, AbstractEntityIdentifier contextURI) {
         this.entityManager = entityManager;
         this.subjectURI = subjectURI;
-        this.contextURI = contextURI;
+        this.contextURI = Objects.requireNonNull(contextURI);
+    }
+
+    public MultilingualString findMultilingualProperty(Set<URI> propertiesToMatch) {
+        final MultilingualString result = new MultilingualString();
+        findProperties(propertiesToMatch, LangString.class).forEach(property -> {
+            property.getLanguage()
+                    .ifPresentOrElse(
+                            lang -> result.set(lang, property.getValue()), () -> result.set(property.getValue()));
+        });
+        return result;
     }
 
     /**
@@ -71,7 +88,7 @@ public class PropertyMapper {
 				SELECT ?object FROM ?context WHERE {
 				    ?subject ?predicate ?object .
 				    FILTER(?predicate IN (?properties))
-				}
+				} ORDER BY ?predicate ?object .
 				""", resultClass)
                 .setParameter("context", contextURI)
                 .setParameter("properties", propertiesToMatch);
@@ -79,6 +96,13 @@ public class PropertyMapper {
             query.setParameter("subject", subjectURI);
         }
         return query;
+    }
+
+    public Set<URI> mapAttributes(Attribute<?, ?>... propertiesToMatch) {
+        return Arrays.stream(propertiesToMatch)
+                .map(Attribute::getIRI)
+                .map(IRI::toURI)
+                .collect(Collectors.toSet());
     }
 
     protected void mergeMultilingualString(

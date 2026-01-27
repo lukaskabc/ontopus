@@ -17,7 +17,6 @@
         <module>plugin-file</module>
         <module>core-model</module>
         <module>plugin-rdf-importer</module>
-        <module>plugin-dcat-mapper</module>
         <module>plugin-owl</module>
         <module>plugin-versioning</module>
     </modules>
@@ -32,7 +31,6 @@
 
         <ontopus.core.version>1.0-SNAPSHOT</ontopus.core.version>
         <ontopus.plugin.api.version>1.0-SNAPSHOT</ontopus.plugin.api.version>
-        <ontopus.plugin.dcatmapper.version>1.0-SNAPSHOT</ontopus.plugin.dcatmapper.version>
         <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
@@ -65,11 +63,6 @@
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>rdf-importer-plugin</artifactId>
                 <version>${ontopus.plugin.rdfimport.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-                <artifactId>dcat-mapper-plugin</artifactId>
-                <version>${ontopus.plugin.dcatmapper.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>

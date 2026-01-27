@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /** {@link OntologyVersioningService} that constructs the version URI by concatenating ontology URI and version. */
 @Service
@@ -48,6 +49,10 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
                     "Failed to construct version URI, the ontology version is missing for version artifact: {}",
                     context.getVersionArtifact());
             return null;
+        }
+
+        if (!ontologyIdentifier.getPath().endsWith("/") && !StringUtils.hasText(ontologyIdentifier.getFragment())) {
+            ontologyIdentifier = URI.create(ontologyIdentifier + "/");
         }
 
         URI versionURI = ontologyIdentifier.resolve(version);

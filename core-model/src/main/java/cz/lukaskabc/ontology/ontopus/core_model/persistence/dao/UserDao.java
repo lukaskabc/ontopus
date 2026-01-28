@@ -25,6 +25,7 @@ public class UserDao extends AbstractDao<UserURI, User> {
 				        ?withUsername ?username .
 				}
 				""", User.class)
+                .setMaxResults(1)
                 .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
                 .setParameter("withUsername", User_.username.getIRI())

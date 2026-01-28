@@ -19,6 +19,7 @@
         <module>plugin-rdf-importer</module>
         <module>plugin-owl</module>
         <module>plugin-versioning</module>
+        <module>plugin-skos</module>
     </modules>
 
     <properties>
@@ -35,6 +36,7 @@
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
         <ontopus.plugin.rdfimport.version>1.0-SNAPSHOT</ontopus.plugin.rdfimport.version>
+        <ontopus.plugin.skos.version>1.0-SNAPSHOT</ontopus.plugin.skos.version>
         <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -68,6 +70,11 @@
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>versioning-plugin</artifactId>
                 <version>${ontopus.plugin.versioning.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                <artifactId>skos-plugin</artifactId>
+                <version>${ontopus.plugin.skos.version}</version>
             </dependency>
             <dependency>
                 <!-- Import dependency management from Spring Boot -->

@@ -173,6 +173,10 @@
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>versioning-plugin</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>skos-plugin</artifactId>
+                </dependency>
             </dependencies>
         </profile>
         <profile>

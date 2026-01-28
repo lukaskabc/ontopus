@@ -10,26 +10,56 @@ import cz.cvut.kbss.ontodriver.model.LangString;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class PropertyMapper {
+    /**
+     * Supplies the value from {@code supplier} to {@code consumer} if the current value returned by
+     * {@code currentValueSupplier} is null.
+     */
+    public static <T> void applyMapping(
+            Supplier<@Nullable T> supplier, Consumer<@NonNull T> consumer, Supplier<@Nullable T> currentValueSupplier) {
+        if (currentValueSupplier.get() == null) {
+            Optional.ofNullable(supplier.get()).ifPresent(consumer);
+        }
+    }
+
+    public static Set<URI> mapAttributes(Attribute<?, ?>... propertiesToMatch) {
+        return Arrays.stream(propertiesToMatch)
+                .map(Attribute::getIRI)
+                .map(IRI::toURI)
+                .collect(Collectors.toSet());
+    }
+
+    public static void mergeMultilingualString(
+            Supplier<@Nullable MultilingualString> getter,
+            Consumer<MultilingualString> setter,
+            MultilingualString multilingualString) {
+        MultilingualString current = getter.get();
+        if (current == null) {
+            current = new MultilingualString();
+        }
+
+        current.getValue().putAll(multilingualString.getValue());
+
+        setter.accept(current);
+    }
+
     protected final EntityManager entityManager;
 
     @Nullable protected final URI subjectURI;
 
-    protected final AbstractEntityIdentifier contextURI;
+    protected final URI contextURI;
 
     public PropertyMapper(EntityManager entityManager, @Nullable URI subjectURI, AbstractEntityIdentifier contextURI) {
         this.entityManager = entityManager;
         this.subjectURI = subjectURI;
-        this.contextURI = Objects.requireNonNull(contextURI);
+        this.contextURI = Objects.requireNonNull(contextURI).toURI();
     }
 
     public MultilingualString findMultilingualProperty(Set<URI> propertiesToMatch) {
@@ -88,7 +118,7 @@ public class PropertyMapper {
 				SELECT ?object FROM ?context WHERE {
 				    ?subject ?predicate ?object .
 				    FILTER(?predicate IN (?properties))
-				} ORDER BY ?predicate ?object .
+				}
 				""", resultClass)
                 .setParameter("context", contextURI)
                 .setParameter("properties", propertiesToMatch);
@@ -96,26 +126,5 @@ public class PropertyMapper {
             query.setParameter("subject", subjectURI);
         }
         return query;
-    }
-
-    public Set<URI> mapAttributes(Attribute<?, ?>... propertiesToMatch) {
-        return Arrays.stream(propertiesToMatch)
-                .map(Attribute::getIRI)
-                .map(IRI::toURI)
-                .collect(Collectors.toSet());
-    }
-
-    protected void mergeMultilingualString(
-            Supplier<@Nullable MultilingualString> getter,
-            Consumer<MultilingualString> setter,
-            MultilingualString multilingualString) {
-        MultilingualString current = getter.get();
-        if (current == null) {
-            current = new MultilingualString();
-        }
-
-        current.getValue().putAll(multilingualString.getValue());
-
-        setter.accept(current);
     }
 }

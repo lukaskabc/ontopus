@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.lang.conditions.ArchConditions.be;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -30,7 +30,7 @@ public class ArchitectureTest {
         noClasses()
                 .should()
                 .transitivelyDependOnClassesThat(resideInPluginPackage())
-                .andShould(be(resideInPluginPackage()))
+                .orShould(be(resideInPluginPackage()))
                 .check(coreClasses());
     }
 
@@ -39,6 +39,6 @@ public class ArchitectureTest {
     }
 
     private DescribedPredicate<JavaClass> resideInPluginPackage() {
-        return resideInAnyPackage("..plugin..");
+        return resideInAPackage("..ontopus.plugin..");
     }
 }

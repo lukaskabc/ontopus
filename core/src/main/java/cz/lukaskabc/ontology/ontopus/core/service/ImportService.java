@@ -39,7 +39,15 @@ public class ImportService {
         throw new IllegalStateException("Could not find uploaded file for " + fileName);
     }
 
-    private static InputStreamSource persistUploadedFile(MultipartFile uploadedFile) {
+    /**
+     * {@link MultipartFile MultipartFile} to transfer to a system temporary file.
+     *
+     * @param uploadedFile the file to transfer
+     * @return {@link InputStreamSource} providing the input stream with file contents. The temporary file will be
+     *     automatically deleted when this object is garbage collected.
+     * @see ConsumableInputStreamSource
+     */
+    private static InputStreamSource transferUploadedFile(MultipartFile uploadedFile) {
         try {
             File tempFile = Files.createTempFile(UPLOAD_TEMP_FILE_PREFIX, null).toFile();
             uploadedFile.transferTo(tempFile);
@@ -115,7 +123,7 @@ public class ImportService {
                             // since the processing will be asynchronous
                             // we need to persist the file
                             // so it won't be deleted once the synchronous request processing ends
-                            yield persistUploadedFile(multipartFile);
+                            yield transferUploadedFile(multipartFile);
                         }
                         case SERVER -> {
                             // TODO resolve server cached file

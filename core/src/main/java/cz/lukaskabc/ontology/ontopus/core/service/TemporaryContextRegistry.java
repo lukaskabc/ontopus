@@ -8,8 +8,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.TemporaryContextUriGenerator;
+import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import java.net.URI;
-import java.time.Instant;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,15 +26,18 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     private final EntityDescriptor temporaryContextDescriptor;
     private final TemporaryContextUriGenerator uriGenerator;
     private final URI temporaryContextGraph;
+    private final TimeProvider timeProvider;
 
     @Autowired
     public TemporaryContextRegistry(
             EntityManager entityManager,
             DescriptorFactory descriptorFactory,
-            TemporaryContextUriGenerator uriGenerator) {
+            TemporaryContextUriGenerator uriGenerator,
+            TimeProvider timeProvider) {
         this.em = entityManager;
         this.temporaryContextDescriptor = descriptorFactory.temporaryContext();
         this.uriGenerator = uriGenerator;
+        this.timeProvider = timeProvider;
         temporaryContextGraph = temporaryContextDescriptor.getSingleContext().orElseThrow();
     }
 
@@ -81,7 +84,7 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
         TemporaryContext tmp = new TemporaryContext();
         tmp.setIdentifier(uriGenerator.generate(tmp));
         tmp.setUri(tmp.getIdentifier().toURI());
-        tmp.setCreatedAt(Instant.now());
+        tmp.setCreatedAt(timeProvider.getInstant());
         em.persist(tmp, temporaryContextDescriptor);
         return Objects.requireNonNull(tmp.getIdentifier());
     }

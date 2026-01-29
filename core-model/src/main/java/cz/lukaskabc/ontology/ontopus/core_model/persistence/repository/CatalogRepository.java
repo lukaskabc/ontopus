@@ -6,7 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.OntopusCatalogDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
-import java.time.Instant;
+import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Validator;
 
@@ -14,14 +14,17 @@ import org.springframework.validation.Validator;
 public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, OntopusCatalog, OntopusCatalogDao> {
     private final OntopusConfig.DcatCatalog config;
     private final OntopusCatalogURI catalogUri;
+    private final TimeProvider timeProvider;
 
     public CatalogRepository(
             OntopusCatalogDao dao,
             Validator validator,
             IdentifierGenerator<OntopusCatalogURI, OntopusCatalog> identifierGenerator,
-            OntopusConfig config) {
+            OntopusConfig config,
+            TimeProvider timeProvider) {
         super(dao, validator, identifierGenerator);
         this.config = config.getDcatCatalog();
+        this.timeProvider = timeProvider;
         this.catalogUri = new OntopusCatalogURI(this.config.getUri());
     }
 
@@ -36,7 +39,7 @@ public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, Ont
         // resource
         catalog.setDescription(MultilingualString.create(config.getDescription(), null));
         catalog.setTitle(MultilingualString.create(config.getTitle(), null));
-        catalog.setReleaseDate(Instant.now());
+        catalog.setReleaseDate(timeProvider.getInstant());
         catalog.setModifiedDate(catalog.getReleaseDate());
         catalog.setVersion("latest");
 

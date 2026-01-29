@@ -145,6 +145,11 @@ public class ImportProcessMediator {
         this.finalizingService = finalizingService;
     }
 
+    /** Closes the current import process and deletes related data (database context, files). */
+    public void closeImportProcess() {
+        holder.close();
+    }
+
     /**
      * Combines form data and reusable files mapped to service names to map of service names to form results.
      *

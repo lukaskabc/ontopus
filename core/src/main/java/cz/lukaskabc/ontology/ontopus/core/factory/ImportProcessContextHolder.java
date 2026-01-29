@@ -81,6 +81,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
         toDelete.clear();
         if (instance != null) {
             temporaryContextRegistry.delete(instance.getDatabaseContext());
+            instance = null;
         }
     }
 

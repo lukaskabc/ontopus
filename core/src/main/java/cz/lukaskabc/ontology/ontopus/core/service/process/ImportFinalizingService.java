@@ -6,20 +6,27 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.VersionSeriesDao;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class ImportFinalizingService {
@@ -43,19 +50,120 @@ public class ImportFinalizingService {
         // return reusableFiles;
         return null; // TODO whole ImportFinalizingService needs to be redone
     }
-    /** Copies the temporary directory and all uploaded files to a persistent one an */
-    private static void persistFiles(ImportProcessContext context, Path targetPath) {
+
+    private final ImportProcessMediator importProcessMediator;
+    private final TimeProvider timeProvider;
+
+    private final ObjectMapper objectMapper;
+
+    private final VersionSeriesRepository versionSeriesRepository;
+
+    private final VersionArtifactRepository versionArtifactRepository;
+    private final EntityManager em;
+
+    private final OntologyFileService fileService;
+
+    public ImportFinalizingService(
+            ImportProcessMediator importProcessMediator,
+            TimeProvider timeProvider,
+            EntityManager em,
+            OntologyFileService fileService,
+            ObjectMapper objectMapper,
+            VersionSeriesRepository versionSeriesRepository,
+            VersionArtifactRepository versionArtifactRepository) {
+        this.importProcessMediator = importProcessMediator;
+        this.timeProvider = timeProvider;
+        this.em = em;
+
+        this.fileService = fileService;
+        this.objectMapper = objectMapper;
+        this.versionSeriesRepository = versionSeriesRepository;
+        this.versionArtifactRepository = versionArtifactRepository;
+    }
+
+    /**
+     *
+     *
+     * <ol>
+     *   <li>Persist files
+     *   <li>Persist database context
+     *   <li>Serialize import process to the version series
+     *   <li>Update version series with the new artifact
+     *   <li>Persist artifacts (which will also validate them), they will be persisted in respective internal contexts
+     *   <li>Delete files from previous import process
+     * </ol>
+     *
+     * @param context the process context to finalize
+     */
+    @Transactional
+    public void finalize(ImportProcessContext context) {
+        // TODO: There should be some validation ensuring that the constructed artifacts
+        // are valid
+        // and possible errors should be propagated to the user
+        Path artifactImportFolder = fileService.createArtifactImportFolder();
+
+        persistFiles(context, artifactImportFolder);
+        persistDatabaseContext(context);
+        serializeContext(context, artifactImportFolder);
+        updateVersionSeries(context);
+
+        final VersionSeries series = context.getVersionSeries();
+        final VersionArtifact artifact = context.getVersionArtifact();
+
+        if (versionSeriesRepository.exists(series.getIdentifier())) {
+            versionSeriesRepository.update(series);
+        } else {
+            versionSeriesRepository.persist(series);
+        }
+
+        versionArtifactRepository.persist(artifact);
+
+        // TODO delete files from previous import process
+        // TODO: create a mechanism that will clear files for old artifacts
+        // perhaps at the end of saving a new artifact, delete the old files (after
+        // successful transaction)
+
+        // TODO: compile serializable import context
+        // backup files for reuse
+        // publish event?
+        importProcessMediator.closeImportProcess();
+    }
+
+    /**
+     * Moves the temporary graph from the context to the target ontology graph specified by the identifier of the
+     * version artifact. All data from the target graph are dropped before the move.
+     */
+    private void persistDatabaseContext(ImportProcessContext context) {
+        VersionArtifactURI ontologyGraph =
+                Objects.requireNonNull(context.getVersionArtifact().getIdentifier());
+
+        try {
+            // according to SPARQL specification, the destination graph is removed before
+            // insertion
+            // https://www.w3.org/TR/sparql11-update/#move
+            this.em
+                    .createNativeQuery("MOVE GRAPH ?source TO ?target")
+                    .setParameter("source", context.getDatabaseContext().toURI())
+                    .setParameter("target", ontologyGraph.toURI())
+                    .executeUpdate();
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    /** Copies the temporary directory and all uploaded files to a persistent one */
+    private void persistFiles(ImportProcessContext context, Path destinationFolder) {
         Path sourcePath = context.getTempFolder();
 
         try {
-            Files.createDirectories(targetPath);
+            Files.createDirectories(destinationFolder);
             // not moving to allow database save to file and try again
-            FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
+            FileUtils.copyDirectory(sourcePath.toFile(), destinationFolder.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO exception
         }
 
-        // copy all uploaded files
+        // TODO copy all uploaded files?
         // context.getProcessedResults()
         // .forEach(result -> result.submittedFiles().values().forEach(file -> {
         // try {
@@ -65,93 +173,64 @@ public class ImportFinalizingService {
         // throw new RuntimeException(e); // TODO: exception
         // }
         // }));
-
-        // TODO: create a mechanism that will clear files for old artifacts
-        // perhaps at the end of saving a new artifact, delete the old files (after
-        // successful transaction)
     }
 
-    private static SerializableImportProcessContext persistImportContext(ImportProcessContext context, Path filesPath) {
-        final SerializableImportProcessContext persistentContext = new SerializableImportProcessContext();
-        persistentContext.setFilesDirectory(filesPath.toString());
-        final List<String> services =
-                new ArrayList<>(context.getProcessedServices().size());
-        int serviceIndex = 0;
-        for (final ImportProcessingService<?> service : context.getProcessedServices()) {
-            services.add(ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex));
-        }
-        persistentContext.setServicesList(services);
+    private void serializeContext(ImportProcessContext context, Path artifactImportFolder) {
+        final SerializableImportProcessContext serializedContext = new SerializableImportProcessContext();
+        serializedContext.setFilesDirectory(artifactImportFolder.toString());
 
-        final List<SerializableImportProcessContext.ReusableFormResult> formResults =
-                new ArrayList<>(context.getProcessedResults().size());
+        // save services
+        final int servicesCount = context.getProcessedServices().size();
+        final List<String> serviceIds = new ArrayList<>(servicesCount);
+        for (int serviceIndex = 0; serviceIndex < servicesCount; serviceIndex++) {
+            final ImportProcessingService<?> service =
+                    context.getProcessedServices().get(serviceIndex);
+            serviceIds.add(ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex));
+        }
+        serializedContext.setServicesList(serviceIds);
+
+        final int resultsCount = context.getProcessedResults().size();
+        final List<SerializableImportProcessContext.ReusableFormResult> formResults = new ArrayList<>(resultsCount);
         for (final FormResult result : context.getProcessedResults()) {
             Map<String, UploadedFile> reusableFiles = getUploadedFileMap(result);
-            // formResults.add(new
-            // SerializableImportProcessContext.ReusableFormResult(result.formData(),
-            // reusableFiles));
+            Map<String, String> serializedFormData = serializeFormData(result.formData());
+            formResults.add(new SerializableImportProcessContext.ReusableFormResult(serializedFormData, reusableFiles));
         }
-        persistentContext.setFormResults(formResults);
+        serializedContext.setFormResults(formResults);
 
-        return persistentContext;
+        context.getVersionSeries().setSerializableImportProcessContext(serializedContext);
     }
 
-    private final EntityManager em;
-
-    private final VersionSeriesDao ontologyArtifactVersionSeriesDao;
-
-    private final OntologyFileService fileService;
-
-    public ImportFinalizingService(
-            EntityManager em, VersionSeriesDao ontologyArtifactVersionSeriesDao, OntologyFileService fileService) {
-        this.em = em;
-
-        this.ontologyArtifactVersionSeriesDao = ontologyArtifactVersionSeriesDao;
-        this.fileService = fileService;
+    private Map<String, String> serializeFormData(Map<String, JsonNode> formData) {
+        final Map<String, String> result = new HashMap<>(formData.size());
+        for (final Map.Entry<String, JsonNode> entry : formData.entrySet()) {
+            final String key = entry.getKey();
+            final JsonNode value = entry.getValue();
+            result.put(key, objectMapper.writeValueAsString(value));
+        }
+        return result;
     }
 
-    @Transactional
-    public void finalize(ImportProcessContext context) {
-        context.getVersionArtifact();
+    private void updateVersionSeries(ImportProcessContext context) {
+        final VersionArtifact artifact = context.getVersionArtifact();
+        final VersionSeries series = context.getVersionSeries();
 
-        // final URI ontologyGraph =
-        // context.getOntologyVersionArtifact().getCurrentVersion();
-        // Path artifactImportFolder = fileService.createArtifactImportFolder();
-        // persistDatabaseContext(context, ontologyGraph);
-        // persistFiles(context, artifactImportFolder);
-        //
-        // SerializableImportProcessContext persistentContext =
-        // persistImportContext(context, artifactImportFolder);
-        //
-        // OntologyArtifactVersionSeries series =
-        // context.getOntologyArtifactVersionSeries();
-        //
-        // series.setLatestArtifact(context.getOntologyVersionArtifact());
-        // series.getOntologyArtifacts().add(context.getOntologyVersionArtifact());
-        // series.setSerializableImportProcessContext(persistentContext);
-        //
-        // ontologyArtifactVersionSeriesDao.persist(series);
+        final Instant timestamp = timeProvider.getInstant();
+        if (series.getLast() != null) {
+            artifact.setPreviousVersion(series.getLast().toURI());
+        }
+        if (series.getMembers() == null) {
+            series.setMembers(new HashSet<>(1));
+        }
+        artifact.setReleaseDate(timestamp);
+        artifact.setModifiedDate(timestamp);
+        artifact.setSeries(series.getIdentifier().toURI());
+        series.setLast(artifact.getIdentifier());
+        series.setModifiedDate(timestamp);
+        if (series.getReleaseDate() == null) {
+            series.setReleaseDate(timestamp);
+        }
 
-        // TODO: compile serializable import context
-        // backup files for reuse
-        // publish event?
-
-    }
-
-    /**
-     * Moves the temporary graph from the context to the target ontology graph. All data from the target graph are
-     * dropped.
-     *
-     * @param ontologyGraph The target database graph
-     */
-    private void persistDatabaseContext(ImportProcessContext context, URI ontologyGraph) {
-        this.em
-                .createNativeQuery("DROP GRAPH ?target")
-                .setParameter("target", ontologyGraph)
-                .executeUpdate();
-        this.em
-                .createNativeQuery("MOVE GRAPH ?source TO ?target")
-                .setParameter("source", context.getDatabaseContext())
-                .setParameter("target", ontologyGraph)
-                .executeUpdate();
+        series.setVersion(timeProvider.getCurrentDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 }

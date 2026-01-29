@@ -15,8 +15,7 @@ public class OntologyFileService {
     }
 
     public Path createArtifactImportFolder() {
-        return Path.of(fileConfig.getImportFilesDirectory().toString() + "_"
-                + UUID.randomUUID().toString());
+        return fileConfig.getImportFilesDirectory().resolve(UUID.randomUUID().toString());
     }
 
     public Path relativizeArtifactImportFolder(Path artifactPath) {

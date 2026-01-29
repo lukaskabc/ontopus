@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
-@SpringBootApplication
+@SpringBootApplication(scanBasePackageClasses = {OntoPuSApplication.class, CoreModel.class})
 @ConfigurationPropertiesScan(basePackageClasses = {OntoPuSApplication.class, CoreModel.class})
 @EnableConfigurationProperties
 public class OntoPuSApplication {

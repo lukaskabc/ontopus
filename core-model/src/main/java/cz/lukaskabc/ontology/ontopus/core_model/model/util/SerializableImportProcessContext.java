@@ -14,7 +14,7 @@ public class SerializableImportProcessContext implements Serializable {
      * @param formData
      * @param reusableFiles
      */
-    public record ReusableFormResult(Map<String, String[]> formData, Map<String, UploadedFile> reusableFiles)
+    public record ReusableFormResult(Map<String, String> formData, Map<String, UploadedFile> reusableFiles)
             implements Serializable {
         // TODO implement factory using relative paths for backed up files available for
         // reusage

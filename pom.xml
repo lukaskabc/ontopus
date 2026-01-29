@@ -26,7 +26,7 @@
         <jackson.annotations.version>2.21</jackson.annotations.version>
         <jackson.version>3.0.3</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.7.2</jopa.version>
+        <jopa.version>2.8.1</jopa.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 

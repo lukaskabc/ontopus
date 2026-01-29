@@ -22,6 +22,13 @@ public abstract class AbstractRepository<
         this.identifierGenerator = identifierGenerator;
     }
 
+    public boolean exists(@Nullable I identifier) {
+        if (identifier == null) {
+            return false;
+        }
+        return dao.exists(identifier);
+    }
+
     @Nullable public E find(@Nullable I identifier) {
         if (identifier == null) {
             return null;

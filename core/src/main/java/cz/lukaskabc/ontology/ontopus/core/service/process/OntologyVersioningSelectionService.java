@@ -29,12 +29,15 @@ public class OntologyVersioningSelectionService extends ImportProcessNextService
         return "ontopus.core.service.OrderedImportPipelineService.OntologyVersioningSelectionService.name";
     }
 
+    // TODO: Versioning service should respect the version value from the ontology,
+    // when its present
+    // but it should also offer changing it
     @Override
     public OntologyVersioningService handleSubmit(FormResult formResult, ImportProcessContext context) {
         OntologyVersioningService service = super.handleSubmit(formResult, context);
         assert context.peekService() == this;
         context.popService(); // pop self
-        context.pushService(service);
+        // context.pushService(service);
         context.pushService(versionURIConstructionService);
         return service;
     }

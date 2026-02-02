@@ -7,11 +7,13 @@ import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
@@ -51,7 +53,6 @@ public class ImportFinalizingService {
         return null; // TODO whole ImportFinalizingService needs to be redone
     }
 
-    private final ImportProcessMediator importProcessMediator;
     private final TimeProvider timeProvider;
 
     private final ObjectMapper objectMapper;
@@ -63,15 +64,16 @@ public class ImportFinalizingService {
 
     private final OntologyFileService fileService;
 
+    private final CatalogRepository catalogRepository;
+
     public ImportFinalizingService(
-            ImportProcessMediator importProcessMediator,
             TimeProvider timeProvider,
             EntityManager em,
             OntologyFileService fileService,
             ObjectMapper objectMapper,
             VersionSeriesRepository versionSeriesRepository,
-            VersionArtifactRepository versionArtifactRepository) {
-        this.importProcessMediator = importProcessMediator;
+            VersionArtifactRepository versionArtifactRepository,
+            CatalogRepository catalogRepository) {
         this.timeProvider = timeProvider;
         this.em = em;
 
@@ -79,6 +81,7 @@ public class ImportFinalizingService {
         this.objectMapper = objectMapper;
         this.versionSeriesRepository = versionSeriesRepository;
         this.versionArtifactRepository = versionArtifactRepository;
+        this.catalogRepository = catalogRepository;
     }
 
     /**
@@ -116,7 +119,12 @@ public class ImportFinalizingService {
             versionSeriesRepository.persist(series);
         }
 
+        if (versionArtifactRepository.exists(artifact.getIdentifier())) {
+            versionArtifactRepository.delete(artifact);
+        }
         versionArtifactRepository.persist(artifact);
+
+        updateCatalog(series);
 
         // TODO delete files from previous import process
         // TODO: create a mechanism that will clear files for old artifacts
@@ -126,7 +134,6 @@ public class ImportFinalizingService {
         // TODO: compile serializable import context
         // backup files for reuse
         // publish event?
-        importProcessMediator.closeImportProcess();
     }
 
     /**
@@ -211,6 +218,12 @@ public class ImportFinalizingService {
         return result;
     }
 
+    private void updateCatalog(VersionSeries series) {
+        final OntopusCatalog catalog = catalogRepository.findRequired();
+        catalog.getOntologySeries().add(series.getIdentifier());
+        catalogRepository.update(catalog);
+    }
+
     private void updateVersionSeries(ImportProcessContext context) {
         final VersionArtifact artifact = context.getVersionArtifact();
         final VersionSeries series = context.getVersionSeries();
@@ -225,7 +238,11 @@ public class ImportFinalizingService {
         artifact.setReleaseDate(timestamp);
         artifact.setModifiedDate(timestamp);
         artifact.setSeries(series.getIdentifier().toURI());
+        series.getMembers().add(artifact.getIdentifier());
         series.setLast(artifact.getIdentifier());
+        if (series.getFirst() == null) {
+            series.setFirst(artifact.getIdentifier());
+        }
         series.setModifiedDate(timestamp);
         if (series.getReleaseDate() == null) {
             series.setReleaseDate(timestamp);

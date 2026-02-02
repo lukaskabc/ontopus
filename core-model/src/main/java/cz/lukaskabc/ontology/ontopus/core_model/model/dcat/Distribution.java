@@ -50,7 +50,7 @@ public abstract class Distribution<ID extends EntityIdentifier> extends Persiste
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_mediaType)
     private MimeType mediaType;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_format)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcat_format, simpleLiteral = true)
     private String format;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_compressFormat)

@@ -26,6 +26,24 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
         this.entityGraphContext = descriptor.getSingleContext().orElseThrow();
     }
 
+    public void delete(E entity) {
+        Objects.requireNonNull(entity.getUri());
+        try {
+            em.createNativeQuery("""
+					DELETE WHERE {
+					    GRAPH ?context {
+					        ?entity ?r ?o .
+					    }
+					}
+					""")
+                    .setParameter("context", entityGraphContext)
+                    .setParameter("entity", entity.getUri())
+                    .executeUpdate();
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
     public boolean exists(I identifier) {
         Objects.requireNonNull(identifier);
         try {

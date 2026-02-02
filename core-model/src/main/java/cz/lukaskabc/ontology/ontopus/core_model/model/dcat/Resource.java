@@ -33,7 +33,7 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
     private Instant modifiedDate;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_language)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcat_language, simpleLiteral = true)
     private Set<String> languages;
     /*
      * Skipping publisher

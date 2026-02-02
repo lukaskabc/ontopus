@@ -29,8 +29,12 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @SessionScope
 @NullMarked
@@ -121,6 +125,17 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
     }
 
+    private Runnable decorateAsyncTask(Consumer<ImportProcessContext> consumer) {
+        final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        final SecurityContext securityContext = SecurityContextHolder.getContext();
+        return () -> {
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            SecurityContextHolder.setContext(securityContext);
+            assert instance != null;
+            consumer.accept(instance);
+        };
+    }
+
     private void ensureInitialized() {
         if (instance == null) {
             throw new ImportProcessNotInitializedException();
@@ -193,7 +208,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
                     future = CancelledFuture.getInstance();
                     return result;
                 case CANCELLED, SUCCESS:
-                    result = executor.submit(() -> consumer.accept(instance));
+                    result = executor.submit(decorateAsyncTask(consumer));
                     future = result;
                     return result;
                 default:

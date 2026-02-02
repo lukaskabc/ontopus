@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
+import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
@@ -184,6 +185,9 @@ public class ImportProcessMediator {
     private void finalize(ImportProcessContext context) {
         if (!context.hasUnprocessedService()) {
             finalizingService.finalize(context);
+            closeImportProcess();
+            throw new ImportProcessFinalizedException(
+                    context.getVersionArtifact().getIdentifier());
         }
     }
 

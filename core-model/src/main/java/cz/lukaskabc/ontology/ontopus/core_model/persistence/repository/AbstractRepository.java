@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.Identifie
 import java.util.Objects;
 import java.util.Optional;
 import org.jspecify.annotations.Nullable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 public abstract class AbstractRepository<
@@ -22,6 +23,12 @@ public abstract class AbstractRepository<
         this.identifierGenerator = identifierGenerator;
     }
 
+    @Transactional
+    public void delete(E entity) {
+        dao.delete(entity);
+    }
+
+    @Transactional
     public boolean exists(@Nullable I identifier) {
         if (identifier == null) {
             return false;
@@ -29,6 +36,7 @@ public abstract class AbstractRepository<
         return dao.exists(identifier);
     }
 
+    @Transactional
     @Nullable public E find(@Nullable I identifier) {
         if (identifier == null) {
             return null;
@@ -36,11 +44,13 @@ public abstract class AbstractRepository<
         return dao.find(identifier);
     }
 
+    @Transactional
     public E findRequired(I identifier) {
         Objects.requireNonNull(identifier);
         return Optional.ofNullable(find(identifier)).orElseThrow();
     }
 
+    @Transactional
     public void persist(E entity) {
         Objects.requireNonNull(entity);
         setIdentifierIfMissing(entity);
@@ -54,6 +64,7 @@ public abstract class AbstractRepository<
         }
     }
 
+    @Transactional
     public void update(E entity) {
         Objects.requireNonNull(entity);
         setIdentifierIfMissing(entity);

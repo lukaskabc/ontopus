@@ -2,13 +2,12 @@ package cz.lukaskabc.ontology.ontopus.core.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessTaskConflictException;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
+import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,6 +32,12 @@ public class ImportController {
         this.objectMapper = objectMapper;
     }
 
+    @GetMapping
+    public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
+        // TODO test and setup LOG4J2 logging
+        return ImportProcessMediatorFutureHandler.handleFuture(importService.getCurrentJsonForm());
+    }
+
     /**
      * Initializes a new import process. The ontology will be published as a version in existing version series when the
      * identifier is supplied. New version series are created otherwise.
@@ -49,12 +54,6 @@ public class ImportController {
         importService.initializeImport(uri);
     }
 
-    @GetMapping
-    public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
-        // TODO test and setup LOG4J2 logging
-        return handleFuture(importService.getCurrentJsonForm());
-    }
-
     /**
      * // TODO replace with open api docs
      *
@@ -66,7 +65,7 @@ public class ImportController {
     public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request) throws Throwable {
         Map<String, JsonNode> combinedData = parseData(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
-        return handleFuture(importService.submitCombinedData(combinedData, files));
+        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(combinedData, files));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -74,29 +73,7 @@ public class ImportController {
         Map<String, JsonNode> jsonData = parseData(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
         // TODO how to pass async error back to the FE?
-        return handleFuture(importService.submitData(jsonData, files));
-    }
-
-    /**
-     * Immediately returns a response entity based on the current future status.
-     *
-     * @param future the future to handle
-     * @return Response entity based on the future status.
-     * @param <T> The type of the result value
-     */
-    private <T> ResponseEntity<T> handleFuture(Future<T> future) throws Throwable {
-        return switch (future.state()) {
-            case SUCCESS -> {
-                T value = future.resultNow();
-                if (value != null) {
-                    yield ResponseEntity.ok(value);
-                }
-                yield ResponseEntity.noContent().build();
-            }
-            case RUNNING -> ResponseEntity.accepted().build();
-            case FAILED -> throw future.exceptionNow();
-            case CANCELLED -> throw new ImportProcessTaskConflictException();
-        };
+        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitData(jsonData, files));
     }
 
     private Map<String, JsonNode> parseData(MultipartHttpServletRequest request) throws JsonProcessingException {

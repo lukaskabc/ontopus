@@ -13,7 +13,9 @@ import java.util.Set;
 @OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
+    // TODO resolve uri, identifier and ontology identifier conflict
+
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier)
     private VersionArtifactURI identifier;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_distribution)

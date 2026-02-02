@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.Identifie
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 
@@ -23,6 +24,7 @@ public class UserRepository extends AbstractRepository<UserURI, User, UserDao> {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public User create(String username, String plainPassword) {
         User user = new User();
         user.setUsername(username);
@@ -31,6 +33,7 @@ public class UserRepository extends AbstractRepository<UserURI, User, UserDao> {
         return user;
     }
 
+    @Transactional
     @Nullable public User findByUsername(@Nullable String username) {
         if (!StringUtils.hasText(username)) {
             return null;
@@ -45,6 +48,7 @@ public class UserRepository extends AbstractRepository<UserURI, User, UserDao> {
      * @param username The username or null
      * @return whether an account with the given username exists
      */
+    @Transactional
     public boolean userAccountExists(@Nullable String username) {
         return dao.userAccountExists(username);
     }

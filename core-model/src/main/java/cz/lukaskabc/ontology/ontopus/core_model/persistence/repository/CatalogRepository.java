@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.OntopusCatalogDa
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 @Repository
@@ -32,6 +33,7 @@ public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, Ont
         return dao.catalogExists(catalogUri);
     }
 
+    @Transactional
     public OntopusCatalog create() {
         final OntopusCatalog catalog = new OntopusCatalog();
         catalog.setIdentifier(new OntopusCatalogURI(config.getUri()));
@@ -52,5 +54,10 @@ public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, Ont
 
         persist(catalog);
         return catalog;
+    }
+
+    @Transactional
+    public OntopusCatalog findRequired() {
+        return findRequired(catalogUri);
     }
 }

@@ -24,6 +24,6 @@ public class CatalogInitializationService implements InitService {
         }
 
         OntopusCatalog catalog = catalogRepository.create();
-        log.atInfo().log("Initialized ontology catalog {}", catalog.getUri());
+        log.atInfo().log("Initialized ontology catalog {}", catalog.getIdentifier());
     }
 }

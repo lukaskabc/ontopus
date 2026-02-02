@@ -2,14 +2,12 @@ package cz.lukaskabc.ontology.ontopus.core_model.model;
 
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.DatasetSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
-import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.Set;
 
@@ -17,12 +15,6 @@ import java.util.Set;
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
     @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
-
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
-    private VersionSeriesURI identifier;
-
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
-    private URI ontologyIdentifier;
 
     /** The newest version of the ontology */
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_last)
@@ -46,11 +38,6 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     }
 
     @Override
-    public VersionSeriesURI getIdentifier() {
-        return identifier;
-    }
-
-    @Override
     public VersionArtifactURI getLast() {
         return last;
     }
@@ -58,10 +45,6 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @Override
     public Set<VersionArtifactURI> getMembers() {
         return members;
-    }
-
-    public URI getOntologyIdentifier() {
-        return ontologyIdentifier;
     }
 
     public SerializableImportProcessContext getSerializableImportProcessContext() {
@@ -77,11 +60,6 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     }
 
     @Override
-    public void setIdentifier(VersionSeriesURI identifier) {
-        this.identifier = identifier;
-    }
-
-    @Override
     public void setLast(VersionArtifactURI last) {
         this.last = last;
     }
@@ -91,11 +69,12 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
         this.members = members;
     }
 
-    public void setOntologyIdentifier(URI ontologyIdentifier) {
-        this.ontologyIdentifier = ontologyIdentifier;
-    }
-
     public void setSerializableImportProcessContext(SerializableImportProcessContext serializableImportProcessContext) {
         this.serializableImportProcessContext = serializableImportProcessContext;
+    }
+
+    @Override
+    protected VersionSeriesURI wrapUri(URI uri) {
+        return new VersionSeriesURI(uri);
     }
 }

@@ -230,14 +230,14 @@ public class ImportFinalizingService {
 
         final Instant timestamp = timeProvider.getInstant();
         if (series.getLast() != null) {
-            artifact.setPreviousVersion(series.getLast().toURI());
+            artifact.setPreviousVersion(series.getLast());
         }
         if (series.getMembers() == null) {
             series.setMembers(new HashSet<>(1));
         }
         artifact.setReleaseDate(timestamp);
         artifact.setModifiedDate(timestamp);
-        artifact.setSeries(series.getIdentifier().toURI());
+        artifact.setSeries(series.getIdentifier());
         series.getMembers().add(artifact.getIdentifier());
         series.setLast(artifact.getIdentifier());
         if (series.getFirst() == null) {

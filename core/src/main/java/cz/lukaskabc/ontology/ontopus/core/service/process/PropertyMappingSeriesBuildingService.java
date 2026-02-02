@@ -7,7 +7,6 @@ import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -34,10 +33,7 @@ public class PropertyMappingSeriesBuildingService implements OrderedImportPipeli
 
         PropertyMapper.applyMapping(artifact::getTitle, series::setTitle, series::getTitle);
         PropertyMapper.applyMapping(artifact::getDescription, series::setDescription, series::getDescription);
-        PropertyMapper.applyMapping(
-                () -> new VersionSeriesURI(series.getOntologyIdentifier()),
-                series::setIdentifier,
-                series::getIdentifier);
+        PropertyMapper.applyMapping(series::getIdentifier, series::setIdentifier, series::getIdentifier);
         series.setLanguages(artifact.getLanguages());
         return null;
     }

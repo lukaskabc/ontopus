@@ -54,7 +54,6 @@ public abstract class AbstractRepository<
     public void persist(E entity) {
         Objects.requireNonNull(entity);
         setIdentifierIfMissing(entity);
-        entity.setUri(entity.getIdentifier().toURI());
         dao.persist(validated(entity));
     }
 
@@ -68,7 +67,6 @@ public abstract class AbstractRepository<
     public void update(E entity) {
         Objects.requireNonNull(entity);
         setIdentifierIfMissing(entity);
-        entity.setUri(entity.getIdentifier().toURI());
         dao.merge(validated(entity));
     }
 

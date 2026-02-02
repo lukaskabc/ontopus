@@ -103,9 +103,9 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
     private void loadVersionSeriesProperties(ObjectNode properties) {
         final VersionSeries series = importProcessContext.getVersionSeries();
         properties
-                .putObject(VersionSeries_.ontologyIdentifier.getName())
+                .putObject(VersionSeries_.identifier.getName())
                 .put("type", "string")
-                .put("default", Objects.toString(series.getOntologyIdentifier()))
+                .put("default", Objects.toString(series.getIdentifier()))
                 .put("disabled", true);
         properties
                 .putObject(VersionSeries_.title.getName())

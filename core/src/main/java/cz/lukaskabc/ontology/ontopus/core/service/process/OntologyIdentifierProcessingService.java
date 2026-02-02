@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyIdentifierResolvingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.ResultHandlingServiceWrapper;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,7 @@ import tools.jackson.databind.ObjectMapper;
 @Order(ImportProcessServiceOrder.ONTOLOGY_IDENTIFIER_RESOLVING_SERVICE)
 public class OntologyIdentifierProcessingService implements OrderedImportPipelineService<Void> {
     private static void setOntologyIdentifier(URI identifier, ImportProcessContext context) {
-        context.getVersionSeries().setOntologyIdentifier(identifier);
+        context.getVersionSeries().setIdentifier(new VersionSeriesURI(identifier));
     }
 
     private final List<OntologyIdentifierResolvingService> resolvers;
@@ -40,7 +41,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
      */
     @Override
     public void afterStackPush(ImportProcessContext context) {
-        if (context.getVersionSeries().getOntologyIdentifier() != null) {
+        if (context.getVersionSeries().getIdentifier() != null) {
             assert context.peekService() == this;
             context.popService();
         }

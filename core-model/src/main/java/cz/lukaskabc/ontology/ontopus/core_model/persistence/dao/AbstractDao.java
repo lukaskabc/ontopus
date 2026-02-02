@@ -27,7 +27,7 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
     }
 
     public void delete(E entity) {
-        Objects.requireNonNull(entity.getUri());
+        Objects.requireNonNull(entity.getIdentifier());
         try {
             em.createNativeQuery("""
 					DELETE WHERE {
@@ -37,7 +37,7 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
 					}
 					""")
                     .setParameter("context", entityGraphContext)
-                    .setParameter("entity", entity.getUri())
+                    .setParameter("entity", entity.getIdentifier())
                     .executeUpdate();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);

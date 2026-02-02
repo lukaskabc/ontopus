@@ -4,7 +4,7 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProviderFactory;
-import java.net.URI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +17,7 @@ public class DublinCoreMappingProviderFactory implements ArtifactPropertyMapping
 
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
-        final URI artifactURI = context.getVersionArtifact().getUri();
-        return new DublinCorePropertyMappingProvider(entityManager, artifactURI, context.getDatabaseContext());
+        final VersionArtifactURI artifactURI = context.getVersionArtifact().getIdentifier();
+        return new DublinCorePropertyMappingProvider(entityManager, artifactURI.toURI(), context.getDatabaseContext());
     }
 }

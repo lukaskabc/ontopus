@@ -2,6 +2,8 @@ package cz.lukaskabc.ontology.ontopus.core_model.model;
 
 import cz.cvut.kbss.jopa.model.annotations.Id;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -12,15 +14,25 @@ public abstract class PersistenceEntity<ID extends EntityIdentifier> {
     @Id
     @NotNull private URI uri;
 
-    public abstract ID getIdentifier();
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
+    private URI identifier;
 
-    public URI getUri() {
+    public ID getIdentifier() {
+        return wrapUri(getUri());
+    }
+
+    protected URI getUri() {
         return uri;
     }
 
-    public abstract void setIdentifier(ID identifier);
-
-    public void setUri(URI uri) {
-        this.uri = uri;
+    public void setIdentifier(ID identifier) {
+        setUri(identifier.toURI());
     }
+
+    protected void setUri(URI uri) {
+        this.uri = uri;
+        this.identifier = uri;
+    }
+
+    protected abstract ID wrapUri(URI uri);
 }

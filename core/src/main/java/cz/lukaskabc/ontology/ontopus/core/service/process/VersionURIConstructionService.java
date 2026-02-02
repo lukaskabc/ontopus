@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import java.net.URI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
             return null;
         }
 
-        URI ontologyIdentifier = context.getVersionSeries().getOntologyIdentifier();
+        VersionSeriesURI ontologyIdentifier = context.getVersionSeries().getIdentifier();
         if (ontologyIdentifier == null) {
             log.warn(
                     "Failed to construct version URI, the ontology identifier is missing for the version series: {}",
@@ -51,14 +52,14 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
             return null;
         }
 
-        if (!ontologyIdentifier.getPath().endsWith("/") && !StringUtils.hasText(ontologyIdentifier.getFragment())) {
-            ontologyIdentifier = URI.create(ontologyIdentifier + "/");
+        URI ontologyUri = ontologyIdentifier.toURI();
+        if (!ontologyUri.getPath().endsWith("/") && !StringUtils.hasText(ontologyUri.getFragment())) {
+            ontologyUri = URI.create(ontologyUri + "/");
         }
 
-        URI versionURI = ontologyIdentifier.resolve(version);
+        URI versionURI = ontologyUri.resolve(version);
         VersionArtifactURI versionArtifactURI = new VersionArtifactURI(versionURI);
         context.getVersionArtifact().setIdentifier(versionArtifactURI);
-        context.getVersionArtifact().setUri(versionURI);
         return null;
     }
 }

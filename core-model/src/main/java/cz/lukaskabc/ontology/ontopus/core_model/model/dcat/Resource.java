@@ -78,8 +78,8 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
         return modifiedDate;
     }
 
-    public URI getPreviousVersion() {
-        return previousVersion;
+    public ID getPreviousVersion() {
+        return wrapUri(previousVersion);
     }
 
     public Instant getReleaseDate() {
@@ -110,8 +110,8 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
         this.modifiedDate = modifiedDate;
     }
 
-    public void setPreviousVersion(URI previousVersion) {
-        this.previousVersion = previousVersion;
+    public void setPreviousVersion(ID previousVersion) {
+        this.previousVersion = previousVersion.toURI();
     }
 
     public void setReleaseDate(Instant releaseDate) {

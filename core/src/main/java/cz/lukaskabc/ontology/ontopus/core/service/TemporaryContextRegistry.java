@@ -83,7 +83,6 @@ public class TemporaryContextRegistry implements TemporaryContextGenerator {
     public TemporaryContextURI generate() {
         TemporaryContext tmp = new TemporaryContext();
         tmp.setIdentifier(uriGenerator.generate(tmp));
-        tmp.setUri(tmp.getIdentifier().toURI());
         tmp.setCreatedAt(timeProvider.getInstant());
         em.persist(tmp, temporaryContextDescriptor);
         return Objects.requireNonNull(tmp.getIdentifier());

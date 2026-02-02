@@ -4,6 +4,7 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
 import java.net.URI;
 import java.util.Set;
@@ -27,13 +28,13 @@ public abstract class Dataset<DistributionIdentifier extends EntityIdentifier, I
 
     public abstract Set<DistributionIdentifier> getDistributions();
 
-    public URI getSeries() {
-        return series;
+    public VersionSeriesURI getSeries() {
+        return new VersionSeriesURI(series);
     }
 
     public abstract void setDistributions(Set<DistributionIdentifier> distributions);
 
-    public void setSeries(URI series) {
-        this.series = series;
+    public void setSeries(VersionSeriesURI series) {
+        this.series = series.toURI();
     }
 }

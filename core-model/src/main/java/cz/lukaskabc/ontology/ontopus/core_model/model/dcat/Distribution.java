@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.dcat;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
@@ -34,12 +35,12 @@ public abstract class Distribution<ID extends EntityIdentifier> extends Persiste
     /*
      * Skipping license, access right, rights, has policy
      */
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_accessURL)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_accessURL)
     private URL accessURL;
     /*
      * Skipping access service
      */
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_downloadURL)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_downloadURL)
     private URL downloadURL;
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_byteSize)

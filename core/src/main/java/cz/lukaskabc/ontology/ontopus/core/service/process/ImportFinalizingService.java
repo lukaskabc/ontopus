@@ -17,18 +17,19 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRe
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class ImportFinalizingService {

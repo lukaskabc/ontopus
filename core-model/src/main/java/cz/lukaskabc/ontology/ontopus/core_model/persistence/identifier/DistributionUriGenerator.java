@@ -5,9 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.OntologyDistribution;
 import cz.lukaskabc.ontology.ontopus.core_model.model.OntologyDistribution_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
+import org.springframework.stereotype.Component;
+
 import java.net.URI;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DistributionUriGenerator extends AbstractIdentifierGenerator<DistributionURI, OntologyDistribution> {

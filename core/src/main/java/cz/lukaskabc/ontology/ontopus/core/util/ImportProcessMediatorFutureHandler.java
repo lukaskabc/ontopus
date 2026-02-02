@@ -2,9 +2,10 @@ package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessTaskConflictException;
-import java.util.concurrent.Future;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
+
+import java.util.concurrent.Future;
 
 public class ImportProcessMediatorFutureHandler {
     private ImportProcessMediatorFutureHandler() {

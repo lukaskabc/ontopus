@@ -4,12 +4,13 @@ import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
-import java.util.List;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
+
+import java.util.List;
 
 public abstract class ImportProcessNextServiceSelector<S extends ImportProcessingService<?>>
         implements ImportProcessingService<S> {

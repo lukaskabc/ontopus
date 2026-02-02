@@ -7,12 +7,13 @@ import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import java.net.URI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.net.URI;
 
 /** {@link OntologyVersioningService} that constructs the version URI by concatenating ontology URI and version. */
 @Service

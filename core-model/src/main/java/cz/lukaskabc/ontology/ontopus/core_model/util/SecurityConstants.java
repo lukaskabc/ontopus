@@ -1,8 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core_model.util;
 
-import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+
+import java.util.Set;
 
 public class SecurityConstants {
     public static final Set<GrantedAuthority> DEFAULT_AUTHORITIES =

@@ -4,11 +4,6 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.IRI;
@@ -26,6 +21,12 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

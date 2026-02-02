@@ -6,11 +6,12 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyLoadingService;
-import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
+
+import java.util.Map;
 
 /** {@link OntologyLoadingService} allowing to upload a local files to server. */
 @Service

@@ -1,7 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
-import java.net.URI;
 import org.jspecify.annotations.NullUnmarked;
+
+import java.net.URI;
 
 @NullUnmarked
 public interface Ontology {

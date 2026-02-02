@@ -5,10 +5,11 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Distribution;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
+import org.springframework.util.MimeType;
+
 import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
-import org.springframework.util.MimeType;
 
 /**
  * A specific representation of an {@link VersionArtifact}. An artifact might be available in multiple serializations

@@ -5,6 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 

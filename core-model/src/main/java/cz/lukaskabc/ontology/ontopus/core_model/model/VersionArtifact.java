@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Dataset;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+
 import java.net.URI;
 import java.util.Set;
 

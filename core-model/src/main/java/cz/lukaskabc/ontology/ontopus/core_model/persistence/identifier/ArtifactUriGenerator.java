@@ -5,9 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import org.springframework.stereotype.Component;
+
 import java.net.URI;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 
 @Component
 public class ArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArtifactURI, VersionArtifact> {

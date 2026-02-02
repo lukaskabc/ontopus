@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+
 import java.net.URI;
 import java.util.Set;
 

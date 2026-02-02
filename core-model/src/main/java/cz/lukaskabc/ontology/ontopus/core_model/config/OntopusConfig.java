@@ -1,11 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.nio.file.Path;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "ontopus")

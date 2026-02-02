@@ -7,11 +7,6 @@ import cz.lukaskabc.ontology.ontopus.core.util.ConsumableInputStreamSource;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.concurrent.Future;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
@@ -21,6 +16,12 @@ import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.concurrent.Future;
 
 @Service
 public class ImportService {

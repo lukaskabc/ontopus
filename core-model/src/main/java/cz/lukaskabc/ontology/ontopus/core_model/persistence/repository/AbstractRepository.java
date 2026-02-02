@@ -5,11 +5,12 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
-import java.util.Objects;
-import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
+
+import java.util.Objects;
+import java.util.Optional;
 
 public abstract class AbstractRepository<
         I extends EntityIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {

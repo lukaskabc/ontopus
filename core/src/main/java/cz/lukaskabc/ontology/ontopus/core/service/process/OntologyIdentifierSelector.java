@@ -5,15 +5,16 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ObjectNode;
-import tools.jackson.databind.node.StringNode;
 
 public class OntologyIdentifierSelector implements ImportProcessingService<URI> {
     private static final String ID_FIELD = "identifier";

@@ -5,9 +5,10 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import org.jspecify.annotations.Nullable;
+
 import java.net.URI;
 import java.util.Set;
-import org.jspecify.annotations.Nullable;
 
 public class SkosPropertyMappingProvider extends PropertyMapper implements ArtifactPropertyMappingProvider {
     private static final String SKOS_PREFIX = "http://www.w3.org/2004/02/skos/core#";

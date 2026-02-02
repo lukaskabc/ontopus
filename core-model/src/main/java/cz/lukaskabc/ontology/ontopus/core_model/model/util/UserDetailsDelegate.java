@@ -1,10 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.util;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
-import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Set;
 
 public class UserDetailsDelegate implements UserDetails {
     private final Set<GrantedAuthority> authorities;

@@ -7,11 +7,12 @@ import cz.lukaskabc.ontology.ontopus.api.service.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
+
+import java.util.Objects;
 
 @Service
 public class GeneralVersioningService implements OntologyVersioningService {

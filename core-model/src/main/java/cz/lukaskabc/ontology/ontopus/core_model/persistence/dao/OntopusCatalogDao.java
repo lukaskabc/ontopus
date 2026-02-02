@@ -5,9 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class OntopusCatalogDao extends AbstractDao<OntopusCatalogURI, OntopusCatalog> {

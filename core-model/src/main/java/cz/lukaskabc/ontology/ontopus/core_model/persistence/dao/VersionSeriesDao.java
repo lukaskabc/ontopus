@@ -5,9 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
-import java.net.URI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
+
+import java.net.URI;
 
 @Component
 public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSeries> {

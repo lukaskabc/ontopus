@@ -3,10 +3,11 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.converter;
 import cz.cvut.kbss.jopa.model.AttributeConverter;
 import cz.cvut.kbss.jopa.model.annotations.Converter;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
-import java.util.Base64;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.Base64;
 
 @Converter(autoApply = true)
 public class SerializableImportProcessContextConverter

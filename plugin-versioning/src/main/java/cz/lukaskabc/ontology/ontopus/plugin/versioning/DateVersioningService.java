@@ -6,11 +6,12 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class DateVersioningService implements OntologyVersioningService {

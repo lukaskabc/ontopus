@@ -5,9 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import org.springframework.stereotype.Component;
+
 import java.net.URI;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 
 @Component
 public class TemporaryContextUriGenerator extends AbstractIdentifierGenerator<TemporaryContextURI, TemporaryContext> {

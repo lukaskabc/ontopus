@@ -9,13 +9,14 @@ import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.cvut.kbss.ontodriver.model.LangString;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public class PropertyMapper {
     /**

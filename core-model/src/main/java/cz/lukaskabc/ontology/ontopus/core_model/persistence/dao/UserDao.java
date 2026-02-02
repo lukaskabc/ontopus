@@ -5,10 +5,11 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class UserDao extends AbstractDao<UserURI, User> {

@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Catalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+
 import java.net.URI;
 import java.util.Set;
 

@@ -12,17 +12,18 @@ import cz.lukaskabc.ontology.ontopus.core.PluginRegistryApplicationInitializer;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)

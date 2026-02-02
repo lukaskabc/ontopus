@@ -4,11 +4,12 @@ import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import org.jspecify.annotations.NullMarked;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * State of the import process.

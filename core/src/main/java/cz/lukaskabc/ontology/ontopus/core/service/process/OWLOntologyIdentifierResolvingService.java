@@ -4,11 +4,12 @@ import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyIdentifierResolvingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import org.springframework.stereotype.Service;
+
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OWLOntologyIdentifierResolvingService implements OntologyIdentifierResolvingService {

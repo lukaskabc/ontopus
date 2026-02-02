@@ -2,9 +2,10 @@ package cz.lukaskabc.ontology.ontopus.core.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
+import tools.jackson.databind.JsonNode;
+
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
-import tools.jackson.databind.JsonNode;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.SIMPLE_NAME,

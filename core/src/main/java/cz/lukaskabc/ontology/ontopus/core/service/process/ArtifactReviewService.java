@@ -9,13 +9,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries_;
-import java.util.Iterator;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
+
+import java.util.Iterator;
+import java.util.Objects;
 
 @Service
 @Order(ImportProcessServiceOrder.ARTIFACT_REVIEW_SERVICE)

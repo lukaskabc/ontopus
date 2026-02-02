@@ -1,10 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
+import org.jspecify.annotations.Nullable;
+
 import java.net.URI;
 import java.time.Instant;
 import java.util.Set;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Object constructed with {@link ArtifactPropertyMappingProviderFactory} capable of resolving attributes for the

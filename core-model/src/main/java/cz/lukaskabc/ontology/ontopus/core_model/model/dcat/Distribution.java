@@ -8,10 +8,11 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
+import org.springframework.util.MimeType;
+
 import jakarta.validation.constraints.NotNull;
 import java.net.URL;
 import java.time.Instant;
-import org.springframework.util.MimeType;
 
 /**
  * A specific representation of a dataset. A dataset might be available in multiple serializations that may differ in

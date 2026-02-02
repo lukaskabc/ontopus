@@ -4,8 +4,9 @@ import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core_model.CoreModel;
 import cz.lukaskabc.ontology.ontopus.core_model.model.converter.SerializableImportProcessContextConverter;
 import cz.lukaskabc.ontology.ontopus.core_model.model.converter.id.AbstractEntityIdentifierConverter;
-import java.util.List;
 import org.jspecify.annotations.NullMarked;
+
+import java.util.List;
 
 @NullMarked
 public class CorePlugin implements Plugin {

@@ -6,11 +6,12 @@ import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import org.jspecify.annotations.Nullable;
+
 import java.net.URI;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import org.jspecify.annotations.Nullable;
 
 public class DcatPropertyMappingProvider extends PropertyMapper implements ArtifactPropertyMappingProvider {
     public DcatPropertyMappingProvider(

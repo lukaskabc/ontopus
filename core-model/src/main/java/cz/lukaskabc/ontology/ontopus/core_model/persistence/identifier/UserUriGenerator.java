@@ -5,9 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
+import org.springframework.stereotype.Component;
+
 import java.net.URI;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 
 @Component
 public class UserUriGenerator extends AbstractIdentifierGenerator<UserURI, User> {

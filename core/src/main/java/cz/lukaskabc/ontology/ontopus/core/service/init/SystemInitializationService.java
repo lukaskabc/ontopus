@@ -1,11 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
-import java.util.Set;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Component(SystemInitializationService.BEAN_NAME)

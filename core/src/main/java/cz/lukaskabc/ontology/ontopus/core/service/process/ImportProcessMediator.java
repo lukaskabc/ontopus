@@ -11,6 +11,11 @@ import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import org.jspecify.annotations.Nullable;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,10 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.Future;
-import org.jspecify.annotations.Nullable;
-import org.springframework.core.io.InputStreamSource;
-import org.springframework.stereotype.Service;
-import tools.jackson.databind.JsonNode;
 
 @Service
 public class ImportProcessMediator {

@@ -8,14 +8,15 @@ import cz.lukaskabc.ontology.ontopus.api.service.OntologyIdentifierResolvingServ
 import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
+
+import java.net.URI;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Order(ImportProcessServiceOrder.ONTOLOGY_IDENTIFIER_RESOLVING_SERVICE)

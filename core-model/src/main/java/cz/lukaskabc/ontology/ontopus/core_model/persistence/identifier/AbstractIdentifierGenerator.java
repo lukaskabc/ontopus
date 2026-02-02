@@ -5,6 +5,7 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+
 import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;

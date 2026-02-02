@@ -1,13 +1,14 @@
 package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.core.OntoPuSApplication;
-import java.io.*;
-import java.lang.ref.Cleaner;
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.InputStreamSource;
+
+import java.io.*;
+import java.lang.ref.Cleaner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Source providing input stream to a file that will be automatically deleted when this object is garbage collected */
 public class ConsumableInputStreamSource implements InputStreamSource {

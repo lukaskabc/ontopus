@@ -1,11 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
+import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JsonNode;
 
 /**
  * Result of submitted form.

@@ -4,10 +4,6 @@ import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
 import cz.lukaskabc.ontology.ontopus.core.util.Constants;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
@@ -22,6 +18,11 @@ import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Scans each plugin's base package for Spring components and registers them in the application context. Main plugin

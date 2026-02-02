@@ -5,9 +5,6 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,6 +17,10 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/import")

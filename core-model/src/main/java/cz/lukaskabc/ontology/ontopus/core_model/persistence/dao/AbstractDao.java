@@ -6,10 +6,11 @@ import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
-import java.net.URI;
-import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.function.ThrowingSupplier;
+
+import java.net.URI;
+import java.util.Objects;
 
 public abstract class AbstractDao<I extends EntityIdentifier, E extends PersistenceEntity<I>> {
     protected final EntityManager em;

@@ -9,10 +9,11 @@ import cz.lukaskabc.ontology.ontopus.api.service.OntologyArtifactBuildingService
 import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
-import java.util.List;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Order(ImportProcessServiceOrder.ARTIFACT_BUILDING_SERVICE)

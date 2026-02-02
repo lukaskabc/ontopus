@@ -6,13 +6,14 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyLoadingService;
+import org.jspecify.annotations.Nullable;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.jspecify.annotations.Nullable;
-import org.springframework.stereotype.Service;
 
 /**
  * An {@link OntologyLoadingService} capable of accepting upload of local files and importing them into the database.

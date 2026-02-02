@@ -1,12 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.core_model.CoreModel;
-import java.lang.ref.Cleaner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableAsync;
+
+import java.lang.ref.Cleaner;
 
 @EnableAsync
 @SpringBootApplication(scanBasePackageClasses = {OntoPuSApplication.class, CoreModel.class})

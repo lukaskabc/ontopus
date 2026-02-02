@@ -250,8 +250,13 @@
                             <style>PALANTIR</style>
                             <formatJavadoc>true</formatJavadoc>
                         </palantirJavaFormat>
-                        <removeUnusedImports/>
                         <formatAnnotations/>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <wildcardsLast>true</wildcardsLast>
+                            <semanticSort>true</semanticSort>
+                            <order>,jakarta|java|javax</order>
+                        </importOrder>
                     </java>
                     <pom>
                         <sortPom>

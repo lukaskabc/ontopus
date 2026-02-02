@@ -1,9 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.api;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import org.jspecify.annotations.NullMarked;
 
 /**
  * Discoverable plugin service for OntoPuS server.

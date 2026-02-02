@@ -4,9 +4,10 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import org.jspecify.annotations.Nullable;
+
 import java.net.URI;
 import java.util.Set;
-import org.jspecify.annotations.Nullable;
 
 public class OwlPropertyMappingProvider extends PropertyMapper implements ArtifactPropertyMappingProvider {
     public OwlPropertyMappingProvider(

@@ -4,8 +4,9 @@ import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
-import java.util.function.BiConsumer;
 import org.jspecify.annotations.Nullable;
+
+import java.util.function.BiConsumer;
 
 /**
  * Wraps an {@link ImportProcessingService} and calls provided result handler with the result value from the wrapped

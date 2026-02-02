@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model;
 
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.DatasetSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
@@ -10,7 +11,9 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @OWLClass(iri = Vocabulary.s_c_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
@@ -18,15 +21,23 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private SerializableImportProcessContext serializableImportProcessContext;
 
     /** The newest version of the ontology */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_last)
-    private VersionArtifactURI last;
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_last)
+    private URI last;
 
     /** The oldest version of the ontology */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_first)
-    private VersionArtifactURI first;
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first)
+    private URI first;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_seriesMember)
-    private Set<VersionArtifactURI> members;
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember)
+    private Set<URI> members = new HashSet<>();
+
+    @Override
+    public void addDistribution(DistributionURI distributionURI) {}
+
+    @Override
+    public void addMember(VersionArtifactURI member) {
+        members.add(member.toURI());
+    }
 
     @Override
     public Set<DistributionURI> getDistributions() {
@@ -35,17 +46,23 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public VersionArtifactURI getFirst() {
-        return first;
+        if (first == null) {
+            return null;
+        }
+        return new VersionArtifactURI(first);
     }
 
     @Override
     public VersionArtifactURI getLast() {
-        return last;
+        if (last == null) {
+            return null;
+        }
+        return new VersionArtifactURI(last);
     }
 
     @Override
     public Set<VersionArtifactURI> getMembers() {
-        return members;
+        return members.stream().map(VersionArtifactURI::new).collect(Collectors.toSet());
     }
 
     public SerializableImportProcessContext getSerializableImportProcessContext() {
@@ -53,21 +70,31 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     }
 
     @Override
-    public void setDistributions(Set<DistributionURI> distributions) {}
+    public boolean hasDistribution(DistributionURI distributionURI) {
+        return false;
+    }
+
+    @Override
+    public boolean hasMember(VersionArtifactURI member) {
+        return members.contains(member.toURI());
+    }
+
+    @Override
+    public void removeDistribution(DistributionURI distributionURI) {}
+
+    @Override
+    public void removeMember(VersionArtifactURI member) {
+        members.remove(member.toURI());
+    }
 
     @Override
     public void setFirst(VersionArtifactURI first) {
-        this.first = first;
+        this.first = first.toURI();
     }
 
     @Override
     public void setLast(VersionArtifactURI last) {
-        this.last = last;
-    }
-
-    @Override
-    public void setMembers(Set<VersionArtifactURI> members) {
-        this.members = members;
+        this.last = last.toURI();
     }
 
     public void setSerializableImportProcessContext(SerializableImportProcessContext serializableImportProcessContext) {

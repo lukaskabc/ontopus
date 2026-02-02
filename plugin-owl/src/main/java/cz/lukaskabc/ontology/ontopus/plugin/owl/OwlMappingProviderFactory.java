@@ -4,7 +4,7 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProviderFactory;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +17,7 @@ public class OwlMappingProviderFactory implements ArtifactPropertyMappingProvide
 
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
-        final VersionArtifactURI artifactURI = context.getVersionArtifact().getIdentifier();
-        return new OwlPropertyMappingProvider(entityManager, artifactURI.toURI(), context.getDatabaseContext());
+        final VersionSeriesURI ontologyUri = context.getVersionSeries().getIdentifier();
+        return new OwlPropertyMappingProvider(entityManager, ontologyUri.toURI(), context.getDatabaseContext());
     }
 }

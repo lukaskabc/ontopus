@@ -15,10 +15,14 @@ public abstract class PersistenceEntity<ID extends EntityIdentifier> {
     @Id
     @NotNull private URI uri;
 
+    @SuppressWarnings("unused,FieldCanBeLocal")
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private URI identifier;
 
     public ID getIdentifier() {
+        if (getUri() == null) {
+            return null;
+        }
         return wrapUri(getUri());
     }
 

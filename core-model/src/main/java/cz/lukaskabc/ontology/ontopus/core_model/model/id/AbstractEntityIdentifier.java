@@ -11,7 +11,7 @@ public abstract class AbstractEntityIdentifier implements EntityIdentifier {
     }
 
     protected AbstractEntityIdentifier(URI uri) {
-        Objects.requireNonNull(uri); // TODO does URI support blank string?
+        Objects.requireNonNull(uri);
         this.uri = uri;
     }
 

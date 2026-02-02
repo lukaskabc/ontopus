@@ -15,27 +15,20 @@ public abstract class DatasetSeries<
                 ID extends EntityIdentifier>
         extends Dataset<SeriesDistributionIdentifier, ID> {
 
-    public void addMember(MembersIdentifier member) {
-        getMembers().add(member);
-    }
+    public abstract void addMember(MembersIdentifier member);
 
     public abstract MembersIdentifier getFirst();
 
     public abstract MembersIdentifier getLast();
 
+    /** @return unmodifiable set of member identifiers */
     public abstract Set<MembersIdentifier> getMembers();
 
-    public boolean hasMember(MembersIdentifier member) {
-        return getMembers().contains(member);
-    }
+    public abstract boolean hasMember(MembersIdentifier member);
 
-    public void removeMember(MembersIdentifier member) {
-        getMembers().remove(member);
-    }
+    public abstract void removeMember(MembersIdentifier member);
 
     public abstract void setFirst(MembersIdentifier first);
 
     public abstract void setLast(MembersIdentifier last);
-
-    public abstract void setMembers(Set<MembersIdentifier> members);
 }

@@ -80,6 +80,9 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
     }
 
     public ID getPreviousVersion() {
+        if (previousVersion == null) {
+            return null;
+        }
         return wrapUri(previousVersion);
     }
 

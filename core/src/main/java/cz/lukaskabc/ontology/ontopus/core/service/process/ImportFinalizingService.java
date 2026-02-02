@@ -221,7 +221,7 @@ public class ImportFinalizingService {
 
     private void updateCatalog(VersionSeries series) {
         final OntopusCatalog catalog = catalogRepository.findRequired();
-        catalog.getOntologySeries().add(series.getIdentifier());
+        catalog.addVersionSeries(series.getIdentifier());
         catalogRepository.update(catalog);
     }
 
@@ -233,12 +233,9 @@ public class ImportFinalizingService {
         if (series.getLast() != null) {
             artifact.setPreviousVersion(series.getLast());
         }
-        if (series.getMembers() == null) {
-            series.setMembers(new HashSet<>(1));
-        }
         artifact.setReleaseDate(timestamp);
         artifact.setModifiedDate(timestamp);
-        artifact.setSeries(series.getIdentifier());
+        artifact.setSeries(series.getIdentifier().toURI());
         series.getMembers().add(artifact.getIdentifier());
         series.setLast(artifact.getIdentifier());
         if (series.getFirst() == null) {

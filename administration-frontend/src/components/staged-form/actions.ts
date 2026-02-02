@@ -30,7 +30,6 @@ function compileDataForRequest(formData: any, files: FileWithFieldName[]): strin
 
 export function submitForm(formData: any, files: FileWithFieldName[]) {
   return request('POST', '/import', { body: compileDataForRequest(formData, files) }, [204, 202, 200])
-  // TODO: handle conflict state 409
 }
 
 /**
@@ -65,7 +64,7 @@ export function loadJsonForm() {
           .catch((res) => {
             if (res instanceof Response) {
               switch (res.status) {
-                case 205:
+                case 205: // import process not initialized // TODO: consider using something else
                   // TODO move import process initialization to publish stepper
                   // initialize based on navigation with or without version series
                   // Throw error here and redirect in staged form
@@ -73,7 +72,8 @@ export function loadJsonForm() {
                     .then(() => setTimeout(task, NEXT_FORM_RETRY_DELAY))
                     .catch(console.error) // ERROR handling??
                   return
-                case 204:
+                case 204: // no content (still processing)
+                case 409: // conflict (still processing)
                   setTimeout(task, NEXT_FORM_RETRY_DELAY)
                   return
               }

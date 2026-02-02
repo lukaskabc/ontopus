@@ -63,10 +63,14 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
                 .put(
                         "title",
                         "ontopus.core.service.ImportProcessingService.OntologyIdentifierSelector.field.identifier.title")
-                .put("default", stringIds.getFirst())
                 .putArray("examples")
                 .addAll(examples);
 
-        return new JsonForm(scheme, null, null);
+        ObjectNode formData = objectMapper.createObjectNode();
+        if (!stringIds.isEmpty()) {
+            formData.put(ID_FIELD, stringIds.getFirst());
+        }
+
+        return new JsonForm(scheme, null, formData);
     }
 }

@@ -36,6 +36,10 @@ public class JsonForm {
         this.formData = formData;
     }
 
+    public @Nullable JsonNode getFormData() {
+        return formData;
+    }
+
     public JsonNode getJsonSchema() {
         return jsonSchema;
     }

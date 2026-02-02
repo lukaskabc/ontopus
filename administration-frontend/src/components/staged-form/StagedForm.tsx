@@ -83,7 +83,6 @@ export const StagedForm: FunctionComponent<{}> = () => {
     trackPromise(promise, STAGED_FORM_PROMISE_AREA)
       .then((result) => {
         setJsonSchema(result.jsonSchema)
-        setFormData(result.formData)
         setUiSchema(result.uiSchema)
         setFormData(result.formData)
         setIsDisabled(false)

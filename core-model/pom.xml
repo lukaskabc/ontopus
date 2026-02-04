@@ -33,6 +33,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <!-- RDF4J repository -->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-repository-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

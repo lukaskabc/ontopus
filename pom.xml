@@ -40,6 +40,7 @@
         <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <rdf4j.version>5.2.2</rdf4j.version>
         <spring.boot.version>4.0.2</spring.boot.version>
     </properties>
 
@@ -134,6 +135,19 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.20.0</version>
                 <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
+            </dependency>
+
+            <!-- RDF/XML export -->
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-rio-rdfxml</artifactId>
+                <version>${rdf4j.version}</version>
+            </dependency>
+            <!-- RDF4J repository -->
+            <dependency>
+                <groupId>org.eclipse.rdf4j</groupId>
+                <artifactId>rdf4j-repository-api</artifactId>
+                <version>${rdf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

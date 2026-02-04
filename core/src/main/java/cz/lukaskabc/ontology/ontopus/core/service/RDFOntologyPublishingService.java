@@ -1,0 +1,66 @@
+package cz.lukaskabc.ontology.ontopus.core.service;
+
+import cz.lukaskabc.ontology.ontopus.api.model.EndpointRegistrationInfo;
+import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
+import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.api.service.core.EndpointRegistrationService;
+import cz.lukaskabc.ontology.ontopus.core.persistence.ContextDao;
+import org.jspecify.annotations.Nullable;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
+
+import java.net.URI;
+import java.util.*;
+
+@Service
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class RDFOntologyPublishingService implements OrderedImportPipelineService<Void> {
+    private static Map<String, Set<String>> mapByHost(Collection<URI> uris) {
+        Map<String, Set<String>> map = new HashMap<>();
+        uris.forEach(uri -> {
+            final String stringUri = uri.toString();
+            final String rawPath = uri.getRawPath();
+            final String fullPath = stringUri.substring(stringUri.indexOf(rawPath));
+            map.computeIfAbsent(uri.getHost(), k -> new HashSet<>()).add(stringUri);
+        });
+        return map;
+    }
+
+    private final ContextDao contextDao;
+
+    private final EndpointRegistrationService endpointRegistrationService;
+
+    public RDFOntologyPublishingService(
+            ContextDao contextDao, EndpointRegistrationService endpointRegistrationService) {
+        this.contextDao = contextDao;
+        this.endpointRegistrationService = endpointRegistrationService;
+    }
+
+    @Override
+    public @Nullable JsonForm getJsonForm() {
+        return null;
+    }
+
+    @Override
+    public String getServiceName() {
+        return "";
+    }
+
+    @Override
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+        List<URI> subjects =
+                contextDao.findAllSubjects(context.getDatabaseContext().toURI());
+        // TODO: subjects may be possible very large?
+        Map<String, Set<String>> map = mapByHost(subjects);
+        map.forEach((host, paths) -> {
+            EndpointRegistrationInfo info =
+                    EndpointRegistrationInfo.builder().host(host).paths(paths).build();
+
+            endpointRegistrationService.register(info);
+        });
+        return null;
+    }
+}

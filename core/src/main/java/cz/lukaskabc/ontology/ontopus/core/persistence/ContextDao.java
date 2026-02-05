@@ -20,7 +20,7 @@ public class ContextDao {
     public List<URI> findAllSubjects(URI contextUri) {
         Objects.requireNonNull(contextUri);
         return em.createNativeQuery("""
-				SELECT ?subject DISTINCT FROM ?context WHERE {
+				SELECT DISTINCT ?subject FROM ?context WHERE {
 				    ?subject ?predicate ?object .
 				}
 				""", URI.class)

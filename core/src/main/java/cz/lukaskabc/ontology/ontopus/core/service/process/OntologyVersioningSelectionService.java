@@ -37,8 +37,8 @@ public class OntologyVersioningSelectionService extends ImportProcessNextService
         OntologyVersioningService service = super.handleSubmit(formResult, context);
         assert context.peekService() == this;
         context.popService(); // pop self
-        // context.pushService(service);
         context.pushService(versionURIConstructionService);
+        context.pushService(service);
         return service;
     }
 }

@@ -11,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.net.URI;
 import java.util.*;
@@ -25,9 +26,26 @@ public class PropertyMapper {
      */
     public static <T> void applyMapping(
             Supplier<@Nullable T> supplier, Consumer<@NonNull T> consumer, Supplier<@Nullable T> currentValueSupplier) {
-        if (currentValueSupplier.get() == null) {
+        if (isValueEmpty(currentValueSupplier)) {
             Optional.ofNullable(supplier.get()).ifPresent(consumer);
         }
+    }
+
+    public static boolean isValueEmpty(Supplier<?> valueSupplier) {
+        Object value = valueSupplier.get();
+        if (value instanceof Collection<?> collection) {
+            return collection.isEmpty();
+        }
+        if (value instanceof LangString langString) {
+            value = langString.getValue();
+        }
+        if (value instanceof CharSequence sequence) {
+            return !StringUtils.hasText(sequence);
+        }
+        if (value instanceof MultilingualString multilingualString) {
+            return multilingualString.getValue().isEmpty();
+        }
+        return value == null;
     }
 
     public static Set<URI> mapAttributes(Attribute<?, ?>... propertiesToMatch) {

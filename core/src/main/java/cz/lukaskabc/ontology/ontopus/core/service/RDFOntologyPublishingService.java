@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
-import cz.lukaskabc.ontology.ontopus.api.model.EndpointRegistrationInfo;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
@@ -55,12 +54,12 @@ public class RDFOntologyPublishingService implements OrderedImportPipelineServic
                 contextDao.findAllSubjects(context.getDatabaseContext().toURI());
         // TODO: subjects may be possible very large?
         Map<String, Set<String>> map = mapByHost(subjects);
-        map.forEach((host, paths) -> {
-            EndpointRegistrationInfo info =
-                    EndpointRegistrationInfo.builder().host(host).paths(paths).build();
-
-            endpointRegistrationService.register(info);
-        });
+        // map.forEach((host, paths) -> {
+        // EndpointRegistrationInfo info =
+        // EndpointRegistrationInfo.builder().host(host).paths(paths).build();
+        //
+        // endpointRegistrationService.register(info);
+        // });
         return null;
     }
 }

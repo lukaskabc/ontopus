@@ -3,10 +3,10 @@ package cz.lukaskabc.ontology.ontopus.core.config;
 import cz.lukaskabc.ontology.ontopus.core_model.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +23,29 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+    @Bean
+    @Order(0)
+    public SecurityFilterChain administrationSecurityFilter(
+            HttpSecurity http, AuthenticationManager authenticationManager) {
+        http.securityMatcher("/login", "/import", "/import/**", "/auth-ping")
+                .authenticationManager(authenticationManager)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .with(
+                        new UsernamePasswordAuthenticationConfigurer<>(),
+                        AbstractAuthenticationFilterConfigurer::permitAll)
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+        // .authorizeHttpRequests(
+        // req -> req.requestMatchers("/login", "/swagger-ui.html", "/swagger-ui/**",
+        // "/v3/api-docs/**")
+        // .permitAll()
+        // .requestMatchers("/locale/**")
+        // .permitAll()
+        // .anyRequest()
+        // .permitAll());
+        // TODO: authentication disbaled for dev, replace!
+        return http.build();
+    }
+
     @Bean
     public AuthenticationManager authenticationManager(UserService userService, PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userService);
@@ -45,31 +68,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager)
-            throws Exception {
+    @Order
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
         http.csrf(AbstractHttpConfigurer::disable) // disable csrf
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                .cors(AbstractHttpConfigurer::disable) // no cors
                 .logout(LogoutConfigurer::permitAll)
-                .authenticationManager(authenticationManager)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .with(
-                        new UsernamePasswordAuthenticationConfigurer<>(),
-                        AbstractAuthenticationFilterConfigurer::permitAll)
-                .authorizeHttpRequests(
-                        req -> req.requestMatchers("/login", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
-                                .permitAll()
-                                .requestMatchers("/locale/**")
-                                .permitAll()
-                                .anyRequest()
-                                .permitAll()); // TODO:
-        // only
-        // for
-        // dev,
-        // replace
-        // with
-        // authenticated!
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }
 

@@ -107,9 +107,9 @@ public class ImportFinalizingService {
         Path artifactImportFolder = fileService.createArtifactImportFolder();
 
         persistFiles(context, artifactImportFolder);
-        persistDatabaseContext(context);
         serializeContext(context, artifactImportFolder);
         updateVersionSeries(context);
+        persistDatabaseContext(context);
 
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();

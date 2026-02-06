@@ -1,6 +1,8 @@
 {
   "title": "OntoPuS",
   "subtitle": "Ontology Publication Server",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
   "login": {
     "button.submit": "Login",
     "field": {
@@ -9,6 +11,10 @@
     }
   },
   "publish": {
+    "abort-dialog": {
+      "title": "Are you sure?",
+      "text": "Are you sure you want to abort and reset the process? All entered data will be lost."
+    },
     "button": {
       "abort": "Abort and reset"
     },

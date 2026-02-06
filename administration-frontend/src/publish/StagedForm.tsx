@@ -2,23 +2,17 @@ import { PromiseArea } from '@/components/PromiseArea.tsx'
 import Form from '@rjsf/mui'
 import type { IChangeEvent } from '@rjsf/core'
 import RjsfForm from '@rjsf/core'
-import { createRef, type FunctionComponent, type RefObject } from 'preact'
+import { createRef, type FunctionComponent, type RefObject, type TargetedEvent } from 'preact'
 import validator from '@rjsf/validator-ajv8'
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
-import { type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import intlSchema from '@/components/staged-form/intlSchema.ts'
 import type { RegistryFieldsType, RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
-import {
-  type FileWithFieldName,
-  loadJsonForm,
-  STAGED_FORM_PROMISE_AREA,
-  submitForm,
-} from '@/components/staged-form/actions.ts'
+import { type FileWithFieldName, loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/publish/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
-import { Box, Button } from '@mui/material'
+import { Box } from '@mui/material'
 import ReusableFileField from '@/components/staged-form/ReusableFileField.tsx'
+import intlSchema from '@/publish/utils/intlSchema.ts'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
@@ -46,6 +40,10 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
   return fileList
 }
 
+export type StagedFormProps = {
+  doRefresh: RefObject<() => void>
+}
+
 /**
  * Supported JSON schema
  * https://json-schema.org/draft-07/json-schema-release-notes
@@ -53,14 +51,18 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
  * @implNote Surround with suspense
  * @constructor
  */
-export const StagedForm: FunctionComponent<{}> = () => {
-  const { t, i18n } = useTranslation()
+export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) => {
+  const { i18n } = useTranslation()
   const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>()
   const [uiSchema, setUiSchema] = useState<UiSchema>()
   const [formData, setFormData] = useState<any>()
   const [loadScheme, setLoadScheme] = useState<boolean>(true)
   const [isDisabled, setIsDisabled] = useState<boolean>(false)
   const formRef = createRef<RjsfForm>()
+
+  useEffect(() => {
+    doRefresh.current = () => setLoadScheme(true)
+  }, [doRefresh, setLoadScheme])
 
   /*
   {
@@ -92,10 +94,8 @@ export const StagedForm: FunctionComponent<{}> = () => {
     return cleanup
   }, [loadScheme])
 
-  console.debug(jsonSchema, uiSchema, formData)
-
   const onSubmit = useCallback(
-    ({ formData }: IChangeEvent, e: FormEvent<HTMLFormElement>) => {
+    ({ formData }: IChangeEvent, e: TargetedEvent<HTMLFormElement>) => {
       e.preventDefault()
       setIsDisabled(true)
       const fileList = resolveFiles(formRef.current)
@@ -136,9 +136,6 @@ export const StagedForm: FunctionComponent<{}> = () => {
       <Box sx={{ my: 4 }}>
         <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
       </Box>
-      <Button variant={'outlined'} color={'error'} style={{ float: 'right' }}>
-        {t('publish.button.abort')}
-      </Button>
     </>
   )
 }

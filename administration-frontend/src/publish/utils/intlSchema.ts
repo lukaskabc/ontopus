@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { RJSFSchema } from '@rjsf/utils'
 import { defaultTo, isEqual, mapValues, pickBy } from 'lodash'
 import type { i18n } from 'i18next'

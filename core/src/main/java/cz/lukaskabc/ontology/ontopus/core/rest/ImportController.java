@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,11 +22,19 @@ import tools.jackson.databind.node.ArrayNode;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(path = "/import")
 public class ImportController {
+    private static URI extractSeriesURI(Map<String, JsonNode> combinedData) {
+        JsonNode node = combinedData.get("versionSeries");
+        Objects.requireNonNull(node);
+        return URI.create(node.asString());
+    }
+
     private final ImportService importService;
+
     private final ObjectMapper objectMapper;
 
     public ImportController(ImportService importService, ObjectMapper objectMapper) {
@@ -59,14 +68,13 @@ public class ImportController {
      * // TODO replace with open api docs
      *
      * <p>Expects several JSONs with form data separated into parts, each for a single service in the pipeline.
-     *
-     * @param request
      */
     @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request) throws Throwable {
-        Map<String, JsonNode> combinedData = parseData(request);
+        SerializableImportProcessContext context = resolveImportProcessContext(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
-        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(combinedData, files));
+        initialize(context.getVersionSeriesIdentifier());
+        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(context, files));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -119,5 +127,16 @@ public class ImportController {
         } else {
             return objectMapper.readTree(values[0]);
         }
+    }
+
+    private SerializableImportProcessContext resolveImportProcessContext(MultipartHttpServletRequest request) {
+        final String contextParam = "context";
+        String[] context = request.getParameterMap().get("context");
+        Objects.requireNonNull(context, "No context parameter specified");
+        final boolean isJson = MediaType.APPLICATION_JSON_VALUE.equals(request.getMultipartContentType(contextParam));
+        if (context.length != 1 || !isJson) {
+            throw new IllegalArgumentException("More than one context supplier");
+        }
+        return objectMapper.readValue(context[0], SerializableImportProcessContext.class);
     }
 }

@@ -11,9 +11,12 @@ import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.JsonNode;
 
 import java.io.File;
@@ -243,12 +246,13 @@ public class ImportProcessMediator {
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
     public Future<?> submitCombinedFormResult(
-            Map<String, JsonNode> combinedJsonData, Map<ReusableFileDto, InputStreamSource> combinedReusableFiles) {
+            SerializableImportProcessContext serializedContext, MultiValueMap<String, MultipartFile> files) {
         return holder.scheduleWithContext((context -> {
-            Map<String, Map<String, ReusableFile>> serviceNameToFilePathMap =
-                    extractCombinedFiles(combinedReusableFiles, context);
-            Map<String, FormResult> formResults = extractFormResults(combinedJsonData, serviceNameToFilePathMap);
-            processAllResults(context, formResults);
+            // Map<String, Map<String, ReusableFile>> serviceNameToFilePathMap =
+            // extractCombinedFiles(serializedContext, context);
+            // Map<String, FormResult> formResults = extractFormResults(combinedJsonData,
+            // serviceNameToFilePathMap);
+            // processAllResults(context, formResults);
         }));
     }
 

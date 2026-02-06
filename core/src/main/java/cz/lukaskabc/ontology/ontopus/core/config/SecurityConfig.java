@@ -3,12 +3,13 @@ package cz.lukaskabc.ontology.ontopus.core.config;
 import cz.lukaskabc.ontology.ontopus.core_model.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,25 +25,28 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
     @Bean
-    @Order(0)
+    @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain administrationSecurityFilter(
             HttpSecurity http, AuthenticationManager authenticationManager) {
-        http.securityMatcher("/login", "/import", "/import/**", "/auth-ping")
+        http.securityMatcher("/login", "/logout", "/import", "/import/**", "/auth-ping")
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults()) // TODO configure cors for
+                // administration
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
                 .authenticationManager(authenticationManager)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .with(
-                        new UsernamePasswordAuthenticationConfigurer<>(),
-                        AbstractAuthenticationFilterConfigurer::permitAll)
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-        // .authorizeHttpRequests(
-        // req -> req.requestMatchers("/login", "/swagger-ui.html", "/swagger-ui/**",
-        // "/v3/api-docs/**")
-        // .permitAll()
-        // .requestMatchers("/locale/**")
-        // .permitAll()
-        // .anyRequest()
-        // .permitAll());
-        // TODO: authentication disbaled for dev, replace!
+                .logout(LogoutConfigurer::permitAll)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .with(new UsernamePasswordAuthenticationConfigurer<>()) // configure /login endpoint handling
+                .authorizeHttpRequests(auth ->
+                        auth.requestMatchers("/login").permitAll().anyRequest().permitAll()); // TODO:
+        // for
+        // dev
+        // permitAll,
+        // change
+        // to
+        // authenticated()
+        // TODO: review authentication stack
         return http.build();
     }
 
@@ -68,21 +72,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
-        http.csrf(AbstractHttpConfigurer::disable) // disable csrf
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable) // no cors
-                .logout(LogoutConfigurer::permitAll)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-        return http.build();
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 
     @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
+    public SecurityFilterChain ontopusDefaultSecurityFilterChain(HttpSecurity http) {
+        http.csrf(AbstractHttpConfigurer::disable) // disable csrf
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults()) // TODO: allow cors for all?
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        return http.build();
     }
 
     @Bean

@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import org.jspecify.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
 
 import java.util.Objects;
@@ -72,7 +73,10 @@ public abstract class AbstractRepository<
     }
 
     protected <T> T validated(T entity) {
-        validator.validateObject(entity).failOnError(ValidationException::new);
+        BeanPropertyBindingResult errors =
+                new BeanPropertyBindingResult(entity, entity.getClass().getSimpleName());
+        validator.validate(entity, errors);
+        errors.failOnError(ValidationException::new);
         return entity;
     }
 }

@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 @OWLClass(iri = Vocabulary.s_c_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
-    @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
+    @Valid @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
 
     /** The newest version of the ontology */

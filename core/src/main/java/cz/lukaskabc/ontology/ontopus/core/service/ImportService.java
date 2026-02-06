@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core.util.ConsumableInputStreamSource;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
@@ -106,7 +107,6 @@ public class ImportService {
     /**
      * Finds reusable files in the jsonData
      *
-     * @param jsonData
      * @param files
      */
     private Map<ReusableFileDto, InputStreamSource> resolveFiles(
@@ -142,9 +142,8 @@ public class ImportService {
     }
 
     public Future<?> submitCombinedData(
-            Map<String, JsonNode> combinedData, MultiValueMap<String, MultipartFile> files) {
-        Map<ReusableFileDto, InputStreamSource> reusableFiles = resolveFiles(combinedData, files);
-        return mediator.submitCombinedFormResult(combinedData, reusableFiles);
+            SerializableImportProcessContext context, MultiValueMap<String, MultipartFile> files) {
+        return mediator.submitCombinedFormResult(context, files);
     }
 
     public Future<?> submitData(Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {

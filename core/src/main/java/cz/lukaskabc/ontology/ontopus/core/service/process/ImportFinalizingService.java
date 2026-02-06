@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.process;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.model.ServiceAwareFormResult;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
@@ -18,6 +19,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionAr
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,8 @@ import java.util.*;
 
 @Service
 public class ImportFinalizingService {
+    private static final Logger log = LogManager.getLogger(ImportFinalizingService.class);
+
     private static @NonNull Map<String, UploadedFile> getUploadedFileMap(FormResult result) {
         // Map<String, UploadedFile> reusableFiles =
         // new HashMap<>(result.submittedFiles().size());
@@ -59,8 +64,8 @@ public class ImportFinalizingService {
     private final ObjectMapper objectMapper;
 
     private final VersionSeriesRepository versionSeriesRepository;
-
     private final VersionArtifactRepository versionArtifactRepository;
+
     private final EntityManager em;
 
     private final OntologyFileService fileService;
@@ -114,16 +119,10 @@ public class ImportFinalizingService {
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
 
-        if (versionSeriesRepository.exists(series.getIdentifier())) {
-            versionSeriesRepository.update(series);
-        } else {
-            versionSeriesRepository.persist(series);
-        }
-
-        if (versionArtifactRepository.exists(artifact.getIdentifier())) {
-            versionArtifactRepository.delete(artifact);
-        }
-        versionArtifactRepository.persist(artifact);
+        versionSeriesRepository.update(series);
+        versionArtifactRepository.delete(artifact);
+        versionArtifactRepository.update(artifact);
+        // TODO: what if the artifact already exists?
 
         updateCatalog(series);
 
@@ -185,28 +184,43 @@ public class ImportFinalizingService {
 
     private void serializeContext(ImportProcessContext context, Path artifactImportFolder) {
         final SerializableImportProcessContext serializedContext = new SerializableImportProcessContext();
+        serializedContext.setVersionSeriesIdentifier(
+                context.getVersionSeries().getIdentifier().toURI());
         serializedContext.setFilesDirectory(artifactImportFolder.toString());
 
-        // save services
         final int servicesCount = context.getProcessedServices().size();
+        final int resultsCount = context.getProcessedResults().size();
+        assert servicesCount >= resultsCount;
+
         final List<String> serviceIds = new ArrayList<>(servicesCount);
+        final HashMap<String, SerializableImportProcessContext.ReusableFormResult> serviceToFormResultMap =
+                new HashMap<>(resultsCount);
+
+        serializedContext.setServicesList(serviceIds);
+        serializedContext.setServiceToReusableFormResultMap(serviceToFormResultMap);
+
+        int resultIndex = 0;
         for (int serviceIndex = 0; serviceIndex < servicesCount; serviceIndex++) {
             final ImportProcessingService<?> service =
                     context.getProcessedServices().get(serviceIndex);
-            serviceIds.add(ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex));
+            final String serviceId = ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex);
+            serviceIds.add(serviceId);
+            final ServiceAwareFormResult result = context.getProcessedResults().get(resultIndex);
+            if (result.service() == service) {
+                Map<String, UploadedFile> reusableFiles = getUploadedFileMap(result.formResult());
+                Map<String, String> serializedFormData =
+                        serializeFormData(result.formResult().formData());
+                assert !serviceToFormResultMap.containsKey(serviceId);
+                serviceToFormResultMap.put(
+                        serviceId,
+                        new SerializableImportProcessContext.ReusableFormResult(serializedFormData, reusableFiles));
+                resultIndex++;
+            }
         }
-        serializedContext.setServicesList(serviceIds);
-
-        final int resultsCount = context.getProcessedResults().size();
-        final List<SerializableImportProcessContext.ReusableFormResult> formResults = new ArrayList<>(resultsCount);
-        for (final FormResult result : context.getProcessedResults()) {
-            Map<String, UploadedFile> reusableFiles = getUploadedFileMap(result);
-            Map<String, String> serializedFormData = serializeFormData(result.formData());
-            formResults.add(new SerializableImportProcessContext.ReusableFormResult(serializedFormData, reusableFiles));
-        }
-        serializedContext.setFormResults(formResults);
 
         context.getVersionSeries().setSerializableImportProcessContext(serializedContext);
+
+        log.warn(() -> objectMapper.writeValueAsString(serializedContext));
     }
 
     private Map<String, String> serializeFormData(Map<String, JsonNode> formData) {

@@ -33,7 +33,7 @@ public class UserRepository extends AbstractRepository<UserURI, User, UserDao> {
         return user;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Nullable public User findByUsername(@Nullable String username) {
         if (!StringUtils.hasText(username)) {
             return null;
@@ -48,7 +48,7 @@ public class UserRepository extends AbstractRepository<UserURI, User, UserDao> {
      * @param username The username or null
      * @return whether an account with the given username exists
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean userAccountExists(@Nullable String username) {
         return dao.userAccountExists(username);
     }

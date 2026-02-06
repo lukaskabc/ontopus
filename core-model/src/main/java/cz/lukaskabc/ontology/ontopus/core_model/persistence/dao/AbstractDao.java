@@ -11,6 +11,7 @@ import org.springframework.util.function.ThrowingSupplier;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.Optional;
 
 public abstract class AbstractDao<I extends EntityIdentifier, E extends PersistenceEntity<I>> {
     protected final EntityManager em;
@@ -30,6 +31,7 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
     public void delete(E entity) {
         Objects.requireNonNull(entity.getIdentifier());
         try {
+            Optional.ofNullable(find(entity.getIdentifier())).ifPresent(em::remove);
             em.createNativeQuery("""
 					DELETE WHERE {
 					    GRAPH ?context {

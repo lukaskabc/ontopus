@@ -30,7 +30,7 @@ public class ImportProcessContext {
 
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
-    private final ArrayList<FormResult> processedResults;
+    private final ArrayList<ServiceAwareFormResult> processedResults;
 
     private final Map<Object, Object> additionalProperties;
 
@@ -65,7 +65,7 @@ public class ImportProcessContext {
         return pendingServicesStack;
     }
 
-    public ArrayList<FormResult> getProcessedResults() {
+    public ArrayList<ServiceAwareFormResult> getProcessedResults() {
         return processedResults;
     }
 
@@ -106,7 +106,7 @@ public class ImportProcessContext {
         if (hasUnprocessedService()) {
             ImportProcessingService<?> service = peekService();
             service.handleSubmit(formResult, this);
-            processedResults.add(formResult);
+            processedResults.add(new ServiceAwareFormResult(service, formResult));
             if (service == peekService()) {
                 popService();
             }
@@ -132,7 +132,6 @@ public class ImportProcessContext {
     /**
      * Removes a service from the top of the service stack and transfers it to the processed services list.
      *
-     * @return the removed service
      * @throws NoSuchElementException if the stack is empty
      */
     public void popService() {

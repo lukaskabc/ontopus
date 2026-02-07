@@ -18,7 +18,15 @@ export const ReusableFileType = makeEnum(
 )
 export type ReusableFileType = (typeof ReusableFileType)[keyof typeof ReusableFileType]
 
-function pathPrefixedFileName(file: File) {
+interface ExtendedFile extends File {
+  path?: string
+}
+
+function pathPrefixedFileName<T extends ExtendedFile>(file: T) {
+  if (file.path && file.path.endsWith(file.name)) {
+    return file.path.startsWith('.') ? file.path.substring(1) : file.path
+  }
+
   // get path if there is one and strip all leading slashes
   const path = (file?.webkitRelativePath || '').replace(/\/+$/, '')
   return path.endsWith(file.name) ? path : `${path}/${file.name}`

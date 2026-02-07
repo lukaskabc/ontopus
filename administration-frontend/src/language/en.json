@@ -15,6 +15,9 @@
       "title": "Are you sure?",
       "text": "Are you sure you want to abort and reset the process? All entered data will be lost."
     },
+    "file-dropzone": {
+      "text": "Drag 'n' drop files or directories here; click to select files"
+    },
     "button": {
       "abort": "Abort and reset"
     },

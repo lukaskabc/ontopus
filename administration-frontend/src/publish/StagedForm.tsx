@@ -7,12 +7,12 @@ import validator from '@rjsf/validator-ajv8'
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks'
 import { useTranslation } from 'react-i18next'
 import type { RegistryFieldsType, RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
-import HeadingWidget from '@/components/staged-form/HeadingWidget.tsx'
 import { type FileWithFieldName, loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/publish/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
 import { Box } from '@mui/material'
-import ReusableFileField from '@/components/staged-form/ReusableFileField.tsx'
 import intlSchema from '@/publish/utils/intlSchema.ts'
+import HeadingWidget from '@/publish/widgets/HeadingWidget.tsx'
+import ReusableFileField from '@/publish/fields/ReusableFileField.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
@@ -64,15 +64,6 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
     doRefresh.current = () => setLoadScheme(true)
   }, [doRefresh, setLoadScheme])
 
-  /*
-  {
-    submitPath: '',
-    jsonSchema: JSON.parse(
-      '{"$schema": "http://json-schema.org/draft-07/schema#","type": "object","$translationRoot": "ontopus.plugin.git.importForm","properties": {"repositoryUrl": {"type": "string","format": "uri"},"branch": {"type": "string"},"authText": {"type": "string"},"username": {"type": "string"},"password": {"type": "string"}},"required": ["repositoryUrl"],"dependencies": {"password": ["username"],"username": ["password"]}}'
-    ),
-  }
-   */
-
   // load JSON form when doLoadJsonForm is true
   // if the endpoint returns 205, initialize new import process and set doLoadJsonForm to true again
   useEffect(() => {
@@ -89,10 +80,13 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
         setFormData(result.formData)
         setIsDisabled(false)
       })
-      .catch(console.error) // TODO handle error
+      .catch((e) => {
+        if (e == null) return
+        console.error(e)
+      }) // TODO handle error
       .finally(() => setLoadScheme(false))
     return cleanup
-  }, [loadScheme])
+  }, [loadScheme, formRef])
 
   const onSubmit = useCallback(
     ({ formData }: IChangeEvent, e: TargetedEvent<HTMLFormElement>) => {
@@ -117,6 +111,12 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
 
   const localizedSchema = useMemo(() => intlSchema(jsonSchema, i18n), [jsonSchema])
 
+  useEffect(() => {
+    if (!loadScheme && formRef.current) {
+      formRef.current.reset()
+    }
+  }, [uiSchema, localizedSchema, formData, loadScheme])
+
   return (
     <>
       {localizedSchema && (
@@ -124,7 +124,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
           ref={formRef}
           schema={localizedSchema}
           uiSchema={uiSchema}
-          formData={formData}
+          initialFormData={formData}
           validator={validator}
           liveValidate={true}
           onSubmit={onSubmit}

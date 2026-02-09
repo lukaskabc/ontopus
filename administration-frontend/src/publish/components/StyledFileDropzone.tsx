@@ -37,6 +37,7 @@ function makeStyles(theme: Theme) {
 
 export interface StyledFileDropzoneProps extends DropzoneOptions {
   text: string
+  textSecondary?: string
 }
 
 /**
@@ -62,12 +63,18 @@ export const StyledFileDropzone: FunctionComponent<StyledFileDropzoneProps> = (p
   )
 
   return (
-    <div className="container">
-      <div {...getRootProps({ style })}>
-        <input {...getInputProps()} />
-        <CloudUploadIcon fontSize={'large'} color={'primary'} />
-        <p>{props.text}</p>
-      </div>
+    <div {...getRootProps({ style })}>
+      <input {...getInputProps()} />
+      <CloudUploadIcon fontSize={'large'} color={'primary'} />
+      <p style={{ textAlign: 'center' }}>
+        {props.text}
+        {props.textSecondary && (
+          <>
+            <br />
+            {props.textSecondary}
+          </>
+        )}
+      </p>
     </div>
   )
 }

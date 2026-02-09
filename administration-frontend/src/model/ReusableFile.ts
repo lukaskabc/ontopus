@@ -24,7 +24,7 @@ interface ExtendedFile extends File {
 
 function pathPrefixedFileName<T extends ExtendedFile>(file: T) {
   if (file.path && file.path.endsWith(file.name)) {
-    return file.path.startsWith('.') ? file.path.substring(1) : file.path
+    return file.path.startsWith('./') ? file.path.substring(2) : file.path
   }
 
   // get path if there is one and strip all leading slashes
@@ -62,5 +62,35 @@ export class ReusableFile {
       }
     }
     return null
+  }
+}
+
+export class ActionAwareReusableFile {
+  readonly reusableFile: ReusableFile
+  readonly isServerAvailable: boolean
+  isUploadAvailable: boolean
+  isDeleted: boolean
+
+  constructor(reusableFile: ReusableFile, isServerAvailable: boolean, isUploadAvailable: boolean) {
+    this.reusableFile = reusableFile
+    this.isServerAvailable = isServerAvailable
+    this.isUploadAvailable = isUploadAvailable
+    this.isDeleted = false
+  }
+
+  delete() {
+    if (this.isUploadAvailable) {
+      this.isUploadAvailable = false
+    } else {
+      this.isDeleted = true
+    }
+  }
+
+  restore() {
+    this.isDeleted = false
+  }
+
+  isAvailable() {
+    return this.isServerAvailable || this.isUploadAvailable
   }
 }

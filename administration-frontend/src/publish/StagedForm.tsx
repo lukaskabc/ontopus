@@ -28,7 +28,7 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
   if (formElement?.current) {
     const fileInputs = formElement.current.querySelectorAll('input[type="file"]')
     fileInputs.forEach((input) => {
-      const name = input.getAttribute('name') || 'file'
+      const name = input.getAttribute('name') || ''
       const fInput = input as any
       if (fInput?.files) {
         for (const file of fInput.files as FileList) {

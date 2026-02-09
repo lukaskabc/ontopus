@@ -15,7 +15,7 @@ export interface FileWithFieldName {
 
 function compileDataForRequest(formData: any, files: FileWithFieldName[]): string | FormData {
   const data = new FormData()
-  if (typeof formData === 'object') {
+  if (typeof formData === 'object' && !(formData instanceof Array)) {
     Object.keys(formData).forEach((key: string) => {
       data.append(key, JSON.stringify(formData[key]))
     })
@@ -23,7 +23,9 @@ function compileDataForRequest(formData: any, files: FileWithFieldName[]): strin
     data.append('data', formData)
   }
   files.forEach((file) => {
-    data.append(file.name, file.file)
+    if (file && file.name && file.file) {
+      data.append(file.name, file.file)
+    }
   })
   return data
 }

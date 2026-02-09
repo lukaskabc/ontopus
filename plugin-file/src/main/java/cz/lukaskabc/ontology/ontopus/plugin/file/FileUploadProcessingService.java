@@ -31,7 +31,7 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
 
     @Override
     public String getServiceName() {
-        return "ontopus.plugin.file_upload.serviceName";
+        return "ontopus.plugin.file.serviceName";
     }
 
     @Override
@@ -52,11 +52,16 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
 
     protected JsonForm makeForm() {
         ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "array");
+        schema.put("type", "object");
         schema.put("title", getServiceName());
+        schema.putArray("required").add("files");
+        schema.putObject("properties").putObject("files").put("type", "array");
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
-        uiSchema.put("ui:field", "reusableFileField").put("multiple", true).put("directory", true);
+        uiSchema.putObject("files")
+                .put("ui:field", "reusableFileField")
+                .put("multiple", true)
+                .put("directory", true);
         return new JsonForm(schema, uiSchema, null);
     }
 }

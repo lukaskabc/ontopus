@@ -16,7 +16,20 @@
       "text": "Are you sure you want to abort and reset the process? All entered data will be lost."
     },
     "file-dropzone": {
-      "text": "Drag 'n' drop files or directories here; click to select files"
+      "text": "Drag 'n' drop files or directories here",
+      "text-secondary": "Click to select files"
+    },
+    "reusable-file": {
+      "list": {
+        "root": "<root>"
+      },
+      "action":{
+        "tooltip": {
+          "upload": "File will be uploaded to the server",
+          "server": "File is already on server and will be reused",
+          "delete": "File on server won't be reused and will be deleted"
+        }
+      }
     },
     "button": {
       "abort": "Abort and reset"

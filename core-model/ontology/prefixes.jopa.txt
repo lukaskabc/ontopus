@@ -4,3 +4,6 @@ http://www.w3.org/XML/1998/namespace=xml
 http://www.w3.org/2001/XMLSchema#=xsd
 http://www.w3.org/2000/01/rdf-schema#=rdfs
 http://ontology.lukaskabc.cz/application/ontopus#=ontopus
+http://www.w3.org/ns/dcat=dcat
+http://purl.org/dc/terms=dcterms
+http://rdfs.org/sioc/ns#=sioc

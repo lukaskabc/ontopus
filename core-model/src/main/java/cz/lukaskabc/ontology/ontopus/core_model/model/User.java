@@ -19,7 +19,7 @@ public class User extends PersistenceEntity<UserURI> {
 
     @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_-]{3,}[a-zA-Z0-9]") // TODO move to constants
     @NotEmpty @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = Vocabulary.s_p_org_name, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_sioc_name, simpleLiteral = true)
     private String username;
 
     public String getPassword() {

@@ -45,7 +45,7 @@ public abstract class Resource<ID extends EntityIdentifier> extends PersistenceE
      * Skipping theme/category, type/genre, relation, qualified attribution,
      * license, rights
      */
-    @OWLObjectProperty(iri = Vocabulary.s_p_org_hasPart)
+    @OWLObjectProperty(iri = Vocabulary.s_i_dcat_hasPart)
     private Set<URI> hasParts;
     /*
      * Skipping has policy, is referenced by

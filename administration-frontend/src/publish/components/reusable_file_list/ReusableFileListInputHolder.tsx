@@ -1,34 +1,25 @@
-import type { FunctionComponent } from 'preact'
-import { type ActionAwareReusableFile } from '@/model/ReusableFile.ts'
-import { useEffect, useMemo, useRef } from 'preact/hooks'
+import type { FunctionComponent, RefCallback } from 'preact'
+import { useCallback } from 'preact/hooks'
 
 export type ReusableFileListInputHolderProps = {
-  files: Map<ActionAwareReusableFile, File>
+  files: Map<string, File>
   name: string
 }
 
 export const ReusableFileListInputHolder: FunctionComponent<ReusableFileListInputHolderProps> = ({ files, name }) => {
-  const inputRef = useRef<HTMLInputElement>(null)
-  const filesToTransfer: File[] = useMemo(() => {
-    const result: File[] = []
-    files.forEach((file: File, actionFile: ActionAwareReusableFile) => {
-      if (actionFile.isAvailable()) {
-        result.push(file)
-      }
-    })
-    return result
-  }, [files])
+  const inputRefCallback: RefCallback<HTMLInputElement> = useCallback(
+    (element: HTMLInputElement | null) => {
+      if (!element) return
 
-  useEffect(() => {
-    if (!inputRef.current) return
+      // https://stackoverflow.com/a/68182158/1068446
+      const dataTransfer = new DataTransfer()
+      files.forEach((v: File, fileName: string) => {
+        dataTransfer.items.add(new File([v], fileName, { type: v.type, lastModified: v.lastModified }))
+      })
+      element.files = dataTransfer.files
+    },
+    [files]
+  )
 
-    // https://stackoverflow.com/a/68182158/1068446
-    const dataTransfer = new DataTransfer()
-    filesToTransfer.forEach((v) => {
-      dataTransfer.items.add(v)
-    })
-    inputRef.current.files = dataTransfer.files
-  }, [filesToTransfer])
-
-  return <input type={'file'} name={name} ref={inputRef} style={{ display: 'none' }} />
+  return <input type={'file'} name={name} ref={inputRefCallback} style={{ display: 'none' }} />
 }

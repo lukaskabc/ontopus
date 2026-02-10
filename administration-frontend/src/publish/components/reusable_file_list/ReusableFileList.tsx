@@ -19,23 +19,24 @@ import { Box } from '@mui/material'
 import { ItemTypeIcon } from '@/publish/components/reusable_file_list/TreeItemTypeIcon.tsx'
 import { TreeItemActions } from '@/publish/components/reusable_file_list/TreeItemActions.tsx'
 import { type ItemType, ItemTypeEnum } from '@/publish/components/reusable_file_list/ItemType.ts'
-import { useTranslation } from 'react-i18next'
 
 export type ReusableFileListProps = {
   files: ActionAwareReusableFile[]
   onDelete: (file: ActionAwareReusableFile) => void
+  onUpdate: (file: ActionAwareReusableFile) => void
 }
 
 interface ExtendedItemProperties extends TreeViewDefaultItemModelProperties {
   type: ItemType
   file?: ActionAwareReusableFile
   onDelete: (file: ActionAwareReusableFile) => void
+  onUpdate: (file: ActionAwareReusableFile) => void
   children?: ExtendedItemProperties[]
 }
 
-function findTreeRoot(label: string, tree: ExtendedItemProperties[], rootLabel: string): ExtendedItemProperties | null {
+function findTreeRoot(label: string, tree: ExtendedItemProperties[]): ExtendedItemProperties | null {
   for (let rootNode of tree) {
-    if (rootNode.label === label || rootLabel === rootNode.label) {
+    if (rootNode.label === label) {
       return rootNode
     }
   }
@@ -54,26 +55,37 @@ function findTreeNodeChild(label: string, node: ExtendedItemProperties): Extende
   return null
 }
 
+function splitPath(path?: string) {
+  if (!path) {
+    return []
+  }
+
+  if (path.startsWith('/')) {
+    return path.substring(1).split('/')
+  }
+  return path.split('/')
+}
+
 function insertToTree(
   file: ActionAwareReusableFile,
   tree: ExtendedItemProperties[],
-  rootLabel: string,
-  onDelete: (file: ActionAwareReusableFile) => void
+  onDelete: (file: ActionAwareReusableFile) => void,
+  onUpdate: (file: ActionAwareReusableFile) => void
 ) {
-  const path = file.reusableFile.fileName?.split('/')
+  const path = splitPath(file.reusableFile.fileName)
   if (!path || path.length === 0) {
     console.error('Unable to process file', file)
     return
   }
 
   let currentPath = path[0]
-  let current: ExtendedItemProperties | null = findTreeRoot(path[0], tree, rootLabel)
+  let current: ExtendedItemProperties | null = findTreeRoot(path[0], tree)
   if (!current) {
     const isFileInRoot = path.length === 1
     const type = isFileInRoot ? ItemTypeEnum.FILE : ItemTypeEnum.DIRECTORY
-    const label = path[0] === '' ? rootLabel : path[0]
+    const label = path[0]
     const fileValue = isFileInRoot ? file : undefined
-    current = { id: label, label, children: [], type, onDelete, file: fileValue }
+    current = { id: label, label, children: [], type, onDelete, onUpdate, file: fileValue }
     tree.push(current)
   }
   for (let i = 1; i < path.length; i++) {
@@ -85,7 +97,7 @@ function insertToTree(
       const isLast = i === path.length - 1
       const type = isLast ? ItemTypeEnum.FILE : ItemTypeEnum.DIRECTORY
       const fileValue = isLast ? file : undefined // do not pass file to folder entried
-      found = { id: currentPath, label, children: [], type, onDelete, file: fileValue }
+      found = { id: currentPath, label, children: [], type, onDelete, onUpdate, file: fileValue }
       current.children?.push(found)
     }
     current = found
@@ -122,7 +134,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
     children,
   })
 
-  const { type, file, onDelete } = useTreeItemModel<ExtendedItemProperties>(itemId)!
+  const { type, file, onDelete, onUpdate } = useTreeItemModel<ExtendedItemProperties>(itemId)!
 
   const opacity = getOpacity(file)
 
@@ -151,7 +163,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
 
         <TreeItemContent {...getContentProps()} sx={{ paddingLeft: '14px', opacity }}>
           <TreeItemLabel {...getLabelProps()} />
-          {type === ItemTypeEnum.FILE && <TreeItemActions file={file} onDelete={onDelete} />}
+          {type === ItemTypeEnum.FILE && <TreeItemActions file={file} onDelete={onDelete} onUpdate={onUpdate} />}
           <TreeItemDragAndDropOverlay {...getDragAndDropOverlayProps()} />
         </TreeItemContent>
         {children && <TreeItemGroupTransition {...getGroupTransitionProps()} />}
@@ -160,19 +172,17 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
   )
 })
 
-export default function ReusableFileList({ files, onDelete }: ReusableFileListProps) {
-  const { t } = useTranslation()
-  const rootLabel = t('publish.reusable-file.list.root')
+export default function ReusableFileList({ files, onDelete, onUpdate }: ReusableFileListProps) {
   const treeData: ExtendedItemProperties[] = useMemo(() => {
     const result: ExtendedItemProperties[] = []
 
     if (files) {
       for (let f of files) {
-        insertToTree(f, result, rootLabel, onDelete)
+        insertToTree(f, result, onDelete, onUpdate)
       }
     }
     return result
-  }, [files, rootLabel])
+  }, [files])
 
-  return <RichTreeView items={treeData} slots={{ item: CustomTreeItem }} defaultExpandedItems={[rootLabel]} />
+  return <RichTreeView items={treeData} slots={{ item: CustomTreeItem }} />
 }

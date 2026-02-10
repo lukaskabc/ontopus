@@ -6,16 +6,43 @@ import { useTranslation } from 'react-i18next'
 import ReusableFileList from '@/publish/components/reusable_file_list/ReusableFileList.tsx'
 import { ReusableFileListInputHolder } from '@/publish/components/reusable_file_list/ReusableFileListInputHolder.tsx'
 
-function toUploadedActionAware(file: ReusableFile) {
-  return new ActionAwareReusableFile(file, false, true)
-}
-
-function toServerActionAware(file: ReusableFile) {
-  return new ActionAwareReusableFile(file, true, false)
-}
-
 function unpackActionAware(files: ActionAwareReusableFile[]): ReusableFile[] {
-  return files.map((file) => file.reusableFile)
+  return files.filter((file) => file.isAvailable()).map((file) => file.reusableFile)
+}
+
+function parseFormData(fieldName: string, formData?: any) {
+  if (formData && Object.hasOwn(formData, fieldName) && formData[fieldName] instanceof Array) {
+    return formData[fieldName]
+      .map(ReusableFile.fromJSON)
+      .filter((file) => file != null)
+      .map((file) => new ActionAwareReusableFile(file, true, false))
+  }
+  return []
+}
+
+function acceptNewFiles(
+  acceptedFiles: File[],
+  currentValue: ActionAwareReusableFile[],
+  currentFileMap: Map<string, File>,
+  fieldName: string
+) {
+  const value: ActionAwareReusableFile[] = [...currentValue]
+  const fileMap = new Map<string, File>(currentFileMap)
+
+  acceptedFiles.forEach((file) => {
+    const reusable = ReusableFile.fromFile(file, fieldName)
+    const existingFile = value.find((e) => e.reusableFile.fileName === reusable.fileName)
+    if (existingFile) {
+      existingFile.isDeleted = false
+      existingFile.isUploadAvailable = true
+    } else {
+      const actionAware = new ActionAwareReusableFile(reusable, false, true)
+      value.push(actionAware)
+    }
+    fileMap.set(reusable.fileName, file)
+  })
+
+  return { value, fileMap }
 }
 
 /**
@@ -30,16 +57,8 @@ function ReusableFileField(props: FieldProps) {
     console.error('No field name specified for reusable file field', props)
   }
 
-  const [value, setValue] = useState<ActionAwareReusableFile[]>(() => {
-    if (props.formData && Object.hasOwn(props.formData, name) && props.formData[name] instanceof Array) {
-      return props.formData[name]
-        .map(ReusableFile.fromJSON)
-        .filter((file) => file != null)
-        .map(toServerActionAware)
-    }
-    return []
-  })
-  const [fileMap, setFileMap] = useState<Map<ActionAwareReusableFile, File>>(new Map())
+  const [value, setValue] = useState<ActionAwareReusableFile[]>(() => parseFormData(name, props.formData))
+  const [fileMap, setFileMap] = useState<Map<string, File>>(() => new Map())
 
   const updateValue = useCallback(
     (newValue: ActionAwareReusableFile[]) => {
@@ -51,42 +70,11 @@ function ReusableFileField(props: FieldProps) {
 
   const onDropAccepted = useCallback(
     (acceptedFiles: File[]) => {
-      const newValue: ActionAwareReusableFile[] = []
-      const fileIndex = new Set<string>()
-      const newFileMap = new Map<ActionAwareReusableFile, File>()
-      const addValue = (actionFile: ActionAwareReusableFile, file?: File) => {
-        if (!actionFile) {
-          return
-        }
-
-        const existingFile = newValue.find((f) => f.reusableFile.fileName === actionFile.reusableFile.fileName)
-        if (!file) {
-          file = newFileMap.get(existingFile || actionFile)
-        }
-
-        if (fileIndex.has(actionFile.reusableFile.fileName) && existingFile) {
-          existingFile.isUploadAvailable = true
-          existingFile.isDeleted = false
-        } else {
-          fileIndex.add(actionFile.reusableFile.fileName)
-          newValue.push(actionFile)
-        }
-        if (file) {
-          newFileMap.set(existingFile || actionFile, file)
-        }
-      }
-      value.forEach((file) => addValue(file))
-      acceptedFiles.forEach((file) => {
-        const reusable = ReusableFile.fromFile(file, name)
-        const actionAware = toUploadedActionAware(reusable)
-        newFileMap.set(actionAware, file)
-        addValue(actionAware)
-      })
-
-      setFileMap(newFileMap)
-      updateValue(newValue)
+      const update = acceptNewFiles(acceptedFiles, value, fileMap, name)
+      setFileMap(update.fileMap)
+      updateValue(update.value)
     },
-    [value, onChange, name, setFileMap, updateValue]
+    [value, name, setFileMap, updateValue, fileMap]
   )
 
   const onFileDelete = useCallback(
@@ -94,8 +82,25 @@ function ReusableFileField(props: FieldProps) {
       file.delete()
       const newValue = value.filter((f) => f.isAvailable())
       updateValue(newValue)
+
+      for (let key of fileMap.keys()) {
+        if (key === file.reusableFile.fileName) {
+          const newFileMap = new Map<string, File>(fileMap)
+          newFileMap.delete(key)
+          setFileMap(newFileMap)
+          break
+        }
+      }
     },
-    [value, updateValue]
+    [value, updateValue, fileMap, setFileMap]
+  )
+
+  const onFileUpdate = useCallback(
+    // @ts-ignore
+    (file: ActionAwareReusableFile) => {
+      setValue([...value])
+    },
+    [setValue, value]
   )
 
   return (
@@ -106,7 +111,7 @@ function ReusableFileField(props: FieldProps) {
         textSecondary={t('publish.file-dropzone.text-secondary')}
         onDropAccepted={onDropAccepted}
       />
-      <ReusableFileList files={value} onDelete={onFileDelete} />
+      <ReusableFileList files={value} onDelete={onFileDelete} onUpdate={onFileUpdate} />
     </>
   )
 }

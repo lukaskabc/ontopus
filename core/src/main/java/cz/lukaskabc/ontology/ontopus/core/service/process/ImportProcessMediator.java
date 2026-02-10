@@ -54,7 +54,8 @@ public class ImportProcessMediator {
     private static File copyFileToContext(
             InputStreamSource source, ReusableFileDto fileDto, ImportProcessContext context) {
         Objects.requireNonNull(context.getTempFolder());
-        final Path safeDestination = FileUtils.resolvePath(context.getTempFolder(), Path.of(fileDto.getFileName()));
+        final Path safeDestination =
+                FileUtils.resolvePath(context.getTempFolder(), FileUtils.forceRelativePath(fileDto.getFileName()));
 
         try {
             CopyOption[] options =

@@ -12,6 +12,7 @@ import { useCallback } from 'preact/hooks'
 
 export type WithOnDelete = {
   onDelete: (file: ActionAwareReusableFile) => void
+  onUpdate: (file: ActionAwareReusableFile) => void
 }
 
 export type TreeItemActionsProps = {
@@ -48,10 +49,11 @@ const StateIcon: FunctionComponent<FileProps> = ({ file }) => {
   return null
 }
 
-const DeleteRestoreButton: FunctionComponent<FileProps & WithOnDelete> = ({ file, onDelete }) => {
+const DeleteRestoreButton: FunctionComponent<FileProps & WithOnDelete> = ({ file, onDelete, onUpdate }) => {
   const onRestore = useCallback(() => {
     file.restore()
-  }, [file])
+    onUpdate(file)
+  }, [file, onUpdate])
   const sx = { padding: 0 }
   if (file.isDeleted && file.isServerAvailable) {
     return (
@@ -67,7 +69,7 @@ const DeleteRestoreButton: FunctionComponent<FileProps & WithOnDelete> = ({ file
   )
 }
 
-export const TreeItemActions: FunctionComponent<TreeItemActionsProps> = ({ file, onDelete }) => {
+export const TreeItemActions: FunctionComponent<TreeItemActionsProps> = ({ file, onDelete, onUpdate }) => {
   if (!file) {
     return null
   }
@@ -75,7 +77,7 @@ export const TreeItemActions: FunctionComponent<TreeItemActionsProps> = ({ file,
   return (
     <>
       <StateIcon file={file} />
-      <DeleteRestoreButton file={file} onDelete={onDelete} />
+      <DeleteRestoreButton file={file} onDelete={onDelete} onUpdate={onUpdate} />
     </>
   )
 }

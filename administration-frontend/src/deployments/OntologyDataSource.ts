@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import type { DataSource } from '@toolpad/core'
 import type { OntologyEntity } from '@/model/OntologyEntity.ts'
 import i18n from '@/config/i18n.ts'

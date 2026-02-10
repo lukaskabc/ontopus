@@ -86,10 +86,10 @@ public class RDFController {
             Stream<Triple> triples = contextDao.findAllTriples(contextURI);
             RDFWriter writer = writerFactory.getWriter(outputStream);
             WriterConfig writerConfig = new WriterConfig().useDefaults();
-            final boolean enablePrettyPrint = false;
+            final boolean enablePrettyPrint = true;
             writerConfig.set(BasicWriterSettings.PRETTY_PRINT, enablePrettyPrint);
             // merge lines: (consumes memory!)
-            // writerConfig.set(BasicWriterSettings.INLINE_BLANK_NODES, enablePrettyPrint);
+            writerConfig.set(BasicWriterSettings.INLINE_BLANK_NODES, enablePrettyPrint);
             writer.setWriterConfig(writerConfig);
 
             writer.startRDF();

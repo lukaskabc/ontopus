@@ -1,4 +1,4 @@
-import { Create, CrudProvider, DataSourceCache, Edit, List, Show } from '@toolpad/core'
+import { CrudProvider, DataSourceCache, Edit, List, Show } from '@toolpad/core'
 
 import { Route, Switch, useLocation, useRoute } from 'wouter-preact'
 import type { OntologyEntity } from '@/model/OntologyEntity.ts'
@@ -17,22 +17,22 @@ function CrudList() {
       onCreateClick={() => navigate(`/publish`)}
       onEditClick={(id) => navigate(`/${id}/edit`)}
       slots={{
-        dataGrid: (p) => <DataGrid {...p} />,
+        dataGrid: (p: any) => <DataGrid {...p} />,
       }}
     />
   )
 }
 
-function CrudCreate() {
-  return (
-    <Create<OntologyEntity>
-      initialValues={{ title: 'New note' }}
-      onSubmitSuccess={() => console.debug('Create submit')}
-      resetOnSubmit={false}
-      pageTitle="New Note"
-    />
-  )
-}
+// function CrudCreate() {
+//   return (
+//     <Create<OntologyEntity>
+//       initialValues={{ title: 'New note' }}
+//       onSubmitSuccess={() => console.debug('Create submit')}
+//       resetOnSubmit={false}
+//       pageTitle="New Note"
+//     />
+//   )
+// }
 
 function CrudShow() {
   const [_, params] = useRoute('/:noteId')

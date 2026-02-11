@@ -47,26 +47,36 @@
                 <groupId>cz.cvut.kbss.jopa</groupId>
                 <artifactId>jopa-maven-plugin</artifactId>
                 <version>${jopa.version}</version>
-                <configuration>
-                    <!-- owl2java -->
-                    <package>${project.groupId}.core_model.generated</package>
-                    <output-directory>${project.build.generated-source.directory}</output-directory>
-                    <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
-                    <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
-                    <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
-                    <with-java-uris>true</with-java-uris>
-                    <!-- modelgen -->
-                    <source-package>${project.groupId}.core_model.model</source-package>
-                    <output-property-iris>true</output-property-iris>
-                    <initialize-iris>true</initialize-iris>
-                </configuration>
                 <executions>
                     <execution>
+                        <id>generate-vocabulary</id>
                         <goals>
                             <goal>owl2java-transform</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <package>${project.groupId}.core_model.generated</package>
+                            <output-directory>${project.build.generated-source.directory}</output-directory>
+                            <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
+                            <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
+                            <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
+                            <with-java-uris>true</with-java-uris>
+                            <vocabulary-only>true</vocabulary-only>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-static-metamodel</id>
+                        <goals>
                             <goal>modelgen</goal>
                         </goals>
                         <phase>generate-sources</phase>
+                        <configuration>
+                            <output-directory>${project.build.generated-source.directory}</output-directory>
+                            <additional-sources>${project.build.generated-source.directory}</additional-sources>
+                            <source-package>${project.groupId}.core_model.model</source-package>
+                            <output-property-iris>true</output-property-iris>
+                            <initialize-iris>true</initialize-iris>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

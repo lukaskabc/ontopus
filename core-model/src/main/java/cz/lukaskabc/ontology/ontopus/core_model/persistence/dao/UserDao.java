@@ -29,7 +29,7 @@ public class UserDao extends AbstractDao<UserURI, User> {
                 .setMaxResults(1)
                 .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
-                .setParameter("withUsername", User_.username.getIRI())
+                .setParameter("withUsername", User_.usernamePropertyIRI)
                 .setParameter("username", username)::getSingleResult);
     }
 
@@ -49,7 +49,7 @@ public class UserDao extends AbstractDao<UserURI, User> {
 				""", Boolean.class)
                 .setParameter("graph", entityGraphContext)
                 .setParameter("userType", User_.entityClassIRI)
-                .setParameter("hasUsername", User_.username.getIRI());
+                .setParameter("hasUsername", User_.usernamePropertyIRI);
 
         if (username != null) {
             query.setParameter("username", username);

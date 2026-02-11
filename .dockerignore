@@ -3,3 +3,4 @@
 /*/node_modules
 /*/dist
 !.mvn
+/core/src/main/resources/static

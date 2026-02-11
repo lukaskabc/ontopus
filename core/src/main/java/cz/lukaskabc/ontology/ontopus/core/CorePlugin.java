@@ -2,7 +2,6 @@ package cz.lukaskabc.ontology.ontopus.core;
 
 import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core_model.CoreModel;
-import cz.lukaskabc.ontology.ontopus.core_model.model.converter.SerializableImportProcessContextConverter;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
@@ -11,8 +10,7 @@ import java.util.List;
 public class CorePlugin implements Plugin {
     @Override
     public List<String> getJopaScanPackages() {
-        return List.of(
-                CoreModel.class.getPackageName(), SerializableImportProcessContextConverter.class.getPackageName());
+        return List.of(CoreModel.class.getPackageName());
     }
 
     @Override

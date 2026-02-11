@@ -1,6 +1,6 @@
 import type { AppProviderProps, Navigate } from '@toolpad/core'
 import { AppProvider, type Router } from '@toolpad/core/AppProvider'
-import { Link, useLocation, useSearchParams } from 'wouter-preact'
+import { Link, Router as WRouter, useLocation, useSearchParams } from 'wouter-preact'
 import { useCallback, useMemo } from 'preact/hooks'
 import { forwardRef } from 'preact/compat'
 
@@ -34,5 +34,9 @@ export default function (props: AppProviderProps) {
     }),
     [pathname, searchParams, navigateImpl]
   )
-  return <AppProvider router={routerImpl} {...props} />
+  return (
+    <WRouter>
+      <AppProvider router={routerImpl} {...props} />
+    </WRouter>
+  )
 }

@@ -154,6 +154,15 @@
                 <!-- allowing to modify the classpath with loader.properties -->
                 <configuration>
                     <layout>ZIP</layout>
+                    <additionalClasspathElements>
+                        <element>./model.jar</element>
+                    </additionalClasspathElements>
+                    <excludes>
+                        <exclude>
+                            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+                            <artifactId>model</artifactId>
+                        </exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

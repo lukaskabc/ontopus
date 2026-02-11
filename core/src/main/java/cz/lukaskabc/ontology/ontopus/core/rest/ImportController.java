@@ -2,10 +2,10 @@ package cz.lukaskabc.ontology.ontopus.core.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,11 +27,6 @@ import java.util.Objects;
 @RestController
 @RequestMapping(path = "/import")
 public class ImportController {
-    private static URI extractSeriesURI(Map<String, JsonNode> combinedData) {
-        JsonNode node = combinedData.get("versionSeries");
-        Objects.requireNonNull(node);
-        return URI.create(node.asString());
-    }
 
     private final ImportService importService;
 
@@ -71,9 +66,9 @@ public class ImportController {
      */
     @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request) throws Throwable {
-        SerializableImportProcessContext context = resolveImportProcessContext(request);
+        ImportProcessContextRequest context = resolveImportProcessContext(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
-        initialize(context.getVersionSeriesIdentifier());
+        initialize(context.getVersionSeriesURI().toURI());
         return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(context, files));
     }
 
@@ -129,14 +124,17 @@ public class ImportController {
         }
     }
 
-    private SerializableImportProcessContext resolveImportProcessContext(MultipartHttpServletRequest request) {
+    private ImportProcessContextRequest resolveImportProcessContext(MultipartHttpServletRequest request) {
         final String contextParam = "context";
         String[] context = request.getParameterMap().get("context");
         Objects.requireNonNull(context, "No context parameter specified");
-        final boolean isJson = MediaType.APPLICATION_JSON_VALUE.equals(request.getMultipartContentType(contextParam));
+        final String partTypeValue = request.getMultipartContentType(contextParam);
+        Objects.requireNonNull(partTypeValue, "No media type for context parameter specified");
+        final MediaType partType = MediaType.parseMediaType(partTypeValue);
+        final boolean isJson = MediaType.APPLICATION_JSON.isCompatibleWith(partType);
         if (context.length != 1 || !isJson) {
-            throw new IllegalArgumentException("More than one context supplier");
+            throw new IllegalArgumentException("More than one context supplied");
         }
-        return objectMapper.readValue(context[0], SerializableImportProcessContext.class);
+        return objectMapper.readValue(context[0], ImportProcessContextRequest.class);
     }
 }

@@ -2,12 +2,12 @@ package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
+import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.util.ConsumableInputStreamSource;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
@@ -89,9 +89,9 @@ public class ImportService {
      * @param jsonData the data to search
      * @return the list
      */
-    private List<ReusableFileDto> findReusableFiles(Map<String, JsonNode> jsonData) {
+    private List<ReusableFileDto> findReusableFiles(Iterator<JsonNode> jsonData) {
         ArrayList<ReusableFileDto> reusableFiles = new ArrayList<>();
-        findReusableFiles(jsonData.values().iterator(), reusableFiles);
+        findReusableFiles(jsonData, reusableFiles);
         reusableFiles.trimToSize();
         return reusableFiles;
     }
@@ -110,7 +110,7 @@ public class ImportService {
      * @param files
      */
     private Map<ReusableFileDto, InputStreamSource> resolveFiles(
-            Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
+            Iterator<JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
         final List<ReusableFileDto> reusableFiles = findReusableFiles(jsonData);
         validator.validateObject(reusableFiles).failOnError(ValidationException::new);
         final Map<ReusableFileDto, InputStreamSource> result = new HashMap<>(reusableFiles.size());
@@ -141,13 +141,28 @@ public class ImportService {
         return result;
     }
 
+    private Map<ReusableFileDto, InputStreamSource> resolveCombinedFiles(
+            ImportProcessContextRequest contextRequest, MultiValueMap<String, MultipartFile> files) {
+        Map<ReusableFileDto, InputStreamSource> result = new HashMap<>(files.size());
+        contextRequest.getServiceToReusableFormResultMap().forEach((serviceId, formResult) -> {
+            Iterator<JsonNode> jsonDataIterator =
+                    formResult.values().stream().map(objectMapper::readTree).iterator();
+            result.putAll(resolveFiles(jsonDataIterator, files));
+        });
+        return result;
+    }
+
     public Future<?> submitCombinedData(
-            SerializableImportProcessContext context, MultiValueMap<String, MultipartFile> files) {
-        return mediator.submitCombinedFormResult(context, files);
+            ImportProcessContextRequest context, MultiValueMap<String, MultipartFile> files) {
+        Map<ReusableFileDto, InputStreamSource> reusableFiles = resolveCombinedFiles(context, files);
+        // return mediator.submitCombinedFormResult(context, reusableFiles);
+        // TODO implement submitting combined data
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public Future<?> submitData(Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
-        Map<ReusableFileDto, InputStreamSource> reusableFiles = resolveFiles(jsonData, files);
+        Map<ReusableFileDto, InputStreamSource> reusableFiles =
+                resolveFiles(jsonData.values().iterator(), files);
         return mediator.submitFormResult(jsonData, reusableFiles);
     }
 }

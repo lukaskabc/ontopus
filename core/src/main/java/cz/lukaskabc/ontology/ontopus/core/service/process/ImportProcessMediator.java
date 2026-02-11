@@ -11,12 +11,9 @@ import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.JsonNode;
 
 import java.io.File;
@@ -218,6 +215,11 @@ public class ImportProcessMediator {
      */
     public void initialize(@Nullable VersionSeriesURI uri) {
         holder.resetSessionImportProcess(uri);
+        Future<?> scheduled = holder.scheduleWithContext(this::processAutoServices);
+        if (scheduled.isCancelled()) {
+            throw new IllegalStateException(
+                    "Failed to schedule service processing during import context initialization");
+        }
     }
 
     private void processAllResults(ImportProcessContext context, Map<String, FormResult> results) {
@@ -230,6 +232,7 @@ public class ImportProcessMediator {
                 throw new IllegalStateException(); // TODO: exception
             }
             context.handleResult(result);
+            processAutoServices(context);
         }
         finalize(context);
     }
@@ -243,19 +246,17 @@ public class ImportProcessMediator {
     /**
      * Submit all required form results combined to complete the import process in background.
      *
-     * @param combinedJsonData combined results
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
-    public Future<?> submitCombinedFormResult(
-            SerializableImportProcessContext serializedContext, MultiValueMap<String, MultipartFile> files) {
-        return holder.scheduleWithContext((context -> {
-            // Map<String, Map<String, ReusableFile>> serviceNameToFilePathMap =
-            // extractCombinedFiles(serializedContext, context);
-            // Map<String, FormResult> formResults = extractFormResults(combinedJsonData,
-            // serviceNameToFilePathMap);
-            // processAllResults(context, formResults);
-        }));
-    }
+    // public Future<?> submitCombinedFormResult(
+    // ImportProcessContextRequest contextRequest, Map<ReusableFileDto,
+    // InputStreamSource> reusableFiles) {
+    // return holder.scheduleWithContext((context -> {
+    // Map<String, FormResult> formResults = extractFormResults(contextRequest,
+    // serviceNameToFilePathMap);
+    // processAllResults(context, formResults);
+    // }));
+    // }
 
     /**
      * Submits a single result to the service at the top of the service stack.

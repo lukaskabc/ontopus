@@ -3,6 +3,14 @@ import { navigate } from 'wouter-preact/use-browser-location'
 
 export type RESTMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
+export function jsonBody(body: any): RequestInit {
+  const bodyValue = typeof body === 'string' ? body : JSON.stringify(body)
+  return {
+    body: bodyValue,
+    headers: { 'Content-Type': 'application/json' },
+  }
+}
+
 const request = (
   method: RESTMethod,
   path: string,

@@ -7,9 +7,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.function.ThrowingSupplier;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,6 +31,20 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
         this.em = em;
         this.descriptor = descriptor;
         this.entityGraphContext = descriptor.getSingleContext().orElseThrow();
+    }
+
+    private String buildOrderByClause(Pageable pageable) {
+        String orderBy = "ORDER BY ?entity";
+        if (pageable.getSort().isSorted()) {
+            // TODO use metamodel to build the order by clause
+            // StringBuilder sb = new StringBuilder("ORDER BY ");
+            // pageable.getSort().forEach(order -> {
+            // String direction = order.isAscending() ? "ASC" : "DESC";
+            // sb.append(direction).append("(?").append(order.getProperty()).append(") ");
+            // });
+            // orderBy = sb.toString();
+        }
+        return orderBy;
     }
 
     public void delete(E entity) {
@@ -70,6 +89,43 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
             return em.<@Nullable E>find(entityClass, identifier.toURI(), descriptor);
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
+        }
+    }
+
+    @Transactional
+    public Page<E> find(Pageable pageable) {
+        Objects.requireNonNull(pageable);
+        try {
+            String orderBy = buildOrderByClause(pageable);
+            String query = """
+					SELECT DISTINCT ?entity FROM ?context WHERE {
+					    ?entity a ?type .
+					    OPTIONAL { ?entity ?p ?o . }
+					}
+					%s
+					LIMIT %d
+					OFFSET %d
+					""".formatted(orderBy, pageable.getPageSize(), pageable.getOffset());
+
+            List<E> results = em.createNativeQuery(query, entityClass)
+                    .setParameter("context", entityGraphContext)
+                    .setParameter("type", typeUri)
+                    .getResultList();
+
+            // 3. Fetch the total count
+            long total = em.createNativeQuery("""
+					SELECT (COUNT(DISTINCT ?entity) AS ?count) FROM ?context WHERE {
+					    ?entity a ?type .
+					}
+					""", Long.class)
+                    .setParameter("context", entityGraphContext)
+                    .setParameter("type", typeUri)
+                    .getSingleResult();
+
+            return new PageImpl<>(results, pageable, total);
+
+        } catch (RuntimeException e) {
+            throw new PersistenceException("Could not retrieve paginated and sorted entities", e);
         }
     }
 

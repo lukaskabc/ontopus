@@ -4,5 +4,5 @@ export interface PersistenceEntity extends DataModel {
   /**
    * URI identifying the entity
    */
-  uri: string
+  identifier: string
 }

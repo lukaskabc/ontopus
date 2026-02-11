@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { trackPromise } from 'react-promise-tracker'
-import { fetchImportSources } from '@/deployments/actions.ts'
+import { fetchImportSources } from '@/ontologies/actions.ts'
 import { useLocation } from 'wouter-preact'
 
 const IMPORT_SOURCES_PROMISE_AREA = 'OntologyPublishSourceSelectDialog_fetchImportSources'

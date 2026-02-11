@@ -39,5 +39,12 @@
       "process": "Process and edit",
       "publish": "Generate and publish"
     }
+  },
+  "entity": {
+    "version-series": {
+      "name": "Ontology",
+      "version": "Current Version",
+      "modified": "Modified date"
+    }
   }
 }

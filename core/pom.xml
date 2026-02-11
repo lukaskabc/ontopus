@@ -17,6 +17,7 @@
     <description>Ontology Publication Server Core</description>
 
     <properties>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
         <spring.profiles.active/>
     </properties>
@@ -40,11 +41,7 @@
             <groupId>cz.cvut.kbss.jopa</groupId>
             <artifactId>ontodriver-rdf4j</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>net.sourceforge.owlapi</groupId>-->
-        <!--            <artifactId>owlapi-api</artifactId>-->
-        <!--            <version>5.5.1</version>-->
-        <!--        </dependency>-->
+
         <!-- Spring declarative transactions with JOPA -->
         <dependency>
             <groupId>com.github.ledsoft</groupId>
@@ -58,6 +55,11 @@
         </dependency>
 
         <!-- Serialization -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
         <!-- XML -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -142,6 +144,11 @@
                         <path>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-configuration-processor</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

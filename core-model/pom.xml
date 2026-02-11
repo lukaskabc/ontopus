@@ -55,10 +55,10 @@
                     <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
                     <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
                     <with-java-uris>true</with-java-uris>
-                    <output-property-iris>true</output-property-iris>
-                    <initialize-iris>true</initialize-iris>
                     <!-- modelgen -->
                     <source-package>${project.groupId}.core_model.model</source-package>
+                    <output-property-iris>true</output-property-iris>
+                    <initialize-iris>true</initialize-iris>
                 </configuration>
                 <executions>
                     <execution>

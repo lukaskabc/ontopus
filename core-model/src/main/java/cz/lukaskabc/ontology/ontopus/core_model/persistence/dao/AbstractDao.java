@@ -95,6 +95,7 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
     @Transactional
     public Page<E> find(Pageable pageable) {
         Objects.requireNonNull(pageable);
+        assert pageable.isPaged();
         try {
             String orderBy = buildOrderByClause(pageable);
             String query = """
@@ -112,7 +113,6 @@ public abstract class AbstractDao<I extends EntityIdentifier, E extends Persiste
                     .setParameter("type", typeUri)
                     .getResultList();
 
-            // 3. Fetch the total count
             long total = em.createNativeQuery("""
 					SELECT (COUNT(DISTINCT ?entity) AS ?count) FROM ?context WHERE {
 					    ?entity a ?type .

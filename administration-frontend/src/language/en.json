@@ -3,6 +3,10 @@
   "subtitle": "Ontology Publication Server",
   "confirm": "Confirm",
   "cancel": "Cancel",
+  "data-format": {
+    "_comment_date_reference": "https://www.i18next.com/translation-function/formatting#datetime",
+    "date": "{{val, iso-date}}"
+  },
   "login": {
     "button.submit": "Login",
     "field": {

@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -50,6 +51,9 @@ public abstract class AbstractRepository<
 
     @Transactional
     public Page<E> find(Pageable pageable) {
+        if (pageable.isUnpaged()) {
+            pageable = PageRequest.of(0, 100); // TODO config
+        }
         return dao.find(pageable);
     }
 

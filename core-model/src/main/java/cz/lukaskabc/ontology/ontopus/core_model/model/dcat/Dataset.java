@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.dcat;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
 
 import java.net.URI;
@@ -15,7 +15,7 @@ import java.util.Set;
  */
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Dataset)
-public abstract class Dataset<DistributionIdentifier extends EntityIdentifier, ID extends EntityIdentifier>
+public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID extends TypedIdentifier>
         extends Resource<ID> {
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_inSeries)
     private URI series;

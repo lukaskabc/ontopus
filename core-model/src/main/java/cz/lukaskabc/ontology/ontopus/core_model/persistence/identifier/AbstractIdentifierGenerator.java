@@ -4,14 +4,14 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 
 import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public abstract class AbstractIdentifierGenerator<I extends EntityIdentifier, E extends PersistenceEntity<I>>
+public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E extends PersistenceEntity<I>>
         implements IdentifierGenerator<I, E> {
     protected static final int MAX_GENERATION_ATTEMPTS = 15;
 

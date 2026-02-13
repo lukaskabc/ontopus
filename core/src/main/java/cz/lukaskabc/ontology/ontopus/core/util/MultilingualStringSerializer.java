@@ -6,7 +6,7 @@ import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueSerializer;
 
-public class MultilingualStringMapper extends ValueSerializer<MultilingualString> {
+public class MultilingualStringSerializer extends ValueSerializer<MultilingualString> {
 
     @Override
     public void serialize(MultilingualString value, JsonGenerator gen, SerializationContext ctxt)

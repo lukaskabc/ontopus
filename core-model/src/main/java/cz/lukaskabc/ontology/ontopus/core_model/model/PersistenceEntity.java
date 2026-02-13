@@ -4,14 +4,14 @@ import cz.cvut.kbss.jopa.model.annotations.Id;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
 /** A persistence (JOPA) entity with an identifier - {@link #uri} */
 @MappedSuperclass
-public abstract class PersistenceEntity<ID extends EntityIdentifier> {
+public abstract class PersistenceEntity<ID extends TypedIdentifier> {
     @Id
     @NotNull private URI uri;
 

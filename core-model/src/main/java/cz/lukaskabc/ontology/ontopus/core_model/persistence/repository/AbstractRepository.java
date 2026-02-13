@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import org.jspecify.annotations.Nullable;
@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public abstract class AbstractRepository<
-        I extends EntityIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {
+        I extends TypedIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {
     protected final D dao;
     protected final Validator validator;
     protected final IdentifierGenerator<I, E> identifierGenerator;
@@ -50,11 +51,11 @@ public abstract class AbstractRepository<
     }
 
     @Transactional
-    public Page<E> find(Pageable pageable) {
+    public Page<E> find(Pageable pageable, List<String> filter) {
         if (pageable.isUnpaged()) {
             pageable = PageRequest.of(0, 100); // TODO config
         }
-        return dao.find(pageable);
+        return dao.find(pageable, filter);
     }
 
     @Transactional

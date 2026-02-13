@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 
 /**
  * Object capable of identifier generation for a specific entity
@@ -9,6 +9,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
  * @param <I> The entity identifier type
  * @param <E> The entity type
  */
-public interface IdentifierGenerator<I extends EntityIdentifier, E extends PersistenceEntity<I>> {
+public interface IdentifierGenerator<I extends TypedIdentifier, E extends PersistenceEntity<I>> {
     I generate(E entity);
 }

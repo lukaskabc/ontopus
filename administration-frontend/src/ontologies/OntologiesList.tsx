@@ -2,7 +2,10 @@ import { CrudProvider, DataSourceCache, List } from '@toolpad/core'
 
 import { Route, Switch, useLocation } from 'wouter-preact'
 import type { VersionSeriesListEntry } from '@/model/VersionSeriesListEntry.ts'
-import { VersionSeriesDataSource, VersionSeriesDataSourceContext } from '@/ontologies/OntologyDataSource.ts'
+import {
+  VersionSeriesListEntryDataSource,
+  VersionSeriesListEntryDataSourceContext,
+} from '@/ontologies/OntologyDataSource.ts'
 import { useMemo } from 'preact/hooks'
 import { useTranslation } from 'react-i18next'
 import { VersionSeriesDetail } from '@/ontologies/detail/VersionSeriesDetail.tsx'
@@ -41,7 +44,7 @@ function CrudList() {
 export default function OntologiesList() {
   const { i18n } = useTranslation()
   const dataCacheRef = useMemo(() => new DataSourceCache(), [])
-  const dataSource = useMemo(() => new VersionSeriesDataSource(i18n), [i18n])
+  const dataSource = useMemo(() => new VersionSeriesListEntryDataSource(i18n), [i18n])
 
   return (
     // <Crud<OntologyEntity>
@@ -56,13 +59,13 @@ export default function OntologiesList() {
     //     show: `Note ${showNoteId}`,
     //   }}
     // />
-    <VersionSeriesDataSourceContext.Provider value={dataSource}>
+    <VersionSeriesListEntryDataSourceContext.Provider value={dataSource}>
       <CrudProvider<VersionSeriesListEntry> dataSource={dataSource} dataSourceCache={dataCacheRef}>
         <Switch>
           <Route path={'/'} component={CrudList} />
           <Route path={'/*'} component={VersionSeriesDetail} />
         </Switch>
       </CrudProvider>
-    </VersionSeriesDataSourceContext.Provider>
+    </VersionSeriesListEntryDataSourceContext.Provider>
   )
 }

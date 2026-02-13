@@ -1,6 +1,6 @@
 import { type PersistenceEntity } from '@/model/PersistenceEntity.ts'
 import type { MultilingualString } from '@/model/MultilingualString.ts'
-import { validateMultilingual, validateValue } from '@/model/ModelUtils.ts'
+import { validateDate, validateMultilingual, validateValue } from '@/model/ModelUtils.ts'
 
 export class VersionSeriesListEntry implements PersistenceEntity {
   readonly id: string
@@ -22,10 +22,6 @@ export class VersionSeriesListEntry implements PersistenceEntity {
     this.description = validateMultilingual(jsonObj.description, 'description')
     this.version = validateValue(jsonObj.version, 'string', 'version')
 
-    const dateValue = new Date(jsonObj.modifiedDate)
-    if (isNaN(dateValue.getTime())) {
-      throw new Error(`Invalid Date format for field 'modifiedDate': ${jsonObj.modifiedDate}`)
-    }
-    this.modifiedDate = dateValue
+    this.modifiedDate = validateDate(jsonObj.modifiedDate, 'modifiedDate')
   }
 }

@@ -7,6 +7,13 @@ export function validateValue<T>(value: T, expectedType: string, fieldName: stri
   return value
 }
 
+export function validateNullableValue<T>(value: T, expectedType: string, fieldName: string): T | null {
+  if (value != null && typeof value !== expectedType) {
+    throw new Error(`Missing or invalid field: '${fieldName}'. Expected ${expectedType}, got ${typeof value}.`)
+  }
+  return value
+}
+
 /**
  * Validates that the input is a MultilingualString
  */
@@ -23,4 +30,15 @@ export function validateMultilingual(value: any, fieldName: string): Multilingua
   }
 
   return value as MultilingualString
+}
+
+export function validateDate(value: any | undefined | null, fieldName: string) {
+  if (!value || (typeof value !== 'string' && typeof value !== 'number')) {
+    throw new Error(`Field ${fieldName}' must be a string or number (Date).`)
+  }
+  const dateValue = new Date(value)
+  if (isNaN(dateValue.getTime())) {
+    throw new Error(`Invalid Date format for field '${fieldName}': ${value}`)
+  }
+  return dateValue
 }

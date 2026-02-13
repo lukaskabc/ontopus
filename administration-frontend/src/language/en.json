@@ -3,6 +3,7 @@
   "subtitle": "Ontology Publication Server",
   "confirm": "Confirm",
   "cancel": "Cancel",
+  "language": "Language",
   "data-format": {
     "_comment_date_reference": "https://www.i18next.com/translation-function/formatting#datetime",
     "date": "{{val, iso-date}}"
@@ -46,9 +47,19 @@
   },
   "entity": {
     "version-series": {
-      "name": "Ontology",
-      "version": "Current Version",
-      "modified": "Modified date"
+      "table": {
+        "name": "Ontology",
+        "version": "Current Version",
+        "modified": "Modified date"
+      },
+      "detail": {
+        "title": "Title",
+        "description": "Description",
+        "identifier": "Identifier",
+        "release-date": "Release date",
+        "modified-date": "Last modification",
+        "version": "Latest version"
+      }
     }
   }
 }

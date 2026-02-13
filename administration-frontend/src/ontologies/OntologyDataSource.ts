@@ -3,7 +3,7 @@ import { type VersionSeriesListEntry } from '@/model/VersionSeriesListEntry.ts'
 import { type i18n } from 'i18next'
 import type { GridFilterModel, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid'
 import { Direction, Order, Pageable, Sort } from '@hallysonh/pageable'
-import { findVersionSeries } from '@/ontologies/actions.ts'
+import { findAllVersionSeries } from '@/ontologies/actions.ts'
 import type { PagedResult } from '@/utils/RequestTypes.ts'
 import { getAnyLang, type MultilingualString } from '@/model/MultilingualString.ts'
 import { createContext } from 'preact'
@@ -37,7 +37,7 @@ function defineFields(i18n: i18n): DataField[] {
     {
       field: 'title',
       type: 'string',
-      headerName: i18n.t('entity.version-series.name'),
+      headerName: i18n.t('entity.version-series.table.name'),
       flex: 2,
       valueFormatter: (value: MultilingualString) => {
         if (value.hasOwnProperty(i18n.language)) {
@@ -55,20 +55,20 @@ function defineFields(i18n: i18n): DataField[] {
     {
       field: 'version',
       type: 'string',
-      headerName: i18n.t('entity.version-series.version'),
+      headerName: i18n.t('entity.version-series.table.version'),
       flex: 1,
     },
     {
       field: 'modifiedDate',
       type: 'date',
-      headerName: i18n.t('entity.version-series.modified'),
+      headerName: i18n.t('entity.version-series.table.modified'),
       flex: 1,
       valueFormatter: (val: Date) => i18n.t('data-format.date', { val }),
     },
   ]
 }
 
-export class VersionSeriesDataSource implements DataSource<VersionSeriesListEntry> {
+export class VersionSeriesListEntryDataSource implements DataSource<VersionSeriesListEntry> {
   readonly fields: DataField[]
 
   constructor(i18n: i18n) {
@@ -79,7 +79,7 @@ export class VersionSeriesDataSource implements DataSource<VersionSeriesListEntr
     const sort = new Sort(mapSort(sortModel))
     const pageable = new Pageable(paginationModel.page, paginationModel.pageSize, false, sort)
 
-    return findVersionSeries(pageable, filterModel.quickFilterValues).then((page) => {
+    return findAllVersionSeries(pageable, filterModel.quickFilterValues).then((page) => {
       return { items: page.content, itemCount: page.totalElements }
     })
   }
@@ -172,4 +172,4 @@ export class VersionSeriesDataSource implements DataSource<VersionSeriesListEntr
 //   },
 // }
 
-export const VersionSeriesDataSourceContext = createContext<VersionSeriesDataSource | null>(null)
+export const VersionSeriesListEntryDataSourceContext = createContext<VersionSeriesListEntryDataSource | null>(null)

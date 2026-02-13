@@ -7,7 +7,10 @@ export function fetchImportSources() {
   return request('GET', 'import/source').then((response) => response.json())
 }
 
-export function findVersionSeries(pageable: Pageable, filter?: string[]): Promise<ArrayPage<VersionSeriesListEntry>> {
+export function findAllVersionSeries(
+  pageable: Pageable,
+  filter?: string[]
+): Promise<ArrayPage<VersionSeriesListEntry>> {
   const options = toPageRequest(pageable)
   filter?.forEach((val) => options.append('filter', val))
   return request('GET', 'ontologies?' + options.toString())

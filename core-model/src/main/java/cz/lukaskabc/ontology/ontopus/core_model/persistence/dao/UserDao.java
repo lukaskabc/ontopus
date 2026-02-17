@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
+import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,12 @@ public class UserDao extends AbstractDao<UserURI, User> {
         super(User.class, User_.entityClassIRI.toURI(), em, descriptorFactory.user());
     }
 
+    /**
+     * Finds a user account with the given username.
+     *
+     * @param username the username to search for
+     * @return the user account with the given username or null if no such account exists
+     */
     @Nullable public User findByUsername(String username) {
         Objects.requireNonNull(username);
         return resultOrNull(em.createNativeQuery("""
@@ -40,8 +48,8 @@ public class UserDao extends AbstractDao<UserURI, User> {
      * @param username The username or null
      * @return whether an account with the given username exists
      */
-    public boolean userAccountExists(@Nullable String username) {
-        final var query = em.createNativeQuery("""
+    public boolean userAccountExistsWithUsername(@Nullable String username) {
+        final TypedQuery<Boolean> query = em.createNativeQuery("""
 				ASK FROM ?graph {
 				    ?user a ?userType;
 				        ?hasUsername ?username .

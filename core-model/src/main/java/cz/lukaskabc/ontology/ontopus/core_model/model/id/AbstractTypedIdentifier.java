@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 import java.net.URI;
 import java.util.Objects;
 
-public class AbstractTypedIdentifier implements TypedIdentifier {
+public abstract class AbstractTypedIdentifier implements TypedIdentifier {
     private final URI uri;
 
     protected AbstractTypedIdentifier(String uri) {

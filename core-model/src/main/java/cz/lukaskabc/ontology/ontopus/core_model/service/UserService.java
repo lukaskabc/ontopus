@@ -1,30 +1,38 @@
 package cz.lukaskabc.ontology.ontopus.core_model.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UserDetailsDelegate;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.UserRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseEntityService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.SecurityConstants;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService implements UserDetailsService {
-    private final UserRepository userRepository;
+public class UserService extends BaseEntityService<UserURI, User, UserRepository> implements UserDetailsService {
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        super(userRepository);
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User create(String username, String plainPassword) {
-        return userRepository.create(username, plainPassword);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(plainPassword));
+        repository.persist(user);
+        return user;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        final User user = userRepository.findByUsername(username);
+        final User user = repository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username");
         }
@@ -40,6 +48,6 @@ public class UserService implements UserDetailsService {
      * @return whether an account with the given username exists
      */
     public boolean userAccountExists(@Nullable String username) {
-        return userRepository.userAccountExists(username);
+        return repository.userAccountExists(username);
     }
 }

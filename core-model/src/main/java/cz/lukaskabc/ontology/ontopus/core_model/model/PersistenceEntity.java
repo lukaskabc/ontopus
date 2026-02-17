@@ -5,6 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
+import org.jspecify.annotations.Nullable;
 
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -19,11 +20,12 @@ public abstract class PersistenceEntity<ID extends TypedIdentifier> {
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private URI identifier;
 
-    public ID getIdentifier() {
-        if (getUri() == null) {
+    @Nullable public ID getIdentifier() {
+        final URI uri = getUri();
+        if (uri == null) {
             return null;
         }
-        return wrapUri(getUri());
+        return wrapUri(uri);
     }
 
     protected URI getUri() {
@@ -39,5 +41,5 @@ public abstract class PersistenceEntity<ID extends TypedIdentifier> {
         this.identifier = uri;
     }
 
-    protected abstract ID wrapUri(URI uri);
+    @NotNull protected abstract ID wrapUri(@NotNull URI uri);
 }

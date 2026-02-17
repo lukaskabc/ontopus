@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.VersionSeriesDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Validator;
 

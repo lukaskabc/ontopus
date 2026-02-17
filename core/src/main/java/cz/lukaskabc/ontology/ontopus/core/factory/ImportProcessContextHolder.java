@@ -144,11 +144,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
     }
 
     private VersionSeries findOrBlankSeries(@Nullable VersionSeriesURI uri) {
-        VersionSeries series = versionSeriesService.find(uri);
-        if (series == null) {
-            return new VersionSeries();
-        }
-        return series;
+        return versionSeriesService.findById(uri).orElseGet(VersionSeries::new);
     }
 
     public void resetSessionImportProcess(@Nullable VersionSeriesURI uri) {

@@ -3,18 +3,12 @@ package cz.lukaskabc.ontology.ontopus.core_model.service;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
-import org.jspecify.annotations.Nullable;
+import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseEntityService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VersionSeriesService {
-    private final VersionSeriesRepository repository;
-
+public class VersionSeriesService extends BaseEntityService<VersionSeriesURI, VersionSeries, VersionSeriesRepository> {
     public VersionSeriesService(VersionSeriesRepository repository) {
-        this.repository = repository;
-    }
-
-    @Nullable public VersionSeries find(@Nullable VersionSeriesURI uri) {
-        return repository.find(uri);
+        super(repository);
     }
 }

@@ -7,6 +7,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
+/**
+ * Delegates calls to the {@link User} entity.
+ *
+ * <p>Holds a set of authorities associated with the user.
+ */
 public class UserDetailsDelegate implements UserDetails {
     private final Set<GrantedAuthority> authorities;
     private final User user;

@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
+package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base;
 
 import cz.cvut.kbss.jopa.exceptions.NoResultException;
 import cz.cvut.kbss.jopa.model.EntityManager;
@@ -12,10 +12,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import org.apache.commons.lang3.stream.Streams;
 import org.jspecify.annotations.Nullable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.function.ThrowingSupplier;
 
 import java.net.URI;
@@ -23,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class AbstractDao<I extends TypedIdentifier, E extends PersistenceEntity<I>> {
-    protected static String buildFilterClause(List<String> filter) {
+    protected static String buildFilterClause(@Nullable List<String> filter) {
         if (filter == null || filter.isEmpty()) {
             return "";
         }
@@ -39,7 +36,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         return "ORDER BY %s ASC(?entity)".formatted(String.join(" ", orders.values()));
     }
 
-    protected static void setFilterParams(Query query, List<String> filter) {
+    protected static void setFilterParams(Query query, @Nullable List<String> filter) {
         if (filter == null) {
             return;
         }
@@ -65,6 +62,14 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         this.entityGraphContext = descriptor.getSingleContext().orElseThrow();
     }
 
+    /**
+     * Builds {@code LIMIT X OFFSET Y} clause for SPARQL query based on the provided pageable. If the pageable is not
+     * paged, returns an empty string.
+     *
+     * @param pageable the pageable containing pagination information
+     * @return a string representing the LIMIT and OFFSET clause for SPARQL query, or an empty string if pageable is not
+     *     paged
+     */
     protected String buildLimitOffsetClause(Pageable pageable) {
         if (pageable.isPaged()) {
             return "LIMIT %d OFFSET %d".formatted(pageable.getPageSize(), pageable.getOffset());
@@ -72,6 +77,13 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         return "";
     }
 
+    /**
+     * Builds a series of OPTIONAL clauses for the given attributes to be included in the SPARQL query. One OPTIONAL
+     * clause is generated for each attribute.
+     *
+     * @param attributes the attributes for which to build OPTIONAL clauses
+     * @return a string containing the OPTIONAL clauses for the provided attributes
+     */
     protected String buildOptionalClause(Iterable<Attribute<?, ?>> attributes) {
         return Streams.of(attributes)
                 .map(attr -> "OPTIONAL { ?entity ?%sType ?%s . }".formatted(attr.getName(), attr.getName()))
@@ -106,6 +118,13 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         return orders;
     }
 
+    /**
+     * Builds a string of parameters used for SELECT clause in SPARQL query. For each attribute, a parameter in the form
+     * of "?attributeName" is created and all parameters are joined with a space.
+     *
+     * @param attributes the attributes for which to build SELECT parameters
+     * @return a string of parameters for SELECT clause in SPARQL query, e.g. "?name ?age ?email"
+     */
     protected String buildSelectParams(Iterable<Attribute<?, ?>> attributes) {
         return Streams.of(attributes)
                 .map(Attribute::getName)
@@ -113,8 +132,44 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
                 .collect(Collectors.joining(" "));
     }
 
+    /**
+     * Counts the number of entities matching the provided filter criteria.
+     *
+     * @param filter a list of strings used for filtering entities based on their properties.
+     * @return the count of entities matching the filter criteria
+     * @see #find(Pageable, List) for details on how the filter is applied to the entities
+     */
+    public long count(List<String> filter) {
+        try {
+            final String searchClause = buildFilterClause(filter);
+            String query = """
+					SELECT (COUNT(DISTINCT ?entity) AS ?count) FROM ?context WHERE {
+					    ?entity a ?type .
+					    %s
+					}
+					""".formatted(searchClause);
+
+            TypedQuery<Long> typedQuery = em.createNativeQuery(query, Long.class)
+                    .setMaxResults(1)
+                    .setParameter("context", entityGraphContext)
+                    .setParameter("type", typeUri)
+                    .setDescriptor(descriptor);
+            setFilterParams(typedQuery, filter);
+
+            return typedQuery.getSingleResult();
+        } catch (RuntimeException e) {
+            throw new PersistenceException("Could not count entities matching the filter criteria", e);
+        }
+    }
+
+    /**
+     * Deletes the given entity from its context. All triples with the entity as a subject are removed from the context.
+     *
+     * @param entity the entity to be deleted
+     */
     public void delete(E entity) {
-        Objects.requireNonNull(entity.getIdentifier());
+        Objects.requireNonNull(entity, "The entity must not be null");
+        Objects.requireNonNull(entity.getIdentifier(), "The entity identifier must not be null");
         try {
             Optional.ofNullable(find(entity.getIdentifier())).ifPresent(em::remove);
             em.createNativeQuery("""
@@ -132,8 +187,14 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         }
     }
 
+    /**
+     * Checks if an entity with the given identifier exists in the context.
+     *
+     * @param identifier the identifier of the entity to check for existence
+     * @return true if an entity with the given identifier exists in the context, false otherwise
+     */
     public boolean exists(I identifier) {
-        Objects.requireNonNull(identifier);
+        Objects.requireNonNull(identifier, "The entity identifier must not be null");
         try {
             return em.createNativeQuery("""
 					ASK FROM ?context WHERE {
@@ -149,17 +210,32 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         }
     }
 
+    /**
+     * Finds an entity by its identifier.
+     *
+     * @param identifier the identifier of the entity to find
+     * @return the entity with the given identifier, or null if no such entity exists in the context
+     */
     @Nullable public E find(I identifier) {
         try {
             Objects.requireNonNull(identifier);
-            return em.<@Nullable E>find(entityClass, identifier.toURI(), descriptor);
+            return em.find(entityClass, identifier.toURI(), descriptor);
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
     }
 
-    @Transactional
-    public Page<E> find(Pageable pageable, List<String> filter) {
+    /**
+     * Finds entities based on the provided pageable and filter criteria.
+     *
+     * <p>Each string from the filter is matched against all properties of the entity using a case-insensitive
+     * containment check. If the filter list is empty or null, no filtering is applied.
+     *
+     * @param pageable the pageable containing pagination and sorting information
+     * @param filter a list of strings used for filtering entities based on their properties
+     * @return a list of entities matching the provided pageable and filter criteria
+     */
+    public List<E> find(Pageable pageable, List<String> filter) {
         Objects.requireNonNull(pageable);
         assert pageable.isPaged();
         try {
@@ -190,32 +266,48 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             setTypeParams(typedQuery, orders.keySet());
             setFilterParams(typedQuery, filter);
 
-            long total = em.createNativeQuery("""
-					SELECT (COUNT(DISTINCT ?entity) AS ?count) FROM ?context WHERE {
-					    ?entity a ?type .
-					}
-					""", Long.class)
-                    .setParameter("context", entityGraphContext)
-                    .setParameter("type", typeUri)
-                    .getSingleResult();
-
-            return new PageImpl<>(typedQuery.getResultList(), pageable, total);
-
+            return typedQuery.getResultList();
         } catch (RuntimeException e) {
             throw new PersistenceException("Could not retrieve paginated and sorted entities", e);
         }
     }
 
+    /**
+     * Merges the state of the given entity into the current persistence context.
+     *
+     * @param entity the entity to be merged
+     */
     public void merge(E entity) {
         Objects.requireNonNull(entity);
-        em.merge(entity, descriptor);
+        try {
+            em.merge(entity, descriptor);
+        } catch (RuntimeException e) {
+            throw new PersistenceException("Failed to merge an entity", e);
+        }
     }
 
+    /**
+     * Persists the given entity in the context. Throws if the entity already exists in the context.
+     *
+     * @param entity the entity to be persisted
+     */
     public void persist(E entity) {
         Objects.requireNonNull(entity);
-        em.persist(entity, descriptor);
+        try {
+            em.persist(entity, descriptor);
+        } catch (RuntimeException e) {
+            throw new PersistenceException("Failed to persist an entity", e);
+        }
     }
 
+    /**
+     * Executes the given supplier and returns its result. If a {@link NoResultException} is thrown during the
+     * execution, null is returned instead.
+     *
+     * @param supplier the supplier to be executed, which may throw a {@link NoResultException} if no result is found
+     * @return the result of the supplier if it executes successfully, or null if a {@link NoResultException} is thrown
+     * @param <T> the type of the result returned by the supplier
+     */
     @Nullable protected <T> T resultOrNull(ThrowingSupplier<T> supplier) {
         try {
             return supplier.get(PersistenceException::new);
@@ -224,6 +316,15 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         }
     }
 
+    /**
+     * Sets parameters for the given query based on the provided attributes. For each attribute, a parameter with the
+     * name "attributeNameType" is set to the IRI of the attribute.
+     *
+     * @param query the query for which to set the parameters
+     * @param attributes the attributes based on which the parameters will be set.
+     * @see #buildOrders(Pageable)
+     * @see #buildOptionalClause(Iterable)
+     */
     protected void setTypeParams(Query query, Iterable<Attribute<?, ?>> attributes) {
         for (Attribute<?, ?> attribute : attributes) {
             query.setParameter(attribute.getName() + "Type", attribute.getIRI());

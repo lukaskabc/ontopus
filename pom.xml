@@ -252,6 +252,7 @@
                     </formats>
                     <!-- language-specific format -->
                     <java>
+                        <toggleOffOn/>
                         <eclipse>
                             <version>4.38</version>
                             <sortMembersEnabled>true</sortMembersEnabled>

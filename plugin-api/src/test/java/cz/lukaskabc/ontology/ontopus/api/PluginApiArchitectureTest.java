@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.api;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import org.junit.jupiter.api.Test;
 
 public class PluginApiArchitectureTest {
@@ -13,6 +15,26 @@ public class PluginApiArchitectureTest {
             .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_PACKAGE_INFOS)
             .importPackages("cz.lukaskabc.ontology.ontopus")
             .as("Ontopus classes");
+
+    @Test
+    void classesImplementingImportProcessingServiceShouldResideInImportPackage() {
+        classes()
+                .that()
+                .resideInAnyPackage("..service.import_process..")
+                .should()
+                .beAssignableTo(ImportProcessingService.class)
+                .check(ontopusClasses);
+    }
+
+    @Test
+    void importProcessingServicesResideInImportPackage() {
+        classes()
+                .that()
+                .areAssignableTo(ImportProcessingService.class)
+                .should()
+                .resideInAnyPackage("..service.import_process..")
+                .check(ontopusClasses);
+    }
 
     @Test
     void pluginArchitectureShouldBeStrictlyRespected() {

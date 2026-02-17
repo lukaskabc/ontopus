@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.api.service;
+package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
 /**
  * Service plugged in the main importing pipeline. Services implementing this interface can be ordered with

@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.process;
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;

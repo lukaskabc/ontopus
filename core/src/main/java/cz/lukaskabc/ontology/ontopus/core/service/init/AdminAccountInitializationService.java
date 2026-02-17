@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
+import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class AdminAccountInitializationService implements InitService {
+public class AdminAccountInitializationService implements InitializationService {
     private static final Logger log = LogManager.getLogger(AdminAccountInitializationService.class);
     private final UserService userService;
 
@@ -20,7 +21,7 @@ public class AdminAccountInitializationService implements InitService {
 
     @Override
     @Transactional
-    public void init() {
+    public void initialize() {
         if (userService.userAccountExists(null)) {
             return;
         }

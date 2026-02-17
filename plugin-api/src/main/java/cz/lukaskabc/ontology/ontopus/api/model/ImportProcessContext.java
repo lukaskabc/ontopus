@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
-import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
@@ -9,7 +9,10 @@ import org.jspecify.annotations.NullMarked;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * State of the import process.
@@ -32,7 +35,18 @@ public class ImportProcessContext {
     private final ArrayList<ImportProcessingService<?>> processedServices;
     private final ArrayList<ServiceAwareFormResult> processedResults;
 
-    private final Map<Object, Object> additionalProperties;
+    // TODO add import process context bootstraper API that will allow to subclass
+    // the import process context
+    // the hard part will be handling the serialization
+    public <P extends ImportProcessContext> ImportProcessContext(P other) {
+        this.versionSeries = other.getVersionSeries();
+        this.databaseContext = other.getDatabaseContext();
+        this.tempFolder = other.getTempFolder();
+        this.versionArtifact = other.getVersionArtifact();
+        this.pendingServicesStack = new ArrayList<>(other.getPendingServicesStack());
+        this.processedServices = new ArrayList<>(other.getProcessedServices());
+        this.processedResults = new ArrayList<>(other.getProcessedResults());
+    }
 
     public ImportProcessContext(
             VersionSeries versionSeries,
@@ -43,18 +57,9 @@ public class ImportProcessContext {
         this.databaseContext = Objects.requireNonNull(databaseContext);
         this.tempFolder = Objects.requireNonNull(tempFolder);
         this.versionArtifact = Objects.requireNonNull(versionArtifact);
-        this.additionalProperties = new HashMap<>();
         this.pendingServicesStack = new ArrayList<>();
         this.processedServices = new ArrayList<>();
         this.processedResults = new ArrayList<>();
-    }
-
-    public Map<Object, Object> getAdditionalProperties() {
-        return additionalProperties;
-    }
-
-    public Object getAdditionalProperty(Object key) {
-        return additionalProperties.get(key);
     }
 
     public TemporaryContextURI getDatabaseContext() {
@@ -149,9 +154,5 @@ public class ImportProcessContext {
     public void pushService(ImportProcessingService<?> service) {
         pendingServicesStack.addLast(service);
         service.afterStackPush(this);
-    }
-
-    public void setAdditionalProperty(Object key, Object value) {
-        additionalProperties.put(key, value);
     }
 }

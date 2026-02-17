@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service.mapping;
+package cz.lukaskabc.ontology.ontopus.core.import_process.mapping;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;

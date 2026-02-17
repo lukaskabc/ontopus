@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -7,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
+import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.rest.ImportController;
 import org.junit.jupiter.api.Test;
 
@@ -18,10 +21,30 @@ public class CoreArchitectureTest {
             .as("Ontopus classes");
 
     @Test
+    void initializationServicesShouldResideInInitPackage() {
+        classes()
+                .that()
+                .implement(InitializationService.class)
+                .should()
+                .resideInAPackage("..service.init..")
+                .check(ontopusClasses);
+    }
+
+    @Test
     void ontopusClassesAreNotEmpty() {
         assertFalse(ontopusClasses.isEmpty());
         assertTrue(ontopusClasses.contain(OntoPuSApplication.class));
         assertTrue(ontopusClasses.contain(ImportController.class));
+    }
+
+    @Test
+    void orderedImportServicesResidesInOrderedPackage() {
+        classes()
+                .that()
+                .implement(OrderedImportPipelineService.class)
+                .should()
+                .resideInAPackage("..import_process.ordered..")
+                .check(ontopusClasses);
     }
 
     @Test

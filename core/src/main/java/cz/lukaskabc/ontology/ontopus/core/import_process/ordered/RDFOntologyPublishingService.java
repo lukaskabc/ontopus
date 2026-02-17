@@ -1,10 +1,10 @@
-package cz.lukaskabc.ontology.ontopus.core.service;
+package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.EndpointRegistrationService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.persistence.ContextDao;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.*;
+
+// TODO move to a plugin
 
 @Service
 @Order(Ordered.LOWEST_PRECEDENCE)

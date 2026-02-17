@@ -1,9 +1,10 @@
-package cz.lukaskabc.ontology.ontopus.core.service.process;
+package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.OntologyLoadingService;
-import cz.lukaskabc.ontology.ontopus.api.service.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessNextServiceSelector;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;

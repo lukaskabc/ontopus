@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
+import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.Ordered;
@@ -13,25 +14,25 @@ import java.util.Set;
 public class SystemInitializationService implements SmartInitializingSingleton {
     protected static final String BEAN_NAME = "systemInitializationService";
 
-    private final Set<InitService> initServices;
+    private final Set<InitializationService> initServices;
     private final DefaultListableBeanFactory defaultListableBeanFactory;
 
     public SystemInitializationService(
-            Set<InitService> initServices, DefaultListableBeanFactory defaultListableBeanFactory) {
+            Set<InitializationService> initServices, DefaultListableBeanFactory defaultListableBeanFactory) {
         this.initServices = initServices;
         this.defaultListableBeanFactory = defaultListableBeanFactory;
     }
 
     @Override
     public void afterSingletonsInstantiated() {
-        for (InitService initService : initServices) {
-            initService.init();
+        for (InitializationService initService : initServices) {
+            initService.initialize();
         }
         clearSpringContext();
     }
 
     private void clearSpringContext() {
-        String[] names = defaultListableBeanFactory.getBeanNamesForType(InitService.class);
+        String[] names = defaultListableBeanFactory.getBeanNamesForType(InitializationService.class);
         for (String beanName : names) {
             removeBean(beanName);
         }

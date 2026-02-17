@@ -5,7 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
-import cz.lukaskabc.ontology.ontopus.api.service.OntologyLoadingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.util;
 
-import cz.lukaskabc.ontology.ontopus.api.service.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 
 public class ImportContextUtils {
     public static String getIndexedServiceIdentifier(ImportProcessingService<?> service, int index) {

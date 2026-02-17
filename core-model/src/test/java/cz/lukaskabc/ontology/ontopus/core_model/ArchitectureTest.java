@@ -28,7 +28,12 @@ public class ArchitectureTest {
 
     @Test
     void coreModelClassesShouldBePublic() {
-        classes().should().bePublic().check(coreModelClasses());
+        classes()
+                .that()
+                .areNotAnonymousClasses() // exclude compiler-generated classes
+                .should()
+                .bePublic()
+                .check(coreModelClasses());
     }
 
     @Test

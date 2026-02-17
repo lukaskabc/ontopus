@@ -24,7 +24,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @Valid @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
 
-    /** The version i */
+    /** The ontology version independent identifier */
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
     private URI ontologyURI;
 

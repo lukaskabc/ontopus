@@ -1,4 +1,3 @@
-import { ActionAwareReusableFile } from '@/model/ReusableFile.ts'
 import { useMemo } from 'preact/hooks'
 import type { TreeViewDefaultItemModelProperties } from '@mui/x-tree-view/models'
 import {
@@ -16,21 +15,20 @@ import {
 } from '@mui/x-tree-view'
 import { forwardRef, type Ref } from 'preact/compat'
 import { Box } from '@mui/material'
-import { ItemTypeIcon } from '@/publish/components/reusable_file_list/TreeItemTypeIcon.tsx'
-import { TreeItemActions } from '@/publish/components/reusable_file_list/TreeItemActions.tsx'
-import { type ItemType, ItemTypeEnum } from '@/publish/components/reusable_file_list/ItemType.ts'
+import { ItemTypeIcon } from '@/publish/components/file_list/TreeItemTypeIcon.tsx'
+import { TreeItemActions } from '@/publish/components/file_list/TreeItemActions.tsx'
+import { type ItemType, ItemTypeEnum } from '@/publish/components/file_list/ItemType.ts'
+import type { FormFile } from '@/model/FormFile.ts'
 
-export type ReusableFileListProps = {
-  files: ActionAwareReusableFile[]
-  onDelete: (file: ActionAwareReusableFile) => void
-  onUpdate: (file: ActionAwareReusableFile) => void
+export type FormFileListProps = {
+  files: FormFile[]
+  onDelete: (file: FormFile) => void
 }
 
 interface ExtendedItemProperties extends TreeViewDefaultItemModelProperties {
   type: ItemType
-  file?: ActionAwareReusableFile
-  onDelete: (file: ActionAwareReusableFile) => void
-  onUpdate: (file: ActionAwareReusableFile) => void
+  file?: FormFile
+  onDelete: (file: FormFile) => void
   children?: ExtendedItemProperties[]
 }
 
@@ -66,13 +64,8 @@ function splitPath(path?: string) {
   return path.split('/')
 }
 
-function insertToTree(
-  file: ActionAwareReusableFile,
-  tree: ExtendedItemProperties[],
-  onDelete: (file: ActionAwareReusableFile) => void,
-  onUpdate: (file: ActionAwareReusableFile) => void
-) {
-  const path = splitPath(file.reusableFile.fileName)
+function insertToTree(file: FormFile, tree: ExtendedItemProperties[], onDelete: (file: FormFile) => void) {
+  const path = splitPath(file.fileName)
   if (!path || path.length === 0) {
     console.error('Unable to process file', file)
     return
@@ -85,7 +78,7 @@ function insertToTree(
     const type = isFileInRoot ? ItemTypeEnum.FILE : ItemTypeEnum.DIRECTORY
     const label = path[0]
     const fileValue = isFileInRoot ? file : undefined
-    current = { id: label, label, children: [], type, onDelete, onUpdate, file: fileValue }
+    current = { id: label, label, children: [], type, onDelete, file: fileValue }
     tree.push(current)
   }
   for (let i = 1; i < path.length; i++) {
@@ -97,23 +90,17 @@ function insertToTree(
       const isLast = i === path.length - 1
       const type = isLast ? ItemTypeEnum.FILE : ItemTypeEnum.DIRECTORY
       const fileValue = isLast ? file : undefined // do not pass file to folder entried
-      found = { id: currentPath, label, children: [], type, onDelete, onUpdate, file: fileValue }
+      found = { id: currentPath, label, children: [], type, onDelete, file: fileValue }
       current.children?.push(found)
     }
     current = found
   }
 }
 
-function getOpacity(file?: ActionAwareReusableFile) {
-  if (file?.isDeleted) {
-    return 0.5
-  }
-  return undefined
-}
-
 /**
- * Tree list of reusable files
- * <p>Allows to list, remove and overwrite reusable files that may also be present on the server</p>
+ * Tree list of files
+ * <p>
+ * Allows to list and remove selected files
  */
 const CustomTreeItem = forwardRef(function CustomTreeItem(
   { id, itemId, label, disabled, children }: TreeItemProps,
@@ -134,9 +121,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
     children,
   })
 
-  const { type, file, onDelete, onUpdate } = useTreeItemModel<ExtendedItemProperties>(itemId)!
-
-  const opacity = getOpacity(file)
+  const { type, file, onDelete } = useTreeItemModel<ExtendedItemProperties>(itemId)!
 
   const handleClick = (event: MouseEvent) => {
     interactions.handleExpansion(event)
@@ -161,9 +146,9 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
           <ItemTypeIcon isExpanded={status.expanded} handleClick={handleClick} type={type} />
         </Box>
 
-        <TreeItemContent {...getContentProps()} sx={{ paddingLeft: '14px', opacity }}>
+        <TreeItemContent {...getContentProps()} sx={{ paddingLeft: '14px' }}>
           <TreeItemLabel {...getLabelProps()} />
-          {type === ItemTypeEnum.FILE && <TreeItemActions file={file} onDelete={onDelete} onUpdate={onUpdate} />}
+          {type === ItemTypeEnum.FILE && <TreeItemActions file={file} onDelete={onDelete} />}
           <TreeItemDragAndDropOverlay {...getDragAndDropOverlayProps()} />
         </TreeItemContent>
         {children && <TreeItemGroupTransition {...getGroupTransitionProps()} />}
@@ -172,13 +157,13 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
   )
 })
 
-export default function ReusableFileList({ files, onDelete, onUpdate }: ReusableFileListProps) {
+export default function FormFileList({ files, onDelete }: FormFileListProps) {
   const treeData: ExtendedItemProperties[] = useMemo(() => {
     const result: ExtendedItemProperties[] = []
 
     if (files) {
       for (let f of files) {
-        insertToTree(f, result, onDelete, onUpdate)
+        insertToTree(f, result, onDelete)
       }
     }
     return result

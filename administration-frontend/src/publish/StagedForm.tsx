@@ -12,14 +12,14 @@ import { trackPromise } from 'react-promise-tracker'
 import { Box } from '@mui/material'
 import intlSchema from '@/publish/utils/intlSchema.ts'
 import HeadingWidget from '@/publish/widgets/HeadingWidget.tsx'
-import ReusableFileField from '@/publish/fields/ReusableFileField.tsx'
+import FileField from '@/publish/fields/FileField.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
 }
 
 const FIELDS: RegistryFieldsType = {
-  reusableFileField: ReusableFileField,
+  fileField: FileField,
 }
 
 function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {

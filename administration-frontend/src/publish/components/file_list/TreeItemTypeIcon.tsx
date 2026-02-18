@@ -4,7 +4,7 @@ import { Fragment, type FunctionComponent } from 'preact'
 import FolderIcon from '@mui/icons-material/Folder'
 import OpenFolderIcon from '@mui/icons-material/FolderOpen'
 import ArticleIcon from '@mui/icons-material/Article'
-import { type ItemType, ItemTypeEnum } from '@/publish/components/reusable_file_list/ItemType.ts'
+import { type ItemType, ItemTypeEnum } from '@/publish/components/file_list/ItemType.ts'
 
 type ItemIconType = ElementType<SvgIconProps> | typeof Fragment
 

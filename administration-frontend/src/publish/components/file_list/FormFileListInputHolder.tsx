@@ -1,12 +1,12 @@
 import type { FunctionComponent, RefCallback } from 'preact'
 import { useCallback } from 'preact/hooks'
 
-export type ReusableFileListInputHolderProps = {
+export type FormFileListInputHolderProps = {
   files: Map<string, File>
   name: string
 }
 
-export const ReusableFileListInputHolder: FunctionComponent<ReusableFileListInputHolderProps> = ({ files, name }) => {
+export const FormFileListInputHolder: FunctionComponent<FormFileListInputHolderProps> = ({ files, name }) => {
   const inputRefCallback: RefCallback<HTMLInputElement> = useCallback(
     (element: HTMLInputElement | null) => {
       if (!element) return

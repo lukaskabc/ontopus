@@ -2,15 +2,16 @@ package cz.lukaskabc.ontology.ontopus.plugin.file;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +49,11 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
      * @param uploadedFiles the uploaded files
      * @param context the import process context
      */
-    private void handleFiles(Map<String, ReusableFile> uploadedFiles, ImportProcessContext context) throws IOException {
-        List<File> files = new ArrayList<>(
-                uploadedFiles.values().stream().map(ReusableFile::getFile).toList());
+    private void handleFiles(Map<String, UploadedFile> uploadedFiles, ImportProcessContext context) throws IOException {
+        List<File> files = new ArrayList<>(uploadedFiles.values().stream()
+                .map(UploadedFile::fsPath)
+                .map(Path::toFile)
+                .toList());
         List<File> toImport = new ArrayList<>(files.size());
         for (DataFileImportingService importingService : dataFileImportingServices) {
             for (File file : files) {
@@ -68,7 +71,7 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        Map<String, ReusableFile> uploadedFiles = this.fileUploadService.handleSubmit(formResult, context);
+        Map<String, UploadedFile> uploadedFiles = this.fileUploadService.handleSubmit(formResult, context);
         try {
             handleFiles(uploadedFiles, context);
         } catch (IOException e) {

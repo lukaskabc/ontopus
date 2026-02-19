@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
+import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.util.ConsumableInputStreamSource;
@@ -9,7 +9,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import org.jspecify.annotations.Nullable;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -72,28 +71,28 @@ public class ImportService {
         this.validator = validator;
     }
 
-    private void findReusableFiles(Iterator<JsonNode> iterator, List<ReusableFileDto> reusableFiles) {
-        while (iterator.hasNext()) {
-            final JsonNode node = iterator.next();
-            if (ReusableFileDto.matches(node)) {
-                reusableFiles.add(objectMapper.convertValue(node, ReusableFileDto.class));
-            } else {
-                findReusableFiles(node.iterator(), reusableFiles);
-            }
-        }
-    }
-
     /**
      * Finds all reusable files inside {@code jsonData}
      *
      * @param jsonData the data to search
      * @return the list
      */
-    private List<ReusableFileDto> findReusableFiles(Iterator<JsonNode> jsonData) {
-        ArrayList<ReusableFileDto> reusableFiles = new ArrayList<>();
+    private List<FormFileRequest> findReusableFiles(Iterator<JsonNode> jsonData) {
+        ArrayList<FormFileRequest> reusableFiles = new ArrayList<>();
         findReusableFiles(jsonData, reusableFiles);
         reusableFiles.trimToSize();
         return reusableFiles;
+    }
+
+    private void findReusableFiles(Iterator<JsonNode> iterator, List<FormFileRequest> reusableFiles) {
+        while (iterator.hasNext()) {
+            final JsonNode node = iterator.next();
+            if (FormFileRequest.matches(node)) {
+                reusableFiles.add(objectMapper.convertValue(node, FormFileRequest.class));
+            } else {
+                findReusableFiles(node.iterator(), reusableFiles);
+            }
+        }
     }
 
     public Future<JsonForm> getCurrentJsonForm() {
@@ -104,46 +103,9 @@ public class ImportService {
         mediator.initialize(uri);
     }
 
-    /**
-     * Finds reusable files in the jsonData
-     *
-     * @param files
-     */
-    private Map<ReusableFileDto, InputStreamSource> resolveFiles(
-            Iterator<JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
-        final List<ReusableFileDto> reusableFiles = findReusableFiles(jsonData);
-        validator.validateObject(reusableFiles).failOnError(ValidationException::new);
-        final Map<ReusableFileDto, InputStreamSource> result = new HashMap<>(reusableFiles.size());
-
-        for (final ReusableFileDto reusableFile : reusableFiles) {
-            InputStreamSource streamSource =
-                    switch (reusableFile.getType()) {
-                        case UPLOAD -> {
-                            MultipartFile multipartFile = findUploadedFile(
-                                    files, reusableFile.getFormFieldName(), reusableFile.getFileName());
-                            // since the processing will be asynchronous
-                            // we need to persist the file
-                            // so it won't be deleted once the synchronous request processing ends
-                            yield transferUploadedFile(multipartFile);
-                        }
-                        case SERVER -> {
-                            // TODO resolve server cached file
-                            File cachedFile = null;
-                            yield new FileSystemResource(cachedFile);
-                        }
-                        default ->
-                            throw new IllegalStateException("Unknown reusable file type: " + reusableFile.getType());
-                    };
-
-            Objects.requireNonNull(streamSource);
-            result.put(reusableFile, streamSource);
-        }
-        return result;
-    }
-
-    private Map<ReusableFileDto, InputStreamSource> resolveCombinedFiles(
+    private Map<FormFileRequest, InputStreamSource> resolveCombinedFiles(
             ImportProcessContextRequest contextRequest, MultiValueMap<String, MultipartFile> files) {
-        Map<ReusableFileDto, InputStreamSource> result = new HashMap<>(files.size());
+        Map<FormFileRequest, InputStreamSource> result = new HashMap<>(files.size());
         contextRequest.getServiceToReusableFormResultMap().forEach((serviceId, formResult) -> {
             Iterator<JsonNode> jsonDataIterator =
                     formResult.values().stream().map(objectMapper::readTree).iterator();
@@ -152,16 +114,39 @@ public class ImportService {
         return result;
     }
 
+    /**
+     * Finds reusable files in the jsonData
+     *
+     * @param files
+     */
+    private Map<FormFileRequest, InputStreamSource> resolveFiles(
+            Iterator<JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
+        final List<FormFileRequest> reusableFiles = findReusableFiles(jsonData); // TODO rename from reusable files
+        validator.validateObject(reusableFiles).failOnError(ValidationException::new);
+        final Map<FormFileRequest, InputStreamSource> result = new HashMap<>(reusableFiles.size());
+
+        for (final FormFileRequest fileRequest : reusableFiles) {
+            MultipartFile multipartFile =
+                    findUploadedFile(files, fileRequest.getFormFieldName(), fileRequest.getFileName());
+
+            InputStreamSource streamSource = transferUploadedFile(multipartFile);
+
+            Objects.requireNonNull(streamSource);
+            result.put(fileRequest, streamSource);
+        }
+        return result;
+    }
+
     public Future<?> submitCombinedData(
             ImportProcessContextRequest context, MultiValueMap<String, MultipartFile> files) {
-        Map<ReusableFileDto, InputStreamSource> reusableFiles = resolveCombinedFiles(context, files);
+        Map<FormFileRequest, InputStreamSource> reusableFiles = resolveCombinedFiles(context, files);
         // return mediator.submitCombinedFormResult(context, reusableFiles);
         // TODO implement submitting combined data
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public Future<?> submitData(Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
-        Map<ReusableFileDto, InputStreamSource> reusableFiles =
+        Map<FormFileRequest, InputStreamSource> reusableFiles =
                 resolveFiles(jsonData.values().iterator(), files);
         return mediator.submitFormResult(jsonData, reusableFiles);
     }

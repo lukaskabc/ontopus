@@ -6,6 +6,10 @@ import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextReque
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +26,6 @@ import tools.jackson.databind.node.ArrayNode;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping(path = "/import")
@@ -60,16 +63,23 @@ public class ImportController {
     }
 
     /**
-     * // TODO replace with open api docs
-     *
-     * <p>Expects several JSONs with form data separated into parts, each for a single service in the pipeline.
+     * Consumes a single {@code context} parameter, which is expected to be a JSON of
+     * {@link ImportProcessContextRequest} and files as multipart form data.
      */
+    @Operation(
+            summary = "Submit combined import data",
+            description = "Performs the whole import process asynchronously from a single request.")
+    @ApiResponse(responseCode = "200", description = "Import started successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
     @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> onCombinedFormSubmit(MultipartHttpServletRequest request) throws Throwable {
-        ImportProcessContextRequest context = resolveImportProcessContext(request);
+    public ResponseEntity<?> onCombinedFormSubmit(
+            @Parameter(description = "Import context") @RequestParam(name = "context")
+                    ImportProcessContextRequest contextRequest,
+            MultipartHttpServletRequest request)
+            throws Throwable {
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
-        initialize(context.getVersionSeriesURI().toURI());
-        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(context, files));
+        initialize(contextRequest.getVersionSeriesURI().toURI());
+        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest, files));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -122,19 +132,5 @@ public class ImportController {
         } else {
             return objectMapper.readTree(values[0]);
         }
-    }
-
-    private ImportProcessContextRequest resolveImportProcessContext(MultipartHttpServletRequest request) {
-        final String contextParam = "context";
-        String[] context = request.getParameterMap().get("context");
-        Objects.requireNonNull(context, "No context parameter specified");
-        final String partTypeValue = request.getMultipartContentType(contextParam);
-        Objects.requireNonNull(partTypeValue, "No media type for context parameter specified");
-        final MediaType partType = MediaType.parseMediaType(partTypeValue);
-        final boolean isJson = MediaType.APPLICATION_JSON.isCompatibleWith(partType);
-        if (context.length != 1 || !isJson) {
-            throw new IllegalArgumentException("More than one context supplied");
-        }
-        return objectMapper.readValue(context[0], ImportProcessContextRequest.class);
     }
 }

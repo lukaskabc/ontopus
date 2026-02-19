@@ -193,8 +193,7 @@ public class ImportFinalizingService {
         assert servicesCount >= resultsCount;
 
         final List<String> serviceIds = new ArrayList<>(servicesCount);
-        final HashMap<String, SerializableImportProcessContext.ReusableFormResult> serviceToFormResultMap =
-                new HashMap<>(resultsCount);
+        final HashMap<String, FormResult> serviceToFormResultMap = new HashMap<>(resultsCount);
 
         serializedContext.setServicesList(serviceIds);
         serializedContext.setServiceToReusableFormResultMap(serviceToFormResultMap);
@@ -207,13 +206,13 @@ public class ImportFinalizingService {
             serviceIds.add(serviceId);
             final ServiceAwareFormResult result = context.getProcessedResults().get(resultIndex);
             if (result.service() == service) {
-                Map<String, UploadedFile> reusableFiles = getUploadedFileMap(result.formResult());
-                Map<String, String> serializedFormData =
-                        serializeFormData(result.formResult().formData());
+                // Map<String, UploadedFile> reusableFiles =
+                // getUploadedFileMap(result.formResult());
+                // Map<String, String> serializedFormData =
+                // serializeFormData(result.formResult().formData());
                 assert !serviceToFormResultMap.containsKey(serviceId);
-                serviceToFormResultMap.put(
-                        serviceId,
-                        new SerializableImportProcessContext.ReusableFormResult(serializedFormData, reusableFiles));
+
+                serviceToFormResultMap.put(serviceId, result.formResult());
                 resultIndex++;
             }
         }

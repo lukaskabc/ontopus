@@ -15,12 +15,15 @@ spring:
 springdoc:
   api-docs:
     enabled: false
-#  show-login-endpoint: true
 
 logging:
   level:
     web: debug
-
+    org:
+      springframework:
+        boot:
+          autoconfigure:
+            logging: INFO # disables conditions evaluation report
 server:
   servlet:
     session:

@@ -13,12 +13,17 @@ function parseFormData(fieldName: string, formData?: any) {
   return []
 }
 
-function acceptNewFiles(acceptedFiles: File[], currentValue: FormFile[], currentFileMap: Map<string, File>) {
+function acceptNewFiles(
+  acceptedFiles: File[],
+  currentValue: FormFile[],
+  currentFileMap: Map<string, File>,
+  formFieldName: string
+) {
   const value: FormFile[] = [...currentValue]
   const fileMap = new Map<string, File>(currentFileMap)
 
   acceptedFiles.forEach((file) => {
-    const formFile = FormFile.fromFile(file)
+    const formFile = FormFile.fromFile(file, formFieldName)
     const existingFile = value.find((f) => formFile.equals(f))
     if (!existingFile) {
       value.push(formFile)
@@ -37,7 +42,7 @@ function acceptNewFiles(acceptedFiles: File[], currentValue: FormFile[], current
 function FileField(props: FieldProps) {
   const { t } = useTranslation()
   const { onChange, name, fieldPathId } = props
-  const multiple = !!(props.multiple || props.options?.multiple)
+  const multiple = !!(props.uiSchema?.multiple || props.schema?.multiple)
 
   if (!name || name.trim() === '') {
     console.error('No field name specified for file field', props)
@@ -57,7 +62,7 @@ function FileField(props: FieldProps) {
 
   const onDropAccepted = useCallback(
     (acceptedFiles: File[]) => {
-      const update = acceptNewFiles(acceptedFiles, value, fileMap)
+      const update = acceptNewFiles(acceptedFiles, value, fileMap, name)
 
       if (!multiple && update.value.length > 1) {
         const singleValue = update.value.pop()!

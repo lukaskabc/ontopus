@@ -60,10 +60,7 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
         schema.putObject("properties").putObject("files").put("type", "array");
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
-        uiSchema.putObject("files")
-                .put("ui:field", "reusableFileField")
-                .put("multiple", true)
-                .put("directory", true);
+        uiSchema.putObject("files").put("ui:field", "fileField").put("multiple", true);
         return new JsonForm(schema, uiSchema, null);
     }
 }

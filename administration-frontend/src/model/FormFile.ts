@@ -20,16 +20,18 @@ export class FormFile {
   readonly class = 'FormFileRequest'
   readonly fileName: string
   readonly path: string
+  readonly formFieldName: string
 
-  constructor(fileName: string, path: string) {
+  constructor(fileName: string, path: string, formFieldName: string) {
     this.fileName = fileName
     this.path = path
+    this.formFieldName = formFieldName
   }
 
-  static fromFile(file: DropZoneFile) {
+  static fromFile(file: DropZoneFile, formFieldName: string): FormFile {
     const fileName = file.name
     const path = pathPrefixedFileName(file)
-    return new FormFile(fileName, path)
+    return new FormFile(fileName, path, formFieldName)
   }
 
   static fromJson(jsonObj: any): FormFile | null {
@@ -38,10 +40,16 @@ export class FormFile {
     }
     const fileName = jsonObj.fileName
     const path = jsonObj.path
-    if (typeof fileName !== 'string' || typeof path !== 'string' || !path.endsWith(fileName)) {
+    const formFieldName = jsonObj.formFieldName
+    if (
+      typeof fileName !== 'string' ||
+      typeof path !== 'string' ||
+      !path.endsWith(fileName) ||
+      typeof formFieldName !== 'string'
+    ) {
       return null
     }
-    return new FormFile(fileName, path)
+    return new FormFile(fileName, path, formFieldName)
   }
 
   equals(other: FormFile): boolean {

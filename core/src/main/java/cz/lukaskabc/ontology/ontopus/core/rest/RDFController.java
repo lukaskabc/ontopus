@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -48,7 +47,7 @@ public class RDFController {
                 .orElse(null);
     }
 
-    @GetMapping("/**")
+    // @GetMapping("/**")
     public ResponseEntity<@NonNull StreamingResponseBody> resolve(ServletWebRequest webRequest) throws Exception {
         final HttpServletRequest request = webRequest.getRequest();
         final String decodedUri = URLDecoder.decode(request.getRequestURL().toString(), StandardCharsets.UTF_8);

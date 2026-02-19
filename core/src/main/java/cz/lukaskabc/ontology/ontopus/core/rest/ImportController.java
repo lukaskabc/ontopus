@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,6 +28,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag(name = "Import", description = "Endpoints for importing new ontologies and their versions")
 @RestController
 @RequestMapping(path = "/import")
 public class ImportController {
@@ -52,6 +54,10 @@ public class ImportController {
      *
      * @param versionSeries The identifier of existing version series for publishing a new version.
      */
+    @Operation(
+            summary = "Initialize new import process",
+            description =
+                    "Initialize a new import process for the given version series. If the version series is not specified, a new one will be created.")
     @PostMapping("initialize")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void initialize(@Nullable @RequestParam(required = false, name = "versionSeries") URI versionSeries) {
@@ -69,9 +75,11 @@ public class ImportController {
     @Operation(
             summary = "Submit combined import data",
             description = "Performs the whole import process asynchronously from a single request.")
-    @ApiResponse(responseCode = "200", description = "Import started successfully")
+    @ApiResponse(responseCode = "202", description = "Import started successfully")
     @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
-    @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(
+            path = "combined",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> onCombinedFormSubmit(
             @Parameter(description = "Import context") @RequestParam(name = "context")
                     ImportProcessContextRequest contextRequest,
@@ -82,7 +90,7 @@ public class ImportController {
         return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest, files));
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> onFormSubmit(MultipartHttpServletRequest request) throws Throwable {
         Map<String, JsonNode> jsonData = parseData(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();

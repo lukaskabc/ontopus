@@ -65,7 +65,7 @@ function splitPath(path?: string) {
 }
 
 function insertToTree(file: FormFile, tree: ExtendedItemProperties[], onDelete: (file: FormFile) => void) {
-  const path = splitPath(file.fileName)
+  const path = splitPath(file.path)
   if (!path || path.length === 0) {
     console.error('Unable to process file', file)
     return

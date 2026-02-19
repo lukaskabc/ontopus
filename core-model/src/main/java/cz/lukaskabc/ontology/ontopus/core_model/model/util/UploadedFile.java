@@ -7,6 +7,7 @@ import java.nio.file.Path;
  * have a different name than the original file.
  *
  * @param originalName the original name of the uploaded file, as provided by the user
- * @param path the path on the filesystem where the uploaded file is stored
+ * @param path the relative path to the file, as provided by the user
+ * @param fsPath the path on the filesystem where the uploaded file is stored
  */
-public record UploadedFile(String originalName, Path path) {}
+public record UploadedFile(String originalName, Path fsPath, String path) {}

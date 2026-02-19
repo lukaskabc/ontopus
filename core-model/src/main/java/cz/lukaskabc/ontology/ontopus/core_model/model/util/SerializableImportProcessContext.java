@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Holds list of processed services with corresponding submitted forms for them. */
 public class SerializableImportProcessContext implements Serializable {
@@ -17,49 +16,39 @@ public class SerializableImportProcessContext implements Serializable {
 
     @NotEmpty private List<String> servicesList;
 
-    @NotNull private HashMap<String, ReusableFormResult> serviceToReusableFormResultMap;
-
-    /**
-     * @param formData
-     * @param reusableFiles
-     */
-    public record ReusableFormResult(Map<String, String> formData, Map<String, UploadedFile> reusableFiles)
-            implements Serializable {
-        // TODO implement factory using relative paths for backed up files available for
-        // reusage
-    }
+    @NotNull private HashMap<String, FormResult> serviceToReusableFormResultMap;
 
     public SerializableImportProcessContext() {}
-
-    public URI getVersionSeriesIdentifier() {
-        return versionSeriesIdentifier;
-    }
-
-    public void setVersionSeriesIdentifier(URI versionSeriesIdentifier) {
-        this.versionSeriesIdentifier = versionSeriesIdentifier;
-    }
 
     public String getFilesDirectory() {
         return filesDirectory;
     }
 
-    public void setFilesDirectory(String filesDirectory) {
-        this.filesDirectory = filesDirectory;
+    public HashMap<String, FormResult> getServiceToReusableFormResultMap() {
+        return serviceToReusableFormResultMap;
     }
 
     public List<String> getServicesList() {
         return servicesList;
     }
 
+    public URI getVersionSeriesIdentifier() {
+        return versionSeriesIdentifier;
+    }
+
+    public void setFilesDirectory(String filesDirectory) {
+        this.filesDirectory = filesDirectory;
+    }
+
+    public void setServiceToReusableFormResultMap(HashMap<String, FormResult> serviceToReusableFormResultMap) {
+        this.serviceToReusableFormResultMap = serviceToReusableFormResultMap;
+    }
+
     public void setServicesList(List<String> servicesList) {
         this.servicesList = servicesList;
     }
 
-    public HashMap<String, ReusableFormResult> getServiceToReusableFormResultMap() {
-        return serviceToReusableFormResultMap;
-    }
-
-    public void setServiceToReusableFormResultMap(HashMap<String, ReusableFormResult> serviceToReusableFormResultMap) {
-        this.serviceToReusableFormResultMap = serviceToReusableFormResultMap;
+    public void setVersionSeriesIdentifier(URI versionSeriesIdentifier) {
+        this.versionSeriesIdentifier = versionSeriesIdentifier;
     }
 }

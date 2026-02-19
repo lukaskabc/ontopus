@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
-import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 
 /**
  * Service capable of versioning an {@link VersionArtifact ontology artifact}.

@@ -1,10 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
-import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;

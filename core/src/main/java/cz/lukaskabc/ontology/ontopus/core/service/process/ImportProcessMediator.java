@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
-import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReusableFile;
@@ -11,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.ReusableFileDto;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.api.model.FormResult;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.ServiceAwareFormResult;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
@@ -12,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;

@@ -25,13 +25,15 @@ public class PropertyMapper {
      * {@code currentValueSupplier} is null.
      */
     public static <T> void applyMapping(
-            Supplier<@Nullable T> supplier, Consumer<@NonNull T> consumer, Supplier<@Nullable T> currentValueSupplier) {
+            Supplier<? extends @Nullable T> supplier,
+            Consumer<@NonNull T> consumer,
+            Supplier<? extends @Nullable T> currentValueSupplier) {
         if (isValueEmpty(currentValueSupplier)) {
             Optional.ofNullable(supplier.get()).ifPresent(consumer);
         }
     }
 
-    public static boolean isValueEmpty(Supplier<?> valueSupplier) {
+    public static <T> boolean isValueEmpty(Supplier<? extends @Nullable T> valueSupplier) {
         Object value = valueSupplier.get();
         if (value instanceof Collection<?> collection) {
             return collection.isEmpty();

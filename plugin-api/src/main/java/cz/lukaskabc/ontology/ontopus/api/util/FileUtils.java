@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 public class FileUtils {
+
     public static Path forceRelativePath(String pathString) {
         Objects.requireNonNull(pathString);
         final Path path = Path.of(pathString);
@@ -12,6 +13,7 @@ public class FileUtils {
         }
         return path;
     }
+
     /**
      * Resolves an untrusted user-specified path against the API's base directory. Paths that try to escape the base
      * directory are rejected.

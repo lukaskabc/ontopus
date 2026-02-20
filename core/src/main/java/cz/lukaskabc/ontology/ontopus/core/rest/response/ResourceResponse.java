@@ -7,13 +7,33 @@ import java.time.Instant;
 import java.util.Set;
 
 public class ResourceResponse extends EntityResponse {
-    private MultilingualString description;
-    private MultilingualString title;
-    private Instant releaseDate;
-    private Instant modifiedDate;
-    private Set<String> languages;
-    private URI previousVersion;
-    private String version;
+    private final MultilingualString description;
+    private final MultilingualString title;
+    private final Instant releaseDate;
+    private final Instant modifiedDate;
+    private final Set<String> languages;
+    private final URI previousVersion;
+    private final String version;
+
+    public ResourceResponse(
+            URI uri,
+            URI identifier,
+            MultilingualString description,
+            MultilingualString title,
+            Instant releaseDate,
+            Instant modifiedDate,
+            Set<String> languages,
+            URI previousVersion,
+            String version) {
+        super(uri, identifier);
+        this.description = description;
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.modifiedDate = modifiedDate;
+        this.languages = languages;
+        this.previousVersion = previousVersion;
+        this.version = version;
+    }
 
     public MultilingualString getDescription() {
         return description;
@@ -41,33 +61,5 @@ public class ResourceResponse extends EntityResponse {
 
     public String getVersion() {
         return version;
-    }
-
-    public void setDescription(MultilingualString description) {
-        this.description = description;
-    }
-
-    public void setLanguages(Set<String> languages) {
-        this.languages = languages;
-    }
-
-    public void setModifiedDate(Instant modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-
-    public void setPreviousVersion(URI previousVersion) {
-        this.previousVersion = previousVersion;
-    }
-
-    public void setReleaseDate(Instant releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public void setTitle(MultilingualString title) {
-        this.title = title;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 }

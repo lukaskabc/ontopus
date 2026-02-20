@@ -13,7 +13,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -167,8 +167,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
      *     otherwise, failed future when the previous future failed.
      * @param <R> the result type
      */
-    @NullUnmarked
-    public <R> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
+    public <R extends @Nullable Object> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
         lock.lock();
         try {
             ensureInitialized();
@@ -178,9 +177,11 @@ public class ImportProcessContextHolder implements AutoCloseable {
                     future = CancelledFuture.getInstance();
                     return result;
                 case CANCELLED, SUCCESS:
+                    Objects.requireNonNull(instance);
                     return CompletableFuture.completedFuture(function.apply(instance));
+                default:
+                    return CancelledFuture.getInstance();
             }
-            return CancelledFuture.getInstance();
         } finally {
             lock.unlock();
         }
@@ -193,28 +194,32 @@ public class ImportProcessContextHolder implements AutoCloseable {
      * @return canceled future when there is already another task running or scheduled, future of the submitted task
      *     otherwise, failed future when the previous future failed.
      */
-    @NullUnmarked
-    public Future<?> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
+    public Future<@Nullable Void> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
         lock.lock();
         try {
             ensureInitialized();
-            Future<?> result;
+            Future<Void> result;
             switch (future.state()) {
                 case FAILED:
                     result = CompletableFuture.failedFuture(future.exceptionNow());
                     future = CancelledFuture.getInstance();
-                    return result;
+                    return (Future<@Nullable Void>) result;
                 case CANCELLED, SUCCESS:
-                    result = executor.submit(decorateAsyncTask(consumer));
+                    result = submitVoidTask(consumer);
                     future = result;
-                    return result;
+                    return (Future<@Nullable Void>) result;
                 default:
                     result = CancelledFuture.getInstance();
             }
-            return result;
+            return (Future<@Nullable Void>) result;
         } finally {
             lock.unlock();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Future<Void> submitVoidTask(Consumer<ImportProcessContext> consumer) {
+        return (Future<Void>) executor.submit(decorateAsyncTask(consumer));
     }
 
     private static final class CancelledFuture<T> implements Future<T> {

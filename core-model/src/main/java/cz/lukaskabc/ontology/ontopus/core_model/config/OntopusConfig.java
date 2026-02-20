@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -54,10 +55,10 @@ public class OntopusConfig {
         @NotNull private String language = "en";
 
         /** Username for authentication with database repository */
-        private String username;
+        @Nullable private String username;
 
         /** Password for authentication with database repository */
-        private String password;
+        @Nullable private String password;
 
         /** Database repository URL */
         @NotNull private String url = "http://localhost:7200/repositories/ontopus";
@@ -70,7 +71,7 @@ public class OntopusConfig {
             return language;
         }
 
-        public String getPassword() {
+        public @Nullable String getPassword() {
             return password;
         }
 
@@ -78,7 +79,7 @@ public class OntopusConfig {
             return url;
         }
 
-        public String getUsername() {
+        public @Nullable String getUsername() {
             return username;
         }
 

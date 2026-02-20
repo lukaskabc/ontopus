@@ -4,8 +4,13 @@ import java.io.Serializable;
 import java.net.URI;
 
 public class EntityResponse implements Serializable {
-    private URI uri;
-    private URI identifier;
+    private final URI uri;
+    private final URI identifier;
+
+    public EntityResponse(URI uri, URI identifier) {
+        this.uri = uri;
+        this.identifier = identifier;
+    }
 
     public URI getIdentifier() {
         return identifier;
@@ -13,13 +18,5 @@ public class EntityResponse implements Serializable {
 
     public URI getUri() {
         return uri;
-    }
-
-    public void setIdentifier(URI identifier) {
-        this.identifier = identifier;
-    }
-
-    public void setUri(URI uri) {
-        this.uri = uri;
     }
 }

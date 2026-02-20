@@ -17,7 +17,9 @@ import java.util.Objects;
 @Service
 public class SemanticVersioningService implements OntologyVersioningService {
     static final String VERSION_FIELD = "version";
-    private JsonForm jsonForm;
+
+    @Nullable private JsonForm jsonForm;
+
     private final ObjectMapper objectMapper;
     private final VersionArtifactRepository artifactRepository;
 

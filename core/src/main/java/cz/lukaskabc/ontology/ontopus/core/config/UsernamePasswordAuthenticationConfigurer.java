@@ -12,8 +12,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 /**
  * Basically alternative implementation to {@link FormLoginConfigurer} but without the default login page
  * ({@link DefaultLoginPageGeneratingFilter})
- *
- * @param <H>
  */
 public class UsernamePasswordAuthenticationConfigurer<H extends HttpSecurityBuilder<H>>
         extends AbstractAuthenticationFilterConfigurer<

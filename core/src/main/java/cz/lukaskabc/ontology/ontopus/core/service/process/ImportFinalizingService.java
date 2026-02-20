@@ -56,7 +56,7 @@ public class ImportFinalizingService {
         // }
 
         // return reusableFiles;
-        return null; // TODO whole ImportFinalizingService needs to be redone
+        return Map.of(); // TODO whole ImportFinalizingService needs to be redone
     }
 
     private final TimeProvider timeProvider;
@@ -196,7 +196,7 @@ public class ImportFinalizingService {
         final HashMap<String, FormResult> serviceToFormResultMap = new HashMap<>(resultsCount);
 
         serializedContext.setServicesList(serviceIds);
-        serializedContext.setServiceToReusableFormResultMap(serviceToFormResultMap);
+        serializedContext.setServiceToFormResultMap(serviceToFormResultMap);
 
         int resultIndex = 0;
         for (int serviceIndex = 0; serviceIndex < servicesCount; serviceIndex++) {

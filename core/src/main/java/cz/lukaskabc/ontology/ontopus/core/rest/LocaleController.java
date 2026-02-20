@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
 import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,10 +23,13 @@ public class LocaleController {
     }
 
     @GetMapping("/{namespace}/{locale}.json")
-    public ResponseEntity<Map<String, String>> getLocale(
+    public ResponseEntity<@NonNull Map<String, String>> getLocale(
             @PathVariable(name = "namespace") String namespace, @PathVariable(name = "locale") String locale) {
         if (SERVER_NAMESPACE.equals(namespace)) {
-            return ResponseEntity.ok(localizationProvider.getLocale(locale));
+            return localizationProvider
+                    .getLocale(locale)
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
         }
         return ResponseEntity.notFound().build();
     }

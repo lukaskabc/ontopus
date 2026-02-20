@@ -63,7 +63,8 @@ public class ImportService {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Future<Void> submitData(Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
+    public Future<@Nullable Void> submitData(
+            Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
         Map<FormFileRequest, InputStreamSource> reusableFiles =
                 requestFileResolver.resolveFiles(jsonData.values().iterator(), files);
         return mediator.submitFormResult(jsonData, reusableFiles);

@@ -1,13 +1,48 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.response;
 
+import cz.cvut.kbss.jopa.model.MultilingualString;
+
 import java.net.URI;
+import java.time.Instant;
 import java.util.Set;
 
 public class VersionSeriesResponse extends DatasetResponse {
-    private URI ontologyURI;
-    private URI last;
-    private URI first;
-    private Set<VersionArtifactListEntry> members;
+    private final URI ontologyURI;
+    private final URI last;
+    private final URI first;
+    private final Set<VersionArtifactListEntry> members;
+
+    public VersionSeriesResponse(
+            URI uri,
+            URI identifier,
+            MultilingualString description,
+            MultilingualString title,
+            Instant releaseDate,
+            Instant modifiedDate,
+            Set<String> languages,
+            URI previousVersion,
+            String version,
+            URI series,
+            URI ontologyURI,
+            URI last,
+            URI first,
+            Set<VersionArtifactListEntry> members) {
+        super(
+                uri,
+                identifier,
+                description,
+                title,
+                releaseDate,
+                modifiedDate,
+                languages,
+                previousVersion,
+                version,
+                series);
+        this.ontologyURI = ontologyURI;
+        this.last = last;
+        this.first = first;
+        this.members = members;
+    }
 
     public URI getFirst() {
         return first;
@@ -23,21 +58,5 @@ public class VersionSeriesResponse extends DatasetResponse {
 
     public URI getOntologyURI() {
         return ontologyURI;
-    }
-
-    public void setFirst(URI first) {
-        this.first = first;
-    }
-
-    public void setLast(URI last) {
-        this.last = last;
-    }
-
-    public void setMembers(Set<VersionArtifactListEntry> members) {
-        this.members = members;
-    }
-
-    public void setOntologyURI(URI ontologyURI) {
-        this.ontologyURI = ontologyURI;
     }
 }

@@ -15,10 +15,10 @@ public class ImportProcessContextRequest implements Serializable {
 
     @NotEmpty private List<String> servicesList;
 
-    @NotNull private HashMap<String, FormDataDto> serviceToReusableFormResultMap;
+    @NotNull private HashMap<String, FormDataDto> serviceToFormResultMap;
 
-    public HashMap<String, FormDataDto> getServiceToReusableFormResultMap() {
-        return serviceToReusableFormResultMap;
+    public HashMap<String, FormDataDto> getServiceToFormResultMap() {
+        return serviceToFormResultMap;
     }
 
     public List<String> getServicesList() {
@@ -29,8 +29,8 @@ public class ImportProcessContextRequest implements Serializable {
         return new VersionSeriesURI(versionSeriesURI);
     }
 
-    public void setServiceToReusableFormResultMap(HashMap<String, FormDataDto> serviceToReusableFormResultMap) {
-        this.serviceToReusableFormResultMap = serviceToReusableFormResultMap;
+    public void setServiceToFormResultMap(HashMap<String, FormDataDto> serviceToFormResultMap) {
+        this.serviceToFormResultMap = serviceToFormResultMap;
     }
 
     public void setServicesList(List<String> servicesList) {

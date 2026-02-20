@@ -23,8 +23,6 @@ public class RDFOntologyPublishingService implements OrderedImportPipelineServic
         Map<String, Set<String>> map = new HashMap<>();
         uris.forEach(uri -> {
             final String stringUri = uri.toString();
-            final String rawPath = uri.getRawPath();
-            final String fullPath = stringUri.substring(stringUri.indexOf(rawPath));
             map.computeIfAbsent(uri.getHost(), k -> new HashSet<>()).add(stringUri);
         });
         return map;

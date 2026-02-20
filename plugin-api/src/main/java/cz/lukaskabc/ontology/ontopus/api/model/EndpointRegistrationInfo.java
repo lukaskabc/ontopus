@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
 import org.springframework.http.MediaType;
 
 import java.lang.reflect.Method;
@@ -8,6 +10,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
+@NullMarked
 public class EndpointRegistrationInfo {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
@@ -81,6 +84,7 @@ public class EndpointRegistrationInfo {
         return produces;
     }
 
+    @NullUnmarked
     public static class Builder {
         private String host;
         private Set<String> paths = Set.of();

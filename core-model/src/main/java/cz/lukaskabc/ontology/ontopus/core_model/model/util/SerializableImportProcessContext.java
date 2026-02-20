@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.util;
 
+import org.jspecify.annotations.NullUnmarked;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -8,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /** Holds list of processed services with corresponding submitted forms for them. */
+@NullUnmarked
 public class SerializableImportProcessContext implements Serializable {
     @NotNull private URI versionSeriesIdentifier;
     // TODO: make a DTO/Request object without files directory, that will be
@@ -16,7 +19,7 @@ public class SerializableImportProcessContext implements Serializable {
 
     @NotEmpty private List<String> servicesList;
 
-    @NotNull private HashMap<String, FormResult> serviceToReusableFormResultMap;
+    @NotNull private HashMap<String, FormResult> serviceToFormResultMap;
 
     public SerializableImportProcessContext() {}
 
@@ -24,8 +27,8 @@ public class SerializableImportProcessContext implements Serializable {
         return filesDirectory;
     }
 
-    public HashMap<String, FormResult> getServiceToReusableFormResultMap() {
-        return serviceToReusableFormResultMap;
+    public HashMap<String, FormResult> getServiceToFormResultMap() {
+        return serviceToFormResultMap;
     }
 
     public List<String> getServicesList() {
@@ -40,8 +43,8 @@ public class SerializableImportProcessContext implements Serializable {
         this.filesDirectory = filesDirectory;
     }
 
-    public void setServiceToReusableFormResultMap(HashMap<String, FormResult> serviceToReusableFormResultMap) {
-        this.serviceToReusableFormResultMap = serviceToReusableFormResultMap;
+    public void setServiceToFormResultMap(HashMap<String, FormResult> serviceToFormResultMap) {
+        this.serviceToFormResultMap = serviceToFormResultMap;
     }
 
     public void setServicesList(List<String> servicesList) {

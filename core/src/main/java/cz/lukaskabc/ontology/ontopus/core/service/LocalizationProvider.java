@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class LocalizationProvider {
     private final Map<String, Map<String, String>> localization;
@@ -9,7 +10,7 @@ public class LocalizationProvider {
         this.localization = localization;
     }
 
-    public Map<String, String> getLocale(String locale) {
-        return localization.get(locale);
+    public Optional<Map<String, String>> getLocale(String locale) {
+        return Optional.ofNullable(localization.get(locale));
     }
 }

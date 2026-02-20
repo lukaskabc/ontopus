@@ -12,6 +12,7 @@ import cz.lukaskabc.ontology.ontopus.core.PluginRegistryApplicationInitializer;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +30,8 @@ import java.util.Set;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PersistenceFactoryConfig {
 
-    private EntityManagerFactory factory;
+    @Nullable private EntityManagerFactory factory;
+
     private final OntopusConfig serverConfig;
     private final DefaultListableBeanFactory defaultListableBeanFactory;
 
@@ -40,14 +42,14 @@ public class PersistenceFactoryConfig {
 
     @PreDestroy
     private void close() {
-        if (factory.isOpen()) {
+        if (factory != null && factory.isOpen()) {
             factory.close();
         }
     }
 
     @Bean
     @Primary
-    public EntityManagerFactory entityManagerFactory() {
+    public @Nullable EntityManagerFactory entityManagerFactory() {
         return factory;
     }
 

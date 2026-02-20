@@ -2,11 +2,13 @@ package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessTaskConflictException;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 
 import java.util.concurrent.Future;
 
+@NullMarked
 public class ImportProcessMediatorFutureHandler {
     private ImportProcessMediatorFutureHandler() {
         throw new AssertionError();
@@ -16,10 +18,10 @@ public class ImportProcessMediatorFutureHandler {
      * Immediately returns a response entity based on the current future status.
      *
      * @param future the future to handle
-     * @return Response entity based on the future status.
+     * @return Response entity based on the future status, the value is never null.
      * @param <T> The type of the result value
      */
-    public static <T> ResponseEntity<@NonNull T> handleFuture(Future<T> future) throws Throwable {
+    public static <T> ResponseEntity<T> handleFuture(Future<@Nullable T> future) throws Throwable {
         try {
             return resolveFuture(future);
         } catch (ImportProcessFinalizedException e) {
@@ -27,7 +29,7 @@ public class ImportProcessMediatorFutureHandler {
         }
     }
 
-    private static <T> ResponseEntity<@NonNull T> resolveFuture(Future<T> future) throws Throwable {
+    private static <T> ResponseEntity<T> resolveFuture(Future<@Nullable T> future) throws Throwable {
         return switch (future.state()) {
             case SUCCESS -> {
                 T value = future.resultNow();

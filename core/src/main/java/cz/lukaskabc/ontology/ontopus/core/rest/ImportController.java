@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
@@ -11,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +27,9 @@ import tools.jackson.databind.node.ArrayNode;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 
+@NullMarked
 @Tag(name = "Import", description = "Endpoints for importing new ontologies and their versions")
 @RestController
 @RequestMapping(path = "/import")
@@ -44,8 +46,8 @@ public class ImportController {
 
     @GetMapping
     public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
-        // TODO test and setup LOG4J2 logging
-        return ImportProcessMediatorFutureHandler.handleFuture(importService.getCurrentJsonForm());
+        Future<@Nullable JsonForm> futureForm = importService.getCurrentJsonForm();
+        return ImportProcessMediatorFutureHandler.handleFuture(futureForm);
     }
 
     /**
@@ -87,7 +89,10 @@ public class ImportController {
             throws Throwable {
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
         initialize(contextRequest.getVersionSeriesURI().toURI());
-        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest, files));
+        // return
+        // ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest,
+        // files));
+        return ResponseEntity.accepted().build(); // TODO implement submitting combined data
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
@@ -98,7 +103,7 @@ public class ImportController {
         return ImportProcessMediatorFutureHandler.handleFuture(importService.submitData(jsonData, files));
     }
 
-    private Map<String, JsonNode> parseData(MultipartHttpServletRequest request) throws JsonProcessingException {
+    private Map<String, JsonNode> parseData(MultipartHttpServletRequest request) {
         Map<String, JsonNode> result = new HashMap<>();
         for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
             if (entry.getValue().length == 0) {

@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core.model;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
+import org.jspecify.annotations.NullUnmarked;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
+@NullUnmarked
 public class CombinedImportProcessInput extends SerializableImportProcessContext {
     private Map<String, MultipartFile> submittedFiles;
 

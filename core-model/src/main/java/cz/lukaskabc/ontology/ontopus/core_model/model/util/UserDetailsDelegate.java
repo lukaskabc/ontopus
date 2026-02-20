@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -17,6 +18,9 @@ public class UserDetailsDelegate implements UserDetails {
     private final User user;
 
     public UserDetailsDelegate(Set<GrantedAuthority> authorities, User user) {
+        Objects.requireNonNull(authorities, "Authorities cannot be null");
+        Objects.requireNonNull(user, "User cannot be null");
+        Objects.requireNonNull(user.getUsername(), "User's username cannot be null");
         this.authorities = authorities;
         this.user = user;
     }
@@ -31,7 +35,7 @@ public class UserDetailsDelegate implements UserDetails {
         return user.getPassword();
     }
 
-    @Nullable @Override
+    @Override
     public String getUsername() {
         return user.getUsername();
     }

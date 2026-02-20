@@ -203,12 +203,14 @@ public class ImportProcessMediator {
      *     running.
      */
     public Future<@Nullable JsonForm> getCurrentForm() {
-        return holder.runWithContextNow((context) -> {
-            if (context.hasUnprocessedService()) {
-                return context.peekService().getJsonForm();
-            }
-            return null;
-        });
+        return holder.<@Nullable JsonForm>runWithContextNow(this::getCurrentFormUsingContext);
+    }
+
+    private @Nullable JsonForm getCurrentFormUsingContext(ImportProcessContext context) {
+        if (context.hasUnprocessedService()) {
+            return context.peekService().getJsonForm();
+        }
+        return null;
     }
 
     /**
@@ -218,7 +220,7 @@ public class ImportProcessMediator {
      */
     public void initialize(@Nullable VersionSeriesURI uri) {
         holder.resetSessionImportProcess(uri);
-        Future<?> scheduled = holder.scheduleWithContext(this::processAutoServices);
+        Future<@Nullable Void> scheduled = holder.scheduleWithContext(this::processAutoServices);
         if (scheduled.isCancelled()) {
             throw new IllegalStateException(
                     "Failed to schedule service processing during import context initialization");
@@ -267,7 +269,7 @@ public class ImportProcessMediator {
      * @param jsonData the json data to submit
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
-    public Future<?> submitFormResult(
+    public Future<@Nullable Void> submitFormResult(
             Map<String, JsonNode> jsonData, Map<FormFileRequest, InputStreamSource> FormFileRequests) {
         return holder.scheduleWithContext((context) -> {
             if (context.hasUnprocessedService()) {

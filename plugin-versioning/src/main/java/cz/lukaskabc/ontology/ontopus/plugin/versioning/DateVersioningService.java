@@ -17,7 +17,8 @@ import java.time.format.DateTimeFormatter;
 public class DateVersioningService implements OntologyVersioningService {
     static final String SEPARATOR = "_";
     private final VersionArtifactRepository artifactRepository;
-    private String versionValue = null;
+
+    @Nullable private String versionValue = null;
 
     public DateVersioningService(VersionArtifactRepository artifactRepository) {
         this.artifactRepository = artifactRepository;

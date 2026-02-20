@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.service.base;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public abstract class BaseEntityService<
         this.repository = repository;
     }
 
-    public Optional<E> findById(I id) {
+    public Optional<E> findById(@Nullable I id) {
         return Optional.ofNullable(repository.find(id));
     }
 }

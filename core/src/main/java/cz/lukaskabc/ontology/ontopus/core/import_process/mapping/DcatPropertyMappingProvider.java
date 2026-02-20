@@ -19,32 +19,32 @@ public class DcatPropertyMappingProvider extends PropertyMapper implements Artif
         super(entityManager, subjectURI, contextURI);
     }
 
-    @Override
+    @Nullable @Override
     public MultilingualString resolveDescription() {
         return findMultilingualProperty(mapAttributes(VersionArtifact_.description));
     }
 
-    @Override
+    @Nullable @Override
     public Set<String> resolveLanguages() {
         return new HashSet<>(findProperties(mapAttributes(VersionArtifact_.languages), String.class));
     }
 
-    @Override
+    @Nullable @Override
     public Instant resolveModifiedDate() {
         return findSingleProperty(mapAttributes(VersionArtifact_.modifiedDate), Instant.class);
     }
 
-    @Override
+    @Nullable @Override
     public Instant resolveReleaseDate() {
         return findSingleProperty(mapAttributes(VersionArtifact_.releaseDate), Instant.class);
     }
 
-    @Override
+    @Nullable @Override
     public MultilingualString resolveTitle() {
         return findMultilingualProperty(mapAttributes(VersionArtifact_.title));
     }
 
-    @Override
+    @Nullable @Override
     public String resolveVersion() {
         return findSingleProperty(mapAttributes(VersionArtifact_.version), String.class);
     }

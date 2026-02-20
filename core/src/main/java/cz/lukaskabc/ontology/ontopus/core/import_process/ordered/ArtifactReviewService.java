@@ -22,7 +22,8 @@ import java.util.Objects;
 @Order(ImportProcessServiceOrder.ARTIFACT_REVIEW_SERVICE)
 public class ArtifactReviewService implements OrderedImportPipelineService<Void> {
     private final ObjectMapper objectMapper;
-    private ImportProcessContext importProcessContext = null;
+
+    @Nullable private ImportProcessContext importProcessContext = null;
 
     public ArtifactReviewService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -80,6 +81,8 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
     }
 
     private void loadArtifactProperties(ObjectNode properties) {
+        Objects.requireNonNull(
+                importProcessContext, "Import process context must be available to load artifact properties");
         final VersionArtifact artifact = importProcessContext.getVersionArtifact();
         properties
                 .putObject(VersionArtifact_.identifier.getName())
@@ -102,6 +105,8 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
     }
 
     private void loadVersionSeriesProperties(ObjectNode properties) {
+        Objects.requireNonNull(
+                importProcessContext, "Import process context must be available to load version series properties");
         final VersionSeries series = importProcessContext.getVersionSeries();
         properties
                 .putObject(VersionSeries_.identifier.getName())

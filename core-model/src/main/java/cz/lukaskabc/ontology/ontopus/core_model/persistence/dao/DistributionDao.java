@@ -1,9 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntologyDistribution;
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntologyDistribution_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.springframework.beans.factory.annotation.Autowired;

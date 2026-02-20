@@ -4,8 +4,8 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;

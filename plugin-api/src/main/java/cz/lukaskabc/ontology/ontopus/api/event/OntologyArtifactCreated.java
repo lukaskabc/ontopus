@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.event;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import org.springframework.context.ApplicationEvent;
 
 /** Indicates that a new ontology artifact was fully constructed and is ready for further processing. */

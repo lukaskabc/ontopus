@@ -1,7 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence;
 
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
-import cz.lukaskabc.ontology.ontopus.core_model.model.*;
+import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
 import org.springframework.stereotype.Component;
 
 @Component

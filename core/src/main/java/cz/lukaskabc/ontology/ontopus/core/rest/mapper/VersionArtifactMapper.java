@@ -2,8 +2,8 @@ package cz.lukaskabc.ontology.ontopus.core.rest.mapper;
 
 import cz.lukaskabc.ontology.ontopus.core.rest.response.VersionArtifactListEntry;
 import cz.lukaskabc.ontology.ontopus.core.rest.response.VersionArtifactResponse;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import org.jspecify.annotations.NullUnmarked;
 import org.mapstruct.Mapper;

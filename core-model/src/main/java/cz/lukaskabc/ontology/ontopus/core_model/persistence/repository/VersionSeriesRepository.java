@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.VersionSeriesDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;

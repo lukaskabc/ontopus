@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 
 /**

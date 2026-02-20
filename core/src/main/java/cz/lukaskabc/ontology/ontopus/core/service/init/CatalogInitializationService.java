@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core_model.model;
+package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;

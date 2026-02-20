@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
@@ -9,7 +10,7 @@ import java.util.Set;
 
 /**
  * Object constructed with {@link ArtifactPropertyMappingProviderFactory} capable of resolving attributes for the
- * {@link cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact VersionArtifact}
+ * {@link VersionArtifact VersionArtifact}
  */
 public interface ArtifactPropertyMappingProvider {
     default @Nullable MultilingualString resolveDescription() {

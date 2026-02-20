@@ -3,8 +3,8 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;

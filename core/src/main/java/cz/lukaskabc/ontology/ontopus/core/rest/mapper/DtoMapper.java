@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.rest.mapper;
 
 import cz.lukaskabc.ontology.ontopus.core.rest.response.VersionSeriesListEntry;
 import cz.lukaskabc.ontology.ontopus.core.rest.response.VersionSeriesResponse;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

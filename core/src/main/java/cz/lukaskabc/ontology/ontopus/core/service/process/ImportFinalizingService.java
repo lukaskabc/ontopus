@@ -7,10 +7,10 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;

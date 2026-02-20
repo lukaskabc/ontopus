@@ -20,16 +20,45 @@
                                                     owl:versionInfo "Development version 0.0.1"@en .
 
 #################################################################
+#    Object Properties
+#################################################################
+
+###  http://ontology.lukaskabc.cz/application/ontopus#mappedBy
+ontopus:mappedBy rdf:type owl:ObjectProperty ;
+                 rdfs:range ontopus:Controller ;
+                 rdfs:comment "describes that the resource is mapped by the controller"@en ;
+                 rdfs:label "is mapped by"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
+ontopus:ontologyIdentifier rdf:type owl:ObjectProperty ;
+                           rdfs:domain ontopus:VersionSeries ;
+                           rdfs:range rdfs:Resource ;
+                           rdfs:comment "Identifier of the ontology published in the series"@en ;
+                           rdfs:label "Ontology identifier"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#uriMappingType
+ontopus:uriMappingType rdf:type owl:ObjectProperty ;
+                       rdfs:domain ontopus:UriMapping ;
+                       rdfs:range [ rdf:type owl:Class ;
+                                    owl:oneOf ( ontopus:OntologyDocument
+                                                ontopus:OntologyResource
+                                              )
+                                  ] ;
+                       rdfs:comment "The type of the resource that is being mapped."@en ;
+                       rdfs:label "URI Mapping Type"@en .
+
+
+#################################################################
 #    Data properties
 #################################################################
 
-###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
-ontopus:ontologyIdentifier rdf:type owl:DatatypeProperty ;
-                           rdfs:subPropertyOf <http://purl.org/dc/terms/identifier> ;
-                           rdfs:domain ontopus:VersionSeries ;
-                           rdfs:range rdfs:Literal ;
-                           rdfs:comment "Identifier of the ontology published in the series"@en ;
-                           rdfs:label "Ontology identifier"@en .
+###  http://ontology.lukaskabc.cz/application/ontopus#javaClassName
+ontopus:javaClassName rdf:type owl:DatatypeProperty ;
+                      rdfs:range xsd:string ;
+                      rdfs:comment "The fully qualified name of the Java class"@en ;
+                      rdfs:label "Java Class Name"@en .
 
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#password
@@ -52,6 +81,12 @@ ontopus:serializedImportContext rdf:type owl:DatatypeProperty ;
 #    Classes
 #################################################################
 
+###  http://ontology.lukaskabc.cz/application/ontopus#Controller
+ontopus:Controller rdf:type owl:Class ;
+                   rdfs:comment "Ontopus Controller class capable of retrieving a resource in a supported media type"@en ;
+                   rdfs:label "Ontopus Controller" .
+
+
 ###  http://ontology.lukaskabc.cz/application/ontopus#OntopusCatalog
 ontopus:OntopusCatalog rdf:type owl:Class ;
                        rdfs:subClassOf dcat:Catalog ,
@@ -67,6 +102,12 @@ ontopus:OntopusCatalog rdf:type owl:Class ;
 ontopus:TemporaryContext rdf:type owl:Class ;
                          rdfs:comment "Temporary GRAPH in a database"@en ;
                          rdfs:label "TemporaryContext"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#UriMapping
+ontopus:UriMapping rdf:type owl:Class ;
+                   rdfs:comment "Mapping of an URI identifier, identifying an entity or an ontology document, to an Ontopus Controller producing the entity/document in a supported media type."@en ;
+                   rdfs:label "URI Mapping"@en .
 
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#UserAccount
@@ -93,5 +134,22 @@ ontopus:VersionSeries rdf:type owl:Class ;
                       rdfs:comment "Dataset series of ontology artifacts representing different versions of a single ontology"@en ;
                       rdfs:label "Ontology version series"@en .
 
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://ontology.lukaskabc.cz/application/ontopus#OntologyDocument
+ontopus:OntologyDocument rdf:type owl:NamedIndividual ,
+                                  <http://xmlns.com/foaf/0.1/Document> ;
+                         rdfs:comment "A document describing an ontology"@en ;
+                         rdfs:label "Ontology Document"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#OntologyResource
+ontopus:OntologyResource rdf:type owl:NamedIndividual ,
+                                rdfs:Resource ;
+                       rdfs:comment "A thing that participates in an ontology"@en ;
+                       rdfs:label "Ontology Entity"@en .
 
 ###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

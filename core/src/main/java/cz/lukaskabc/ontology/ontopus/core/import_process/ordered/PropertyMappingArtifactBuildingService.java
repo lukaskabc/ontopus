@@ -7,7 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyArtifactBuildingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;

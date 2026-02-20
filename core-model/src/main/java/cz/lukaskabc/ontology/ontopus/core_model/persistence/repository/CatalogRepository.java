@@ -2,8 +2,8 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.OntopusCatalogDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;

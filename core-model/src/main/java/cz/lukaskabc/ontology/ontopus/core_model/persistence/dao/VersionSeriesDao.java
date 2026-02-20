@@ -1,9 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.jspecify.annotations.Nullable;

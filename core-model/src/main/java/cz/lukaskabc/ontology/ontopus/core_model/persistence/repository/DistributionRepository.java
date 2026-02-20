@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntologyDistribution;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.DistributionDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;

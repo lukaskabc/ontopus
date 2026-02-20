@@ -1,8 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.model.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import org.springframework.stereotype.Component;
 
 @Component

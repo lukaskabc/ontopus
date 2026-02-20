@@ -1,9 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionArtifact;
-import cz.lukaskabc.ontology.ontopus.core_model.model.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.NullMarked;
 

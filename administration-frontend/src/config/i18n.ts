@@ -30,12 +30,6 @@ if (!i18n.isInitialized && !i18n.isInitializing) {
       maxRetries: 5,
       interpolation: {
         escapeValue: false, // react already safes from xss
-        format: (value, format, lng, options) => {
-          if (value instanceof Date && format === 'iso-date') {
-            return value.toISOString().split('T')[0] // Returns YYYY-MM-DD
-          }
-          return value
-        },
       },
       backend: {
         backends: [FetchBackend, resourceToBackend(bundledTranslations)],
@@ -53,5 +47,12 @@ if (!i18n.isInitialized && !i18n.isInitializing) {
       },
     })
 }
+
+i18n.services.formatter?.addCached('iso-date', () => (value) => {
+  if (value instanceof Date) {
+    return value.toISOString().split('T')[0] // Returns YYYY-MM-DD
+  }
+  return value
+})
 
 export default i18n

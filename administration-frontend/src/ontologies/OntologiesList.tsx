@@ -47,18 +47,6 @@ export default function OntologiesList() {
   const dataSource = useMemo(() => new VersionSeriesListEntryDataSource(i18n), [i18n])
 
   return (
-    // <Crud<OntologyEntity>
-    //   dataSource={OntologyDataSource}
-    //   dataSourceCache={notesCache}
-    //   rootPath="/ontologies"
-    //   initialPageSize={10}
-    //   defaultValues={{ title: 'New note' }}
-    //   pageTitles={{
-    //     create: 'New Note',
-    //     edit: `Note ${editNoteId} - Edit`,
-    //     show: `Note ${showNoteId}`,
-    //   }}
-    // />
     <VersionSeriesListEntryDataSourceContext.Provider value={dataSource}>
       <CrudProvider<VersionSeriesListEntry> dataSource={dataSource} dataSourceCache={dataCacheRef}>
         <Switch>

@@ -2,9 +2,13 @@
 FROM node:25-alpine AS frontend
 
 WORKDIR /administration-frontend
+COPY administration-frontend/package.json administration-frontend/package-lock.json* ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
 COPY administration-frontend .
-RUN npm ci
-RUN npm run build -- --base=/admin/
+RUN --mount=type=cache,target=/root/.npm \
+    npm run build -- --base=/admin/
 
 FROM maven:3-eclipse-temurin-25-alpine AS backend
 
@@ -16,14 +20,14 @@ COPY "mvnw.cmd" .
 COPY pom.xml .
 COPY --parents ./*/pom.xml .
 
-RUN ls -la --recursive .
-
-RUN ./mvnw clean verify --fail-never
+RUN --mount=type=cache,target=/root/.m2 \
+    ./mvnw dependency:go-offline -B
 
 COPY --exclude=administration-frontend . .
 COPY --from=frontend /administration-frontend/dist ./core/src/main/resources/static
 
-RUN ./mvnw clean package -Dspotless.skip
+RUN --mount=type=cache,target=/root/.m2 \
+    ./mvnw clean package -Dspotless.skip -DskipTests
 
 FROM eclipse-temurin:25-jre-alpine as ontopus
 

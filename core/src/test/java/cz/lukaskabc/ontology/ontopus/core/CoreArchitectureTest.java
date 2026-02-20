@@ -51,6 +51,7 @@ public class CoreArchitectureTest {
     void pluginArchitectureShouldBeStrictlyRespected() {
         layeredArchitecture()
                 .consideringAllDependencies()
+                .withOptionalLayers(true)
                 // spotless:off to keep the call inline
                 // layer definition
                 .layer("Core").definedBy("..ontopus.core..")

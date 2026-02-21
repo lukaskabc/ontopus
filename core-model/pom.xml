@@ -42,6 +42,11 @@
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-repository-api</artifactId>
         </dependency>
+        <!-- Tests -->
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+            <artifactId>test-utils</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

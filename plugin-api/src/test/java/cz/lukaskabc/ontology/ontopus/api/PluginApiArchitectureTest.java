@@ -3,44 +3,34 @@ package cz.lukaskabc.ontology.ontopus.api;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchRule;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
-import org.junit.jupiter.api.Test;
+import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
+import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
 
-public class PluginApiArchitectureTest {
+@SuppressWarnings("unused") // for ArchUnit rule fields
+@OntopusArchitectureTest
+public class PluginApiArchitectureTest extends BaseArchitectureTest {
 
-    private final JavaClasses ontopusClasses = new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_PACKAGE_INFOS)
-            .importPackages("cz.lukaskabc.ontology.ontopus")
-            .as("Ontopus classes");
+    @ArchTest
+    static final ArchRule classesImplementingImportProcessingServiceShouldResideInImportPackage = classes()
+            .that()
+            .resideInAnyPackage("..service.import_process..")
+            .should()
+            .beAssignableTo(ImportProcessingService.class);
 
-    @Test
-    void classesImplementingImportProcessingServiceShouldResideInImportPackage() {
-        classes()
-                .that()
-                .resideInAnyPackage("..service.import_process..")
-                .should()
-                .beAssignableTo(ImportProcessingService.class)
-                .check(ontopusClasses);
-    }
+    @ArchTest
+    static final ArchRule importProcessingServicesResideInImportPackage = classes()
+            .that()
+            .areAssignableTo(ImportProcessingService.class)
+            .should()
+            .resideInAnyPackage("..service.import_process..");
 
-    @Test
-    void importProcessingServicesResideInImportPackage() {
-        classes()
-                .that()
-                .areAssignableTo(ImportProcessingService.class)
-                .should()
-                .resideInAnyPackage("..service.import_process..")
-                .check(ontopusClasses);
-    }
-
-    @Test
-    void pluginArchitectureShouldBeStrictlyRespected() {
-        layeredArchitecture()
-                .consideringAllDependencies()
-                // spotless:off to keep the call inline
+    @ArchTest
+    static final ArchRule pluginArchitectureShouldBeStrictlyRespected = layeredArchitecture()
+                    .consideringAllDependencies()
+                    // spotless:off to keep the call inline
             // layer definition
             .layer("Core").definedBy("..ontopus.core..")
             .layer("CoreModel").definedBy("..ontopus.core_model..")
@@ -50,8 +40,7 @@ public class PluginApiArchitectureTest {
             // rules
             .whereLayer("Plugin").mayNotBeAccessedByAnyLayer()
             .whereLayer("Core").mayOnlyBeAccessedByLayers("Plugin")
-            // spotless:on
-                // assertation
-                .check(ontopusClasses);
-    }
+        // spotless:on
+            // assertation
+            ;
 }

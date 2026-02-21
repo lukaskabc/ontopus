@@ -2,57 +2,34 @@ package cz.lukaskabc.ontology.ontopus.core;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchRule;
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
-import cz.lukaskabc.ontology.ontopus.core.rest.ImportController;
-import org.junit.jupiter.api.Test;
+import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
+import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
 
-public class CoreArchitectureTest {
+@SuppressWarnings("unused") // for ArchUnit rule fields
+@OntopusArchitectureTest
+public class CoreArchitectureTest extends BaseArchitectureTest {
 
-    private final JavaClasses ontopusClasses = new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_PACKAGE_INFOS)
-            .importPackages("cz.lukaskabc.ontology.ontopus")
-            .as("Ontopus classes");
+    @ArchTest
+    static final ArchRule initializationServicesShouldResideInInitPackage =
+            classes().that().implement(InitializationService.class).should().resideInAPackage("..service.init..");
 
-    @Test
-    void initializationServicesShouldResideInInitPackage() {
-        classes()
-                .that()
-                .implement(InitializationService.class)
-                .should()
-                .resideInAPackage("..service.init..")
-                .check(ontopusClasses);
-    }
+    @ArchTest
+    static final ArchRule orderedImportServicesResidesInOrderedPackage = classes()
+            .that()
+            .implement(OrderedImportPipelineService.class)
+            .should()
+            .resideInAPackage("..import_process.ordered..");
 
-    @Test
-    void ontopusClassesAreNotEmpty() {
-        assertFalse(ontopusClasses.isEmpty());
-        assertTrue(ontopusClasses.contain(OntoPuSApplication.class));
-        assertTrue(ontopusClasses.contain(ImportController.class));
-    }
-
-    @Test
-    void orderedImportServicesResidesInOrderedPackage() {
-        classes()
-                .that()
-                .implement(OrderedImportPipelineService.class)
-                .should()
-                .resideInAPackage("..import_process.ordered..")
-                .check(ontopusClasses);
-    }
-
-    @Test
-    void pluginArchitectureShouldBeStrictlyRespected() {
-        layeredArchitecture()
-                .consideringAllDependencies()
-                .withOptionalLayers(true)
-                // spotless:off to keep the call inline
+    @ArchTest
+    static final ArchRule pluginArchitectureShouldBeStrictlyRespected = layeredArchitecture()
+                    .consideringAllDependencies()
+                    .withOptionalLayers(true)
+                    // spotless:off to keep the call inline
                 // layer definition
                 .layer("Core").definedBy("..ontopus.core..")
                 .layer("CoreModel").definedBy("..ontopus.core_model..")
@@ -62,7 +39,6 @@ public class CoreArchitectureTest {
                 .whereLayer("Plugin").mayNotBeAccessedByAnyLayer()
                 .whereLayer("Core").mayOnlyBeAccessedByLayers("Plugin")
                 // spotless:on
-                // assertation
-                .check(ontopusClasses);
-    }
+            // assertation
+            ;
 }

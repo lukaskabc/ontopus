@@ -2,81 +2,80 @@ package cz.lukaskabc.ontology.ontopus.core_model;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
-import com.tngtech.archunit.core.importer.ImportOption;
-import org.junit.jupiter.api.Test;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchRule;
+import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
+import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CoreModelArchitectureTest {
+@SuppressWarnings("unused") // for ArchUnit rule fields
+@OntopusArchitectureTest
+public class CoreModelArchitectureTest extends BaseArchitectureTest {
 
-    private final JavaClasses ontopusClasses = new ClassFileImporter()
-            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_PACKAGE_INFOS)
-            .importPackages("cz.lukaskabc.ontology.ontopus")
-            .as("Ontopus classes");
+    @ArchTest
+    static final ArchRule coreModelClassesShouldBePublic = classes()
+            .that()
+            .areNotAnonymousClasses() // exclude
+            // compiler-generated
+            // classes
+            .should()
+            .bePublic();
 
-    @Test
-    void coreModelClassesShouldBePublic() {
-        classes()
-                .that()
-                .areNotAnonymousClasses() // exclude compiler-generated classes
-                .should()
-                .bePublic()
-                .check(ontopusClasses);
-    }
+    static final DescribedPredicate<JavaClass> resideInNonCoreModelPackage = resideInAnyPackage(
+                    "cz.lukaskabc.ontology.ontopus..")
+            .and(not(resideInAnyPackage("..ontopus.core_model..")));
 
-    @Test
-    void coreModelModuleDoesNotDependOnOtherModules() {
-        noClasses()
-                .should()
-                .transitivelyDependOnClassesThat(resideInNonCoreModelPackage())
-                .check(ontopusClasses);
-    }
+    @ArchTest
+    static final ArchRule coreModelModuleDoesNotDependOnOtherModules =
+            noClasses().should().transitivelyDependOnClassesThat(resideInNonCoreModelPackage);
 
-    @Test
-    void layersShouldBeStrictlyRespected() {
-        layeredArchitecture()
-                .consideringAllDependencies()
-                // spotless:off to keep the call inline
-                // layer definition
-                .layer("Service").definedBy("..service..")
-                .layer("Repository").definedBy("..persistence.repository..")
-                .layer("Dao").definedBy("..persistence.dao..")
-                // rules
-                .whereLayer("Service").mayNotBeAccessedByAnyLayer()
-                .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
-                .whereLayer("Dao").mayOnlyBeAccessedByLayers("Repository")
-                // spotless:on
-                // assertation
-                .check(ontopusClasses);
-    }
+    @ArchTest
+    static final ArchRule layersShouldBeStrictlyRespected = layeredArchitecture()
+            .consideringAllDependencies()
+            // spotless:off to keep the call inline
+            // layer definition
+            .layer("Service").definedBy("..service..")
+            .layer("Repository").definedBy("..persistence.repository..")
+            .layer("Dao").definedBy("..persistence.dao..")
+            // rules
+            .whereLayer("Service").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
+            .whereLayer("Dao").mayOnlyBeAccessedByLayers("Repository");
+            // spotless:on
 
-    @Test
-    void noPersistenceCycles() {
-        slices().matching("..persistence.(**)").should().beFreeOfCycles().check(ontopusClasses);
-    }
+    @ArchTest
+    static final ArchRule noPersistenceCycles =
+            slices().matching("..persistence.(**)").should().beFreeOfCycles();
 
-    @Test
-    void noServiceCycles() {
-        slices().matching("..service.(**)").should().beFreeOfCycles().check(ontopusClasses);
-    }
+    @ArchTest
+    static final ArchRule noServiceCycles =
+            slices().matching("..service.(**)").should().beFreeOfCycles();
 
-    @Test
-    void ontopusClassesAreNotEmpty() {
-        assertFalse(ontopusClasses.isEmpty());
-        assertTrue(ontopusClasses.contain(CoreModel.class));
-    }
+    @ArchTest
+    static final ArchRule daoMethodsAreNotTransactional = methods()
+            .that()
+            .areDeclaredInClassesThat()
+            .resideInAPackage("..persistence.dao..")
+            .should()
+            .notBeAnnotatedWith(Transactional.class);
 
-    DescribedPredicate<JavaClass> resideInNonCoreModelPackage() {
-        return resideInAnyPackage("cz.lukaskabc.ontology.ontopus..")
-                .and(not(resideInAnyPackage("..ontopus.core_model..")));
-    }
+    @ArchTest
+    static final ArchRule nonPublicMethodsAreNotTransactional =
+            methods().that().areNotPublic().should().notBeAnnotatedWith(Transactional.class);
+
+    @ArchTest
+    static final ArchRule publicRepositoryMethodsShouldBeTransactional = methods()
+            .that()
+            .arePublic()
+            .and()
+            .areDeclaredInClassesThat()
+            .resideInAPackage("..persistence.repository..")
+            .should()
+            .beAnnotatedWith(Transactional.class);
 }

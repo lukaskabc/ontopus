@@ -20,9 +20,11 @@
         <module>plugin-owl</module>
         <module>plugin-versioning</module>
         <module>plugin-skos</module>
+        <module>test-utils</module>
     </modules>
 
     <properties>
+        <archunit.junit5.version>1.4.1</archunit.junit5.version>
 
         <error-prone.version>2.36.0</error-prone.version>
         <jackson.annotations.version>2.21</jackson.annotations.version>
@@ -41,6 +43,7 @@
         <ontopus.plugin.rdfimport.version>1.0-SNAPSHOT</ontopus.plugin.rdfimport.version>
         <ontopus.plugin.skos.version>1.0-SNAPSHOT</ontopus.plugin.skos.version>
         <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
+        <ontopus.test.utils.version>1.0-SNAPSHOT</ontopus.test.utils.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rdf4j.version>5.2.2</rdf4j.version>
@@ -152,6 +155,13 @@
                 <artifactId>rdf4j-repository-api</artifactId>
                 <version>${rdf4j.version}</version>
             </dependency>
+            <!-- Tests -->
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+                <artifactId>test-utils</artifactId>
+                <version>${ontopus.test.utils.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -215,8 +225,8 @@
         </dependency>
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit</artifactId>
-            <version>1.4.1</version>
+            <artifactId>archunit-junit5</artifactId>
+            <version>${archunit.junit5.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

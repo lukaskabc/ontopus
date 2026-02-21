@@ -1,13 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.response;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.time.Instant;
 
-public abstract class ResourceListEntry<I extends AbstractEntityIdentifier> implements Serializable {
+public abstract class ResourceListEntry<I extends EntityIdentifier> implements Serializable {
     private final URI identifier;
     private final MultilingualString title;
     private final MultilingualString description;

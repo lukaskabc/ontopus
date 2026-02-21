@@ -18,6 +18,6 @@ public class RdfsMappingProviderFactory implements ArtifactPropertyMappingProvid
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
         final VersionSeriesURI ontologyUri = context.getVersionSeries().getIdentifier();
-        return new RdfsPropertyMappingProvider(entityManager, ontologyUri.toURI(), context.getDatabaseContext());
+        return new RdfsPropertyMappingProvider(entityManager, ontologyUri, context.getDatabaseContext());
     }
 }

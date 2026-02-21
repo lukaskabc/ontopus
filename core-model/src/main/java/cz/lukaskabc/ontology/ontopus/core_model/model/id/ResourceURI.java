@@ -2,12 +2,12 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 
 import java.net.URI;
 
-public class OntologyURI extends GraphURI {
-    public OntologyURI(String uri) {
+public class ResourceURI extends AbstractTypedIdentifier {
+    public ResourceURI(String uri) {
         super(uri);
     }
 
-    public OntologyURI(URI uri) {
+    public ResourceURI(URI uri) {
         super(uri);
     }
 }

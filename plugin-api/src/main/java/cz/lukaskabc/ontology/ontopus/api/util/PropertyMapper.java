@@ -8,7 +8,9 @@ import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.cvut.kbss.ontodriver.model.LangString;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
@@ -77,9 +79,10 @@ public class PropertyMapper {
 
     protected final URI contextURI;
 
-    public PropertyMapper(EntityManager entityManager, @Nullable URI subjectURI, AbstractEntityIdentifier contextURI) {
+    public PropertyMapper(EntityManager entityManager, @Nullable ResourceURI subjectURI, GraphURI contextURI) {
         this.entityManager = entityManager;
-        this.subjectURI = subjectURI;
+        this.subjectURI =
+                Optional.ofNullable(subjectURI).map(TypedIdentifier::toURI).orElse(null);
         this.contextURI = Objects.requireNonNull(contextURI).toURI();
     }
 

@@ -4,7 +4,8 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractEntityIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
@@ -17,7 +18,7 @@ public class DublinCorePropertyMappingProvider extends PropertyMapper implements
     private static final String DC_ELEMENTS_PREFIX = "http://purl.org/dc/elements/1.1/";
 
     public DublinCorePropertyMappingProvider(
-            EntityManager entityManager, @Nullable URI subjectURI, AbstractEntityIdentifier contextURI) {
+            EntityManager entityManager, @Nullable ResourceURI subjectURI, GraphURI contextURI) {
         super(entityManager, subjectURI, contextURI);
     }
 

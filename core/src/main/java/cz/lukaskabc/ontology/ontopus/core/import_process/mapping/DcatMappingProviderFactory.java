@@ -18,6 +18,6 @@ public class DcatMappingProviderFactory implements ArtifactPropertyMappingProvid
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
         final VersionSeriesURI ontologyUri = context.getVersionSeries().getIdentifier();
-        return new DcatPropertyMappingProvider(entityManager, ontologyUri.toURI(), context.getDatabaseContext());
+        return new DcatPropertyMappingProvider(entityManager, ontologyUri, context.getDatabaseContext());
     }
 }

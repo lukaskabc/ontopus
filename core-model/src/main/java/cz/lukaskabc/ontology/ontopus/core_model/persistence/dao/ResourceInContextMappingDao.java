@@ -9,6 +9,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.mapping.ResourceInContextMapping;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -34,9 +36,26 @@ public class ResourceInContextMappingDao {
         this.em = em;
     }
 
-    public ResourceInContextMapping find(ResourceURI resource) {
+    public void deleteMappingForGraph(GraphURI graph) {
         try {
-            return (ResourceInContextMapping)
+            em.createNativeQuery("""
+					    DELETE FROM ?context
+					    WHERE {
+					        ?subject ?isPartOf ?graph .
+					    }
+					""")
+                    .setParameter("context", CONTEXT)
+                    .setParameter("isPartOf", Vocabulary.s_p_dcat_isPartOf)
+                    .setParameter("graph", graph.toURI())
+                    .executeUpdate();
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    @Nullable public ResourceInContextMapping find(ResourceURI resource) {
+        try {
+            return (ResourceInContextMapping) AbstractDao.resultOrNull(
                     em.createNativeQuery("""
 					    SELECT ?subject ?object FROM ?context WHERE {
 					        ?subject ?isPartOf ?object .
@@ -44,8 +63,7 @@ public class ResourceInContextMappingDao {
 					""", ResourceInContextMapping.RESOURCE_IN_CONTEXT_MAPPING)
                             .setParameter("context", CONTEXT)
                             .setParameter("isPartOf", Vocabulary.s_p_dcat_isPartOf)
-                            .setParameter("subject", resource.toURI())
-                            .getSingleResult();
+                            .setParameter("subject", resource.toURI())::getSingleResult);
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
@@ -62,6 +80,28 @@ public class ResourceInContextMappingDao {
                     .setParameter("isPartOf", Vocabulary.s_p_dcat_isPartOf)
                     .setParameter("object", graph.toURI())
                     .getResultStream();
+        } catch (RuntimeException e) {
+            throw new PersistenceException(e);
+        }
+    }
+
+    public void mapResourcesFromSourceGraph(GraphURI sourceGraph) {
+        try {
+            em.createNativeQuery("""
+					    WITH ?destinationGraph
+					    INSERT {
+					        ?subject ?isPartOf ?destinationGraph .
+					        ?destinationGraph ?isPartOf ?destinationGraph .
+					    }
+					    USING ?sourceGraph
+					    WHERE {
+					        ?subject ?p ?o .
+					    }
+					""")
+                    .setParameter("destinationGraph", CONTEXT)
+                    .setParameter("isPartOf", Vocabulary.s_p_dcat_isPartOf)
+                    .setParameter("sourceGraph", sourceGraph.toURI())
+                    .executeUpdate();
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }

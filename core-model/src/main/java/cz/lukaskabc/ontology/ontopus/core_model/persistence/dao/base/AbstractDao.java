@@ -36,6 +36,22 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         return "ORDER BY %s ASC(?entity)".formatted(String.join(" ", orders.values()));
     }
 
+    /**
+     * Executes the given supplier and returns its result. If a {@link NoResultException} is thrown during the
+     * execution, null is returned instead.
+     *
+     * @param supplier the supplier to be executed, which may throw a {@link NoResultException} if no result is found
+     * @return the result of the supplier if it executes successfully, or null if a {@link NoResultException} is thrown
+     * @param <T> the type of the result returned by the supplier
+     */
+    @Nullable public static <T> T resultOrNull(ThrowingSupplier<T> supplier) {
+        try {
+            return supplier.get(PersistenceException::new);
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
     protected static void setFilterParams(Query query, @Nullable List<String> filter) {
         if (filter == null) {
             return;
@@ -46,6 +62,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     }
 
     protected final EntityManager em;
+
     protected final Class<E> entityClass;
 
     protected final URI typeUri;
@@ -297,22 +314,6 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             em.persist(entity, descriptor);
         } catch (RuntimeException e) {
             throw new PersistenceException("Failed to persist an entity", e);
-        }
-    }
-
-    /**
-     * Executes the given supplier and returns its result. If a {@link NoResultException} is thrown during the
-     * execution, null is returned instead.
-     *
-     * @param supplier the supplier to be executed, which may throw a {@link NoResultException} if no result is found
-     * @return the result of the supplier if it executes successfully, or null if a {@link NoResultException} is thrown
-     * @param <T> the type of the result returned by the supplier
-     */
-    @Nullable protected <T> T resultOrNull(ThrowingSupplier<T> supplier) {
-        try {
-            return supplier.get(PersistenceException::new);
-        } catch (NoResultException e) {
-            return null;
         }
     }
 

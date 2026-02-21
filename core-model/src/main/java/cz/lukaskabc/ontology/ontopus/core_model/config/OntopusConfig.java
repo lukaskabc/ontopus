@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
@@ -110,21 +111,31 @@ public class OntopusConfig {
         private String description = "Catalog of published ontologies on this OntoPuS instance";
         /** Title of the catalog */
         private String title = "OntoPuS Ontology Catalog";
+        /** Language of the catalog metadata (title, description). */
+        @Nullable private String language = null;
 
         public String getDescription() {
             return description;
+        }
+
+        public @Nullable String getLanguage() {
+            return language;
         }
 
         public String getTitle() {
             return title;
         }
 
-        public URI getUri() {
-            return uri;
+        public OntopusCatalogURI getUri() {
+            return new OntopusCatalogURI(uri);
         }
 
         public void setDescription(String description) {
             this.description = description;
+        }
+
+        public void setLanguage(@Nullable String language) {
+            this.language = language;
         }
 
         public void setTitle(String title) {

@@ -10,7 +10,7 @@ public class CatalogUriUriGenerator implements IdentifierGenerator<OntopusCatalo
     private final OntopusCatalogURI uri;
 
     public CatalogUriUriGenerator(OntopusConfig ontopusConfig) {
-        this.uri = new OntopusCatalogURI(ontopusConfig.getDcatCatalog().getUri());
+        this.uri = ontopusConfig.getDcatCatalog().getUri();
     }
 
     @Override

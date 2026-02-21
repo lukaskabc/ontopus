@@ -27,18 +27,34 @@ public class CoreArchitectureTest extends BaseArchitectureTest {
 
     @ArchTest
     static final ArchRule pluginArchitectureShouldBeStrictlyRespected = layeredArchitecture()
-                    .consideringAllDependencies()
-                    .withOptionalLayers(true)
-                    // spotless:off to keep the call inline
-                // layer definition
-                .layer("Core").definedBy("..ontopus.core..")
-                .layer("CoreModel").definedBy("..ontopus.core_model..")
-                .layer("API").definedBy("..ontopus.api..")
-                .layer("Plugin").definedBy("..plugin..")
-                // rules
-                .whereLayer("Plugin").mayNotBeAccessedByAnyLayer()
-                .whereLayer("Core").mayOnlyBeAccessedByLayers("Plugin")
-                // spotless:on
-            // assertation
-            ;
+            .consideringAllDependencies()
+            .withOptionalLayers(true)
+            // spotless:off to keep the call inline
+            // layer definition
+            .layer("Core").definedBy("..ontopus.core..")
+            .layer("CoreModel").definedBy("..ontopus.core_model..")
+            .layer("API").definedBy("..ontopus.api..")
+            .layer("Plugin").definedBy("..plugin..")
+            // rules
+            .whereLayer("Plugin").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Core").mayOnlyBeAccessedByLayers("Plugin");
+            // spotless:on
+
+    @ArchTest
+    static final ArchRule layeredArchitectureShouldBeStrictlyRespected = layeredArchitecture()
+            .consideringOnlyDependenciesInLayers()
+            // spotless:off to keep the call inline
+            // layer definition
+            .layer("Rest").definedBy("..core.rest..")
+            .layer("Import process service").definedBy("..core.import_process..")
+            .layer("Service").definedBy("..ontopus.core.service..", "..core_model.service..")
+            .layer("Repository").definedBy("..persistence.repository..")
+            .layer("Dao").definedBy("..persistence.dao..")
+            // rules
+            .whereLayer("Rest").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Import process service").mayOnlyBeAccessedByLayers("Rest")
+            .whereLayer("Service").mayOnlyBeAccessedByLayers("Import process service", "Rest")
+            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
+            .whereLayer("Dao").mayOnlyBeAccessedByLayers("Repository");
+            // spotless:on
 }

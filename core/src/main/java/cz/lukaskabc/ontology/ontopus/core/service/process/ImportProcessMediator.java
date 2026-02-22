@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
+import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -270,7 +271,7 @@ public class ImportProcessMediator {
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
     public Future<@Nullable Void> submitFormResult(
-            Map<String, JsonNode> jsonData, Map<FormFileRequest, InputStreamSource> FormFileRequests) {
+            FormJsonDataDto jsonData, Map<FormFileRequest, InputStreamSource> FormFileRequests) {
         return holder.scheduleWithContext((context) -> {
             if (context.hasUnprocessedService()) {
                 Map<String, UploadedFile> filesMap = copyFiles(FormFileRequests, context);

@@ -35,6 +35,7 @@ public class ResourceInContextMappingRepository {
 
     @Transactional
     public void mapResourcesFromSourceGraph(GraphURI sourceGraph) {
-        dao.mapResourcesFromSourceGraph(sourceGraph);
+        dao.deleteExistingMappingsForResourcesFrom(sourceGraph);
+        dao.mapResourcesFrom(sourceGraph);
     }
 }

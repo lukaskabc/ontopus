@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
@@ -50,7 +51,7 @@ public class ImportService {
         contextRequest.getServiceToFormResultMap().values().forEach((formResult) -> {
             Iterator<JsonNode> jsonDataIterator =
                     formResult.values().stream().map(objectMapper::readTree).iterator();
-            result.putAll(requestFileResolver.resolveFiles(jsonDataIterator, files));
+            result.putAll(requestFileResolver.resolveAndCopyFiles(jsonDataIterator, files));
         });
         return result;
     }
@@ -63,10 +64,9 @@ public class ImportService {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Future<@Nullable Void> submitData(
-            Map<String, JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
+    public Future<@Nullable Void> submitData(FormJsonDataDto jsonData, MultiValueMap<String, MultipartFile> files) {
         Map<FormFileRequest, InputStreamSource> reusableFiles =
-                requestFileResolver.resolveFiles(jsonData.values().iterator(), files);
+                requestFileResolver.resolveAndCopyFiles(jsonData.values().iterator(), files);
         return mediator.submitFormResult(jsonData, reusableFiles);
     }
 }

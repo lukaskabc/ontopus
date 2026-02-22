@@ -114,7 +114,7 @@ public class RequestFileResolver {
      * @param files Uploaded files from the request, mapped by form field name.
      * @return Mapping of {@link FormFileRequest} to {@link InputStreamSource} for the corresponding uploaded files.
      */
-    public Map<FormFileRequest, InputStreamSource> resolveFiles(
+    public Map<FormFileRequest, InputStreamSource> resolveAndCopyFiles(
             Iterator<JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
         final List<FormFileRequest> reusableFiles = findFileRequests(jsonData);
         validator.validateObject(reusableFiles).failOnError(ValidationException::new);

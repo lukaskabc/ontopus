@@ -1,6 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.rest;
 
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.core.exception.RestInvalidDataException;
+import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
@@ -24,8 +26,8 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -58,8 +60,8 @@ public class ImportController {
      */
     @Operation(
             summary = "Initialize new import process",
-            description =
-                    "Initialize a new import process for the given version series. If the version series is not specified, a new one will be created.")
+            description = "Initialize a new import process for the given version series. "
+                    + "If the version series is not specified, a new one will be created.")
     @PostMapping("initialize")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void initialize(@Nullable @RequestParam(required = false, name = "versionSeries") URI versionSeries) {
@@ -79,9 +81,7 @@ public class ImportController {
             description = "Performs the whole import process asynchronously from a single request.")
     @ApiResponse(responseCode = "202", description = "Import started successfully")
     @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
-    @PostMapping(
-            path = "combined",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> onCombinedFormSubmit(
             @Parameter(description = "Import context") @RequestParam(name = "context")
                     ImportProcessContextRequest contextRequest,
@@ -95,34 +95,47 @@ public class ImportController {
         return ResponseEntity.accepted().build(); // TODO implement submitting combined data
     }
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @Operation(
+            summary = "Submit data from the JSON form",
+            description = "Submit the data from the dynamic JSON form. "
+                    + "The data are expected to be sent as multipart form data, where the parameters "
+                    + "containing JSON data should have their content type set to application/json. "
+                    + "The files should be sent as file parameters in the same multipart request.")
+    @ApiResponse(responseCode = "202", description = "Import started successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> onFormSubmit(MultipartHttpServletRequest request) throws Throwable {
-        Map<String, JsonNode> jsonData = parseData(request);
+        FormJsonDataDto jsonData = parseData(request);
         MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
         // TODO how to pass async error back to the FE?
         return ImportProcessMediatorFutureHandler.handleFuture(importService.submitData(jsonData, files));
     }
 
-    private Map<String, JsonNode> parseData(MultipartHttpServletRequest request) {
-        Map<String, JsonNode> result = new HashMap<>();
+    /**
+     * Iterates over the parameters of the multipart request and parses them as JSON values.
+     *
+     * @param request the multipart request containing the parameters to be parsed
+     * @return a map of parameter names to their parsed JSON values or strings
+     */
+    private FormJsonDataDto parseData(HttpServletRequest request) {
+        FormJsonDataDto result = new FormJsonDataDto(request.getParameterMap().size());
         for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-            if (entry.getValue().length == 0) {
-                continue;
-            }
-            if (MediaType.APPLICATION_JSON_VALUE.equals(request.getMultipartContentType(entry.getKey()))) {
-                result.put(entry.getKey(), readJsonValues(entry.getValue()));
-            } else {
-                result.put(entry.getKey(), readStringValues(entry.getValue()));
-            }
+            result.put(entry.getKey(), parseDataValue(entry.getValue()));
         }
         return result;
     }
 
-    private JsonNode readJsonValues(String[] values) {
+    /**
+     * Reads the provided string values as JSON and returns the resulting JSON node. If there are multiple values, they
+     * are returned as an array node.
+     *
+     * @param values the string values to be read as JSON
+     * @return the JSON node from the single value or array node containing multiple parsed values
+     */
+    private JsonNode parseDataValue(String[] values) {
         try {
             if (values.length > 1) {
                 ArrayNode node = objectMapper.createArrayNode();
-
                 for (String value : values) {
                     node.add(objectMapper.readTree(value));
                 }
@@ -131,19 +144,7 @@ public class ImportController {
                 return objectMapper.readTree(values[0]);
             }
         } catch (JacksonException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private JsonNode readStringValues(String[] values) {
-        if (values.length > 1) {
-            ArrayNode node = objectMapper.createArrayNode();
-            for (String value : values) {
-                node.add(value);
-            }
-            return node;
-        } else {
-            return objectMapper.readTree(values[0]);
+            throw new RestInvalidDataException("Failed to parse string value as JSON", e);
         }
     }
 }

@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -17,6 +18,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -59,6 +61,8 @@ public class ImportFinalizingService {
         return Map.of(); // TODO whole ImportFinalizingService needs to be redone
     }
 
+    private final ResourceInContextMappingService resourceInContextMappingService;
+
     private final TimeProvider timeProvider;
 
     private final ObjectMapper objectMapper;
@@ -79,7 +83,8 @@ public class ImportFinalizingService {
             ObjectMapper objectMapper,
             VersionSeriesRepository versionSeriesRepository,
             VersionArtifactRepository versionArtifactRepository,
-            CatalogRepository catalogRepository) {
+            CatalogRepository catalogRepository,
+            ResourceInContextMappingService resourceInContextMappingService) {
         this.timeProvider = timeProvider;
         this.em = em;
 
@@ -88,6 +93,7 @@ public class ImportFinalizingService {
         this.versionSeriesRepository = versionSeriesRepository;
         this.versionArtifactRepository = versionArtifactRepository;
         this.catalogRepository = catalogRepository;
+        this.resourceInContextMappingService = resourceInContextMappingService;
     }
 
     /**
@@ -109,12 +115,16 @@ public class ImportFinalizingService {
         // TODO: There should be some validation ensuring that the constructed artifacts
         // are valid
         // and possible errors should be propagated to the user
+        // This can be handled by another previous service and validation here should be
+        // only the last resort
+        // if it fails, the import failed
         Path artifactImportFolder = fileService.createArtifactImportFolder();
 
         persistFiles(context, artifactImportFolder);
         serializeContext(context, artifactImportFolder);
         updateVersionSeries(context);
-        persistDatabaseContext(context);
+        final GraphURI graphURI = persistDatabaseContext(context);
+        resourceInContextMappingService.mapResourcesFromContext(graphURI);
 
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
@@ -140,7 +150,7 @@ public class ImportFinalizingService {
      * Moves the temporary graph from the context to the target ontology graph specified by the identifier of the
      * version artifact. All data from the target graph are dropped before the move.
      */
-    private void persistDatabaseContext(ImportProcessContext context) {
+    private GraphURI persistDatabaseContext(ImportProcessContext context) {
         VersionArtifactURI ontologyGraph =
                 Objects.requireNonNull(context.getVersionArtifact().getIdentifier());
 
@@ -153,6 +163,8 @@ public class ImportFinalizingService {
                     .setParameter("source", context.getDatabaseContext().toURI())
                     .setParameter("target", ontologyGraph.toURI())
                     .executeUpdate();
+
+            return new GraphURI(ontologyGraph.toURI());
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }

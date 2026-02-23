@@ -8,7 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.mapping.ResourceInContextMapping;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ResourceInContextMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -126,14 +126,16 @@ public class ResourceInContextMappingDao {
     public void mapResourcesFrom(GraphURI sourceGraph) {
         try {
             em.createNativeQuery("""
-					               WITH ?context
 					               INSERT {
-					                   ?subject ?isPartOf ?sourceGraph .
-					                   ?sourceGraph ?isPartOf ?sourceGraph .
+					                   GRAPH ?context {
+					                        ?subject ?isPartOf ?sourceGraph .
+					                        ?sourceGraph ?isPartOf ?sourceGraph .
+					                   }
 					               }
-					               USING ?sourceGraph
 					               WHERE {
-					                   ?subject ?p ?o .
+					                   GRAPH ?sourceGraph {
+					                        ?subject ?p ?o .
+					                   }
 					               }
 					""")
                     .setParameter("context", CONTEXT)

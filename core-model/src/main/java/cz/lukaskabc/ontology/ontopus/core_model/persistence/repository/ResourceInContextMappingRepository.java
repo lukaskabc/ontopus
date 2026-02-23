@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.mapping.ResourceInContextMapping;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ResourceInContextMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.ResourceInContextMappingDao;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -130,9 +130,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
         final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         final SecurityContext securityContext = SecurityContextHolder.getContext();
         return () -> {
+            Objects.requireNonNull(instance, "Import process context not initialized, instance is null");
             RequestContextHolder.setRequestAttributes(requestAttributes);
             SecurityContextHolder.setContext(securityContext);
-            assert instance != null;
             consumer.accept(instance);
         };
     }

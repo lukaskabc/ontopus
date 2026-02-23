@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core_model.model.mapping;
+package cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping;
 
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;

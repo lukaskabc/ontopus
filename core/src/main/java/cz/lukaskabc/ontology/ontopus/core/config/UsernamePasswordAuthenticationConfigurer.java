@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.config;
 
-import cz.lukaskabc.ontology.ontopus.core.rest.LoginController;
+import cz.lukaskabc.ontology.ontopus.core.rest.controller.LoginController;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;

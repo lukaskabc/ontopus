@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.rest;
+package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 
 import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
 import org.jspecify.annotations.NonNull;

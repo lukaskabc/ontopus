@@ -4,7 +4,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UserDetailsDelegate;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.UserRepository;
-import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseEntityService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.SecurityConstants;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService extends BaseEntityService<UserURI, User, UserRepository> implements UserDetailsService {
+public class UserService extends BaseService<UserURI, User, UserRepository> implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {

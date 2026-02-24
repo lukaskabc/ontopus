@@ -1,28 +1,43 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 
+import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.List;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 public class ResourceController {
-    @GetMapping("/**")
-    public ResponseEntity<?> getResource(
-            @RequestHeader("Accept") MediaType[] requestedTypes, HttpServletRequest request) {
-        final ResourceURI requestedURI = new ResourceURI(request.getRequestURL().toString());
-        final List<MediaType> sortedTypes = Arrays.asList(requestedTypes);
-        MimeTypeUtils.sortBySpecificity(sortedTypes);
+    private final ResourceService resourceService;
 
-        // TODO: call service which will resolve controller based on the type
-        // preferences and will resolve the URI mapping and call the controller method
-        return ResponseEntity.ok("content");
+    public ResourceController(ResourceService resourceService) {
+        this.resourceService = resourceService;
+    }
+
+    private Charset getCharset(HttpServletRequest request) {
+        String encoding = request.getCharacterEncoding();
+        if (encoding != null) {
+            try {
+                return Charset.forName(encoding);
+            } catch (Exception e) {
+                // fallback to UTF-8
+            }
+        }
+        return StandardCharsets.UTF_8;
+    }
+
+    public ResponseEntity<StreamingResponseBody> getResource(
+            @RequestHeader("Accept") MediaType[] requestedTypes, HttpServletRequest request) {
+        final Charset charset = getCharset(request);
+        final String decodedUrl = URLDecoder.decode(request.getRequestURL().toString(), charset);
+        final ResourceURI requestedURI = new ResourceURI(decodedUrl);
+        return resourceService.getResource(requestedURI, requestedTypes);
     }
 }

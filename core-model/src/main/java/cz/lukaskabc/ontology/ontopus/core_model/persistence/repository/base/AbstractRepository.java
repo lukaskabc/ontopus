@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
@@ -93,7 +94,12 @@ public abstract class AbstractRepository<
     @Transactional(readOnly = true)
     public E findRequired(I identifier) {
         Objects.requireNonNull(identifier);
-        return Optional.ofNullable(find(identifier)).orElseThrow(); // TODO exception type
+        return Optional.ofNullable(find(identifier)).orElseThrow(() -> notFound(identifier));
+    }
+
+    protected NotFoundException notFound(I identifier) {
+        return new NotFoundException(
+                "Entity of type <" + dao.getTypeUri() + "> with identifier <" + identifier + "> not found");
     }
 
     /**

@@ -104,9 +104,9 @@ ontopus:TemporaryContext rdf:type owl:Class ;
                          rdfs:label "TemporaryContext"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#UriMapping
-ontopus:UriMapping rdf:type owl:Class ;
-                   rdfs:comment "Mapping of an URI identifier, identifying an entity or an ontology document, to an Ontopus Controller producing the entity/document in a supported media type."@en ;
+###  http://ontology.lukaskabc.cz/application/ontopus#ContextToControllerMapping
+ontopus:ContextToControllerMapping rdf:type owl:Class ;
+                   rdfs:comment "Mapping of a context URI, identifying an ontology, to an Ontopus Controller producing the entity/document in a supported media type."@en ;
                    rdfs:label "URI Mapping"@en .
 
 

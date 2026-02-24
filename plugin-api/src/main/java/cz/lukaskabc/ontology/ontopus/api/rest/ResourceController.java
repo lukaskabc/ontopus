@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.api.rest;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -16,5 +15,5 @@ import org.springframework.http.ResponseEntity;
  *     MVC Return Values</a>
  */
 public interface ResourceController<R> extends NegotiableController {
-    ResponseEntity<R> handle(ResourceURI requestedURI, RequestContext requestContext);
+    ResponseEntity<R> handleResourceRequest(OntopusRequest requestContext);
 }

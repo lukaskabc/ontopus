@@ -2,6 +2,9 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping;
 
 import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ContextToControllerMappingURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,14 +15,13 @@ import java.util.Set;
  * Mapping of an ontology document, or its entities (defined by {@link #mappingType}, to controllers capable of handling
  * requests for the resource.
  */
-@OWLClass(iri = Vocabulary.s_c_UriMapping)
-public class ResourceToControllerMapping {
-    /** The resource being mapped */
-    @Id
-    @NotNull private URI subject;
+@OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
+public class ContextToControllerMapping extends PersistenceEntity<ContextToControllerMappingURI> {
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject)
+    private URI subject;
 
     /** The controller capable of handling the resource */
-    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy)
+    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Controller> controllers;
 
     /** The type of the mapping */
@@ -35,8 +37,8 @@ public class ResourceToControllerMapping {
         return mappingType;
     }
 
-    public URI getSubject() {
-        return subject;
+    public GraphURI getSubject() {
+        return new GraphURI(subject);
     }
 
     public void setControllers(Set<Controller> controllers) {
@@ -47,7 +49,12 @@ public class ResourceToControllerMapping {
         this.mappingType = mappingType;
     }
 
-    public void setSubject(URI subject) {
-        this.subject = subject;
+    public void setSubject(GraphURI subject) {
+        this.subject = subject.toURI();
+    }
+
+    @Override
+    protected ContextToControllerMappingURI wrapUri(URI uri) {
+        return new ContextToControllerMappingURI(uri);
     }
 }

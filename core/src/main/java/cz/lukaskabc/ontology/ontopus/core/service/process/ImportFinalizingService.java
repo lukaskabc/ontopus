@@ -4,20 +4,26 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.ServiceAwareFormResult;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core.rest.controller.DatabaseRDFController;
 import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ControllerURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.commons.io.FileUtils;
@@ -61,6 +67,14 @@ public class ImportFinalizingService {
         return Map.of(); // TODO whole ImportFinalizingService needs to be redone
     }
 
+    private final EntityManager entityManager;
+
+    private final DescriptorFactory descriptorFactory;
+
+    private final ContextToControllerMappingService contextToControllerMappingService;
+
+    private final DatabaseRDFController databaseRDFController;
+
     private final ResourceInContextMappingService resourceInContextMappingService;
 
     private final TimeProvider timeProvider;
@@ -84,7 +98,11 @@ public class ImportFinalizingService {
             VersionSeriesRepository versionSeriesRepository,
             VersionArtifactRepository versionArtifactRepository,
             CatalogRepository catalogRepository,
-            ResourceInContextMappingService resourceInContextMappingService) {
+            ResourceInContextMappingService resourceInContextMappingService,
+            ContextToControllerMappingService contextToControllerMappingService,
+            DatabaseRDFController databaseRDFController,
+            EntityManager entityManager,
+            DescriptorFactory descriptorFactory) {
         this.timeProvider = timeProvider;
         this.em = em;
 
@@ -94,6 +112,10 @@ public class ImportFinalizingService {
         this.versionArtifactRepository = versionArtifactRepository;
         this.catalogRepository = catalogRepository;
         this.resourceInContextMappingService = resourceInContextMappingService;
+        this.contextToControllerMappingService = contextToControllerMappingService;
+        this.databaseRDFController = databaseRDFController;
+        this.entityManager = entityManager;
+        this.descriptorFactory = descriptorFactory;
     }
 
     /**
@@ -125,6 +147,15 @@ public class ImportFinalizingService {
         updateVersionSeries(context);
         final GraphURI graphURI = persistDatabaseContext(context);
         resourceInContextMappingService.mapResourcesFromContext(graphURI);
+
+        // TODO only temporary for dev
+        final Controller controller = new Controller();
+        controller.setClassName(DatabaseRDFController.class.getName());
+        controller.setIdentifier(new ControllerURI(Controller_.entityClassIRI + "_RDFMapping"));
+        controller.setSupportedMediaTypes(databaseRDFController.getSupportedMediaTypes());
+        entityManager.persist(controller, descriptorFactory.contextToControllerMapping());
+        contextToControllerMappingService.createOntologyMapping(graphURI, Set.of(controller));
+        contextToControllerMappingService.createResourceMapping(graphURI, Set.of(controller));
 
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
@@ -260,7 +291,7 @@ public class ImportFinalizingService {
         }
         artifact.setReleaseDate(timestamp);
         artifact.setModifiedDate(timestamp);
-        artifact.setSeries(series.getIdentifier().toURI());
+        artifact.setSeries(series.getIdentifier());
         series.getMembers().add(artifact.getIdentifier());
         series.setLast(artifact.getIdentifier());
         if (series.getFirst() == null) {

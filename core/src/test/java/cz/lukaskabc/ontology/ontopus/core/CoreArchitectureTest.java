@@ -2,9 +2,13 @@ package cz.lukaskabc.ontology.ontopus.core;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
+import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.library.dependencies.SliceAssignment;
+import com.tngtech.archunit.library.dependencies.SliceIdentifier;
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
@@ -57,4 +61,27 @@ public class CoreArchitectureTest extends BaseArchitectureTest {
             .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
             .whereLayer("Dao").mayOnlyBeAccessedByLayers("Repository");
             // spotless:on
+
+    /** Each service class is assigned to its own slice */
+    static SliceAssignment coreServiceSlices = new SliceAssignment() {
+        @Override
+        public String getDescription() {
+            return "each individual class";
+        }
+
+        @Override
+        public SliceIdentifier getIdentifierOf(JavaClass javaClass) {
+            // Target only the classes within the specific package
+            if (javaClass.getPackageName().startsWith("cz.lukaskabc.ontology.ontopus.core.service")) {
+                // Assign each class to its own slice using its Simple Name
+                return SliceIdentifier.of(javaClass.getSimpleName());
+            }
+            // Ignore classes outside this package
+            return SliceIdentifier.ignore();
+        }
+    };
+
+    @ArchTest
+    static final ArchRule noServiceCyclicDependencies =
+            slices().assignedFrom(coreServiceSlices).should().beFreeOfCycles();
 }

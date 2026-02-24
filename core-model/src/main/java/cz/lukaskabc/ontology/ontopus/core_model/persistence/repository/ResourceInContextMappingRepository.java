@@ -23,12 +23,12 @@ public class ResourceInContextMappingRepository {
         dao.deleteMappingForGraph(graph);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<ResourceInContextMapping> find(ResourceURI resource) {
         return Optional.ofNullable(dao.find(resource));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Stream<ResourceInContextMapping> findAll(GraphURI graph) {
         return dao.findAll(graph).map(ResourceInContextMapping.class::cast);
     }

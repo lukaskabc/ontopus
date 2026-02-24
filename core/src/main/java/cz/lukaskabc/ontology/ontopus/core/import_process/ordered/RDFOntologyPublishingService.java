@@ -50,8 +50,7 @@ public class RDFOntologyPublishingService implements OrderedImportPipelineServic
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        List<URI> subjects =
-                contextDao.findAllSubjects(context.getDatabaseContext().toURI());
+        List<URI> subjects = contextDao.findAllSubjects(context.getDatabaseContext());
         // TODO: subjects may be possible very large?
         Map<String, Set<String>> map = mapByHost(subjects);
         // map.forEach((host, paths) -> {

@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Dataset;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -29,6 +30,10 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
         return distributions.stream().map(DistributionURI::new).collect(Collectors.toSet());
     }
 
+    public VersionSeriesURI getSeries() {
+        return new VersionSeriesURI(getSeriesURI());
+    }
+
     @Override
     public boolean hasDistribution(DistributionURI distributionURI) {
         return this.distributions.contains(distributionURI.toURI());
@@ -37,6 +42,10 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
     @Override
     public void removeDistribution(DistributionURI distributionURI) {
         this.distributions.remove(distributionURI.toURI());
+    }
+
+    public void setSeries(VersionSeriesURI series) {
+        setSeriesURI(series.toURI());
     }
 
     @Override

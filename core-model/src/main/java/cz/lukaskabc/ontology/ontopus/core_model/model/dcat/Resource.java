@@ -5,7 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntityWithDcatIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
 
@@ -18,7 +18,7 @@ import java.util.Set;
 /** Resource published or curated by a single agent. */
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Resource_A)
-public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEntity<ID> {
+public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEntityWithDcatIdentifier<ID> {
     /*
      * skipping access rights, conforms to, contact point, creator
      */

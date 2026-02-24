@@ -289,6 +289,10 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         }
     }
 
+    public URI getTypeUri() {
+        return typeUri;
+    }
+
     /**
      * Merges the state of the given entity into the current persistence context.
      *

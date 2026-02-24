@@ -31,15 +31,15 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
     /** @return unmodifiable set of distribution identifiers */
     public abstract Set<DistributionIdentifier> getDistributions();
 
-    public URI getSeries() {
-        return series; // TODO not type checked
+    protected URI getSeriesURI() {
+        return series;
     }
 
     public abstract boolean hasDistribution(DistributionIdentifier distributionURI);
 
     public abstract void removeDistribution(DistributionIdentifier distributionURI);
 
-    public void setSeries(URI series) {
+    public void setSeriesURI(URI series) {
         this.series = series;
     }
 }

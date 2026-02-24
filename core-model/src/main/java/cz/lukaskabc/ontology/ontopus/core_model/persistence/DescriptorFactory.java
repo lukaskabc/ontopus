@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribut
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping_;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,7 @@ public class DescriptorFactory {
     private final EntityDescriptor ontologyDistribution;
     private final EntityDescriptor temporaryContext;
     private final EntityDescriptor user;
+    private final EntityDescriptor contextToControllerMapping;
 
     public DescriptorFactory() {
         ontologyArtifact = new EntityDescriptor(VersionArtifact_.entityClassIRI.toURI());
@@ -25,6 +27,11 @@ public class DescriptorFactory {
         ontologyDistribution = new EntityDescriptor(OntologyDistribution_.entityClassIRI.toURI());
         temporaryContext = new EntityDescriptor(TemporaryContext_.entityClassIRI.toURI());
         user = new EntityDescriptor(User_.entityClassIRI.toURI());
+        contextToControllerMapping = new EntityDescriptor(ContextToControllerMapping_.entityClassIRI.toURI());
+    }
+
+    public EntityDescriptor contextToControllerMapping() {
+        return contextToControllerMapping;
     }
 
     public EntityDescriptor ontologyArtifact() {

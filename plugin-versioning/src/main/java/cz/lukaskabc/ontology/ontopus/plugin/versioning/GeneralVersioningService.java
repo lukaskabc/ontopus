@@ -5,21 +5,19 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 public class GeneralVersioningService implements OntologyVersioningService {
     static final String VERSION_FIELD = "version";
-
-    @Nullable private JsonForm jsonForm;
 
     private final ObjectMapper objectMapper;
     private final VersionArtifactRepository artifactRepository;
@@ -30,18 +28,30 @@ public class GeneralVersioningService implements OntologyVersioningService {
     }
 
     @Override
-    public void afterStackPush(ImportProcessContext context) {
-        String previousVersion = null;
-        VersionArtifactURI latestVersionUri = context.getVersionSeries().getLast();
-        if (latestVersionUri != null) {
-            previousVersion = artifactRepository.findRequired(latestVersionUri).getVersion();
-        }
-        this.jsonForm = makeJsonForm(previousVersion);
-    }
+    public JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+        String lastVersion = context.getVersionSeries().getVersion();
+        String resolvedVersion = context.getVersionArtifact().getVersion();
 
-    @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
-        return jsonForm;
+        ObjectNode scheme = objectMapper.createObjectNode();
+        scheme.put("type", "object");
+        ObjectNode properties = scheme.putObject("properties");
+        ObjectNode versionField = properties
+                .putObject(VERSION_FIELD)
+                .put("type", "string")
+                .put(
+                        "title",
+                        "ontopus.core.service.OntologyVersioningService.GeneralVersioningService.field.version.title");
+        ArrayNode examples = versionField.putArray("examples");
+
+        Stream.of(lastVersion, resolvedVersion).filter(Objects::nonNull).forEach(examples::add);
+
+        ObjectNode formData = null;
+        if (resolvedVersion != null) {
+            formData = objectMapper.createObjectNode();
+            formData.put(VERSION_FIELD, resolvedVersion);
+        }
+
+        return new JsonForm(scheme, null, formData);
     }
 
     @Override
@@ -59,21 +69,5 @@ public class GeneralVersioningService implements OntologyVersioningService {
             throw new OntopusException(e); // TODO exception
         }
         return null;
-    }
-
-    protected JsonForm makeJsonForm(@Nullable String previousVersion) {
-        ObjectNode scheme = objectMapper.createObjectNode();
-        scheme.put("type", "object");
-        ObjectNode properties = scheme.putObject("properties");
-        properties
-                .putObject(VERSION_FIELD)
-                .put("type", "string")
-                .put(
-                        "title",
-                        "ontopus.core.service.OntologyVersioningService.GeneralVersioningService.field.version.title")
-                .putArray("examples")
-                .add(previousVersion);
-
-        return new JsonForm(scheme, null, null);
     }
 }

@@ -13,6 +13,7 @@ import { Box } from '@mui/material'
 import intlSchema from '@/publish/utils/intlSchema.ts'
 import HeadingWidget from '@/publish/widgets/HeadingWidget.tsx'
 import FileField from '@/publish/fields/FileField.tsx'
+import VersionUriField from '@/publish/fields/VersionUriField.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
@@ -20,6 +21,7 @@ const WIDGETS: RegistryWidgetsType = {
 
 const FIELDS: RegistryFieldsType = {
   fileField: FileField,
+  versionUriField: VersionUriField,
 }
 
 function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {

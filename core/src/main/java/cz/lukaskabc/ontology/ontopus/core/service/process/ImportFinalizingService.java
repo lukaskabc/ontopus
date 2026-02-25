@@ -21,10 +21,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportPro
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -81,8 +81,8 @@ public class ImportFinalizingService {
 
     private final ObjectMapper objectMapper;
 
-    private final VersionSeriesRepository versionSeriesRepository;
-    private final VersionArtifactRepository versionArtifactRepository;
+    private final VersionSeriesService versionSeriesService;
+    private final VersionArtifactService versionArtifactService;
 
     private final EntityManager em;
 
@@ -90,32 +90,32 @@ public class ImportFinalizingService {
 
     private final CatalogRepository catalogRepository;
 
+    // TODO: finalizing service is large and have a lot of dependencies
     public ImportFinalizingService(
-            TimeProvider timeProvider,
-            EntityManager em,
-            OntologyFileService fileService,
-            ObjectMapper objectMapper,
-            VersionSeriesRepository versionSeriesRepository,
-            VersionArtifactRepository versionArtifactRepository,
-            CatalogRepository catalogRepository,
-            ResourceInContextMappingService resourceInContextMappingService,
+            EntityManager entityManager,
+            DescriptorFactory descriptorFactory,
             ContextToControllerMappingService contextToControllerMappingService,
             DatabaseRDFController databaseRDFController,
-            EntityManager entityManager,
-            DescriptorFactory descriptorFactory) {
-        this.timeProvider = timeProvider;
-        this.em = em;
-
-        this.fileService = fileService;
-        this.objectMapper = objectMapper;
-        this.versionSeriesRepository = versionSeriesRepository;
-        this.versionArtifactRepository = versionArtifactRepository;
-        this.catalogRepository = catalogRepository;
-        this.resourceInContextMappingService = resourceInContextMappingService;
-        this.contextToControllerMappingService = contextToControllerMappingService;
-        this.databaseRDFController = databaseRDFController;
+            ResourceInContextMappingService resourceInContextMappingService,
+            TimeProvider timeProvider,
+            ObjectMapper objectMapper,
+            VersionSeriesService versionSeriesService,
+            VersionArtifactService versionArtifactService,
+            EntityManager em,
+            OntologyFileService fileService,
+            CatalogRepository catalogRepository) {
         this.entityManager = entityManager;
         this.descriptorFactory = descriptorFactory;
+        this.contextToControllerMappingService = contextToControllerMappingService;
+        this.databaseRDFController = databaseRDFController;
+        this.resourceInContextMappingService = resourceInContextMappingService;
+        this.timeProvider = timeProvider;
+        this.objectMapper = objectMapper;
+        this.versionSeriesService = versionSeriesService;
+        this.versionArtifactService = versionArtifactService;
+        this.em = em;
+        this.fileService = fileService;
+        this.catalogRepository = catalogRepository;
     }
 
     /**
@@ -160,9 +160,9 @@ public class ImportFinalizingService {
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
 
-        versionSeriesRepository.update(series);
-        versionArtifactRepository.delete(artifact);
-        versionArtifactRepository.update(artifact);
+        versionSeriesService.update(series);
+        versionArtifactService.delete(artifact);
+        versionArtifactService.update(artifact);
         // TODO: what if the artifact already exists?
 
         updateCatalog(series);

@@ -9,7 +9,9 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mapping of an ontology document, or its entities (defined by {@link #mappingType}, to controllers capable of handling
@@ -17,17 +19,29 @@ import java.util.Set;
  */
 @OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
 public class ContextToControllerMapping extends PersistenceEntity<ContextToControllerMappingURI> {
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject)
-    private URI subject;
+    /**
+     * URIs of the ontology that can be handled by the controllers. Always will contain the ontology URI and optionally
+     * also aliases of the ontology.
+     */
+    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject, fetch = FetchType.EAGER)
+    private Set<URI> subjects = new HashSet<>();
 
     /** The controller capable of handling the resource */
     @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Controller> controllers;
+    private Set<Controller> controllers = new HashSet<>();
 
     /** The type of the mapping */
     @NotNull @Enumerated(EnumType.OBJECT_ONE_OF)
     @OWLObjectProperty(iri = Vocabulary.s_p_uriMappingType)
     private MappingType mappingType;
+
+    public void addController(Controller controller) {
+        this.controllers.add(controller);
+    }
+
+    public void addSubject(GraphURI subject) {
+        this.subjects.add(subject.toURI());
+    }
 
     public Set<Controller> getControllers() {
         return controllers;
@@ -37,8 +51,16 @@ public class ContextToControllerMapping extends PersistenceEntity<ContextToContr
         return mappingType;
     }
 
-    public GraphURI getSubject() {
-        return new GraphURI(subject);
+    public Set<GraphURI> getSubjects() {
+        return subjects.stream().map(GraphURI::new).collect(Collectors.toSet());
+    }
+
+    public void removeController(Controller controller) {
+        this.controllers.remove(controller);
+    }
+
+    public void removeSubject(GraphURI subject) {
+        this.subjects.remove(subject.toURI());
     }
 
     public void setControllers(Set<Controller> controllers) {
@@ -49,8 +71,8 @@ public class ContextToControllerMapping extends PersistenceEntity<ContextToContr
         this.mappingType = mappingType;
     }
 
-    public void setSubject(GraphURI subject) {
-        this.subject = subject.toURI();
+    public void setSubjects(Set<GraphURI> subjects) {
+        this.subjects = subjects.stream().map(GraphURI::toURI).collect(Collectors.toSet());
     }
 
     @Override

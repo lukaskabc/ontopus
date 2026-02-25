@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 
 import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+@NullMarked
 @Controller
 public class ResourceController {
     private final ResourceService resourceService;

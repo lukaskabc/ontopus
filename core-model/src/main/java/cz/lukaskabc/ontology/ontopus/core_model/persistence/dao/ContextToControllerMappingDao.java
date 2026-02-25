@@ -24,7 +24,7 @@ public class ContextToControllerMappingDao
 
     @Nullable public ContextToControllerMapping findByTypeAndContext(MappingType mappingType, GraphURI graphURI) {
         return resultOrNull(em.createQuery(
-                        "SELECT m FROM ContextToControllerMapping m WHERE m.mappingType = :mappingType AND m.subject = :graphURI",
+                        "SELECT m FROM ContextToControllerMapping m WHERE m.mappingType = :mappingType AND m.subjects IN (:graphURI)",
                         entityClass)
                 .setMaxResults(1)
                 .setParameter("mappingType", mappingType.getUri())

@@ -5,7 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core.rest.response.VersionSeriesListEntry;
 import cz.lukaskabc.ontology.ontopus.core.rest.response.VersionSeriesResponse;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionSeriesRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-public class EntityController {
-    private final VersionSeriesRepository versionSeriesRepository;
+public class VersionSeriesController {
+    private final VersionSeriesService versionSeriesService;
     private final DtoMapper dtoMapper;
 
-    public EntityController(VersionSeriesRepository versionSeriesRepository, DtoMapper dtoMapper) {
-        this.versionSeriesRepository = versionSeriesRepository;
+    public VersionSeriesController(VersionSeriesService versionSeriesService, DtoMapper dtoMapper) {
+        this.versionSeriesService = versionSeriesService;
         this.dtoMapper = dtoMapper;
     }
 
@@ -33,13 +33,13 @@ public class EntityController {
         //
 
         final VersionSeriesURI uri = new VersionSeriesURI(identifier);
-        final VersionSeries series = versionSeriesRepository.findRequired(uri);
+        final VersionSeries series = versionSeriesService.findRequiredById(uri);
         return dtoMapper.versionSeriesToResponse(series);
     }
 
     @GetMapping("/ontologies")
     public Page<@NonNull VersionSeriesListEntry> versionSeriesList(
             Pageable pageable, @RequestParam(value = "filter", required = false) List<String> filter) {
-        return versionSeriesRepository.find(pageable, filter).map(dtoMapper::versionSeriesToListEntry);
+        return versionSeriesService.find(pageable, filter).map(dtoMapper::versionSeriesToListEntry);
     }
 }

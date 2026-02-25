@@ -42,6 +42,13 @@ public class ResourceService {
         this.contextToControllerMappingService = contextToControllerMappingService;
     }
 
+    private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {
+        if (requestedURI.equals(graphURI)) {
+            return contextToControllerMappingService.findOntologyMappingByContext(graphURI);
+        }
+        return contextToControllerMappingService.findResourceMappingByContext(graphURI);
+    }
+
     private Class<? extends NegotiableController> getControllerClass(Controller controller) {
         try {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
@@ -53,7 +60,7 @@ public class ResourceService {
     @Transactional(readOnly = true)
     public ResponseEntity<StreamingResponseBody> getResource(ResourceURI resourceURI, MediaType[] requestedTypes) {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);
-        ContextToControllerMapping mapping = contextToControllerMappingService.findResourceMappingByContext(graphURI);
+        ContextToControllerMapping mapping = findControllerMapping(resourceURI, graphURI);
 
         Optional<ResponseEntity<StreamingResponseBody>> result = contentNegotiationResolver
                 .resolveController(requestedTypes, mapping.getControllers())

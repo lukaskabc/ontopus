@@ -49,7 +49,7 @@ public class CoreArchitectureTest extends BaseArchitectureTest {
             .consideringOnlyDependenciesInLayers()
             // spotless:off to keep the call inline
             // layer definition
-            .layer("Rest").definedBy("..core.rest..")
+            .layer("Rest").definedBy("..core.rest.controller..")
             .layer("Import process service").definedBy("..core.import_process..")
             .layer("Service").definedBy("..ontopus.core.service..", "..core_model.service..")
             .layer("Repository").definedBy("..persistence.repository..")

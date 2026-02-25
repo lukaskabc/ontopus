@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider;
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProviderFactory;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyArtifactBuildingService;
@@ -37,7 +38,7 @@ public class PropertyMappingArtifactBuildingService
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm() {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
         return null;
     }
 

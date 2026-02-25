@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.file;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -34,8 +35,8 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm() {
-        return this.fileUploadService.getJsonForm();
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+        return this.fileUploadService.getJsonForm(context);
     }
 
     @Override

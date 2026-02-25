@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.core.EndpointRegistrationService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.persistence.ContextDao;
@@ -39,7 +40,7 @@ public class RDFOntologyPublishingService implements OrderedImportPipelineServic
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm() {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
         return null;
     }
 

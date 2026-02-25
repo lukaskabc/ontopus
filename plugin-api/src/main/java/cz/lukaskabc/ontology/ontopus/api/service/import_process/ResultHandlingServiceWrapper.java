@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 
@@ -24,8 +25,8 @@ public class ResultHandlingServiceWrapper<R> implements ImportProcessingService<
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm() {
-        return processingService.getJsonForm();
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+        return processingService.getJsonForm(context);
     }
 
     @Override

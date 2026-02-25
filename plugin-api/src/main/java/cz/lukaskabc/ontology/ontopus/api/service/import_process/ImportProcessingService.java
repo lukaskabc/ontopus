@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 
@@ -17,6 +18,7 @@ public interface ImportProcessingService<R> {
     /**
      * Called once this service was inserted at the top of the stack.
      *
+     * @implSpec The service should not store the context or any of its parts.
      * @param context The process context with service stack with this service at the top.
      */
     default void afterStackPush(ImportProcessContext context) {}
@@ -24,9 +26,11 @@ public interface ImportProcessingService<R> {
     /**
      * Provides a JSON form which will be shown to the user.
      *
+     * @implSpec The method can be called multiple times during the process execution, the result should be cached when
+     *     possible.
      * @return Form with JSON scheme and an optional UI Scheme
      */
-    @Nullable JsonForm getJsonForm();
+    @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context);
 
     /**
      * Provides the description of the Service shown in the UI.

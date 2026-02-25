@@ -10,10 +10,7 @@ import org.jspecify.annotations.NullMarked;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * State of the import process.
@@ -22,7 +19,7 @@ import java.util.Objects;
  * completely blank (e.g. when publishing a version of new ontology)
  */
 @NullMarked
-public class ImportProcessContext {
+public class ImportProcessContext implements ReadOnlyImportProcessContext {
     /** Series of ontology versions of a single ontology */
     private final VersionSeries versionSeries;
     /** Temporary database context TODO: when we will transfer data from temporary context to persistent? */
@@ -63,22 +60,27 @@ public class ImportProcessContext {
         this.processedResults = new ArrayList<>();
     }
 
+    @Override
     public TemporaryContextURI getDatabaseContext() {
         return databaseContext;
     }
 
+    @Override
     public List<ImportProcessingService<?>> getPendingServicesStack() {
-        return pendingServicesStack;
+        return Collections.unmodifiableList(pendingServicesStack);
     }
 
-    public ArrayList<ServiceAwareFormResult> getProcessedResults() {
-        return processedResults;
+    @Override
+    public List<ServiceAwareFormResult> getProcessedResults() {
+        return Collections.unmodifiableList(processedResults);
     }
 
+    @Override
     public List<ImportProcessingService<?>> getProcessedServices() {
-        return processedServices;
+        return Collections.unmodifiableList(processedServices);
     }
 
+    @Override
     public Path getTempFolder() {
         return tempFolder;
     }
@@ -91,10 +93,12 @@ public class ImportProcessContext {
         }
     }
 
+    @Override
     public VersionArtifact getVersionArtifact() {
         return versionArtifact;
     }
 
+    @Override
     public VersionSeries getVersionSeries() {
         return versionSeries;
     }

@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -27,7 +28,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm() {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
         return jsonForm;
     }
 

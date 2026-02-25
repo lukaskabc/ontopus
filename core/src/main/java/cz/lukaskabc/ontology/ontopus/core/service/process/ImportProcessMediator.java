@@ -209,7 +209,7 @@ public class ImportProcessMediator {
 
     private @Nullable JsonForm getCurrentFormUsingContext(ImportProcessContext context) {
         if (context.hasUnprocessedService()) {
-            return context.peekService().getJsonForm();
+            return context.peekService().getJsonForm(context);
         }
         return null;
     }
@@ -244,7 +244,7 @@ public class ImportProcessMediator {
     }
 
     private void processAutoServices(ImportProcessContext context) {
-        while (context.hasUnprocessedService() && context.peekService().getJsonForm() == null) {
+        while (context.hasUnprocessedService() && context.peekService().getJsonForm(context) == null) {
             context.handleResult(new FormResult(Map.of(), Map.of())); // submit empty form result
         }
     }

@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -43,7 +44,7 @@ public class DateVersioningService implements OntologyVersioningService {
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm() {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
         return null;
     }
 

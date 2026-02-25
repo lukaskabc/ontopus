@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
@@ -21,20 +22,7 @@ import java.util.Objects;
 @Service
 @Order(ImportProcessServiceOrder.ARTIFACT_REVIEW_SERVICE)
 public class ArtifactReviewService implements OrderedImportPipelineService<Void> {
-    private final ObjectMapper objectMapper;
-
-    @Nullable private ImportProcessContext importProcessContext = null;
-
-    public ArtifactReviewService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
-    @Override
-    public void afterStackPush(ImportProcessContext context) {
-        this.importProcessContext = context;
-    }
-
-    private String any(MultilingualString multi) {
+    private static String any(MultilingualString multi) {
         if (multi == null) return "";
         if (multi.contains(null)) return multi.get();
         Iterator<String> langIt = multi.getLanguages().iterator();
@@ -44,46 +32,8 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
         return "";
     }
 
-    @Override
-    public @Nullable JsonForm getJsonForm() {
-        Objects.requireNonNull(importProcessContext);
-        ObjectNode scheme = objectMapper.createObjectNode();
-        scheme.put("type", "object");
-        ObjectNode properties = scheme.putObject("properties");
-        ObjectNode seriesProperties = properties
-                .putObject("series")
-                .put("type", "object")
-                .put("title", "ontopus.core.service.ArtifactReviewService.series.title")
-                .put("description", "ontopus.core.service.ArtifactReviewService.series.description")
-                .putObject("properties");
-        ObjectNode artifactProperties = properties
-                .putObject("artifact")
-                .put("type", "object")
-                .put("title", "ontopus.core.service.ArtifactReviewService.artifact.title")
-                .put("description", "ontopus.core.service.ArtifactReviewService.artifact.description")
-                .putObject("properties");
-
-        loadVersionSeriesProperties(seriesProperties);
-        loadArtifactProperties(artifactProperties);
-
-        return new JsonForm(scheme, null, null);
-    }
-
-    @Override
-    public String getServiceName() {
-        return "";
-    }
-
-    @Override
-    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-
-        return null;
-    }
-
-    private void loadArtifactProperties(ObjectNode properties) {
-        Objects.requireNonNull(
-                importProcessContext, "Import process context must be available to load artifact properties");
-        final VersionArtifact artifact = importProcessContext.getVersionArtifact();
+    private static void loadArtifactProperties(ObjectNode properties, ReadOnlyImportProcessContext context) {
+        final VersionArtifact artifact = context.getVersionArtifact();
         properties
                 .putObject(VersionArtifact_.identifier.getName())
                 .put("type", "string")
@@ -104,10 +54,8 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
                 .put("default", artifact.getVersion());
     }
 
-    private void loadVersionSeriesProperties(ObjectNode properties) {
-        Objects.requireNonNull(
-                importProcessContext, "Import process context must be available to load version series properties");
-        final VersionSeries series = importProcessContext.getVersionSeries();
+    private static void loadVersionSeriesProperties(ObjectNode properties, ReadOnlyImportProcessContext context) {
+        final VersionSeries series = context.getVersionSeries();
         properties
                 .putObject(VersionSeries_.identifier.getName())
                 .put("type", "string")
@@ -122,5 +70,46 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
                 .putObject(VersionSeries_.description.getName())
                 .put("type", "string")
                 .put("default", any(series.getDescription()));
+    }
+
+    private final ObjectMapper objectMapper;
+
+    public ArtifactReviewService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+        Objects.requireNonNull(context);
+        ObjectNode scheme = objectMapper.createObjectNode();
+        scheme.put("type", "object");
+        ObjectNode properties = scheme.putObject("properties");
+        ObjectNode seriesProperties = properties
+                .putObject("series")
+                .put("type", "object")
+                .put("title", "ontopus.core.service.ArtifactReviewService.series.title")
+                .put("description", "ontopus.core.service.ArtifactReviewService.series.description")
+                .putObject("properties");
+        ObjectNode artifactProperties = properties
+                .putObject("artifact")
+                .put("type", "object")
+                .put("title", "ontopus.core.service.ArtifactReviewService.artifact.title")
+                .put("description", "ontopus.core.service.ArtifactReviewService.artifact.description")
+                .putObject("properties");
+
+        loadVersionSeriesProperties(seriesProperties, context);
+        loadArtifactProperties(artifactProperties, context);
+
+        return new JsonForm(scheme, null, null);
+    }
+
+    @Override
+    public String getServiceName() {
+        return "";
+    }
+
+    @Override
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+        return null;
     }
 }

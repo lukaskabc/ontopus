@@ -21,10 +21,16 @@ import tools.jackson.databind.node.ObjectNode;
 
 import java.net.URI;
 
-/** {@link OntologyVersioningService} that constructs the version URI by concatenating ontology URI and version. */
+/**
+ * {@link OntologyVersioningService} that constructs the version URI by concatenating ontology URI and version. Uses
+ * {@code VersionUriField} on the frontend to allow the user to customize the URI template.
+ */
 @NullMarked
 @Service
 public class VersionURIConstructionService implements ImportProcessingService<Void> {
+    static final String VERSION_SEGMENT = "{version}";
+    static final String URI_FIELD_NAME = "uri";
+    static final String VERSION_FIELD_NAME = "version";
     private static final Logger log = LogManager.getLogger(VersionURIConstructionService.class);
     private final ObjectMapper objectMapper;
 
@@ -34,21 +40,21 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
 
     @Override
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
-        // TODO pass context to get json form
-        final String version = "2026-02-25";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(
-                "http://onto.fel.cvut.cz/ontologies/slovník/agendový/popis-dat/slovník");
-        builder.pathSegment("{version}");
+        final String version = version(context);
+        final String uri = UriComponentsBuilder.fromUri(seriesURI(context).toURI())
+                .pathSegment(VERSION_SEGMENT)
+                .build()
+                .toUriString();
 
         ObjectNode scheme = objectMapper.createObjectNode();
         scheme.put("type", "object");
         ObjectNode properties = scheme.putObject("properties");
-        properties.putObject("uri").put("type", "string");
-        properties.putObject("version").put("type", "string");
+        properties.putObject(URI_FIELD_NAME).put("type", "string");
+        properties.putObject(VERSION_FIELD_NAME).put("type", "string");
 
         ObjectNode formData = objectMapper.createObjectNode();
-        formData.put("version", version);
-        formData.put("uri", builder.build().toUriString());
+        formData.put(VERSION_FIELD_NAME, version);
+        formData.put(URI_FIELD_NAME, uri);
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
         uiSchema.put("ui:field", "versionUriField");
@@ -63,30 +69,9 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        if (context.getVersionArtifact().getIdentifier() != null) {
-            log.debug(
-                    "Version artifact already has an identifier: {}, skipping version URI construction",
-                    context.getVersionArtifact().getIdentifier());
-            // no operation if there is already an identifier
-            return null;
-        }
+        final String version = version(formResult);
+        final URI versionURI = versionURI(formResult).buildAndExpand(version).toUri();
 
-        VersionSeriesURI ontologyIdentifier = seriesURI(context);
-
-        String version = context.getVersionArtifact().getVersion();
-        if (version == null) {
-            log.warn(
-                    "Failed to construct version URI, the ontology version is missing for version artifact: {}",
-                    context.getVersionArtifact());
-            return null;
-        }
-
-        URI ontologyUri = ontologyIdentifier.toURI();
-        if (!ontologyUri.getPath().endsWith("/") && !StringUtils.hasText(ontologyUri.getFragment())) {
-            ontologyUri = URI.create(ontologyUri + "/");
-        }
-
-        URI versionURI = ontologyUri.resolve(version);
         VersionArtifactURI versionArtifactURI = new VersionArtifactURI(versionURI);
         context.getVersionArtifact().setIdentifier(versionArtifactURI);
         return null;
@@ -100,7 +85,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
      * @return the version series identifier as a {@link VersionSeriesURI}
      * @throws VersionURIConstructionException if the version series identifier is missing in the context
      */
-    private VersionSeriesURI seriesURI(ImportProcessContext context) {
+    private VersionSeriesURI seriesURI(ReadOnlyImportProcessContext context) {
         VersionSeriesURI ontologyIdentifier = context.getVersionSeries().getIdentifier();
         if (ontologyIdentifier == null) {
             throw new VersionURIConstructionException("Failed to construct version URI, "
@@ -109,12 +94,36 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
         return ontologyIdentifier;
     }
 
-    private String version(ImportProcessContext context) {
-        String version = context.getVersionArtifact().getVersion();
-        if (version == null) {
-            throw new VersionURIConstructionException("Failed to construct version URI, "
-                    + "the ontology version is missing for version artifact: " + context.getVersionArtifact());
+    private String version(FormResult formResult) {
+        final String version = formResult.getStringValue(VERSION_FIELD_NAME);
+        if (!StringUtils.hasText(version)) {
+            throw new VersionURIConstructionException("Missing ontology version in the form result");
         }
         return version;
+    }
+
+    /**
+     * Extracts the version from the {@link cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact
+     * VersionArtifact} in the context.
+     *
+     * @param context the import process context containing the version artifact
+     * @return URL encoded version
+     */
+    private String version(ReadOnlyImportProcessContext context) {
+        String version = context.getVersionArtifact().getVersion();
+        if (!StringUtils.hasText(version)) {
+            throw new VersionURIConstructionException(
+                    "Missing ontology version for version artifact: " + context.getVersionArtifact());
+        }
+
+        return UriComponentsBuilder.fromPath(version).build().toUri().toString();
+    }
+
+    private UriComponentsBuilder versionURI(FormResult formResult) {
+        final String uri = formResult.getStringValue(URI_FIELD_NAME);
+        if (!StringUtils.hasText(uri)) {
+            throw new VersionURIConstructionException("Missing ontology URI in the form result");
+        }
+        return UriComponentsBuilder.fromUriString(uri);
     }
 }

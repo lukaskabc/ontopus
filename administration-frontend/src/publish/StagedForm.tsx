@@ -113,11 +113,13 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
 
   const localizedSchema = useMemo(() => intlSchema(jsonSchema, i18n), [jsonSchema])
 
-  useEffect(() => {
-    if (!loadScheme && formRef.current) {
-      formRef.current.reset()
-    }
-  }, [uiSchema, localizedSchema, formData, loadScheme])
+  // using controlled form for form data propagation when the new JSON form and possibly new form data are loaded
+  const onChange = useCallback(
+    (e: IChangeEvent) => {
+      setFormData(e.formData)
+    },
+    [setFormData]
+  )
 
   return (
     <>
@@ -126,7 +128,8 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
           ref={formRef}
           schema={localizedSchema}
           uiSchema={uiSchema}
-          initialFormData={formData}
+          formData={formData}
+          onChange={onChange}
           validator={validator}
           liveValidate={true}
           onSubmit={onSubmit}

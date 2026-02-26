@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
 import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
-import cz.lukaskabc.ontology.ontopus.core.persistence.ContextDao;
+import cz.lukaskabc.ontology.ontopus.core.persistence.dao.ContextDao;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.Triple;
 import org.eclipse.rdf4j.rio.*;

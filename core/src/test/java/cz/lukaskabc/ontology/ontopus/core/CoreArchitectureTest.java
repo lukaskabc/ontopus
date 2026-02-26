@@ -84,4 +84,14 @@ public class CoreArchitectureTest extends BaseArchitectureTest {
     @ArchTest
     static final ArchRule noServiceCyclicDependencies =
             slices().assignedFrom(coreServiceSlices).should().beFreeOfCycles();
+
+    @ArchTest
+    static final ArchRule entityManagerIsAccessedOnlyInDaoAndIdentifierGenerators = classes()
+            .that()
+            .areAssignableTo("cz.cvut.kbss.jopa.model.EntityManager")
+            .or()
+            .haveFullyQualifiedName("cz.cvut.kbss.jopa.model.EntityManager")
+            .should()
+            .onlyBeAccessed()
+            .byAnyPackage("cz.cvut.kbss.jopa..", "..persistence.dao..", "..persistence.identifier..");
 }

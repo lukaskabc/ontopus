@@ -6,7 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.core.TemporaryContextGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.TemporaryContextUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.logging.log4j.LogManager;

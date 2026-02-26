@@ -24,6 +24,8 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             .areNotAnonymousClasses() // exclude
             // compiler-generated
             // classes
+            .and()
+            .resideInAPackage("..core_model..")
             .should()
             .bePublic();
 
@@ -42,10 +44,12 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             // layer definition
             .layer("Service").definedBy("..service..")
             .layer("Repository").definedBy("..persistence.repository..")
+            .layer("Identifier generator").definedBy("..persistence.identifier..")
             .layer("Dao").definedBy("..persistence.dao..")
             // rules
             .whereLayer("Service").mayNotBeAccessedByAnyLayer()
             .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
+            .whereLayer("Identifier generator").mayOnlyBeAccessedByLayers("Repository")
             .whereLayer("Dao").mayOnlyBeAccessedByLayers("Repository");
             // spotless:on
 
@@ -78,4 +82,14 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             .resideInAPackage("..persistence.repository..")
             .should()
             .beAnnotatedWith(Transactional.class);
+
+    @ArchTest
+    static final ArchRule entityManagerIsAccessedOnlyInDaoAndIdentifierGenerators = classes()
+            .that()
+            .areAssignableTo("cz.cvut.kbss.jopa.model.EntityManager")
+            .or()
+            .haveFullyQualifiedName("cz.cvut.kbss.jopa.model.EntityManager")
+            .should()
+            .onlyBeAccessed()
+            .byAnyPackage("cz.cvut.kbss.jopa..", "..persistence.dao..", "..persistence.identifier..");
 }

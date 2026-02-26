@@ -18,8 +18,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
@@ -29,7 +28,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
@@ -45,27 +43,6 @@ import java.util.*;
 @Service
 public class ImportFinalizingService {
     private static final Logger log = LogManager.getLogger(ImportFinalizingService.class);
-
-    private static @NonNull Map<String, UploadedFile> getUploadedFileMap(FormResult result) {
-        // Map<String, UploadedFile> reusableFiles =
-        // new HashMap<>(result.submittedFiles().size());
-        //
-        // for (List<MultipartFile> files : result.submittedFiles().values()) {
-        // for (MultipartFile file : files) {
-        // String fileName = file.getOriginalFilename();
-        // if (fileName == null) {
-        // fileName = file.getName();
-        // }
-        // // TODO review path here
-        // UploadedFile uploadedFile = new UploadedFile(fileName,
-        // Path.of(file.getName()));
-        // reusableFiles.put(fileName, uploadedFile);
-        // }
-        // }
-
-        // return reusableFiles;
-        return Map.of(); // TODO whole ImportFinalizingService needs to be redone
-    }
 
     private final EntityManager entityManager;
 

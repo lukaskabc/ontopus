@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.persistence;
+package cz.lukaskabc.ontology.ontopus.core.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.model.Triple;

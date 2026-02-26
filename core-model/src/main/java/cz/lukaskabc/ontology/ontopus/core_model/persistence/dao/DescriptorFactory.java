@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core_model.persistence;
+package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext_;

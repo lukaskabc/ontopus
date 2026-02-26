@@ -6,7 +6,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingType;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.DescriptorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;

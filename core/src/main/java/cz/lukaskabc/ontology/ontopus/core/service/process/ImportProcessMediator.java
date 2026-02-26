@@ -188,9 +188,9 @@ public class ImportProcessMediator {
      *
      * @param context The context to finalize
      */
-    private void finalize(ImportProcessContext context) {
+    private void finalizeImport(ImportProcessContext context) {
         if (!context.hasUnprocessedService()) {
-            finalizingService.finalize(context);
+            finalizingService.finalizeImport(context);
             closeImportProcess();
             throw new ImportProcessFinalizedException(
                     context.getVersionArtifact().getIdentifier());
@@ -240,7 +240,7 @@ public class ImportProcessMediator {
             context.handleResult(result);
             processAutoServices(context);
         }
-        finalize(context);
+        finalizeImport(context);
     }
 
     private void processAutoServices(ImportProcessContext context) {
@@ -277,7 +277,7 @@ public class ImportProcessMediator {
                 Map<String, UploadedFile> filesMap = copyFiles(FormFileRequests, context);
                 context.handleResult(new FormResult(jsonData, filesMap));
                 processAutoServices(context);
-                finalize(context);
+                finalizeImport(context);
             }
         });
     }

@@ -5,5 +5,7 @@ package cz.lukaskabc.ontology.ontopus.api.service.import_process;
  * {@link org.springframework.core.annotation.Order @Order}
  *
  * @param <R> The type of the result of {@link ImportProcessingService}
+ * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
+ *     annotation)
  */
 public interface OrderedImportPipelineService<R> extends ImportProcessingService<R> {}

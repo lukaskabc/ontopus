@@ -8,10 +8,12 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
 import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @SuppressWarnings("unused") // for ArchUnit rule fields
@@ -92,4 +94,21 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             .should()
             .onlyBeAccessed()
             .byAnyPackage("cz.cvut.kbss.jopa..", "..persistence.dao..", "..persistence.identifier..");
+
+    @ArchTest
+    static final ArchRule servicesAndPersistenceClassesShouldBeAnnotatedWithComponentAnnotation = classes()
+            .that()
+            .resideInAnyPackage("..service..", "..persistence..")
+            .and()
+            .doNotHaveModifier(JavaModifier.ABSTRACT)
+            .and()
+            .areNotInterfaces()
+            .and()
+            .areNotEnums()
+            .and()
+            .areNotAnnotations()
+            .and()
+            .areNotAnonymousClasses()
+            .should()
+            .beMetaAnnotatedWith(Component.class);
 }

@@ -5,8 +5,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribut
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.DistributionDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.validation.Validator;
 
+@Repository
 public class DistributionRepository extends AbstractRepository<DistributionURI, OntologyDistribution, DistributionDao> {
     public DistributionRepository(
             DistributionDao dao,

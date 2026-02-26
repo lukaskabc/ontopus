@@ -25,7 +25,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMapping
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -110,16 +107,17 @@ public class ImportFinalizingService {
      * @param context the process context to finalize
      */
     @Transactional
-    public void finalize(ImportProcessContext context) {
+    public void finalizeImport(ImportProcessContext context) {
         // TODO: There should be some validation ensuring that the constructed artifacts
         // are valid
         // and possible errors should be propagated to the user
         // This can be handled by another previous service and validation here should be
         // only the last resort
         // if it fails, the import failed
-        Path artifactImportFolder = fileService.createArtifactImportFolder();
 
-        persistFiles(context, artifactImportFolder);
+        // TODO: original file publishing service that will serve the original ontology
+        // files
+
         serializeContext(context, artifactImportFolder);
         updateVersionSeries(context);
         final GraphURI graphURI = persistDatabaseContext(context);
@@ -176,30 +174,6 @@ public class ImportFinalizingService {
         } catch (RuntimeException e) {
             throw new PersistenceException(e);
         }
-    }
-
-    /** Copies the temporary directory and all uploaded files to a persistent one */
-    private void persistFiles(ImportProcessContext context, Path destinationFolder) {
-        Path sourcePath = context.getTempFolder();
-
-        try {
-            Files.createDirectories(destinationFolder);
-            // not moving to allow database save to file and try again
-            FileUtils.copyDirectory(sourcePath.toFile(), destinationFolder.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO exception
-        }
-
-        // TODO copy all uploaded files?
-        // context.getProcessedResults()
-        // .forEach(result -> result.submittedFiles().values().forEach(file -> {
-        // try {
-        //
-        // file.transferTo(targetPath.resolve(file.getName()));
-        // } catch (IOException e) {
-        // throw new RuntimeException(e); // TODO: exception
-        // }
-        // }));
     }
 
     private void serializeContext(ImportProcessContext context, Path artifactImportFolder) {

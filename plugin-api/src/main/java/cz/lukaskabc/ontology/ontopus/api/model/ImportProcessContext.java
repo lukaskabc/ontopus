@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,8 +23,9 @@ import java.util.*;
 public class ImportProcessContext implements ReadOnlyImportProcessContext {
     /** Series of ontology versions of a single ontology */
     private final VersionSeries versionSeries;
-    /** Temporary database context TODO: when we will transfer data from temporary context to persistent? */
-    private final TemporaryContextURI databaseContext;
+    /** Temporary database context */
+    @Nullable
+    private TemporaryContextURI databaseContext;
 
     private final Path tempFolder;
     /** A new ontology version */
@@ -62,7 +64,13 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     @Override
     public TemporaryContextURI getDatabaseContext() {
-        return databaseContext;
+        return Objects.requireNonNull(databaseContext, "Database context was already consumed");
+    }
+
+    public TemporaryContextURI consumeDatabaseContext() {
+        final TemporaryContextURI uri = this.databaseContext;
+        this.databaseContext = null;
+        return Objects.requireNonNull(uri);
     }
 
     @Override

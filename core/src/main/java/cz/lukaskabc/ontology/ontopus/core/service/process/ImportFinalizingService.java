@@ -5,7 +5,6 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.ServiceAwareFormResult;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core.rest.controller.DatabaseRDFController;
-import cz.lukaskabc.ontology.ontopus.core.service.OntologyFileService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ControllerURI;
@@ -60,8 +59,6 @@ public class ImportFinalizingService {
 
     private final EntityManager em;
 
-    private final OntologyFileService fileService;
-
     private final CatalogRepository catalogRepository;
 
     // TODO: finalizing service is large and have a lot of dependencies
@@ -76,7 +73,6 @@ public class ImportFinalizingService {
             VersionSeriesService versionSeriesService,
             VersionArtifactService versionArtifactService,
             EntityManager em,
-            OntologyFileService fileService,
             CatalogRepository catalogRepository) {
         this.entityManager = entityManager;
         this.descriptorFactory = descriptorFactory;
@@ -88,7 +84,6 @@ public class ImportFinalizingService {
         this.versionSeriesService = versionSeriesService;
         this.versionArtifactService = versionArtifactService;
         this.em = em;
-        this.fileService = fileService;
         this.catalogRepository = catalogRepository;
     }
 

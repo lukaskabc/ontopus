@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.api.service.import_process;
+package cz.lukaskabc.ontology.ontopus.api.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import org.springframework.transaction.support.TransactionSynchronization;

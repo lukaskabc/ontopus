@@ -14,7 +14,7 @@ import java.net.URI;
 public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSeries> {
 
     public VersionSeriesDao(EntityManager em, DescriptorFactory factory) {
-        super(VersionSeries.class, VersionSeries_.entityClassIRI.toURI(), em, factory.ontologyVersionSeries());
+        super(VersionSeries.class, VersionSeries_.entityClassIRI, em, factory.ontologyVersionSeries());
     }
 
     @Nullable public VersionSeries findForArtifact(URI ontologyArtifact) {

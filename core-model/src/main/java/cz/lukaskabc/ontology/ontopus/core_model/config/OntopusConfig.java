@@ -7,12 +7,18 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 
 @Validated
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
+
+    @NotNull private URI systemURI = URI.create("http://ontopus.local");
+
+    @NotNull private File frontendIndexFile =
+            Path.of("./administration-frontend/dist/index.html").toFile();
 
     @Valid private Database database = new Database();
 
@@ -32,6 +38,14 @@ public class OntopusConfig {
         return files;
     }
 
+    public File getFrontendIndexFile() {
+        return frontendIndexFile;
+    }
+
+    public URI getSystemURI() {
+        return systemURI;
+    }
+
     public void setDatabase(Database database) {
         this.database = database;
     }
@@ -42,6 +56,14 @@ public class OntopusConfig {
 
     public void setFiles(Files files) {
         this.files = files;
+    }
+
+    public void setFrontendIndexFile(File frontendIndexFile) {
+        this.frontendIndexFile = frontendIndexFile;
+    }
+
+    public void setSystemURI(URI systemURI) {
+        this.systemURI = systemURI;
     }
 
     public static class Database {

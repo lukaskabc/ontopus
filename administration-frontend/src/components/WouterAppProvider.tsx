@@ -3,10 +3,21 @@ import { AppProvider, type Router } from '@toolpad/core/AppProvider'
 import { Link, Router as WRouter, useLocation, useSearchParams } from 'wouter-preact'
 import { useCallback, useMemo } from 'preact/hooks'
 import { forwardRef } from 'preact/compat'
+import Constants from '@/Constants.ts'
 
 const WouterLink = forwardRef<HTMLAnchorElement, any>((props, ref) => {
   return <Link ref={ref} {...props} />
 })
+
+function appendBaseUrl(path: string | URL): string {
+  if (typeof path === 'object') {
+    path = path.toString()
+  }
+  if (path.startsWith(Constants.BASE_URL)) {
+    return path
+  }
+  return Constants.BASE_URL + path
+}
 
 export default function (props: AppProviderProps) {
   const [pathname, navigate] = useLocation()
@@ -15,10 +26,10 @@ export default function (props: AppProviderProps) {
   const navigateImpl = useCallback<Navigate>(
     (url, { history = 'auto' } = {}) => {
       if (history === 'auto' || history === 'push') {
-        return navigate(url)
+        return navigate(appendBaseUrl(url))
       }
       if (history === 'replace') {
-        return navigate(url, { replace: true })
+        return navigate(appendBaseUrl(url), { replace: true })
       }
       throw new Error(`Invalid history option: ${history}`)
     },
@@ -35,7 +46,7 @@ export default function (props: AppProviderProps) {
     [pathname, searchParams, navigateImpl]
   )
   return (
-    <WRouter>
+    <WRouter base={Constants.BASE_URL}>
       <AppProvider router={routerImpl} {...props} />
     </WRouter>
   )

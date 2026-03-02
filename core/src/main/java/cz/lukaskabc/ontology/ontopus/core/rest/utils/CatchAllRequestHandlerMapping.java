@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.utils;
 
 import cz.lukaskabc.ontology.ontopus.core.rest.controller.ResourceController;
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -12,15 +13,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
 /**
- * Registers {@link ResourceController} as catch all endpoint {@code /**} with {@link CatchAllEndpointIgnoreCondition}.
+ * Registers {@link ResourceController} as catch all endpoint {@code /**} with {@link RequestUrlNotStartsWithCondition}.
  */
 @Component
 public class CatchAllRequestHandlerMapping extends RequestMappingHandlerMapping {
     private final ResourceController resourceController;
+    private final OntopusConfig ontopusConfig;
 
-    public CatchAllRequestHandlerMapping(ResourceController resourceController) {
+    public CatchAllRequestHandlerMapping(ResourceController resourceController, OntopusConfig ontopusConfig) {
         this.resourceController = resourceController;
         setOrder(1);
+        this.ontopusConfig = ontopusConfig;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class CatchAllRequestHandlerMapping extends RequestMappingHandlerMapping 
                     ResourceController.class.getMethod("getResource", MediaType[].class, HttpServletRequest.class);
 
             RequestMappingInfo mappingInfo = RequestMappingInfo.paths("/**")
-                    .customCondition(new CatchAllEndpointIgnoreCondition())
+                    .customCondition(new RequestUrlNotStartsWithCondition(ontopusConfig.getSystemURI()))
                     .methods(RequestMethod.GET)
                     .build();
 

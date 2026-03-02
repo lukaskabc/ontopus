@@ -14,7 +14,7 @@ public class DistributionDao extends AbstractDao<DistributionURI, OntologyDistri
     public DistributionDao(EntityManager em, DescriptorFactory descriptorFactory) {
         super(
                 OntologyDistribution.class,
-                OntologyDistribution_.entityClassIRI.toURI(),
+                OntologyDistribution_.entityClassIRI,
                 em,
                 descriptorFactory.ontologyDistribution());
     }

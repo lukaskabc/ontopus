@@ -16,7 +16,7 @@ public class ContextToControllerMappingDao
     public ContextToControllerMappingDao(EntityManager em, DescriptorFactory descriptorFactory) {
         super(
                 ContextToControllerMapping.class,
-                ContextToControllerMapping_.entityClassIRI.toURI(),
+                ContextToControllerMapping_.entityClassIRI,
                 em,
                 descriptorFactory.contextToControllerMapping());
     }

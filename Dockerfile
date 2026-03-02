@@ -7,6 +7,9 @@ RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
 COPY administration-frontend .
+
+ENV VITE_ONTOPUS_URL=http://ontopus.local:8080/
+
 RUN --mount=type=cache,target=/root/.npm \
     npm run build -- --base=/admin/
 
@@ -24,7 +27,6 @@ RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw dependency:go-offline -B
 
 COPY --exclude=administration-frontend . .
-COPY --from=frontend /administration-frontend/dist ./core/src/main/resources/static
 
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw clean package -Dspotless.skip -DskipTests
@@ -37,9 +39,13 @@ USER ontopus:ontopus
 WORKDIR /ontopus
 RUN mkdir plugins
 
+ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
+
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
 COPY --from=backend /build/plugin-*/target/*.jar /ontopus/plugins/
+
+COPY --from=frontend /administration-frontend/dist /ontopus/admin
 
 RUN ls -la --recursive /ontopus
 

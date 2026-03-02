@@ -16,7 +16,7 @@ import java.util.Objects;
 public class UserDao extends AbstractDao<UserURI, User> {
     @Autowired
     public UserDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(User.class, User_.entityClassIRI.toURI(), em, descriptorFactory.user());
+        super(User.class, User_.entityClassIRI, em, descriptorFactory.user());
     }
 
     /**

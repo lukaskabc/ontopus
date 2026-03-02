@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext_;
@@ -9,14 +8,13 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
 import java.util.stream.Stream;
 
 @Component
 public class TemporaryContextDao extends AbstractDao<TemporaryContextURI, TemporaryContext> {
-    public TemporaryContextDao(
-            Class<TemporaryContext> entityClass, URI typeUri, EntityManager em, Descriptor descriptor) {
-        super(entityClass, typeUri, em, descriptor);
+
+    public TemporaryContextDao(EntityManager em, DescriptorFactory descriptorFactory) {
+        super(TemporaryContext.class, TemporaryContext_.entityClassIRI, em, descriptorFactory.temporaryContext());
     }
 
     public Stream<TemporaryContext> findAll() {

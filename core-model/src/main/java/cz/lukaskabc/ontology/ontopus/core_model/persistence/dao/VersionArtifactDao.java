@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionArtifact> {
     @Autowired
     public VersionArtifactDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(VersionArtifact.class, VersionArtifact_.entityClassIRI.toURI(), em, descriptorFactory.ontologyArtifact());
+        super(VersionArtifact.class, VersionArtifact_.entityClassIRI, em, descriptorFactory.ontologyArtifact());
     }
 
     // @Nullable public VersionArtifact findLatestArtifact(URI artifactURI) {

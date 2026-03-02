@@ -13,10 +13,6 @@ public class OntopusCatalogDao extends AbstractDao<OntopusCatalogURI, OntopusCat
     @Autowired
     public OntopusCatalogDao(EntityManager em, DescriptorFactory descriptorFactory) {
 
-        super(
-                OntopusCatalog.class,
-                OntopusCatalog_.entityClassIRI.toURI(),
-                em,
-                descriptorFactory.ontologyArtifactCatalog());
+        super(OntopusCatalog.class, OntopusCatalog_.entityClassIRI, em, descriptorFactory.ontologyArtifactCatalog());
     }
 }

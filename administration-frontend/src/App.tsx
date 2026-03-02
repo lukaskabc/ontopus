@@ -10,12 +10,21 @@ import { authPing } from '@/login/actions.ts'
 const Login = lazy(() => import('@/login/LoginForm'))
 const Dashboard = lazy(() => import('@/dashboard/Dashboard'))
 
+function appendSlash(path: string) {
+  if (!path.endsWith('/')) {
+    return path + '/'
+  }
+  return path
+}
+
+const loginPath = appendSlash(import.meta.env.BASE_URL) + 'login'
+
 export function App() {
   const [_, navigate] = useLocation()
   useLayoutEffect(() => {
     authPing().then((loggedIn) => {
       if (!loggedIn) {
-        navigate('/login')
+        navigate(loginPath)
       }
     })
   }, [])

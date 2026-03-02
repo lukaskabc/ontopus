@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base;
 
 import cz.cvut.kbss.jopa.exceptions.NoResultException;
 import cz.cvut.kbss.jopa.model.EntityManager;
+import cz.cvut.kbss.jopa.model.IRI;
 import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.cvut.kbss.jopa.model.metamodel.EntityType;
@@ -71,9 +72,9 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 
     protected final URI entityGraphContext;
 
-    public AbstractDao(Class<E> entityClass, URI typeUri, EntityManager em, Descriptor descriptor) {
+    public AbstractDao(Class<E> entityClass, IRI typeUri, EntityManager em, Descriptor descriptor) {
         this.entityClass = entityClass;
-        this.typeUri = typeUri;
+        this.typeUri = typeUri.toURI();
         this.em = em;
         this.descriptor = descriptor;
         this.entityGraphContext = descriptor.getSingleContext().orElseThrow();

@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.request;
 
-import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

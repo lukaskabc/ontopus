@@ -143,9 +143,10 @@ public class ImportProcessMediator {
 
     private final ImportProcessContextHolder holder;
 
-    private final ImportFinalizingService finalizingService;
+    private final ImportFinalizationService finalizingService;
 
-    public ImportProcessMediator(ImportProcessContextHolder contextHolder, ImportFinalizingService finalizingService) {
+    public ImportProcessMediator(
+            ImportProcessContextHolder contextHolder, ImportFinalizationService finalizingService) {
         this.holder = contextHolder;
         this.finalizingService = finalizingService;
     }

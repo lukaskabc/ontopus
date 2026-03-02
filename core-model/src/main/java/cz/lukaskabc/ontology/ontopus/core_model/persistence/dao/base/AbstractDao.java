@@ -289,6 +289,15 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         }
     }
 
+    public E findReference(I identifier) {
+        Objects.requireNonNull(identifier);
+        try {
+            return em.getReference(entityClass, identifier.toURI());
+        } catch (RuntimeException e) {
+            throw new PersistenceException("Failed to get reference for entity with identifier: " + identifier, e);
+        }
+    }
+
     public URI getTypeUri() {
         return typeUri;
     }

@@ -93,5 +93,10 @@ public class CoreArchitectureTest extends BaseArchitectureTest {
             .haveFullyQualifiedName("cz.cvut.kbss.jopa.model.EntityManager")
             .should()
             .onlyBeAccessed()
-            .byAnyPackage("cz.cvut.kbss.jopa..", "..persistence.dao..", "..persistence.identifier..");
+            .byAnyPackage(
+                    "cz.cvut.kbss.jopa..",
+                    "..persistence.dao..",
+                    "..persistence.identifier..",
+                    // TODO access from property mapper is not nice:
+                    "..api.util..");
 }

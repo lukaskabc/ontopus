@@ -1,8 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+
+import java.util.Set;
 
 /**
  * Service capable of publishing an {@link VersionArtifact OntologyArtifact} via a public endpoint.
@@ -13,7 +17,17 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
  *
  * <p>If a service does not need an input from the user, handling
  * {@link cz.lukaskabc.ontology.ontopus.api.event.OntologyArtifactCreated OntologyArtifactCreated} event can be used
- * instead.
+ * instead. TODO events?
+ *
+ * @implSpec The service should construct
+ *     {@link cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping} and add it to
+ *     the context object with {@link ImportProcessContext#addControllerMapping(ContextToControllerMapping)}
+ * @see
+ *     cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService#createOntologyMapping(GraphURI,
+ *     Set) createOntologyMapping
+ * @see
+ *     cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService#createResourceMapping(GraphURI,
+ *     Set) createResourceMapping
  */
 public interface OntologyPublishingService extends ImportProcessingService<Void> {
 

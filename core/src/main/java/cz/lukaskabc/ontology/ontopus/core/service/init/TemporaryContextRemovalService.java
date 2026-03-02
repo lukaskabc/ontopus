@@ -1,21 +1,20 @@
 package cz.lukaskabc.ontology.ontopus.core.service.init;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
-import cz.lukaskabc.ontology.ontopus.core.service.TemporaryContextRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
+import cz.lukaskabc.ontology.ontopus.core_model.service.TemporaryContextService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TemporaryContextRemovalService implements InitializationService {
-    private final TemporaryContextRegistry temporaryContextRegistry;
 
-    @Autowired
-    public TemporaryContextRemovalService(TemporaryContextRegistry temporaryContextRegistry) {
-        this.temporaryContextRegistry = temporaryContextRegistry;
+    private final TemporaryContextService temporaryContextService;
+
+    public TemporaryContextRemovalService(TemporaryContextService temporaryContextService) {
+        this.temporaryContextService = temporaryContextService;
     }
 
     @Override
     public void initialize() {
-        temporaryContextRegistry.clearAllTemporaryContexts();
+        temporaryContextService.deleteAll();
     }
 }

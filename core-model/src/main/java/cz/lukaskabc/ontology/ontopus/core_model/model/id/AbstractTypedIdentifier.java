@@ -28,7 +28,7 @@ public abstract class AbstractTypedIdentifier implements TypedIdentifier {
 
     @Override
     public String toString() {
-        return "<" + uri + ">";
+        return uri.toString();
     }
 
     @Override

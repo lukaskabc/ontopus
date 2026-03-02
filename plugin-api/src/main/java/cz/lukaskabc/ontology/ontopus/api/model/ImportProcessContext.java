@@ -1,9 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -24,8 +26,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     /** Series of ontology versions of a single ontology */
     private final VersionSeries versionSeries;
     /** Temporary database context */
-    @Nullable
-    private TemporaryContextURI databaseContext;
+    @Nullable private TemporaryContextURI databaseContext;
 
     private final Path tempFolder;
     /** A new ontology version */
@@ -33,7 +34,9 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
-    private final ArrayList<ServiceAwareFormResult> processedResults;
+    private final List<ServiceAwareFormResult> processedResults;
+
+    private final Set<ContextToControllerMapping> controllerMappings;
 
     // TODO add import process context bootstraper API that will allow to subclass
     // the import process context
@@ -46,6 +49,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.pendingServicesStack = new ArrayList<>(other.getPendingServicesStack());
         this.processedServices = new ArrayList<>(other.getProcessedServices());
         this.processedResults = new ArrayList<>(other.getProcessedResults());
+        this.controllerMappings = new HashSet<>(other.getControllerMappings());
     }
 
     public ImportProcessContext(
@@ -60,6 +64,30 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.pendingServicesStack = new ArrayList<>();
         this.processedServices = new ArrayList<>();
         this.processedResults = new ArrayList<>();
+        this.controllerMappings = new HashSet<>();
+    }
+
+    public void addControllerMapping(ContextToControllerMapping mapping) {
+        controllerMappings.add(mapping);
+    }
+
+    public TemporaryContextURI consumeDatabaseContext() {
+        final TemporaryContextURI uri = this.databaseContext;
+        this.databaseContext = null;
+        return Objects.requireNonNull(uri);
+    }
+
+    public Path createTempFolder(Path relativePath) {
+        try {
+            return Files.createDirectory(tempFolder.resolve(relativePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO exception
+        }
+    }
+
+    @Override
+    public Set<ContextToControllerMapping> getControllerMappings() {
+        return Collections.unmodifiableSet(controllerMappings);
     }
 
     @Override
@@ -67,10 +95,9 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         return Objects.requireNonNull(databaseContext, "Database context was already consumed");
     }
 
-    public TemporaryContextURI consumeDatabaseContext() {
-        final TemporaryContextURI uri = this.databaseContext;
-        this.databaseContext = null;
-        return Objects.requireNonNull(uri);
+    public GraphURI getFinalDatabaseContext() {
+        Objects.requireNonNull(versionArtifact.getIdentifier(), "Version artifact identifier is not set");
+        return versionArtifact.getIdentifier().toGraphURI();
     }
 
     @Override
@@ -91,14 +118,6 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     @Override
     public Path getTempFolder() {
         return tempFolder;
-    }
-
-    public Path getTempFolder(Path relativePath) {
-        try {
-            return Files.createDirectory(tempFolder.resolve(relativePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO exception
-        }
     }
 
     @Override

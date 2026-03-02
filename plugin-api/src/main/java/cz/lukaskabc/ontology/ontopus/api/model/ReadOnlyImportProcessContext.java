@@ -4,15 +4,19 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Read-only view of the {@link ImportProcessContext}. The retrieved object should not be modified, but they are not
  * guaranteed to be immutable.
  */
 public interface ReadOnlyImportProcessContext {
+    Set<ContextToControllerMapping> getControllerMappings();
+
     TemporaryContextURI getDatabaseContext();
 
     List<ImportProcessingService<?>> getPendingServicesStack();

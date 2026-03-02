@@ -1,39 +1,34 @@
-package cz.lukaskabc.ontology.ontopus.core.rest.controller;
+package cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing;
 
 import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
 import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
-import cz.lukaskabc.ontology.ontopus.core.persistence.dao.ContextDao;
+import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.Triple;
-import org.eclipse.rdf4j.rio.*;
-import org.eclipse.rdf4j.rio.helpers.BasicWriterSettings;
-import org.jspecify.annotations.NullMarked;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFWriterFactory;
+import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@NullMarked
 @Controller
-public class DatabaseRDFController
+public class RDFController
         implements ResourceController<StreamingResponseBody>, OntologyController<StreamingResponseBody> {
+    private final GraphService graphService;
 
-    private final ContextDao contextDao;
-
-    public DatabaseRDFController(ContextDao contextDao) {
-        this.contextDao = contextDao;
+    public RDFController(GraphService graphService) {
+        this.graphService = graphService;
     }
 
     private Optional<RDFFormat> findCompatible(MediaType mediaType) {
@@ -56,18 +51,19 @@ public class DatabaseRDFController
 
     @Override
     public ResponseEntity<StreamingResponseBody> handleOntologyRequest(OntopusRequest requestContext) {
-        return handleRequestWithData(requestContext, () -> contextDao.findAllTriples(requestContext.graphURI()));
+        final GraphURI graph = requestContext.graphURI();
+        return handleRequestWithData(requestContext, () -> graphService.findAllTriples(graph));
     }
 
     private ResponseEntity<StreamingResponseBody> handleRequestWithData(
-            OntopusRequest request, DataSupplier dataSupplier) {
+            OntopusRequest request, RdfSupplier dataSupplier) {
         try {
             final RDFFormat rdfFormat = resolveRdfFormat(request.mediaType());
             final RDFWriterFactory writerFactory =
                     RDFWriterRegistry.getInstance().get(rdfFormat).orElseThrow();
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.valueOf(rdfFormat.getDefaultMIMEType()))
-                    .body(new ResponseWriter(writerFactory, dataSupplier));
+                    .body(new RdfResponseWriter(writerFactory, dataSupplier));
         } catch (HttpMediaTypeNotAcceptableException e) {
             throw new OntopusException(e); // TODO: exception
         }
@@ -75,44 +71,21 @@ public class DatabaseRDFController
 
     @Override
     public ResponseEntity<StreamingResponseBody> handleResourceRequest(OntopusRequest requestContext) {
-        return handleRequestWithData(
-                requestContext,
-                () -> contextDao.findAllWithSubject(requestContext.graphURI(), requestContext.requestedURI()));
+        final GraphURI graph = requestContext.graphURI();
+        final ResourceURI resource = requestContext.requestedURI();
+        return handleRequestWithData(requestContext, () -> graphService.findAllWithSubject(graph, resource));
     }
 
+    /**
+     * Resolve a compatible RDF format for the given media type.
+     *
+     * @param mediaType the media type to resolve
+     * @return a compatible RDF format
+     * @throws HttpMediaTypeNotAcceptableException if no compatible RDF format is found
+     */
     private RDFFormat resolveRdfFormat(MediaType mediaType) throws HttpMediaTypeNotAcceptableException {
         return findCompatible(mediaType)
                 .orElseThrow(() -> new HttpMediaTypeNotAcceptableException(
                         "No compatible RDF format found for media type: " + mediaType));
-    }
-
-    private interface DataSupplier extends Supplier<Stream<Triple>> {}
-
-    private static class ResponseWriter implements StreamingResponseBody {
-        private final RDFWriterFactory writerFactory;
-        private final DataSupplier dataSupplier;
-
-        public ResponseWriter(RDFWriterFactory writerFactory, DataSupplier dataSupplier) {
-            this.writerFactory = writerFactory;
-            this.dataSupplier = dataSupplier;
-        }
-
-        @Transactional
-        @Override
-        public void writeTo(OutputStream outputStream) {
-            RDFWriter writer = writerFactory.getWriter(outputStream);
-            WriterConfig writerConfig = new WriterConfig().useDefaults();
-            final boolean enablePrettyPrint = true;
-            writerConfig.set(BasicWriterSettings.PRETTY_PRINT, enablePrettyPrint);
-            // merge lines: (consumes memory!)
-            writerConfig.set(BasicWriterSettings.INLINE_BLANK_NODES, enablePrettyPrint);
-            writer.setWriterConfig(writerConfig);
-
-            writer.startRDF();
-
-            // TODO handle namespaces?
-            dataSupplier.get().forEach(writer::handleStatement);
-            writer.endRDF();
-        }
     }
 }

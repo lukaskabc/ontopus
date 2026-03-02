@@ -207,7 +207,7 @@
                 </dependency>
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-                    <artifactId>rdf-importer-plugin</artifactId>
+                    <artifactId>rdf-plugin</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>

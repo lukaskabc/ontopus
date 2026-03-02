@@ -19,20 +19,21 @@ public class ContextToControllerMappingService
         super(repository);
     }
 
-    protected void createMapping(GraphURI contextURI, Set<Controller> controllers, MappingType mappingType) {
+    protected ContextToControllerMapping createMapping(
+            GraphURI contextURI, Set<Controller> controllers, MappingType mappingType) {
         final ContextToControllerMapping mapping = new ContextToControllerMapping();
         mapping.addSubject(contextURI);
         mapping.setMappingType(mappingType);
         mapping.setControllers(controllers);
-        repository.persist(mapping);
+        return mapping;
     }
 
-    public void createOntologyMapping(GraphURI contextURI, Set<Controller> controllers) {
-        createMapping(contextURI, controllers, MappingType.ONTOLOGY_DOCUMENT);
+    public ContextToControllerMapping createOntologyMapping(GraphURI contextURI, Set<Controller> controllers) {
+        return createMapping(contextURI, controllers, MappingType.ONTOLOGY_DOCUMENT);
     }
 
-    public void createResourceMapping(GraphURI contextURI, Set<Controller> controllers) {
-        createMapping(contextURI, controllers, MappingType.RESOURCE);
+    public ContextToControllerMapping createResourceMapping(GraphURI contextURI, Set<Controller> controllers) {
+        return createMapping(contextURI, controllers, MappingType.RESOURCE);
     }
 
     public ContextToControllerMapping findOntologyMappingByContext(GraphURI graphURI) {
@@ -41,5 +42,9 @@ public class ContextToControllerMappingService
 
     public ContextToControllerMapping findResourceMappingByContext(GraphURI graphURI) {
         return repository.findByTypeAndContext(MappingType.RESOURCE, graphURI);
+    }
+
+    public void persist(ContextToControllerMapping contextToControllerMapping) {
+        repository.persist(contextToControllerMapping);
     }
 }

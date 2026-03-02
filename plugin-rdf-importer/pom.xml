@@ -9,8 +9,8 @@
     </parent>
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-    <artifactId>rdf-importer-plugin</artifactId>
-    <version>${ontopus.plugin.rdfimport.version}</version>
+    <artifactId>rdf-plugin</artifactId>
+    <version>${ontopus.plugin.rdf.version}</version>
     <description>OntoPuS plugin allowing to import RDF files into the database.
         Realized using RDF4J Rio library supporting formats like RDF/XML, Turtle, N-Triples, N-Quads, TriG, and TriX</description>
 
@@ -24,6 +24,10 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+            <artifactId>model</artifactId>
         </dependency>
         <!-- RDF/XML export -->
         <dependency>

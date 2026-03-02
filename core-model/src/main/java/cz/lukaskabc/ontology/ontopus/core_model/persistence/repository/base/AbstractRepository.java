@@ -38,6 +38,11 @@ public abstract class AbstractRepository<
         dao.delete(entity);
     }
 
+    @Transactional
+    public void deleteById(I id) {
+        this.delete(dao.findReference(id));
+    }
+
     /**
      * Checks if an entity with the given identifier exists.
      *
@@ -117,7 +122,12 @@ public abstract class AbstractRepository<
     /** Sets the identifier of the given entity if it is missing. */
     protected void setIdentifierIfMissing(E entity) {
         if (entity.getIdentifier() == null) {
-            entity.setIdentifier(identifierGenerator.generate(entity));
+            final I identifier = identifierGenerator.generate(entity);
+            if (identifier == null) {
+                throw new IllegalStateException(
+                        "Identifier generator returned null for entity of type <" + dao.getTypeUri() + ">");
+            }
+            entity.setIdentifier(identifier);
         }
     }
 

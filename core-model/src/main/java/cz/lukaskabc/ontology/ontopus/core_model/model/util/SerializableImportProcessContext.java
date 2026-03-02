@@ -1,33 +1,27 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.util;
 
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import org.jspecify.annotations.NullUnmarked;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Holds list of processed services with corresponding submitted forms for them. */
 @NullUnmarked
 public class SerializableImportProcessContext implements Serializable {
-    @NotNull private URI versionSeriesIdentifier;
-    // TODO: make a DTO/Request object without files directory, that will be
-    // retrieved from version series
-    @NotEmpty private String filesDirectory;
+    @NotNull private URI versionSeriesUri;
 
     @NotEmpty private List<String> servicesList;
 
-    @NotNull private HashMap<String, FormResult> serviceToFormResultMap;
+    @NotNull private Map<String, FormDataDto> serviceToFormResultMap;
 
     public SerializableImportProcessContext() {}
 
-    public String getFilesDirectory() {
-        return filesDirectory;
-    }
-
-    public HashMap<String, FormResult> getServiceToFormResultMap() {
+    public Map<String, FormDataDto> getServiceToFormResultMap() {
         return serviceToFormResultMap;
     }
 
@@ -35,15 +29,11 @@ public class SerializableImportProcessContext implements Serializable {
         return servicesList;
     }
 
-    public URI getVersionSeriesIdentifier() {
-        return versionSeriesIdentifier;
+    public VersionSeriesURI getVersionSeriesUri() {
+        return new VersionSeriesURI(versionSeriesUri);
     }
 
-    public void setFilesDirectory(String filesDirectory) {
-        this.filesDirectory = filesDirectory;
-    }
-
-    public void setServiceToFormResultMap(HashMap<String, FormResult> serviceToFormResultMap) {
+    public void setServiceToFormResultMap(Map<String, FormDataDto> serviceToFormResultMap) {
         this.serviceToFormResultMap = serviceToFormResultMap;
     }
 
@@ -51,7 +41,7 @@ public class SerializableImportProcessContext implements Serializable {
         this.servicesList = servicesList;
     }
 
-    public void setVersionSeriesIdentifier(URI versionSeriesIdentifier) {
-        this.versionSeriesIdentifier = versionSeriesIdentifier;
+    public void setVersionSeriesUri(VersionSeriesURI versionSeriesUri) {
+        this.versionSeriesUri = versionSeriesUri.toURI();
     }
 }

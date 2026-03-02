@@ -40,7 +40,7 @@
         <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
-        <ontopus.plugin.rdfimport.version>1.0-SNAPSHOT</ontopus.plugin.rdfimport.version>
+        <ontopus.plugin.rdf.version>1.0-SNAPSHOT</ontopus.plugin.rdf.version>
         <ontopus.plugin.skos.version>1.0-SNAPSHOT</ontopus.plugin.skos.version>
         <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
         <ontopus.test.utils.version>1.0-SNAPSHOT</ontopus.test.utils.version>
@@ -70,8 +70,8 @@
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-                <artifactId>rdf-importer-plugin</artifactId>
-                <version>${ontopus.plugin.rdfimport.version}</version>
+                <artifactId>rdf-plugin</artifactId>
+                <version>${ontopus.plugin.rdf.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>

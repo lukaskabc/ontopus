@@ -3,11 +3,11 @@ package cz.lukaskabc.ontology.ontopus.core.factory;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
-import cz.lukaskabc.ontology.ontopus.core.service.TemporaryContextRegistry;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.service.TemporaryContextService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,21 +47,19 @@ public class ImportProcessContextHolder implements AutoCloseable {
 
     @Nullable private ImportProcessContext instance = null;
 
-    private final TemporaryContextRegistry temporaryContextRegistry;
-
+    private final TemporaryContextService temporaryContextService;
     private final ListableBeanFactory beanFactory;
     private final ExecutorService executor;
     private final VersionSeriesService versionSeriesService;
     private final Set<File> toDelete = new HashSet<>();
     private final ReentrantLock lock = new ReentrantLock();
 
-    @Autowired
     public ImportProcessContextHolder(
-            TemporaryContextRegistry temporaryContextRegistry,
+            TemporaryContextService temporaryContextService,
             ListableBeanFactory beanFactory,
             ExecutorService executor,
             VersionSeriesService versionSeriesService) {
-        this.temporaryContextRegistry = temporaryContextRegistry;
+        this.temporaryContextService = temporaryContextService;
         this.beanFactory = beanFactory;
         this.executor = executor;
         this.versionSeriesService = versionSeriesService;
@@ -85,7 +82,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
         toDelete.clear();
         if (instance != null) {
-            temporaryContextRegistry.delete(instance.getDatabaseContext());
+            temporaryContextService.deleteById(instance.getDatabaseContext());
             instance = null;
         }
     }
@@ -94,7 +91,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
     private ImportProcessContext create(@Nullable VersionSeriesURI uri) {
         final UUID uuid = UUID.randomUUID();
         final Path tempFolder = createTempFolder(uuid);
-        final TemporaryContextURI databaseContext = this.temporaryContextRegistry.generate();
+        final TemporaryContextURI databaseContext =
+                this.temporaryContextService.generate().getIdentifier();
+        Objects.requireNonNull(databaseContext, "Generated context must have an identifier");
         final VersionArtifact artifact = new VersionArtifact();
         final VersionSeries series = findOrBlankSeries(uri);
         final ImportProcessContext context = new ImportProcessContext(series, databaseContext, tempFolder, artifact);

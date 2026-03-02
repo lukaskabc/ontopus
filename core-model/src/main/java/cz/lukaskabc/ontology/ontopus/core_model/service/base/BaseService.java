@@ -24,6 +24,10 @@ public abstract class BaseService<
         repository.delete(entity);
     }
 
+    public void deleteById(I id) {
+        repository.deleteById(id);
+    }
+
     public Page<E> find(Pageable pageable, List<String> filter) {
         return repository.find(pageable, filter);
     }

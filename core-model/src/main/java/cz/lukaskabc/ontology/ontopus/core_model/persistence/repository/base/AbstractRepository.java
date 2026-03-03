@@ -35,12 +35,12 @@ public abstract class AbstractRepository<
     /** @see #dao#delete(PersistenceEntity) */
     @Transactional
     public void delete(E entity) {
-        dao.delete(entity);
+        dao.delete(entity.getIdentifier());
     }
 
     @Transactional
     public void deleteById(I id) {
-        this.delete(dao.findReference(id));
+        dao.delete(id);
     }
 
     /**

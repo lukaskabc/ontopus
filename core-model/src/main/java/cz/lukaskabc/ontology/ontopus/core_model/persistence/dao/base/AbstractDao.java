@@ -192,13 +192,12 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     /**
      * Deletes the given entity from its context. All triples with the entity as a subject are removed from the context.
      *
-     * @param entity the entity to be deleted
+     * @param identifier the identifier of the entity to be deleted
      */
-    public void delete(E entity) {
-        Objects.requireNonNull(entity, "The entity must not be null");
-        Objects.requireNonNull(entity.getIdentifier(), "The entity identifier must not be null");
+    public void delete(I identifier) {
+        Objects.requireNonNull(identifier, "The entity identifier must not be null");
         try {
-            Optional.ofNullable(find(entity.getIdentifier())).ifPresent(em::remove);
+            Optional.ofNullable(find(identifier)).ifPresent(em::remove);
             em.createNativeQuery("""
 					DELETE WHERE {
 					    GRAPH ?context {
@@ -207,10 +206,10 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 					}
 					""")
                     .setParameter("context", entityGraphContext)
-                    .setParameter("entity", entity.getIdentifier())
+                    .setParameter("entity", identifier.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Could not delete entity: " + entity.getIdentifier(), e);
+            throw persistenceException(LOG, "Could not delete entity: " + identifier, e);
         }
     }
 

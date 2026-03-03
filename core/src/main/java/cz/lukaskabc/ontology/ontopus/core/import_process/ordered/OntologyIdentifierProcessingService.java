@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Order(ImportProcessServiceOrder.ONTOLOGY_IDENTIFIER_RESOLVING_SERVICE)
@@ -60,25 +58,31 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
 
     @Override
     public String getServiceName() {
-        return "";
+        return "Ontology identifier processing service";
     }
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        Set<URI> identifiers = new HashSet<>();
+        // score = number of resolvers that returned the identifier
+        final Map<URI, Integer> identifiersWithScores = new HashMap<>();
         for (OntologyIdentifierResolvingService resolver : resolvers) {
             Set<URI> resolved = resolver.resolve(context.getTemporaryDatabaseContext());
-            identifiers.addAll(resolved);
+            resolved.forEach(uri -> identifiersWithScores.compute(uri, (k, v) -> v == null ? 1 : v + 1));
         }
 
-        // Create a service that will allow the user to pick an identifier
-        // from those automatically resolved, or specify a custom one manually
-        // then wrap the service and set the result to the version series
+        // sort identifiers by their scores in descending order
+        LinkedHashSet<URI> identifiers = identifiersWithScores.entrySet().stream()
+                .sorted(Map.Entry.<URI, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .collect(LinkedHashSet::new, Set::add, Set::addAll);
+
         ImportProcessingService<URI> selector = new ResultHandlingServiceWrapper<>(
                 new OntologyIdentifierSelector(objectMapper, identifiers),
                 OntologyIdentifierProcessingService::setOntologyIdentifier);
 
-        assert context.peekService() == this;
+        if (context.peekService() != this) {
+            throw new IllegalStateException("The service stack is in an unexpected state.");
+        }
         context.popService();
         context.pushService(selector);
 

@@ -51,7 +51,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
     private final ListableBeanFactory beanFactory;
     private final ExecutorService executor;
     private final VersionSeriesService versionSeriesService;
+    /** Files and directories that will be deleted when the context is closed */
     private final Set<File> toDelete = new HashSet<>();
+
     private final ReentrantLock lock = new ReentrantLock();
 
     public ImportProcessContextHolder(
@@ -68,6 +70,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
 
     @Override
     public synchronized void close() {
+        log.debug("Closing import process context {}", instance);
         for (File file : toDelete) {
             try {
                 log.debug("Removing import process context file {}", file::getPath);
@@ -82,7 +85,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
         toDelete.clear();
         if (instance != null) {
-            temporaryContextService.deleteById(instance.getDatabaseContext());
+            if (instance.hasTemporaryDatabaseContext()) {
+                temporaryContextService.deleteById(instance.getTemporaryDatabaseContext());
+            }
             instance = null;
         }
     }
@@ -98,6 +103,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
         final VersionSeries series = findOrBlankSeries(uri);
         final ImportProcessContext context = new ImportProcessContext(series, databaseContext, tempFolder, artifact);
         createServiceStack(context);
+        log.debug("Created new import process context {} and folder {}", context, tempFolder);
         // TODO event
         return context;
     }

@@ -18,6 +18,6 @@ public class DublinCoreMappingProviderFactory implements ArtifactPropertyMapping
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
         final VersionSeriesURI ontologyUri = context.getVersionSeries().getIdentifier();
-        return new DublinCorePropertyMappingProvider(entityManager, ontologyUri, context.getDatabaseContext());
+        return new DublinCorePropertyMappingProvider(entityManager, ontologyUri, context.getTemporaryDatabaseContext());
     }
 }

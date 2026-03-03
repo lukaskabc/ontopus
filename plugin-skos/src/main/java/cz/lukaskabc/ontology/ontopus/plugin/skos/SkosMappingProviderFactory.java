@@ -18,6 +18,6 @@ public class SkosMappingProviderFactory implements ArtifactPropertyMappingProvid
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
         final VersionSeriesURI ontologyUri = context.getVersionSeries().getIdentifier();
-        return new SkosPropertyMappingProvider(entityManager, ontologyUri, context.getDatabaseContext());
+        return new SkosPropertyMappingProvider(entityManager, ontologyUri, context.getTemporaryDatabaseContext());
     }
 }

@@ -17,8 +17,6 @@ import java.util.Set;
 public interface ReadOnlyImportProcessContext {
     Set<ContextToControllerMapping> getControllerMappings();
 
-    TemporaryContextURI getDatabaseContext();
-
     List<ImportProcessingService<?>> getPendingServicesStack();
 
     List<ServiceAwareFormResult> getProcessedResults();
@@ -26,6 +24,8 @@ public interface ReadOnlyImportProcessContext {
     List<ImportProcessingService<?>> getProcessedServices();
 
     Path getTempFolder();
+
+    TemporaryContextURI getTemporaryDatabaseContext();
 
     VersionArtifact getVersionArtifact();
 

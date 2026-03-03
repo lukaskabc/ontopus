@@ -18,6 +18,6 @@ public class OwlMappingProviderFactory implements ArtifactPropertyMappingProvide
     @Override
     public ArtifactPropertyMappingProvider getProvider(ImportProcessContext context) {
         final VersionSeriesURI ontologyUri = context.getVersionSeries().getIdentifier();
-        return new OwlPropertyMappingProvider(entityManager, ontologyUri, context.getDatabaseContext());
+        return new OwlPropertyMappingProvider(entityManager, ontologyUri, context.getTemporaryDatabaseContext());
     }
 }

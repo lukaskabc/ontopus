@@ -1,8 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+import tools.jackson.databind.annotation.JsonDeserialize;
+
 import java.net.URI;
 import java.util.Objects;
 
+@JsonDeserialize(using = TypedIdentifierDeserializer.class)
 public abstract class AbstractTypedIdentifier implements TypedIdentifier {
     private final URI uri;
 
@@ -26,6 +30,7 @@ public abstract class AbstractTypedIdentifier implements TypedIdentifier {
         return uri.hashCode();
     }
 
+    @JsonValue
     @Override
     public String toString() {
         return uri.toString();

@@ -67,7 +67,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
         Set<URI> identifiers = new HashSet<>();
         for (OntologyIdentifierResolvingService resolver : resolvers) {
-            Set<URI> resolved = resolver.resolve(context.getDatabaseContext());
+            Set<URI> resolved = resolver.resolve(context.getTemporaryDatabaseContext());
             identifiers.addAll(resolved);
         }
 

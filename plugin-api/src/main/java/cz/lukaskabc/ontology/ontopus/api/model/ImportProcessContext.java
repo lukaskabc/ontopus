@@ -26,7 +26,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     /** Series of ontology versions of a single ontology */
     private final VersionSeries versionSeries;
     /** Temporary database context */
-    @Nullable private TemporaryContextURI databaseContext;
+    @Nullable private TemporaryContextURI temporaryDatabaseContext;
 
     private final Path tempFolder;
     /** A new ontology version */
@@ -43,7 +43,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     // the hard part will be handling the serialization
     public <P extends ImportProcessContext> ImportProcessContext(P other) {
         this.versionSeries = other.getVersionSeries();
-        this.databaseContext = other.getDatabaseContext();
+        this.temporaryDatabaseContext = other.getTemporaryDatabaseContext();
         this.tempFolder = other.getTempFolder();
         this.versionArtifact = other.getVersionArtifact();
         this.pendingServicesStack = new ArrayList<>(other.getPendingServicesStack());
@@ -54,11 +54,11 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     public ImportProcessContext(
             VersionSeries versionSeries,
-            TemporaryContextURI databaseContext,
+            TemporaryContextURI temporaryDatabaseContext,
             Path tempFolder,
             VersionArtifact versionArtifact) {
         this.versionSeries = Objects.requireNonNull(versionSeries);
-        this.databaseContext = Objects.requireNonNull(databaseContext);
+        this.temporaryDatabaseContext = Objects.requireNonNull(temporaryDatabaseContext);
         this.tempFolder = Objects.requireNonNull(tempFolder);
         this.versionArtifact = Objects.requireNonNull(versionArtifact);
         this.pendingServicesStack = new ArrayList<>();
@@ -72,8 +72,8 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     }
 
     public TemporaryContextURI consumeDatabaseContext() {
-        final TemporaryContextURI uri = this.databaseContext;
-        this.databaseContext = null;
+        final TemporaryContextURI uri = this.temporaryDatabaseContext;
+        this.temporaryDatabaseContext = null;
         return Objects.requireNonNull(uri);
     }
 
@@ -88,11 +88,6 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     @Override
     public Set<ContextToControllerMapping> getControllerMappings() {
         return Collections.unmodifiableSet(controllerMappings);
-    }
-
-    @Override
-    public TemporaryContextURI getDatabaseContext() {
-        return Objects.requireNonNull(databaseContext, "Database context was already consumed");
     }
 
     public GraphURI getFinalDatabaseContext() {
@@ -118,6 +113,11 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     @Override
     public Path getTempFolder() {
         return tempFolder;
+    }
+
+    @Override
+    public TemporaryContextURI getTemporaryDatabaseContext() {
+        return Objects.requireNonNull(temporaryDatabaseContext, "Database context was already consumed");
     }
 
     @Override
@@ -150,6 +150,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         } else {
             throw new IllegalStateException(); // TODO exception
         }
+    }
+
+    public boolean hasTemporaryDatabaseContext() {
+        return temporaryDatabaseContext != null;
     }
 
     public boolean hasUnprocessedService() {

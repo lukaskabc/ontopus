@@ -46,7 +46,7 @@ public class RDFDataImportingService implements DataFileImportingService {
             return;
         }
         final Model model = loadModel(files);
-        final TemporaryContextURI context = importContext.getDatabaseContext();
+        final TemporaryContextURI context = importContext.getTemporaryDatabaseContext();
         final Repository repository = em.unwrap(org.eclipse.rdf4j.repository.Repository.class);
         try (final RepositoryConnection conn = repository.getConnection()) {
             conn.begin();

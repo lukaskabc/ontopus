@@ -62,6 +62,9 @@ public class ImportFinalizationService {
         // This can be handled by another previous service and validation here should be
         // only the last resort
         // if it fails, the import failed
+        log.info(
+                "Finalizing import process for version series: {}",
+                context.getVersionSeries().getIdentifier());
 
         importFinalizingServices.forEach(service -> service.finalizeImport(context));
 
@@ -74,13 +77,7 @@ public class ImportFinalizationService {
 
         updateCatalog(series);
 
-        // TODO delete files from previous import process
-        // TODO: create a mechanism that will clear files for old artifacts
-        // perhaps at the end of saving a new artifact, delete the old files (after
-        // successful transaction)
-
-        // TODO: compile serializable import context
-        // publish event?
+        // TODO: publish event?
     }
 
     private void updateCatalog(VersionSeries series) {

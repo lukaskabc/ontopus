@@ -1,15 +1,18 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
+import static cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao.persistenceException;
+
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.annotations.ConstructorResult;
 import cz.cvut.kbss.jopa.model.annotations.SparqlResultSetMapping;
 import cz.cvut.kbss.jopa.model.annotations.VariableResult;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ResourceInContextMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +31,7 @@ import java.util.stream.Stream;
         })
 @Component
 public class ResourceInContextMappingDao {
+    private static final Logger LOG = LogManager.getLogger(ResourceInContextMappingDao.class);
     static final URI CONTEXT =
             URI.create("http://ontology.lukaskabc.cz/application/ontopus#ResourceInContextMappingGraph");
     protected final EntityManager em;
@@ -64,7 +68,8 @@ public class ResourceInContextMappingDao {
                     .setParameter("sourceGraph", sourceGraph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw new PersistenceException(e);
+            throw persistenceException(
+                    LOG, "Failed to delete existing mappings for resources from graph " + sourceGraph, e);
         }
     }
 
@@ -87,7 +92,7 @@ public class ResourceInContextMappingDao {
                     .setParameter("graph", graph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw new PersistenceException(e);
+            throw persistenceException(LOG, "Failed to delete mapping for graph " + graph, e);
         }
     }
 
@@ -103,7 +108,7 @@ public class ResourceInContextMappingDao {
                             .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
                             .setParameter("subject", resource.toURI())::getSingleResult);
         } catch (RuntimeException e) {
-            throw new PersistenceException(e);
+            throw persistenceException(LOG, "Failed to find resource mapping for " + resource, e);
         }
     }
 
@@ -119,7 +124,7 @@ public class ResourceInContextMappingDao {
                     .setParameter("object", graph.toURI())
                     .getResultStream();
         } catch (RuntimeException e) {
-            throw new PersistenceException(e);
+            throw persistenceException(LOG, "Failed to find all resource to context mappings for graph " + graph, e);
         }
     }
 
@@ -143,7 +148,7 @@ public class ResourceInContextMappingDao {
                     .setParameter("sourceGraph", sourceGraph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw new PersistenceException(e);
+            throw persistenceException(LOG, "Failed to map resources from source graph " + sourceGraph, e);
         }
     }
 }

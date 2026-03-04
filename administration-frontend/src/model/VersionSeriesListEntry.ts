@@ -1,11 +1,8 @@
 import { type PersistenceEntity } from '@/model/PersistenceEntity.ts'
 import { ResourceListEntry } from '@/model/ResourceListEntry.ts'
-import { VersionArtifactListEntry } from '@/model/VersionArtifactListEntry.ts'
-import { validateValue } from '@/model/ModelUtils.ts'
 
 export class VersionSeriesListEntry extends ResourceListEntry implements PersistenceEntity {
-  readonly id: string
-  readonly members: VersionArtifactListEntry[];
+  readonly id: string;
   [key: PropertyKey]: unknown
 
   constructor(jsonObj: any) {
@@ -15,9 +12,5 @@ export class VersionSeriesListEntry extends ResourceListEntry implements Persist
     super(jsonObj)
 
     this.id = this.identifier
-
-    this.members = validateValue(jsonObj.members, 'array', 'members').map(
-      (member: any) => new VersionArtifactListEntry(member)
-    )
   }
 }

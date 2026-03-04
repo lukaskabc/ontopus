@@ -22,7 +22,8 @@ public class VersionArtifactUriGenerator extends AbstractIdentifierGenerator<Ver
     public VersionArtifactURI generate(VersionArtifact entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity::getTitle);
-        String baseId = VersionArtifact_.entityClassIRI + "_" + title;
+        String version = sanitizeString(entity.getVersion());
+        String baseId = VersionArtifact_.entityClassIRI + "_" + title + "_" + version;
 
         int attempt = 0;
         while (attempt < MAX_GENERATION_ATTEMPTS) {

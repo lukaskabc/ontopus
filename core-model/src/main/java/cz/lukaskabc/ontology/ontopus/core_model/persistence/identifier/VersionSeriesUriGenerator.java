@@ -3,8 +3,8 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ public class VersionSeriesUriGenerator extends AbstractIdentifierGenerator<Versi
         String title = sanitizeString(entity::getTitle);
 
         int attempt = 0;
-        final String base = OntologyDistribution_.entityClassIRI + "_" + title;
+        final String base = VersionSeries_.entityClassIRI + "_" + title;
         while (attempt < MAX_GENERATION_ATTEMPTS) {
             URI generated = URI.create(base + (attempt > 0 ? attempt : ""));
 

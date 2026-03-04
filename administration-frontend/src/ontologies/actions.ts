@@ -13,7 +13,7 @@ export function findAllVersionSeries(
 ): Promise<ArrayPage<VersionSeriesListEntry>> {
   const options = toPageRequest(pageable)
   filter?.forEach((val) => options.append('filter', val))
-  return request('GET', 'ontologies?' + options.toString())
+  return request('GET', 'series?' + options.toString())
     .then((response) => response.json())
     .then((data: any) => {
       const page: any = data.page
@@ -21,4 +21,11 @@ export function findAllVersionSeries(
       return new ArrayPage<any>(data.content, page.totalElements, pageable)
     })
     .then((page) => page.map((data) => new VersionSeriesListEntry(data)))
+}
+
+export function parseUri(identifier?: string) {
+  if (identifier) {
+    return decodeURIComponent(identifier)
+  }
+  return null
 }

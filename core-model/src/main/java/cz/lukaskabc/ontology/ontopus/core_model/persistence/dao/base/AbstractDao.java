@@ -20,6 +20,7 @@ import org.springframework.util.function.ThrowingSupplier;
 
 import java.net.URI;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class AbstractDao<I extends TypedIdentifier, E extends PersistenceEntity<I>> {
@@ -167,14 +168,26 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
      * @see #find(Pageable, List) for details on how the filter is applied to the entities
      */
     public long count(List<String> filter) {
+        return this.count(filter, "", q -> {});
+    }
+
+    /**
+     * Counts the number of entities matching the provided filter criteria.
+     *
+     * @param filter a list of strings used for filtering entities based on their properties.
+     * @return the count of entities matching the filter criteria
+     * @see #find(Pageable, List) for details on how the filter is applied to the entities
+     */
+    public long count(List<String> filter, String additionalWhereClause, Consumer<TypedQuery<Long>> queryCustomizer) {
         try {
             final String searchClause = buildFilterClause(filter);
             String query = """
 					SELECT (COUNT(DISTINCT ?entity) AS ?count) FROM ?context WHERE {
 					    ?entity a ?type .
 					    %s
+					    %s
 					}
-					""".formatted(searchClause);
+					""".formatted(additionalWhereClause, searchClause);
 
             TypedQuery<Long> typedQuery = em.createNativeQuery(query, Long.class)
                     .setMaxResults(1)
@@ -182,6 +195,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
                     .setParameter("type", typeUri)
                     .setDescriptor(descriptor);
             setFilterParams(typedQuery, filter);
+            queryCustomizer.accept(typedQuery);
 
             return typedQuery.getSingleResult();
         } catch (RuntimeException e) {
@@ -262,6 +276,24 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
      * @return a list of entities matching the provided pageable and filter criteria
      */
     public List<E> find(Pageable pageable, List<String> filter) {
+        return this.find(pageable, filter, "", q -> {});
+    }
+
+    /**
+     * Finds entities based on the provided pageable and filter criteria.
+     *
+     * <p>Each string from the filter is matched against all properties of the entity using a case-insensitive
+     * containment check. If the filter list is empty or null, no filtering is applied.
+     *
+     * @param pageable the pageable containing pagination and sorting information
+     * @param filter a list of strings used for filtering entities based on their properties
+     * @return a list of entities matching the provided pageable and filter criteria
+     */
+    public List<E> find(
+            Pageable pageable,
+            List<String> filter,
+            String additionalWhereClause,
+            Consumer<TypedQuery<E>> queryCustomizer) {
         Objects.requireNonNull(pageable);
         assert pageable.isPaged();
         try {
@@ -275,11 +307,13 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 					    ?entity a ?type .
 					    %s
 					    %s
+					    %s
 					}
 					%s
 					%s
 					""".formatted(
                             buildSelectParams(orders.keySet()),
+                            additionalWhereClause,
                             buildOptionalClause(orders.keySet()),
                             searchClause,
                             orderClause,
@@ -291,6 +325,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
                     .setDescriptor(descriptor);
             setTypeParams(typedQuery, orders.keySet());
             setFilterParams(typedQuery, filter);
+            queryCustomizer.accept(typedQuery);
 
             return typedQuery.getResultList();
         } catch (RuntimeException e) {

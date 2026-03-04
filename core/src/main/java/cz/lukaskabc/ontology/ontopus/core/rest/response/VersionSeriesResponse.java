@@ -10,7 +10,6 @@ public class VersionSeriesResponse extends DatasetResponse {
     private final URI ontologyURI;
     private final URI last;
     private final URI first;
-    private final Set<VersionArtifactListEntry> members;
 
     public VersionSeriesResponse(
             URI uri,
@@ -25,8 +24,7 @@ public class VersionSeriesResponse extends DatasetResponse {
             URI series,
             URI ontologyURI,
             URI last,
-            URI first,
-            Set<VersionArtifactListEntry> members) {
+            URI first) {
         super(
                 uri,
                 identifier,
@@ -41,7 +39,6 @@ public class VersionSeriesResponse extends DatasetResponse {
         this.ontologyURI = ontologyURI;
         this.last = last;
         this.first = first;
-        this.members = members;
     }
 
     public URI getFirst() {
@@ -50,10 +47,6 @@ public class VersionSeriesResponse extends DatasetResponse {
 
     public URI getLast() {
         return last;
-    }
-
-    public Set<VersionArtifactListEntry> getMembers() {
-        return members;
     }
 
     public URI getOntologyURI() {

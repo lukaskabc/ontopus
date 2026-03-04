@@ -64,7 +64,7 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
                 .getSingleResult();
     }
 
-    protected String sanitizeString(String title) {
+    public String sanitizeString(String title) {
         Objects.requireNonNull(title);
         StringBuilder sb = new StringBuilder();
         for (char c : title.toCharArray()) {

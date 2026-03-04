@@ -44,6 +44,9 @@ export const VersionSeriesDetail: FunctionComponent = () => {
   }, [versionSeries])
 
   useEffect(() => {
+    if (languages.length === 0) {
+      return
+    }
     if (!language || !languages.includes(language)) {
       setLanguage(languages[0])
     }
@@ -70,9 +73,9 @@ export const VersionSeriesDetail: FunctionComponent = () => {
                 label={t('language')}
                 onChange={(ev: SelectChangeEvent) => setLanguage((ev?.target as any).value as string)}
               >
-                {languages.map((language) => (
-                  <MenuItem key={'language-select-' + languages} value={language}>
-                    {language}
+                {languages.map((lang) => (
+                  <MenuItem key={'language-select-' + lang} value={lang}>
+                    {lang}
                   </MenuItem>
                 ))}
               </Select>

@@ -39,8 +39,8 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
     @Override
     public void finalizeImport(ImportProcessContext context) {
         final SerializableImportProcessContext serializedContext = new SerializableImportProcessContext();
-        Objects.requireNonNull(context.getVersionSeries().getIdentifier(), "Version series URI must not be null");
-        serializedContext.setVersionSeriesUri(context.getVersionSeries().getIdentifier());
+        Objects.requireNonNull(context.getVersionSeries().getOntologyURI(), "Ontology URI must not be null");
+        serializedContext.setOntologyURI(context.getVersionSeries().getOntologyURI());
 
         final int servicesCount = context.getProcessedServices().size();
         final int resultsCount = context.getProcessedResults().size();

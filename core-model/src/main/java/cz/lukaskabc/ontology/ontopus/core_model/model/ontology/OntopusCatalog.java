@@ -34,7 +34,7 @@ public class OntopusCatalog extends Catalog<DistributionURI, OntopusCatalogURI> 
     }
 
     public Set<VersionSeriesURI> getVersionSeries() {
-        return ontologyVersionSeries.stream().map(VersionSeriesURI::new).collect(Collectors.toSet());
+        return ontologyVersionSeries.stream().map(VersionSeriesURI::new).collect(Collectors.toUnmodifiableSet());
     }
 
     @Override

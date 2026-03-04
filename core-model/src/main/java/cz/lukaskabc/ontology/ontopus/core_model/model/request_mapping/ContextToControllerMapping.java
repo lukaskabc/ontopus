@@ -52,7 +52,7 @@ public class ContextToControllerMapping extends PersistenceEntity<ContextToContr
     }
 
     public Set<GraphURI> getSubjects() {
-        return subjects.stream().map(GraphURI::new).collect(Collectors.toSet());
+        return subjects.stream().map(GraphURI::new).collect(Collectors.toUnmodifiableSet());
     }
 
     public void removeController(Controller controller) {

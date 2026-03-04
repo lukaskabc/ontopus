@@ -10,25 +10,14 @@ import java.time.Instant;
 public abstract class ResourceListEntry<I extends EntityIdentifier> implements Serializable {
     private final URI identifier;
     private final MultilingualString title;
-    private final MultilingualString description;
     private final String version;
     private final Instant modifiedDate;
 
-    public ResourceListEntry(
-            I identifier,
-            MultilingualString title,
-            MultilingualString description,
-            String version,
-            Instant modifiedDate) {
+    public ResourceListEntry(I identifier, MultilingualString title, String version, Instant modifiedDate) {
         this.identifier = identifier.toURI();
         this.title = title;
-        this.description = description;
         this.version = version;
         this.modifiedDate = modifiedDate;
-    }
-
-    public MultilingualString getDescription() {
-        return description;
     }
 
     public I getIdentifier() {

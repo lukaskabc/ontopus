@@ -64,16 +64,21 @@ public class ImportFinalizationService {
         // if it fails, the import failed
         log.info(
                 "Finalizing import process for version series: {}",
-                context.getVersionSeries().getIdentifier());
+                context.getVersionSeries().getOntologyURI());
 
         importFinalizingServices.forEach(service -> service.finalizeImport(context));
 
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
 
-        versionSeriesService.update(series);
+        if (series.getIdentifier() == null) {
+            versionSeriesService.persist(series);
+        } else {
+            versionSeriesService.update(series);
+        }
+
         versionArtifactService.delete(artifact);
-        versionArtifactService.update(artifact);
+        versionArtifactService.persist(artifact);
 
         updateCatalog(series);
 

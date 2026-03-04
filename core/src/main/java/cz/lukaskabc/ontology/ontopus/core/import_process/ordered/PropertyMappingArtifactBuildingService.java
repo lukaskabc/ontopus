@@ -28,12 +28,14 @@ public class PropertyMappingArtifactBuildingService
 
     private void applyProvider(ArtifactPropertyMappingProvider provider, ImportProcessContext context) {
         final VersionArtifact artifact = context.getVersionArtifact();
-        PropertyMapper.applyMapping(provider::resolveTitle, artifact::setTitle, artifact::getTitle);
-        PropertyMapper.applyMapping(provider::resolveDescription, artifact::setDescription, artifact::getDescription);
-        PropertyMapper.applyMapping(provider::resolveLanguages, artifact::setLanguages, artifact::getLanguages);
-        PropertyMapper.applyMapping(provider::resolveVersion, artifact::setVersion, artifact::getVersion);
-        PropertyMapper.applyMapping(provider::resolveReleaseDate, artifact::setReleaseDate, artifact::getReleaseDate);
-        PropertyMapper.applyMapping(
+        PropertyMapper.applyMappingWhenNull(provider::resolveTitle, artifact::setTitle, artifact::getTitle);
+        PropertyMapper.applyMappingWhenNull(
+                provider::resolveDescription, artifact::setDescription, artifact::getDescription);
+        PropertyMapper.applyMappingWhenNull(provider::resolveLanguages, artifact::setLanguages, artifact::getLanguages);
+        PropertyMapper.applyMappingWhenNull(provider::resolveVersion, artifact::setVersion, artifact::getVersion);
+        PropertyMapper.applyMappingWhenNull(
+                provider::resolveReleaseDate, artifact::setReleaseDate, artifact::getReleaseDate);
+        PropertyMapper.applyMappingWhenNull(
                 provider::resolveModifiedDate, artifact::setModifiedDate, artifact::getModifiedDate);
     }
 

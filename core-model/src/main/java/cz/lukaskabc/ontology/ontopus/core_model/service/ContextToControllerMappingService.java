@@ -43,8 +43,4 @@ public class ContextToControllerMappingService
     public ContextToControllerMapping findResourceMappingByContext(GraphURI graphURI) {
         return repository.findByTypeAndContext(MappingType.RESOURCE, graphURI);
     }
-
-    public void persist(ContextToControllerMapping contextToControllerMapping) {
-        repository.persist(contextToControllerMapping);
-    }
 }

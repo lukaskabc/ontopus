@@ -1,27 +1,23 @@
 import { type PersistenceEntity } from '@/model/PersistenceEntity.ts'
-import type { MultilingualString } from '@/model/MultilingualString.ts'
-import { validateDate, validateMultilingual, validateValue } from '@/model/ModelUtils.ts'
+import { ResourceListEntry } from '@/model/ResourceListEntry.ts'
+import { VersionArtifactListEntry } from '@/model/VersionArtifactListEntry.ts'
+import { validateValue } from '@/model/ModelUtils.ts'
 
-export class VersionSeriesListEntry implements PersistenceEntity {
+export class VersionSeriesListEntry extends ResourceListEntry implements PersistenceEntity {
   readonly id: string
-  readonly identifier: string
-  readonly title: MultilingualString
-  readonly description: MultilingualString
-  readonly version: string
-  readonly modifiedDate: Date;
+  readonly members: VersionArtifactListEntry[];
   [key: PropertyKey]: unknown
 
   constructor(jsonObj: any) {
     if (!jsonObj || typeof jsonObj !== 'object') {
       throw new Error('Invalid data: Expected a JSON object for VersionSeriesListEntry')
     }
+    super(jsonObj)
 
-    this.identifier = validateValue(jsonObj.identifier, 'string', 'identifier')
     this.id = this.identifier
-    this.title = validateMultilingual(jsonObj.title, 'title')
-    this.description = validateMultilingual(jsonObj.description, 'description')
-    this.version = validateValue(jsonObj.version, 'string', 'version')
 
-    this.modifiedDate = validateDate(jsonObj.modifiedDate, 'modifiedDate')
+    this.members = validateValue(jsonObj.members, 'array', 'members').map(
+      (member: any) => new VersionArtifactListEntry(member)
+    )
   }
 }

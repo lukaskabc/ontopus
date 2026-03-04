@@ -9,7 +9,6 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.OntologyIdentifierSelector;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
@@ -23,9 +22,7 @@ import java.util.*;
 @Order(ImportProcessServiceOrder.ONTOLOGY_IDENTIFIER_RESOLVING_SERVICE)
 public class OntologyIdentifierProcessingService implements OrderedImportPipelineService<Void> {
     private static void setOntologyIdentifier(URI identifier, ImportProcessContext context) {
-        context.getVersionSeries().setIdentifier(new VersionSeriesURI(identifier));
-        context.getVersionSeries().setOntologyURI(new OntologyURI(identifier)); // TODO review and rework the ontology
-        // URI handling
+        context.getVersionSeries().setOntologyURI(new OntologyURI(identifier));
     }
 
     private final List<OntologyIdentifierResolvingService> resolvers;

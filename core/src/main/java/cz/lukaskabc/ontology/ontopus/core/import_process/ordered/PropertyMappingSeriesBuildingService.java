@@ -32,9 +32,9 @@ public class PropertyMappingSeriesBuildingService implements OrderedImportPipeli
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
 
-        PropertyMapper.applyMapping(artifact::getTitle, series::setTitle, series::getTitle);
-        PropertyMapper.applyMapping(artifact::getDescription, series::setDescription, series::getDescription);
-        PropertyMapper.applyMapping(series::getIdentifier, series::setIdentifier, series::getIdentifier);
+        PropertyMapper.applyMappingWhenNull(artifact::getTitle, series::setTitle, series::getTitle);
+        PropertyMapper.applyMappingWhenNull(artifact::getDescription, series::setDescription, series::getDescription);
+        PropertyMapper.applyMappingWhenNull(series::getIdentifier, series::setIdentifier, series::getIdentifier);
         series.setLanguages(artifact.getLanguages());
         return null;
     }

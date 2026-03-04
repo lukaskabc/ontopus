@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -16,11 +17,10 @@ public class VersionSeriesUriGenerator extends AbstractIdentifierGenerator<Versi
         super(entityManager, config);
     }
 
-    @Override
+    @NonNull @Override
     public VersionSeriesURI generate(VersionSeries entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity::getTitle);
-        // TODO consider using the ontology identifier which should be unique?
 
         int attempt = 0;
         final String base = OntologyDistribution_.entityClassIRI + "_" + title;

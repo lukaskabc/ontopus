@@ -8,12 +8,8 @@ import java.time.Instant;
 
 public class VersionSeriesListEntry extends ResourceListEntry<VersionSeriesURI> {
     public VersionSeriesListEntry(
-            VersionSeriesURI identifier,
-            MultilingualString title,
-            MultilingualString description,
-            String version,
-            Instant modifiedDate) {
-        super(identifier, title, description, version, modifiedDate);
+            VersionSeriesURI identifier, MultilingualString title, String version, Instant modifiedDate) {
+        super(identifier, title, version, modifiedDate);
     }
 
     @Override

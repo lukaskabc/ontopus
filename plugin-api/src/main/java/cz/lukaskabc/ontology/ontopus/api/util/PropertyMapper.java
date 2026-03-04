@@ -26,7 +26,7 @@ public class PropertyMapper {
      * Supplies the value from {@code supplier} to {@code consumer} if the current value returned by
      * {@code currentValueSupplier} is null.
      */
-    public static <T> void applyMapping(
+    public static <T> void applyMappingWhenNull(
             Supplier<? extends @Nullable T> supplier,
             Consumer<@NonNull T> consumer,
             Supplier<? extends @Nullable T> currentValueSupplier) {

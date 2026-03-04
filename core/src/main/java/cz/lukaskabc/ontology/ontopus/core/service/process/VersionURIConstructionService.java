@@ -6,7 +6,8 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core.exception.VersionURIConstructionException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +42,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
     @Override
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
         final String version = version(context);
-        final String uri = UriComponentsBuilder.fromUri(seriesURI(context).toURI())
+        final String uri = UriComponentsBuilder.fromUri(ontologyURI(context).toURI())
                 .pathSegment(VERSION_SEGMENT)
                 .build()
                 .toUriString();
@@ -72,8 +73,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
         final String version = version(formResult);
         final URI versionURI = versionURI(formResult).buildAndExpand(version).toUri();
 
-        VersionArtifactURI versionArtifactURI = new VersionArtifactURI(versionURI);
-        context.getVersionArtifact().setIdentifier(versionArtifactURI);
+        context.getVersionArtifact().setVersionURI(new OntologyVersionURI(versionURI));
         return null;
     }
 
@@ -85,8 +85,8 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
      * @return the version series identifier as a {@link VersionSeriesURI}
      * @throws VersionURIConstructionException if the version series identifier is missing in the context
      */
-    private VersionSeriesURI seriesURI(ReadOnlyImportProcessContext context) {
-        VersionSeriesURI ontologyIdentifier = context.getVersionSeries().getIdentifier();
+    private OntologyURI ontologyURI(ReadOnlyImportProcessContext context) {
+        OntologyURI ontologyIdentifier = context.getVersionSeries().getOntologyURI();
         if (ontologyIdentifier == null) {
             throw new VersionURIConstructionException("Failed to construct version URI, "
                     + "the ontology identifier is missing for the version series: " + context.getVersionSeries());

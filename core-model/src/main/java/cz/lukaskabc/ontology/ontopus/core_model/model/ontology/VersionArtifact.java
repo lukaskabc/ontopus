@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
+import cz.cvut.kbss.jopa.model.annotations.FetchType;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Dataset;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 
@@ -16,8 +18,10 @@ import java.util.stream.Collectors;
 /** An ontology artifact containing a single ontology version release */
 @OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
+    @OWLObjectProperty(iri = Vocabulary.s_p_ontologyVersionIdentifier)
+    private URI versionURI;
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
 
     @Override
@@ -27,11 +31,18 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
 
     @Override
     public Set<DistributionURI> getDistributions() {
-        return distributions.stream().map(DistributionURI::new).collect(Collectors.toSet());
+        return distributions.stream().map(DistributionURI::new).collect(Collectors.toUnmodifiableSet());
     }
 
     public VersionSeriesURI getSeries() {
         return new VersionSeriesURI(getSeriesURI());
+    }
+
+    public OntologyVersionURI getVersionURI() {
+        if (versionURI == null) {
+            return null;
+        }
+        return new OntologyVersionURI(versionURI);
     }
 
     @Override
@@ -46,6 +57,10 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
 
     public void setSeries(VersionSeriesURI series) {
         setSeriesURI(series.toURI());
+    }
+
+    public void setVersionURI(OntologyVersionURI versionURI) {
+        this.versionURI = versionURI.toURI();
     }
 
     @Override

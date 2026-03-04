@@ -37,6 +37,13 @@ ontopus:ontologyIdentifier rdf:type owl:ObjectProperty ;
                            rdfs:comment "Identifier of the ontology published in the series"@en ;
                            rdfs:label "Ontology identifier"@en .
 
+###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
+ontopus:ontologyVersionIdentifier rdf:type owl:ObjectProperty ;
+                           rdfs:domain ontopus:VersionArtifact ;
+                           rdfs:range rdfs:Resource ;
+                           rdfs:comment "Identifier of the ontology version published in the series"@en ;
+                           rdfs:label "Ontology version identifier"@en .
+
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#uriMappingType
 ontopus:uriMappingType rdf:type owl:ObjectProperty ;

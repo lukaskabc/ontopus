@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
+import cz.cvut.kbss.jopa.model.annotations.FetchType;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
@@ -37,10 +38,10 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private URI first;
 
     /** Set of {@link VersionArtifactURI} of individual ontology versions */
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember, fetch = FetchType.LAZY)
     private Set<URI> members = new HashSet<>();
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
 
     @Override
@@ -55,7 +56,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public Set<DistributionURI> getDistributions() {
-        return distributions.stream().map(DistributionURI::new).collect(Collectors.toSet());
+        return distributions.stream().map(DistributionURI::new).collect(Collectors.toUnmodifiableSet());
     }
 
     @Override
@@ -76,7 +77,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public Set<VersionArtifactURI> getMembers() {
-        return members.stream().map(VersionArtifactURI::new).collect(Collectors.toSet());
+        return members.stream().map(VersionArtifactURI::new).collect(Collectors.toUnmodifiableSet());
     }
 
     public OntologyURI getOntologyURI() {
@@ -113,6 +114,11 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @Override
     public void setFirst(VersionArtifactURI first) {
         this.first = first.toURI();
+    }
+
+    @Override
+    public void setIdentifier(VersionSeriesURI identifier) {
+        super.setIdentifier(identifier);
     }
 
     @Override

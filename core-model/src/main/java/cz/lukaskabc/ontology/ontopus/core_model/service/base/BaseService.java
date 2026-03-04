@@ -40,6 +40,14 @@ public abstract class BaseService<
         return repository.findRequired(id);
     }
 
+    public void persist(E entity) {
+        if (repository.exists(entity.getIdentifier())) {
+            throw new IllegalStateException("Unable to persist a new entity. An entity with identifier "
+                    + entity.getIdentifier() + " already exists.");
+        }
+        repository.persist(entity);
+    }
+
     public void update(E entity) {
         repository.update(entity);
     }

@@ -8,6 +8,9 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.Abst
 import org.springframework.stereotype.Repository;
 import org.springframework.validation.Validator;
 
+import java.util.Collection;
+import java.util.stream.Stream;
+
 @Repository
 public class VersionArtifactRepository
         extends AbstractRepository<VersionArtifactURI, VersionArtifact, VersionArtifactDao> {
@@ -16,5 +19,9 @@ public class VersionArtifactRepository
             Validator validator,
             IdentifierGenerator<VersionArtifactURI, VersionArtifact> identifierGenerator) {
         super(dao, validator, identifierGenerator);
+    }
+
+    public Stream<VersionArtifact> findAllByIds(Collection<VersionArtifactURI> identifiers) {
+        return dao.findAllRecentByIds(identifiers); // TODO: optimize fetching paged artifacts for series
     }
 }

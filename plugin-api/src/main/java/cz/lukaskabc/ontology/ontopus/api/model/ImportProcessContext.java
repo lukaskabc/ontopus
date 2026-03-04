@@ -91,8 +91,9 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     }
 
     public GraphURI getFinalDatabaseContext() {
-        Objects.requireNonNull(versionArtifact.getIdentifier(), "Version artifact identifier is not set");
-        return versionArtifact.getIdentifier().toGraphURI();
+        final GraphURI versionUri = versionArtifact.getVersionURI().toGraphURI();
+        Objects.requireNonNull(versionUri, "Version URI is not set");
+        return versionUri;
     }
 
     @Override

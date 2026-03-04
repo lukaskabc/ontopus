@@ -5,19 +5,20 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Objects;
 
 @Component
-public class ArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArtifactURI, VersionArtifact> {
+public class VersionArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArtifactURI, VersionArtifact> {
 
-    public ArtifactUriGenerator(EntityManager entityManager, OntopusConfig config) {
+    public VersionArtifactUriGenerator(EntityManager entityManager, OntopusConfig config) {
         super(entityManager, config);
     }
 
-    @Override
+    @NonNull @Override
     public VersionArtifactURI generate(VersionArtifact entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity::getTitle);

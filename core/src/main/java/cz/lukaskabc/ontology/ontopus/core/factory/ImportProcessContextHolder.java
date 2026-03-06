@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.factory;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -135,10 +136,18 @@ public class ImportProcessContextHolder implements AutoCloseable {
         final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         final SecurityContext securityContext = SecurityContextHolder.getContext();
         return () -> {
-            Objects.requireNonNull(instance, "Import process context not initialized, instance is null");
-            RequestContextHolder.setRequestAttributes(requestAttributes);
-            SecurityContextHolder.setContext(securityContext);
-            consumer.accept(instance);
+            try {
+                Objects.requireNonNull(instance, "Import process context not initialized, instance is null");
+                RequestContextHolder.setRequestAttributes(requestAttributes);
+                SecurityContextHolder.setContext(securityContext);
+                consumer.accept(instance);
+            } catch (ImportProcessFinalizedException e) {
+                throw e; // expected exception
+            } catch (RuntimeException e) { // TODO perhaps only for debug?
+                log.error("Asynchronous task execution failed with exception: {}", e.getMessage(), e);
+                e.printStackTrace();
+                throw e;
+            }
         };
     }
 

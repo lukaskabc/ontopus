@@ -9,11 +9,12 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.Set;
 
 public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E extends PersistenceEntity<I>>
         implements IdentifierGenerator<I, E> {
     protected static final int MAX_GENERATION_ATTEMPTS = 15;
+    protected static final Set<Character> ALLOWED_CHARACTERS = Set.of('_', '-', '+');
 
     private static IllegalArgumentException invalidMultilingualString() {
         return new IllegalArgumentException("Multilingual string cannot be blank");
@@ -44,10 +45,6 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
         return value;
     }
 
-    protected String extractMultilingualString(Supplier<MultilingualString> supplier) {
-        return extractMultilingualString(supplier.get());
-    }
-
     protected boolean isUnique(URI identifier) {
         Objects.requireNonNull(identifier);
         return !entityManager
@@ -64,20 +61,20 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
                 .getSingleResult();
     }
 
+    protected String sanitizeString(MultilingualString multilingualString) {
+        return sanitizeString(extractMultilingualString(multilingualString));
+    }
+
     public String sanitizeString(String title) {
         Objects.requireNonNull(title);
         StringBuilder sb = new StringBuilder();
         for (char c : title.toCharArray()) {
-            if (Character.isAlphabetic(c)) {
+            if (Character.isAlphabetic(c) || Character.isDigit(c) || ALLOWED_CHARACTERS.contains(c)) {
                 sb.append(c);
             } else if (Character.isWhitespace(c)) {
                 sb.append("_");
             }
         }
         return sb.toString();
-    }
-
-    protected String sanitizeString(Supplier<MultilingualString> supplier) {
-        return sanitizeString(extractMultilingualString(supplier));
     }
 }

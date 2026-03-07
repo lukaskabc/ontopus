@@ -35,6 +35,7 @@ public abstract class AbstractRepository<
     /** @see #dao#delete(PersistenceEntity) */
     @Transactional
     public void delete(E entity) {
+        Objects.requireNonNull(entity.getIdentifier(), "Entity identifier must not be null");
         dao.delete(entity.getIdentifier());
     }
 

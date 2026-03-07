@@ -19,7 +19,7 @@ public class DistributionUriGenerator extends AbstractIdentifierGenerator<Distri
     @Override
     public DistributionURI generate(OntologyDistribution entity) {
         Objects.requireNonNull(entity);
-        String title = sanitizeString(entity::getTitle);
+        String title = sanitizeString(entity.getTitle());
         String format = sanitizeString(entity.getFormat());
 
         int attempt = 0;

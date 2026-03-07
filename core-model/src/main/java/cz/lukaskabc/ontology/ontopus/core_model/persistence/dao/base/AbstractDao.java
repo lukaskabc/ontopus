@@ -19,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.function.ThrowingSupplier;
 
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -211,7 +214,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     public void delete(I identifier) {
         Objects.requireNonNull(identifier, "The entity identifier must not be null");
         try {
-            Optional.ofNullable(find(identifier)).ifPresent(em::remove);
+            // Optional.ofNullable(find(identifier)).ifPresent(em::remove);
             em.createNativeQuery("""
 					DELETE WHERE {
 					    GRAPH ?context {

@@ -20,7 +20,7 @@ public class VersionSeriesUriGenerator extends AbstractIdentifierGenerator<Versi
     @NonNull @Override
     public VersionSeriesURI generate(VersionSeries entity) {
         Objects.requireNonNull(entity);
-        String title = sanitizeString(entity::getTitle);
+        String title = sanitizeString(entity.getTitle());
 
         int attempt = 0;
         final String base = VersionSeries_.entityClassIRI + "_" + title;

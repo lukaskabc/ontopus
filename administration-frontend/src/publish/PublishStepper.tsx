@@ -1,36 +1,51 @@
 import { Button, DialogContentText, Paper, Step, StepLabel, Stepper } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
-import { useCallback, useRef, useState } from 'preact/hooks'
-import { resetImportProcess } from '@/publish/actions.ts'
+import { useCallback, useEffect, useState } from 'preact/hooks'
 import { trackPromise } from 'react-promise-tracker'
 import { ActionConfirmDialog } from '@/components/ActionConfirmDialog.tsx'
 import { StagedForm } from '@/publish/StagedForm.tsx'
+import { type RouteComponentProps, type StringRouteParams } from 'wouter-preact'
+import { parseUri } from '@/ontologies/actions.ts'
+import { resetImportProcess } from '@/publish/actions.ts'
+import type { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
-export default function PublishStepper() {
+export interface PublishStepperProps extends RouteComponentProps<StringRouteParams<typeof PUBLISH_STEPPER_ROUTE>> {}
+
+export default function PublishStepper({ params }: PublishStepperProps) {
   const { t } = useTranslation()
-  const refreshRef = useRef<() => void>(null)
+  const versionSeriesIdentifier = parseUri(params?.versionSeriesIdentifier)
+
+  const [stagedFormElementKey, setStagedFormElementKey] = useState(0)
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)
 
   const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
+  // TODO publish steps
 
   const closeAbortDialog = useCallback(() => setIsAbortDialogOpen(false), [setIsAbortDialogOpen])
-  const onAbort = () => setIsAbortDialogOpen(true)
-  const onAbortConfirmed = useCallback(() => {
-    closeAbortDialog()
+  const onAbort = useCallback(() => setIsAbortDialogOpen(true), [setIsAbortDialogOpen])
+
+  // updating the key of an element forces the element to reset its state
+  const resetJsonForm = useCallback(() => setStagedFormElementKey((k) => k + 1), [setStagedFormElementKey])
+
+  const onImportProcessReset = useCallback(() => {
     trackPromise(
-      resetImportProcess().then(() => {
-        if (refreshRef.current) {
-          refreshRef.current()
-        } else {
-          console.error('Failed to refresh the form, missing reference.')
-        }
-      }),
+      resetImportProcess(versionSeriesIdentifier).then(resetJsonForm),
       PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA
     ).then() // TODO error handle
-  }, [refreshRef])
+  }, [versionSeriesIdentifier])
+
+  const onAbortConfirmed = useCallback(() => {
+    closeAbortDialog()
+    onImportProcessReset()
+  }, [onImportProcessReset, versionSeriesIdentifier])
+
+  // reset import process on version series change
+  useEffect(() => {
+    onImportProcessReset()
+  }, [onImportProcessReset, versionSeriesIdentifier])
 
   return (
     <>
@@ -45,10 +60,15 @@ export default function PublishStepper() {
         })}
       </Stepper>
 
-      <Paper className={'height-100'} sx={{ p: 2 }}>
+      <Paper sx={{ p: 2 }}>
         <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>
-          <StagedForm doRefresh={refreshRef} />
-          <Button variant={'outlined'} color={'error'} style={{ float: 'right' }} onClick={onAbort}>
+          <StagedForm key={'PublishStepper-StagedForm' + stagedFormElementKey} resetForm={onImportProcessReset} />
+          <Button
+            variant={'outlined'}
+            color={'error'}
+            style={{ display: 'block', marginLeft: 'auto' }}
+            onClick={onAbort}
+          >
             {t('publish.button.abort')}
           </Button>
         </PromiseArea>

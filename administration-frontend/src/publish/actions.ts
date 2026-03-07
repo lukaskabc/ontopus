@@ -1,8 +1,20 @@
 import request from '@/config/rest-client.ts'
 import { type JsonForm, makeJsonForm } from '@/model/JsonForm.ts'
+import {
+  ImportProcessNotInitializedError,
+  OntopusError,
+  PromiseCanceledError,
+  UnexpectedResponseStatusError,
+  UnknownError,
+} from '@/utils/errors.ts'
 
-export function resetImportProcess(): Promise<Response> {
-  return request('POST', '/import/initialize', {}, [204])
+export function resetImportProcess(versionSeriesIdentifier: string | null): Promise<Response> {
+  const params = new URLSearchParams()
+  if (versionSeriesIdentifier) {
+    params.append('series', versionSeriesIdentifier)
+  }
+
+  return request('POST', '/import/initialize?' + params.toString(), {}, [204])
 }
 
 export const STAGED_FORM_PROMISE_AREA = 'STAGED_FORM_PROMISE_AREA'
@@ -59,7 +71,7 @@ export function loadJsonForm() {
             if (repeat) {
               return response.json()
             }
-            throw new Error('Promise canceled')
+            throw new PromiseCanceledError()
           })
           .then(makeJsonForm)
           .then(resolve)
@@ -70,21 +82,27 @@ export function loadJsonForm() {
                   // TODO move import process initialization to publish stepper
                   // initialize based on navigation with or without version series
                   // Throw error here and redirect in staged form
-                  resetImportProcess()
-                    .then(() => setTimeout(task, NEXT_FORM_RETRY_DELAY))
-                    .catch(console.error) // ERROR handling??
+                  // resetImportProcess()
+                  //   .then(() => setTimeout(task, NEXT_FORM_RETRY_DELAY))
+                  //   .catch(console.error) // ERROR handling??
+                  reject(new ImportProcessNotInitializedError())
                   return
                 case 204: // no content (still processing)
                 case 409: // conflict (still processing)
                   setTimeout(task, NEXT_FORM_RETRY_DELAY)
                   return
+                default:
+                  reject(new UnexpectedResponseStatusError(`Unexpected response status: ${res.status}`, res))
+                  return
               }
+            } else if (res instanceof OntopusError) {
+              reject(res)
+            } else {
+              reject(new UnknownError('Returned object is not a response', res))
             }
-
-            reject(null)
           })
       } else {
-        reject(null)
+        reject(new PromiseCanceledError())
       }
     }
     task()

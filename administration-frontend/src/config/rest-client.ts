@@ -33,7 +33,7 @@ const request = (
       navigate('/login', { replace: true })
     }
     if (!expectedStatus.includes(response.status)) {
-      return Promise.reject(response)
+      return Promise.reject(response) // TODO type errors
     }
     return Promise.resolve(response)
   })

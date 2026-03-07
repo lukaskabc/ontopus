@@ -5,6 +5,7 @@ import lazy from 'preact-iso/lazy'
 import { VersionSeriesDetail } from '@/ontologies/detail/series/VersionSeriesDetail.tsx'
 import { VersionArtifactDetail } from '@/ontologies/detail/artifact/VersionArtifactDetail.tsx'
 import { Container } from '@mui/material'
+import { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 
 const PublishStepper = lazy(() => import('@/publish/PublishStepper.tsx'))
 const VersionSeriesList = lazy(() => import('@/ontologies/VersionSeriesList.tsx'))
@@ -16,7 +17,7 @@ export default function Dashboard() {
         <DialogsProvider>
           <Container maxWidth="lg" sx={{ mt: 5 }}>
             <Switch>
-              <Route path={'/publish'} component={PublishStepper} nest />
+              <Route path={PUBLISH_STEPPER_ROUTE} component={PublishStepper} nest />
               <Route path={'/:versionSeriesIdentifier'} nest>
                 {({ versionSeriesIdentifier }) => (
                   <Switch>

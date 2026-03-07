@@ -64,7 +64,7 @@ public class ImportController {
                     + "If the version series is not specified, a new one will be created.")
     @PostMapping("initialize")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void initialize(@Nullable @RequestParam(required = false, name = "versionSeries") URI versionSeries) {
+    public void initialize(@Nullable @RequestParam(required = false, name = "series") URI versionSeries) {
         VersionSeriesURI uri = null;
         if (versionSeries != null) {
             uri = new VersionSeriesURI(versionSeries);

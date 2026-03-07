@@ -1,6 +1,12 @@
 import type { ComponentChildren, FunctionComponent } from 'preact'
 import { usePromiseTracker } from 'react-promise-tracker'
-import { CircularProgress, type CircularProgressProps, LinearProgress, type LinearProgressProps } from '@mui/material'
+import {
+  Box,
+  CircularProgress,
+  type CircularProgressProps,
+  LinearProgress,
+  type LinearProgressProps,
+} from '@mui/material'
 
 export interface PromiseAreaProps {
   area: string
@@ -21,9 +27,9 @@ export const PromiseArea: FunctionComponent<PromiseAreaProps> = ({
   if (!promiseInProgress) {
     return children
   }
-  if (useCircleLoading) {
-    return <CircularProgress {...circularProps} />
-  } else {
-    return <LinearProgress {...linearProps} />
-  }
+  return (
+    <Box sx={{ my: 4 }}>
+      {useCircleLoading ? <CircularProgress {...circularProps} /> : <LinearProgress {...linearProps} />}
+    </Box>
+  )
 }

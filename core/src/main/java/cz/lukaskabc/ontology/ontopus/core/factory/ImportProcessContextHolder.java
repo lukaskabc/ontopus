@@ -164,7 +164,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
     public void resetSessionImportProcess(@Nullable VersionSeriesURI uri) {
         lock.lock();
         try {
-            log.trace("Resetting Session Import Process");
+            log.trace("Resetting Session Import Process with version series URI {}", uri);
             this.close();
             this.instance = create(uri);
             this.future = CancelledFuture.getInstance();

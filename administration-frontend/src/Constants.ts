@@ -17,4 +17,6 @@ const Constants = {
   BACKEND_URL: withTrailingSlash(import.meta.env.VITE_ONTOPUS_URL),
 }
 
+export const PUBLISH_STEPPER_ROUTE = '/publish/:versionSeriesIdentifier?'
+
 export default Constants

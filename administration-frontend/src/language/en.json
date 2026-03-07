@@ -15,6 +15,11 @@
       "username.title": "Username"
     }
   },
+  "action": {
+    "publish": {
+      "version": { "artifact": "Publish new version" }
+    }
+  },
   "publish": {
     "abort-dialog": {
       "title": "Are you sure?",

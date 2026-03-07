@@ -9,11 +9,11 @@ import { useTranslation } from 'react-i18next'
 import type { RegistryFieldsType, RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 import { type FileWithFieldName, loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/publish/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
-import { Box } from '@mui/material'
 import intlSchema from '@/publish/utils/intlSchema.ts'
 import HeadingWidget from '@/publish/widgets/HeadingWidget.tsx'
 import FileField from '@/publish/fields/FileField.tsx'
 import VersionUriField from '@/publish/fields/VersionUriField.tsx'
+import { ImportProcessNotInitializedError, PromiseCanceledError } from '@/utils/errors.ts'
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
@@ -43,7 +43,7 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
 }
 
 export type StagedFormProps = {
-  doRefresh: RefObject<() => void>
+  resetForm: () => void
 }
 
 /**
@@ -53,7 +53,7 @@ export type StagedFormProps = {
  * @implNote Surround with suspense
  * @constructor
  */
-export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) => {
+export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) => {
   const { i18n } = useTranslation()
   const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>()
   const [uiSchema, setUiSchema] = useState<UiSchema>()
@@ -62,12 +62,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
   const [isDisabled, setIsDisabled] = useState<boolean>(false)
   const formRef = createRef<RjsfForm>()
 
-  useEffect(() => {
-    doRefresh.current = () => setLoadScheme(true)
-  }, [doRefresh, setLoadScheme])
-
   // load JSON form when doLoadJsonForm is true
-  // if the endpoint returns 205, initialize new import process and set doLoadJsonForm to true again
   useEffect(() => {
     if (!loadScheme) {
       return
@@ -83,12 +78,19 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
         setIsDisabled(false)
       })
       .catch((e) => {
-        if (e == null) return
-        console.error(e)
-      }) // TODO handle error
+        if (e instanceof ImportProcessNotInitializedError) {
+          resetForm()
+        } else if (e instanceof PromiseCanceledError) {
+          // promise was cleaned up
+        } else {
+          // TODO handle error, propagate to user
+          console.error(e)
+        }
+      })
       .finally(() => setLoadScheme(false))
     return cleanup
-  }, [loadScheme, formRef])
+    // TODO install eslint for preact hooks validation
+  }, [loadScheme, resetForm, setJsonSchema, setUiSchema, setFormData, setIsDisabled])
 
   const onSubmit = useCallback(
     ({ formData }: IChangeEvent, e: TargetedEvent<HTMLFormElement>) => {
@@ -97,11 +99,6 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
       const fileList = resolveFiles(formRef.current)
 
       trackPromise(submitForm(formData, fileList), STAGED_FORM_PROMISE_AREA)
-        // .then((res) => {
-        //   if (res.headers) {
-        //     setNextFormUrl(res.headers.get(ONTOPUS_NEXT_FORM_URL_HEADER) || nextFormUrl)
-        //   }
-        // })
         .then(() => setLoadScheme(true))
         .catch((e) => {
           setIsDisabled(false)
@@ -138,9 +135,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ doRefresh }) =>
           disabled={isDisabled}
         />
       )}
-      <Box sx={{ my: 4 }}>
-        <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
-      </Box>
+      <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
     </>
   )
 }

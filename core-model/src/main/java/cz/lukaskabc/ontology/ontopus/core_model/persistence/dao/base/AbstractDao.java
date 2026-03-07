@@ -245,6 +245,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 					}
 					""", Boolean.class)
                     .setParameter("context", entityGraphContext)
+                    .setParameter("entity", identifier.toURI())
                     .setParameter("type", typeUri)
                     .setDescriptor(descriptor)
                     .getSingleResult();

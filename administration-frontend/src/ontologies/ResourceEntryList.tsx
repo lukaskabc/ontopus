@@ -1,20 +1,36 @@
 import { CrudProvider, type DataModel, type DataModelId, type DataSource, DataSourceCache, List } from '@toolpad/core'
 
-import { Route, Switch, useLocation, useRoute } from 'wouter-preact'
-import type { VersionSeriesListEntry } from '@/model/VersionSeriesListEntry.ts'
+import { useLocation } from 'wouter-preact'
+import type { MuiModelListEntry } from '@/model/MuiModelListEntry.ts'
 import { useCallback, useMemo } from 'preact/hooks'
 import type { ResourceListEntry } from '@/model/ResourceListEntry.ts'
-import type { FunctionComponent } from 'preact'
+
+const INITIAL_PAGE_SIZE = 10
+const PAGE_SIZE_OPTIONS = new Set([10, 25, 50, 100, INITIAL_PAGE_SIZE])
+const PAGE_SIZE_OPTIONS_ARRAY = Array.from(PAGE_SIZE_OPTIONS).sort((a, b) => a - b)
 
 function CrudList({ onCreateClick }: { onCreateClick?: () => void }) {
   const [_, navigate] = useLocation()
   const onRowClick = useCallback((id: DataModelId) => navigate(`/${encodeURIComponent(id)}`), [navigate])
   return (
-    <List<VersionSeriesListEntry>
+    <List<MuiModelListEntry>
       initialPageSize={10}
       onRowClick={onRowClick}
       onCreateClick={onCreateClick}
       slotProps={{
+        pageContainer: {
+          disableGutters: true, // removes padding on sides
+          sx: {
+            // removes margin on top and bottom
+            '& > .MuiStack-root': {
+              mt: 0,
+              mb: 0,
+            },
+            '& > .MuiStack-root > .MuiBox-root': {
+              mt: 0,
+            },
+          },
+        },
         dataGrid: {
           disableColumnFilter: true,
           sortingMode: 'server',
@@ -23,6 +39,7 @@ function CrudList({ onCreateClick }: { onCreateClick?: () => void }) {
           showToolbar: true,
           disableColumnSelector: true,
           disableDensitySelector: true,
+          pageSizeOptions: PAGE_SIZE_OPTIONS_ARRAY,
           columnVisibilityModel: {
             actions: false,
           },
@@ -45,28 +62,15 @@ export interface ResourceDetailProps<D extends ResourceListEntry & DataModel> {
 
 export interface ResourceEntryListProps<D extends ResourceListEntry & DataModel> {
   dataSource: DataSource<D>
-  detailComponent: FunctionComponent<ResourceDetailProps<D>>
   onCreateClick?: () => void
 }
 
 export default function ResourceEntryList<D extends ResourceListEntry & DataModel>(props: ResourceEntryListProps<D>) {
-  const [_, params] = useRoute('/:identifier')
-
   const dataCacheRef = useMemo(() => new DataSourceCache(), [])
-
-  const ListComponent = useMemo(() => () => <CrudList onCreateClick={props.onCreateClick} />, [props.onCreateClick])
-
-  const DetailComponent = useCallback(
-    () => <props.detailComponent dataSource={props.dataSource} identifier={params?.identifier} />,
-    [props.detailComponent, props.dataSource, params?.identifier]
-  )
 
   return (
     <CrudProvider<D> dataSource={props.dataSource} dataSourceCache={dataCacheRef}>
-      <Switch>
-        <Route path={'/'} component={ListComponent} />
-        <Route path={'/:identifier'} component={DetailComponent} nest />
-      </Switch>
+      <CrudList onCreateClick={props.onCreateClick} />
     </CrudProvider>
   )
 }

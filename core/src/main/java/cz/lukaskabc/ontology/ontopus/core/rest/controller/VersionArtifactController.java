@@ -50,7 +50,7 @@ public class VersionArtifactController {
                     @Content(
                             mediaType = "application/json",
                             schema = @Schema(anyOf = {VersionSeriesResponse.class, VersionArtifactPage.class})))
-    @GetMapping("/series/artifact")
+    @GetMapping("/series/artifacts")
     public ResponseEntity<?> versionArtifactList(
             @Parameter(description = "Optional URI identifier to fetch a single version artifact")
                     @RequestParam(name = "artifact", required = false)

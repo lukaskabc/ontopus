@@ -1,16 +1,13 @@
 import request from '@/config/rest-client.ts'
 import { ArrayPage, Pageable } from '@hallysonh/pageable'
 import { toPageRequest } from '@/utils/RequestTypes.ts'
-import { VersionSeriesListEntry } from '@/model/VersionSeriesListEntry.ts'
+import { MuiModelListEntry } from '@/model/MuiModelListEntry.ts'
 
 export function fetchImportSources() {
   return request('GET', 'import/source').then((response) => response.json())
 }
 
-export function findAllVersionSeries(
-  pageable: Pageable,
-  filter?: string[]
-): Promise<ArrayPage<VersionSeriesListEntry>> {
+export function findAllVersionSeries(pageable: Pageable, filter?: string[]): Promise<ArrayPage<MuiModelListEntry>> {
   const options = toPageRequest(pageable)
   filter?.forEach((val) => options.append('filter', val))
   return request('GET', 'series?' + options.toString())
@@ -20,7 +17,7 @@ export function findAllVersionSeries(
       const pageable = new Pageable(page.page, page.size)
       return new ArrayPage<any>(data.content, page.totalElements, pageable)
     })
-    .then((page) => page.map((data) => new VersionSeriesListEntry(data)))
+    .then((page) => page.map((data) => new MuiModelListEntry(data)))
 }
 
 export function parseUri(identifier?: string) {

@@ -20,7 +20,7 @@ export function findVersionArtifactsForVersionSeries(
   const options = toPageRequest(pageable)
   options.append('series', versionSeriesUri)
   filter?.forEach((val) => options.append('filter', val))
-  return request('GET', `series/artifact?` + options.toString())
+  return request('GET', `series/artifacts?` + options.toString())
     .then((response) => response.json())
     .then((data: any) => {
       const page: any = data.page

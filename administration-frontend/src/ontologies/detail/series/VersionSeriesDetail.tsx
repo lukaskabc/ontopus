@@ -2,17 +2,17 @@ import type { FunctionComponent } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { useLocation } from 'wouter-preact'
 import { VersionSeriesResponse } from '@/model/VersionSeriesResponse.ts'
-import { Container, Paper } from '@mui/material'
+import { Paper, Typography } from '@mui/material'
 import { findVersionSeries } from '@/ontologies/detail/series/actions.ts'
-import type { ResourceDetailProps } from '@/ontologies/ResourceEntryList.tsx'
-import type { VersionSeriesListEntry } from '@/model/VersionSeriesListEntry.ts'
 import { parseUri } from '@/ontologies/actions.ts'
 import VersionArtifactList from '@/ontologies/detail/series/VersionArtifactList.tsx'
 import VersionSeriesResponseDetail from '@/ontologies/detail/series/VersionSeriesResponseDetail.tsx'
 
-export interface VersionSeriesDetailProps extends ResourceDetailProps<VersionSeriesListEntry> {}
+export interface VersionSeriesDetailProps {
+  identifier?: string
+}
 
-export const VersionSeriesDetail: FunctionComponent<VersionSeriesDetailProps> = ({ dataSource, identifier }) => {
+export const VersionSeriesDetail: FunctionComponent<VersionSeriesDetailProps> = ({ identifier }) => {
   const [__, navigate] = useLocation()
   const versionSeriesUri = parseUri(identifier)
 
@@ -24,14 +24,15 @@ export const VersionSeriesDetail: FunctionComponent<VersionSeriesDetailProps> = 
       return
     }
     findVersionSeries(versionSeriesUri).then(setVersionSeries)
-  }, [dataSource, navigate, versionSeriesUri, setVersionSeries])
+  }, [navigate, versionSeriesUri, setVersionSeries])
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 2 }}>
-      <Paper sx={{ p: 2, mb: 2 }}>
+    <>
+      <Typography variant={'h3'}>Version Series</Typography>
+      <Paper sx={{ p: 2, mt: 2, mb: 5 }}>
         <VersionSeriesResponseDetail versionSeries={versionSeries} />
       </Paper>
       <VersionArtifactList versionSeriesUri={versionSeriesUri} />
-    </Container>
+    </>
   )
 }

@@ -1,7 +1,7 @@
 import { type PersistenceEntity } from '@/model/PersistenceEntity.ts'
 import { ResourceListEntry } from '@/model/ResourceListEntry.ts'
 
-export class VersionSeriesListEntry extends ResourceListEntry implements PersistenceEntity {
+export class MuiModelListEntry extends ResourceListEntry implements PersistenceEntity {
   readonly id: string;
   [key: PropertyKey]: unknown
 

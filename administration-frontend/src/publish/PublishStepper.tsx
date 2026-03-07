@@ -1,4 +1,4 @@
-import { Button, Container, DialogContentText, Paper, Step, StepLabel, Stepper } from '@mui/material'
+import { Button, DialogContentText, Paper, Step, StepLabel, Stepper } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { useCallback, useRef, useState } from 'preact/hooks'
@@ -33,7 +33,7 @@ export default function PublishStepper() {
   }, [refreshRef])
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 2 }}>
+    <>
       <Stepper activeStep={0} sx={{ p: 2 }}>
         {steps.map((label, _) => {
           const stepProps: { completed?: boolean } = {}
@@ -62,6 +62,6 @@ export default function PublishStepper() {
       >
         <DialogContentText>{t('publish.abort-dialog.text')}</DialogContentText>
       </ActionConfirmDialog>
-    </Container>
+    </>
   )
 }

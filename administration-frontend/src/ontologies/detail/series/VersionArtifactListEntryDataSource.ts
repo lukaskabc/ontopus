@@ -3,7 +3,7 @@ import type { VersionArtifactListEntry } from '@/model/VersionArtifactListEntry.
 import { type i18n } from 'i18next'
 import { defineResourceListEntryFields, type GetManyProps, mapSort } from '@/utils/DataSourceUtils.ts'
 import type { PagedResult } from '@/utils/RequestTypes.ts'
-import type { VersionSeriesListEntry } from '@/model/VersionSeriesListEntry.ts'
+import type { MuiModelListEntry } from '@/model/MuiModelListEntry.ts'
 import { Pageable, Sort } from '@hallysonh/pageable'
 import { findVersionArtifactsForVersionSeries } from '@/ontologies/detail/series/actions.ts'
 
@@ -14,21 +14,9 @@ export class VersionArtifactListEntryDataSource implements DataSource<VersionArt
   constructor(versionSeriesUri: string | null, i18n: i18n) {
     this.fields = defineResourceListEntryFields(i18n)
     this.versionSeriesUri = versionSeriesUri
-    console.debug('ARTIFACT DATASOURCE for', versionSeriesUri)
   }
 
-  getMany = ({
-    paginationModel,
-    sortModel,
-    filterModel,
-  }: GetManyProps): Promise<PagedResult<VersionSeriesListEntry>> => {
-    console.debug(
-      'Requesting artifacts for version series',
-      this.versionSeriesUri,
-      paginationModel,
-      sortModel,
-      filterModel
-    )
+  getMany = ({ paginationModel, sortModel, filterModel }: GetManyProps): Promise<PagedResult<MuiModelListEntry>> => {
     if (!this.versionSeriesUri) {
       return Promise.resolve({ items: [], itemCount: 0 })
     }

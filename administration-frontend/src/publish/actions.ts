@@ -78,13 +78,7 @@ export function loadJsonForm() {
           .catch((res) => {
             if (res instanceof Response) {
               switch (res.status) {
-                case 205: // import process not initialized // TODO: consider using something else
-                  // TODO move import process initialization to publish stepper
-                  // initialize based on navigation with or without version series
-                  // Throw error here and redirect in staged form
-                  // resetImportProcess()
-                  //   .then(() => setTimeout(task, NEXT_FORM_RETRY_DELAY))
-                  //   .catch(console.error) // ERROR handling??
+                case 205:
                   reject(new ImportProcessNotInitializedError())
                   return
                 case 204: // no content (still processing)

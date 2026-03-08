@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.service.TemporaryContextService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.apache.commons.io.FileUtils;
@@ -28,10 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -93,19 +91,15 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
     }
 
-    /** Creates a new import process with context. */
-    private ImportProcessContext create(@Nullable VersionSeriesURI uri) {
+    private ImportProcessContext createNewContext(VersionSeries series) {
         final UUID uuid = UUID.randomUUID();
         final Path tempFolder = createTempFolder(uuid);
         final TemporaryContextURI databaseContext =
                 this.temporaryContextService.generate().getIdentifier();
         Objects.requireNonNull(databaseContext, "Generated context must have an identifier");
         final VersionArtifact artifact = new VersionArtifact();
-        final VersionSeries series = findOrBlankSeries(uri);
         final ImportProcessContext context = new ImportProcessContext(series, databaseContext, tempFolder, artifact);
         createServiceStack(context);
-        log.debug("Created new import process context {} and folder {}", context, tempFolder);
-        // TODO event
         return context;
     }
 
@@ -151,6 +145,21 @@ public class ImportProcessContextHolder implements AutoCloseable {
         };
     }
 
+    private Optional<ImportProcessContext> deserializeContext(VersionSeries versionSeries) {
+        final SerializableImportProcessContext serialized = versionSeries.getSerializableImportProcessContext();
+        if (serialized == null) {
+            return Optional.empty();
+        }
+        log.info(
+                "Deserializing import process context for version series {} with serialized context {}",
+                versionSeries.getIdentifier(),
+                serialized);
+        return Optional.empty(); // TODO implement context deserialization
+        // actually nothing is required here, just create normal context, but we need to
+        // pass the result list to the context so it can provide default values for the
+        // form
+    }
+
     private void ensureInitialized() {
         if (instance == null) {
             throw new ImportProcessNotInitializedException();
@@ -161,12 +170,22 @@ public class ImportProcessContextHolder implements AutoCloseable {
         return versionSeriesService.findById(uri).orElseGet(VersionSeries::new);
     }
 
+    /** Creates a new import process with context. */
+    private ImportProcessContext makeImportContext(@Nullable VersionSeriesURI uri) {
+        final VersionSeries series = findOrBlankSeries(uri);
+        final ImportProcessContext context = deserializeContext(series).orElseGet(() -> createNewContext(series));
+
+        log.debug("Created new import process context {} and folder {}", context, context.getTempFolder());
+        // TODO event
+        return context;
+    }
+
     public void resetSessionImportProcess(@Nullable VersionSeriesURI uri) {
         lock.lock();
         try {
             log.trace("Resetting Session Import Process with version series URI {}", uri);
             this.close();
-            this.instance = create(uri);
+            this.instance = makeImportContext(uri);
             this.future = CancelledFuture.getInstance();
         } finally {
             lock.unlock();

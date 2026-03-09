@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ContextToControllerMappingURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURIImpl;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -52,7 +53,7 @@ public class ContextToControllerMapping extends PersistenceEntity<ContextToContr
     }
 
     public Set<GraphURI> getSubjects() {
-        return subjects.stream().map(GraphURI::new).collect(Collectors.toUnmodifiableSet());
+        return subjects.stream().map(GraphURIImpl::new).collect(Collectors.toUnmodifiableSet());
     }
 
     public void removeController(Controller controller) {

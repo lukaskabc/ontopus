@@ -30,8 +30,8 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
-        return jsonForm;
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
+        return jsonForm.withFormData(previousFormData);
     }
 
     @Override

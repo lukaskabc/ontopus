@@ -47,4 +47,8 @@ public class JsonForm {
     public @Nullable JsonNode getUiSchema() {
         return uiSchema;
     }
+
+    public JsonForm withFormData(@Nullable JsonNode formData) {
+        return new JsonForm(this.jsonSchema, this.uiSchema, formData);
+    }
 }

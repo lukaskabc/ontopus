@@ -8,11 +8,13 @@ import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyArtifactBuildingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class PropertyMappingArtifactBuildingService
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         return null;
     }
 
@@ -51,8 +53,9 @@ public class PropertyMappingArtifactBuildingService
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+        final OntologyURI ontologyURI = context.getVersionSeries().getOntologyURI();
         for (final ArtifactPropertyMappingProviderFactory providerFactory : providerFactories) {
-            final ArtifactPropertyMappingProvider provider = providerFactory.getProvider(context);
+            final ArtifactPropertyMappingProvider provider = providerFactory.getProvider(context, ontologyURI);
             applyProvider(provider, context);
         }
         return null;

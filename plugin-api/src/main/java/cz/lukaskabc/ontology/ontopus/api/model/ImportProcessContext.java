@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -37,6 +38,9 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     private final List<ServiceAwareFormResult> processedResults;
 
     private final Set<ContextToControllerMapping> controllerMappings;
+
+    /** Service identifier to default form data mapping. */
+    private Map<String, FormDataDto> serviceToDefaultFormDataMap = Map.of();
 
     // TODO add import process context bootstraper API that will allow to subclass
     // the import process context
@@ -91,7 +95,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     }
 
     public GraphURI getFinalDatabaseContext() {
-        final GraphURI versionUri = versionArtifact.getVersionURI().toGraphURI();
+        final GraphURI versionUri = versionArtifact.getVersionURI();
         Objects.requireNonNull(versionUri, "Version URI is not set");
         return versionUri;
     }
@@ -109,6 +113,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     @Override
     public List<ImportProcessingService<?>> getProcessedServices() {
         return Collections.unmodifiableList(processedServices);
+    }
+
+    public Map<String, FormDataDto> getServiceToDefaultFormDataMap() {
+        return serviceToDefaultFormDataMap;
     }
 
     @Override
@@ -191,5 +199,9 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     public void pushService(ImportProcessingService<?> service) {
         pendingServicesStack.addLast(service);
         service.afterStackPush(this);
+    }
+
+    public void setServiceToDefaultFormDataMap(Map<String, FormDataDto> serviceToDefaultFormDataMap) {
+        this.serviceToDefaultFormDataMap = serviceToDefaultFormDataMap;
     }
 }

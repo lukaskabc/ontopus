@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 // TODO: Design pattern Strategy
 
@@ -26,11 +27,13 @@ public interface ImportProcessingService<R> {
     /**
      * Provides a JSON form which will be shown to the user.
      *
+     * @param context The import process context. Contents should not be modified.
+     * @param previousFormData The data submitted in the previous import process of the ontology version series.
      * @implSpec The method can be called multiple times during the process execution, the result should be cached when
      *     possible.
      * @return Form with JSON scheme and an optional UI Scheme
      */
-    @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context);
+    @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData);
 
     /**
      * Provides the description of the Service shown in the UI.

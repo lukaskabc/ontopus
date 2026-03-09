@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 
 import java.net.URI;
 
-public class ContextToControllerMappingURI extends GraphURI {
+public class ContextToControllerMappingURI extends AbstractTypedIdentifier implements GraphURI {
     public ContextToControllerMappingURI(String uri) {
         super(uri);
     }

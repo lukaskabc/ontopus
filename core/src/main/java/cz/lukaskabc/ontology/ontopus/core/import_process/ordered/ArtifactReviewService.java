@@ -13,6 +13,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -79,7 +80,7 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         Objects.requireNonNull(context);
         ObjectNode scheme = objectMapper.createObjectNode();
         scheme.put("type", "object");

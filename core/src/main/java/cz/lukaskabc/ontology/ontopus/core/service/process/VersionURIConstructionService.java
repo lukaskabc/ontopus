@@ -17,6 +17,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -40,7 +41,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         final String version = version(context);
         final String uri = UriComponentsBuilder.fromUri(ontologyURI(context).toURI())
                 .pathSegment(VERSION_SEGMENT)
@@ -54,8 +55,14 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
         properties.putObject(VERSION_FIELD_NAME).put("type", "string");
 
         ObjectNode formData = objectMapper.createObjectNode();
+
+        if (previousFormData != null && previousFormData.isObject()) {
+            formData.setAll((ObjectNode) previousFormData);
+        } else {
+            formData.put(URI_FIELD_NAME, uri);
+        }
+        // always set new version
         formData.put(VERSION_FIELD_NAME, version);
-        formData.put(URI_FIELD_NAME, uri);
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
         uiSchema.put("ui:field", "versionUriField");

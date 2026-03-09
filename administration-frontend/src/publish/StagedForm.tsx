@@ -57,12 +57,13 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
   const { i18n } = useTranslation()
   const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>()
   const [uiSchema, setUiSchema] = useState<UiSchema>()
-  const [formData, setFormData] = useState<any>()
+  const [formData, setFormData] = useState<any>(null)
   const [loadScheme, setLoadScheme] = useState<boolean>(true)
   const [isDisabled, setIsDisabled] = useState<boolean>(false)
+  const [formKey, setFormKey] = useState(0)
   const formRef = createRef<RjsfForm>()
 
-  // load JSON form when doLoadJsonForm is true
+  // load JSON form when loadScheme is true
   useEffect(() => {
     if (!loadScheme) {
       return
@@ -76,6 +77,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
         setUiSchema(result.uiSchema)
         setFormData(result.formData)
         setIsDisabled(false)
+        setFormKey((k) => k + 1) // force form reset
       })
       .catch((e) => {
         if (e instanceof ImportProcessNotInitializedError) {
@@ -118,10 +120,13 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
     [setFormData]
   )
 
+  console.debug('Form data', formData)
+
   return (
     <>
       {localizedSchema && (
         <Form
+          key={'StagedForm_formKey_' + formKey}
           ref={formRef}
           schema={localizedSchema}
           uiSchema={uiSchema}

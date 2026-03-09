@@ -9,6 +9,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
@@ -27,8 +28,8 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
-        return jsonForm;
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
+        return jsonForm; // not using previous data
     }
 
     @Override

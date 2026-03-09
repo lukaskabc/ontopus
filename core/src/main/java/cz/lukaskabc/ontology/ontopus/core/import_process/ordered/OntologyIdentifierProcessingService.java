@@ -13,6 +13,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
@@ -49,7 +50,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         return null;
     }
 
@@ -60,6 +61,8 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+        final OntologyURI existingIdentifier = context.getVersionSeries().getOntologyURI();
+
         // score = number of resolvers that returned the identifier
         final Map<URI, Integer> identifiersWithScores = new HashMap<>();
         for (OntologyIdentifierResolvingService resolver : resolvers) {
@@ -81,7 +84,10 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
             throw new IllegalStateException("The service stack is in an unexpected state.");
         }
         context.popService();
-        context.pushService(selector);
+
+        if (existingIdentifier == null || identifiersWithScores.containsKey(existingIdentifier.toURI())) {
+            context.pushService(selector);
+        }
 
         return null;
     }

@@ -10,12 +10,15 @@ import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -141,14 +144,19 @@ public class ImportProcessMediator {
         return params;
     }
 
+    private final ObjectMapper objectMapper;
+
     private final ImportProcessContextHolder holder;
 
     private final ImportFinalizationService finalizingService;
 
     public ImportProcessMediator(
-            ImportProcessContextHolder contextHolder, ImportFinalizationService finalizingService) {
+            ImportProcessContextHolder contextHolder,
+            ImportFinalizationService finalizingService,
+            ObjectMapper objectMapper) {
         this.holder = contextHolder;
         this.finalizingService = finalizingService;
+        this.objectMapper = objectMapper;
     }
 
     /** Closes the current import process and deletes related data (database context, files). */
@@ -181,6 +189,14 @@ public class ImportProcessMediator {
     // return formResults;
     // }
 
+    private JsonNode deserializeFormDataDto(FormDataDto formDataDto) {
+        ObjectNode data = objectMapper.createObjectNode();
+        for (Map.Entry<String, String> entry : formDataDto.entrySet()) {
+            data.set(entry.getKey(), objectMapper.readTree(entry.getValue()));
+        }
+        return objectMapper.valueToTree(data);
+    }
+
     /**
      * Finalize the import process with {@link #finalizingService} when the context has no remaining unprocessed
      * services.
@@ -210,9 +226,26 @@ public class ImportProcessMediator {
 
     private @Nullable JsonForm getCurrentFormUsingContext(ImportProcessContext context) {
         if (context.hasUnprocessedService()) {
-            return context.peekService().getJsonForm(context);
+            final ImportProcessingService<?> service = context.peekService();
+            final JsonNode defaultFormData = getDefaultFormData(context, service);
+
+            return service.getJsonForm(context, defaultFormData);
         }
         return null;
+    }
+
+    @Nullable private JsonNode getDefaultFormData(ImportProcessContext context, ImportProcessingService<?> service) {
+
+        final int serviceIndex = context.getProcessedServices().size() + 1;
+        final String serviceId = ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex);
+
+        final FormDataDto defaultFormData =
+                context.getServiceToDefaultFormDataMap().get(serviceId);
+        if (defaultFormData == null) {
+
+            return null;
+        }
+        return deserializeFormDataDto(defaultFormData);
     }
 
     /**
@@ -245,7 +278,7 @@ public class ImportProcessMediator {
     }
 
     private void processAutoServices(ImportProcessContext context) {
-        while (context.hasUnprocessedService() && context.peekService().getJsonForm(context) == null) {
+        while (context.hasUnprocessedService() && context.peekService().getJsonForm(context, null) == null) {
             context.handleResult(new FormResult(Map.of(), Map.of())); // submit empty form result
         }
     }

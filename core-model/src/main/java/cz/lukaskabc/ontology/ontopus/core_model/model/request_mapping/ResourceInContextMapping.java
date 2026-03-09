@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURIImpl;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 
 import java.net.URI;
@@ -16,7 +17,7 @@ public class ResourceInContextMapping {
     }
 
     public GraphURI getObject() {
-        return new GraphURI(object);
+        return new GraphURIImpl(object);
     }
 
     public ResourceURI getSubject() {

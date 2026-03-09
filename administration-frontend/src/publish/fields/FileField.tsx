@@ -6,12 +6,12 @@ import FormFileList from '@/publish/components/file_list/FormFileList.tsx'
 import { FormFileListInputHolder } from '@/publish/components/file_list/FormFileListInputHolder.tsx'
 import { FormFile } from '@/model/FormFile.ts'
 
-function parseFormData(fieldName: string, formData?: any) {
-  if (formData && Object.hasOwn(formData, fieldName) && formData[fieldName] instanceof Array) {
-    return formData[fieldName].map(FormFile.fromJson).filter((file) => file != null)
-  }
-  return []
-}
+// function parseFormData(fieldName: string, formData?: any) {
+//   if (formData && Object.hasOwn(formData, fieldName) && formData[fieldName] instanceof Array) {
+//     return formData[fieldName].map(FormFile.fromJson).filter((file) => file != null)
+//   }
+//   return []
+// }
 
 function acceptNewFiles(
   acceptedFiles: File[],
@@ -48,7 +48,7 @@ function FileField(props: FieldProps) {
     console.error('No field name specified for file field', props)
   }
 
-  const [value, setValue] = useState<FormFile[]>(() => parseFormData(name, props.formData))
+  const [value, setValue] = useState<FormFile[]>([]) // () => parseFormData(name, props.formData)
   const [fileMap, setFileMap] = useState<Map<string, File>>(() => new Map())
 
   // set the state and propagate the value change to the form data

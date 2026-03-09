@@ -29,7 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -98,9 +101,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
                 this.temporaryContextService.generate().getIdentifier();
         Objects.requireNonNull(databaseContext, "Generated context must have an identifier");
         final VersionArtifact artifact = new VersionArtifact();
-        final ImportProcessContext context = new ImportProcessContext(series, databaseContext, tempFolder, artifact);
-        createServiceStack(context);
-        return context;
+        return new ImportProcessContext(series, databaseContext, tempFolder, artifact);
     }
 
     private void createServiceStack(ImportProcessContext context) {
@@ -145,35 +146,30 @@ public class ImportProcessContextHolder implements AutoCloseable {
         };
     }
 
-    private Optional<ImportProcessContext> deserializeContext(VersionSeries versionSeries) {
-        final SerializableImportProcessContext serialized = versionSeries.getSerializableImportProcessContext();
-        if (serialized == null) {
-            return Optional.empty();
-        }
-        log.info(
-                "Deserializing import process context for version series {} with serialized context {}",
-                versionSeries.getIdentifier(),
-                serialized);
-        return Optional.empty(); // TODO implement context deserialization
-        // actually nothing is required here, just create normal context, but we need to
-        // pass the result list to the context so it can provide default values for the
-        // form
-    }
-
     private void ensureInitialized() {
         if (instance == null) {
             throw new ImportProcessNotInitializedException();
         }
     }
 
-    private VersionSeries findOrBlankSeries(@Nullable VersionSeriesURI uri) {
-        return versionSeriesService.findById(uri).orElseGet(VersionSeries::new);
+    private VersionSeries findByIdOrNew(@Nullable VersionSeriesURI uri) {
+        if (uri == null) {
+            return new VersionSeries();
+        }
+        return versionSeriesService.findRequiredById(uri);
     }
 
     /** Creates a new import process with context. */
     private ImportProcessContext makeImportContext(@Nullable VersionSeriesURI uri) {
-        final VersionSeries series = findOrBlankSeries(uri);
-        final ImportProcessContext context = deserializeContext(series).orElseGet(() -> createNewContext(series));
+        final VersionSeries series = findByIdOrNew(uri);
+        final ImportProcessContext context = createNewContext(series);
+        final SerializableImportProcessContext serialized = series.getSerializableImportProcessContext();
+
+        createServiceStack(context);
+
+        if (serialized != null) {
+            context.setServiceToDefaultFormDataMap(serialized.getServiceToFormResultMap());
+        }
 
         log.debug("Created new import process context {} and folder {}", context, context.getTempFolder());
         // TODO event

@@ -14,21 +14,15 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /** Serializes the {@link ImportProcessContext} into a {@link SerializableImportProcessContext}. */
 @Service
 @Order(FinalizationServiceOrder.CONTEXT_SERIALIZATION)
 public class ContextSerializationFinalizationService implements ImportFinalizingService {
     private static final Logger log = LogManager.getLogger(ContextSerializationFinalizationService.class);
-
-    private static FormDataDto serializeFormData(Map<String, JsonNode> stringJsonNodeMap) {
-        FormDataDto data = new FormDataDto(stringJsonNodeMap.size());
-        for (Map.Entry<String, JsonNode> entry : stringJsonNodeMap.entrySet()) {
-            data.put(entry.getKey(), entry.getValue().toString());
-        }
-        return data;
-    }
 
     private final ObjectMapper objectMapper;
 
@@ -40,7 +34,6 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
     public void finalizeImport(ImportProcessContext context) {
         final SerializableImportProcessContext serializedContext = new SerializableImportProcessContext();
         Objects.requireNonNull(context.getVersionSeries().getOntologyURI(), "Ontology URI must not be null");
-        serializedContext.setOntologyURI(context.getVersionSeries().getOntologyURI());
 
         final int servicesCount = context.getProcessedServices().size();
         final int resultsCount = context.getProcessedResults().size();
@@ -48,10 +41,8 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
             throw new IllegalStateException("There are more processed results than processed services");
         }
 
-        final List<String> serviceIds = new ArrayList<>(servicesCount);
         final Map<String, FormDataDto> serviceToFormResultMap = new HashMap<>(resultsCount);
 
-        serializedContext.setServicesList(serviceIds);
         serializedContext.setServiceToFormResultMap(serviceToFormResultMap);
 
         int resultIndex = 0;
@@ -59,12 +50,13 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
             final ImportProcessingService<?> service =
                     context.getProcessedServices().get(serviceIndex);
             final String serviceId = ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex);
-            serviceIds.add(serviceId);
             final ServiceAwareFormResult result = context.getProcessedResults().get(resultIndex);
             if (result.service() == service) {
                 FormDataDto serializedFormData =
                         serializeFormData(result.formResult().formData());
-                assert !serviceToFormResultMap.containsKey(serviceId);
+                if (serviceToFormResultMap.containsKey(serviceId)) {
+                    throw new IllegalStateException("Duplicate service identifier: " + serviceId);
+                }
 
                 serviceToFormResultMap.put(serviceId, serializedFormData);
                 resultIndex++;
@@ -74,5 +66,14 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
         context.getVersionSeries().setSerializableImportProcessContext(serializedContext);
 
         log.warn(() -> objectMapper.writeValueAsString(serializedContext));
+    }
+
+    private FormDataDto serializeFormData(Map<String, JsonNode> stringJsonNodeMap) {
+        FormDataDto data = new FormDataDto(stringJsonNodeMap.size());
+        for (Map.Entry<String, JsonNode> entry : stringJsonNodeMap.entrySet()) {
+            final String value = objectMapper.writeValueAsString(entry.getValue());
+            data.put(entry.getKey(), value);
+        }
+        return data;
     }
 }

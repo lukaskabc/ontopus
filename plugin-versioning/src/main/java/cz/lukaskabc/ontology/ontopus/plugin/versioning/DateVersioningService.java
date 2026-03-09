@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionAr
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import tools.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +45,7 @@ public class DateVersioningService implements OntologyVersioningService {
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         return null;
     }
 

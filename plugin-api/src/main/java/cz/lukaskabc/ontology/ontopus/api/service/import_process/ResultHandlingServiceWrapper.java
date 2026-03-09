@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JsonNode;
 
 import java.util.function.BiConsumer;
 
@@ -25,8 +26,8 @@ public class ResultHandlingServiceWrapper<R> implements ImportProcessingService<
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
-        return processingService.getJsonForm(context);
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
+        return processingService.getJsonForm(context, previousFormData);
     }
 
     @Override

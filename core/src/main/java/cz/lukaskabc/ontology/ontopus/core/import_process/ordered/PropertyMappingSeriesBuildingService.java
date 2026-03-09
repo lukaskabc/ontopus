@@ -11,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 
 /** Copies information from version artifact to version series if the version series is blank */
 @Service
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class PropertyMappingSeriesBuildingService implements OrderedImportPipelineService<Void> {
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         return null;
     }
 

@@ -7,7 +7,9 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioni
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
@@ -28,7 +30,7 @@ public class GeneralVersioningService implements OntologyVersioningService {
     }
 
     @Override
-    public JsonForm getJsonForm(ReadOnlyImportProcessContext context) {
+    public JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         String lastVersion = context.getVersionSeries().getVersion();
         String resolvedVersion = context.getVersionArtifact().getVersion();
 
@@ -49,6 +51,8 @@ public class GeneralVersioningService implements OntologyVersioningService {
         if (resolvedVersion != null) {
             formData = objectMapper.createObjectNode();
             formData.put(VERSION_FIELD, resolvedVersion);
+        } else if (previousFormData != null && previousFormData.isObject()) {
+            formData = (ObjectNode) previousFormData;
         }
 
         return new JsonForm(scheme, null, formData);

@@ -120,8 +120,6 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
     [setFormData]
   )
 
-  console.debug('Form data', formData)
-
   return (
     <>
       {localizedSchema && (

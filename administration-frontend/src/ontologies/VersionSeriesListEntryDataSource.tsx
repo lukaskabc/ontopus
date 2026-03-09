@@ -45,7 +45,6 @@ export class VersionSeriesListEntryDataSource implements DataSource<MuiModelList
   }
 
   getMany = ({ paginationModel, sortModel, filterModel }: GetManyProps): Promise<PagedResult<MuiModelListEntry>> => {
-    console.debug(sortModel)
     const sort = new Sort(mapSort(sortModel))
     const pageable = new Pageable(paginationModel.page, paginationModel.pageSize, false, sort)
 

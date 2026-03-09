@@ -1,22 +1,43 @@
-import { CrudProvider, type DataModel, type DataModelId, type DataSource, DataSourceCache, List } from '@toolpad/core'
+import { type DataModel, type DataModelId, type DataSource } from '@toolpad/core'
 
 import { useLocation } from 'wouter-preact'
-import type { MuiModelListEntry } from '@/model/MuiModelListEntry.ts'
-import { useCallback, useMemo } from 'preact/hooks'
+import { useCallback } from 'preact/hooks'
 import type { ResourceListEntry } from '@/model/ResourceListEntry.ts'
+import type { GridFilterModel, GridSortModel } from '@mui/x-data-grid'
+import DataGridList from '@/components/DataGridList.tsx'
 
 const INITIAL_PAGE_SIZE = 10
 const PAGE_SIZE_OPTIONS = new Set([10, 25, 50, 100, INITIAL_PAGE_SIZE])
 const PAGE_SIZE_OPTIONS_ARRAY = Array.from(PAGE_SIZE_OPTIONS).sort((a, b) => a - b)
 
-function CrudList({ onCreateClick }: { onCreateClick?: () => void }) {
+export interface InitialGridState {
+  sort?: GridSortModel
+  filter?: GridFilterModel
+}
+
+export interface ResourceEntryListProps<D extends ResourceListEntry & DataModel> {
+  dataSource: DataSource<D> & Required<Pick<DataSource<D>, 'getMany'>>
+  gridInitialState?: InitialGridState
+  onCreateClick?: () => void
+}
+
+export default function ResourceEntryList<D extends ResourceListEntry & DataModel>(props: ResourceEntryListProps<D>) {
+  if (!props.gridInitialState) {
+    props.gridInitialState = {
+      sort: [{ field: 'modifiedDate', sort: 'desc' }],
+    }
+  }
+
   const [_, navigate] = useLocation()
   const onRowClick = useCallback((id: DataModelId) => navigate(`/${encodeURIComponent(id)}`), [navigate])
   return (
-    <List<MuiModelListEntry>
+    <DataGridList<D>
+      dataSource={props.dataSource}
       initialPageSize={10}
       onRowClick={onRowClick}
-      onCreateClick={onCreateClick}
+      onCreateClick={props.onCreateClick}
+      initialSortModel={props.gridInitialState?.sort}
+      initialFilterModel={props.gridInitialState?.filter}
       slotProps={{
         pageContainer: {
           disableGutters: true, // removes padding on sides
@@ -41,7 +62,7 @@ function CrudList({ onCreateClick }: { onCreateClick?: () => void }) {
           disableDensitySelector: true,
           pageSizeOptions: PAGE_SIZE_OPTIONS_ARRAY,
           columnVisibilityModel: {
-            actions: false,
+            actions: false, // disable default actions column
           },
           slotProps: {
             toolbar: {
@@ -52,25 +73,5 @@ function CrudList({ onCreateClick }: { onCreateClick?: () => void }) {
         },
       }}
     />
-  )
-}
-
-export interface ResourceDetailProps<D extends ResourceListEntry & DataModel> {
-  identifier?: string
-  dataSource: DataSource<D>
-}
-
-export interface ResourceEntryListProps<D extends ResourceListEntry & DataModel> {
-  dataSource: DataSource<D>
-  onCreateClick?: () => void
-}
-
-export default function ResourceEntryList<D extends ResourceListEntry & DataModel>(props: ResourceEntryListProps<D>) {
-  const dataCacheRef = useMemo(() => new DataSourceCache(), [])
-
-  return (
-    <CrudProvider<D> dataSource={props.dataSource} dataSourceCache={dataCacheRef}>
-      <CrudList onCreateClick={props.onCreateClick} />
-    </CrudProvider>
   )
 }

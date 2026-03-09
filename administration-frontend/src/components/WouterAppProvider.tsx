@@ -4,10 +4,13 @@ import { Link, Router as WRouter, useLocation, useSearchParams } from 'wouter-pr
 import { useCallback, useMemo } from 'preact/hooks'
 import { forwardRef } from 'preact/compat'
 import Constants from '@/Constants.ts'
+import { createContext } from 'preact'
 
 const WouterLink = forwardRef<HTMLAnchorElement, any>((props, ref) => {
   return <Link ref={ref} {...props} />
 })
+
+export const MuiRouterContext = createContext<Router | null>(null)
 
 function appendBaseUrl(path: string | URL): string {
   if (typeof path === 'object') {
@@ -47,7 +50,9 @@ export default function (props: AppProviderProps) {
   )
   return (
     <WRouter base={Constants.BASE_URL}>
-      <AppProvider router={routerImpl} {...props} />
+      <MuiRouterContext.Provider value={routerImpl}>
+        <AppProvider router={routerImpl} {...props} />
+      </MuiRouterContext.Provider>
     </WRouter>
   )
 }

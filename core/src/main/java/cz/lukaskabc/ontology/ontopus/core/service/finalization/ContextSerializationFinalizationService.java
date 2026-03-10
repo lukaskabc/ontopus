@@ -4,7 +4,6 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.ServiceAwareFormResult;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportFinalizingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.apache.logging.log4j.LogManager;
@@ -49,7 +48,7 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
         for (int serviceIndex = 0; serviceIndex < servicesCount; serviceIndex++) {
             final ImportProcessingService<?> service =
                     context.getProcessedServices().get(serviceIndex);
-            final String serviceId = ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex);
+            final String serviceId = service.getUniqueContextIdentifier(context);
             final ServiceAwareFormResult result = context.getProcessedResults().get(resultIndex);
             if (result.service() == service) {
                 FormDataDto serializedFormData =

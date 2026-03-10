@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class VersionArtifactRepository
         super(dao, validator, identifierGenerator);
     }
 
+    @Transactional(readOnly = true)
     public Page<VersionArtifact> find(VersionSeriesURI seriesURI, Pageable pageable, List<String> filter) {
         if (pageable.isUnpaged()) {
             pageable = PageRequest.of(0, 100); // TODO config

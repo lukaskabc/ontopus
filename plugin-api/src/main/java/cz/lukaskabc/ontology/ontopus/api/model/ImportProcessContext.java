@@ -35,6 +35,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     private final ArrayList<ImportProcessingService<?>> pendingServicesStack;
     private final ArrayList<ImportProcessingService<?>> processedServices;
+    private final Set<String> processedServiceIdentifiers;
     private final List<ServiceAwareFormResult> processedResults;
 
     private final Set<ContextToControllerMapping> controllerMappings;
@@ -52,6 +53,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.versionArtifact = other.getVersionArtifact();
         this.pendingServicesStack = new ArrayList<>(other.getPendingServicesStack());
         this.processedServices = new ArrayList<>(other.getProcessedServices());
+        this.processedServiceIdentifiers = new HashSet<>(other.getProcessedServiceIdentifiers());
         this.processedResults = new ArrayList<>(other.getProcessedResults());
         this.controllerMappings = new HashSet<>(other.getControllerMappings());
     }
@@ -67,6 +69,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.versionArtifact = Objects.requireNonNull(versionArtifact);
         this.pendingServicesStack = new ArrayList<>();
         this.processedServices = new ArrayList<>();
+        this.processedServiceIdentifiers = new HashSet<>();
         this.processedResults = new ArrayList<>();
         this.controllerMappings = new HashSet<>();
     }
@@ -108,6 +111,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     @Override
     public List<ServiceAwareFormResult> getProcessedResults() {
         return Collections.unmodifiableList(processedResults);
+    }
+
+    public Set<String> getProcessedServiceIdentifiers() {
+        return processedServiceIdentifiers;
     }
 
     @Override
@@ -183,11 +190,17 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
      * Removes a service from the top of the service stack and transfers it to the processed services list.
      *
      * @throws NoSuchElementException if the stack is empty
+     * @throws IllegalStateException if the service identifier is already processed
      */
     public void popService() {
-        processedServices.ensureCapacity(processedServices.size() + pendingServicesStack.size());
-        ImportProcessingService<?> last = pendingServicesStack.removeLast();
-        processedServices.addLast(last);
+        final String identifier = pendingServicesStack.getLast().getUniqueContextIdentifier(this);
+        if (processedServiceIdentifiers.add(identifier)) {
+            processedServices.ensureCapacity(processedServices.size() + pendingServicesStack.size());
+            ImportProcessingService<?> last = pendingServicesStack.removeLast();
+            processedServices.addLast(last);
+            return;
+        }
+        throw new IllegalStateException("Duplicated service identifier %s in a import process".formatted(identifier));
     }
 
     /**

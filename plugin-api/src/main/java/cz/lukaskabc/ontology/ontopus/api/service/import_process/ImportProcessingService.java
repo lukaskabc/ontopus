@@ -13,6 +13,9 @@ import tools.jackson.databind.JsonNode;
  * A service that is a part of the ontology importing process
  *
  * <p>The implementation must be deterministic and execution with the same parameters must result in same effects.
+ *
+ * @see #getUniqueContextIdentifier(ReadOnlyImportProcessContext) by default, the service can be in the import process
+ *     stack only once
  */
 public interface ImportProcessingService<R> {
 
@@ -52,17 +55,22 @@ public interface ImportProcessingService<R> {
     String getServiceName();
 
     /**
-     * Provides a unique identifier of the service type (not instance).
+     * Provides a unique identifier for the service instance in the context of the import process. The identifier must
+     * be unique for each invocation of the service in the import process. The identifier must be stable between
+     * publishing a new ontology and publishing a new version of the same ontology.
      *
-     * @return a unique identifier for the service type
+     * @implSpec The service is guaranteed to be at the top of the service stack when this method is called.
+     * @param context The import process context with this service at the top of the stack.
+     * @return a unique identifier for the service instance in the context of the import process
      */
-    default String getUniqueIdentifier() {
+    default String getUniqueContextIdentifier(ReadOnlyImportProcessContext context) {
         return this.getClass().getName();
     }
 
     /**
      * Accepts and handles the result of submitted form. If the service does not provide a form, it returns {@code null}
-     * from {@link #getJsonForm()} then this method will be called with an empty form result without users interaction.
+     * from {@link #getJsonForm(ReadOnlyImportProcessContext, JsonNode)} then this method will be called with an empty
+     * form result without users interaction.
      *
      * @param formResult The data submitted in the form
      * @param context The import process context

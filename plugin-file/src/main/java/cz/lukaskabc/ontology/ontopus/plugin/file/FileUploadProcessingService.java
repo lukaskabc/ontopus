@@ -16,7 +16,11 @@ import tools.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.util.Map;
 
-/** {@link OntologyLoadingService} allowing to upload a local files to server. */
+/**
+ * {@link OntologyLoadingService} allowing to upload a local files to server.
+ *
+ * @implSpec Must not be pushed to the context stack on its own. Rather, should be wrapped by another service.
+ */
 @Service
 public class FileUploadProcessingService implements ImportProcessingService<Map<String, UploadedFile>> {
     private final JsonForm jsonForm;
@@ -25,6 +29,11 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
     public FileUploadProcessingService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.jsonForm = makeForm();
+    }
+
+    @Override
+    public void afterStackPush(ImportProcessContext context) {
+        throw new AssertionError("FileUploadProcessingService must not be pushed to stack");
     }
 
     @Override

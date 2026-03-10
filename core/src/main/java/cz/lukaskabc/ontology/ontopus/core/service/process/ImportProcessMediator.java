@@ -8,7 +8,6 @@ import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedExcept
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
-import cz.lukaskabc.ontology.ontopus.core.util.ImportContextUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -235,9 +234,8 @@ public class ImportProcessMediator {
     }
 
     @Nullable private JsonNode getDefaultFormData(ImportProcessContext context, ImportProcessingService<?> service) {
-
-        final int serviceIndex = context.getProcessedServices().size() + 1;
-        final String serviceId = ImportContextUtils.getIndexedServiceIdentifier(service, serviceIndex);
+        final String serviceId = service.getUniqueContextIdentifier(context);
+        Objects.requireNonNull(serviceId, "Service unique context identifier cannot be null!");
 
         final FormDataDto defaultFormData =
                 context.getServiceToDefaultFormDataMap().get(serviceId);
@@ -266,8 +264,8 @@ public class ImportProcessMediator {
         int serviceId = 0;
         while (context.hasUnprocessedService()) {
             ImportProcessingService<?> service = context.peekService();
-            String serviceName = ImportContextUtils.getIndexedServiceIdentifier(service, serviceId);
-            FormResult result = results.get(serviceName);
+            String serviceIdentifier = service.getUniqueContextIdentifier(context);
+            FormResult result = results.get(serviceIdentifier);
             if (result == null) {
                 throw new IllegalStateException(); // TODO: exception
             }

@@ -36,8 +36,9 @@ public class ResultHandlingServiceWrapper<R> implements ImportProcessingService<
     }
 
     @Override
-    public String getUniqueIdentifier() {
-        return ResultHandlingServiceWrapper.class.getName() + "---" + processingService.getUniqueIdentifier();
+    public String getUniqueContextIdentifier(ReadOnlyImportProcessContext context) {
+        return ResultHandlingServiceWrapper.class.getName() + "---"
+                + processingService.getUniqueContextIdentifier(context);
     }
 
     @Override

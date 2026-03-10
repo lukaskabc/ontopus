@@ -27,6 +27,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -83,16 +84,11 @@ public class ImportController {
     @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content)
     @PostMapping(path = "combined", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> onCombinedFormSubmit(
-            @Parameter(description = "Import context") @RequestParam(name = "context")
-                    ImportProcessContextRequest contextRequest,
-            MultipartHttpServletRequest request)
+            @Parameter(description = "Import context") @RequestParam(name = "context") @Valid ImportProcessContextRequest contextRequest)
             throws Throwable {
-        MultiValueMap<String, MultipartFile> files = request.getMultiFileMap();
         initialize(contextRequest.getVersionSeriesURI().toURI());
-        // return
-        // ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest,
-        // files));
-        return ResponseEntity.accepted().build(); // TODO implement submitting combined data
+
+        return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest));
     }
 
     @Operation(

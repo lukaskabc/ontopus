@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.util;
 
 import org.jspecify.annotations.NullUnmarked;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 @NullUnmarked
 public class SerializableImportProcessContext implements Serializable {
 
-    @NotNull private Map<String, FormDataDto> serviceToFormResultMap;
+    @NotEmpty private Map<String, FormDataDto> serviceToFormResultMap;
 
     public SerializableImportProcessContext() {}
 

@@ -13,11 +13,7 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -26,14 +22,10 @@ import java.util.concurrent.Future;
 public class ImportService {
 
     private final ImportProcessMediator mediator;
-
-    private final ObjectMapper objectMapper;
     private final RequestFileResolver requestFileResolver;
 
-    public ImportService(
-            ImportProcessMediator mediator, ObjectMapper objectMapper, RequestFileResolver requestFileResolver) {
+    public ImportService(ImportProcessMediator mediator, RequestFileResolver requestFileResolver) {
         this.mediator = mediator;
-        this.objectMapper = objectMapper;
         this.requestFileResolver = requestFileResolver;
     }
 
@@ -45,23 +37,8 @@ public class ImportService {
         mediator.initialize(uri);
     }
 
-    private Map<FormFileRequest, InputStreamSource> resolveCombinedFiles(
-            ImportProcessContextRequest contextRequest, MultiValueMap<String, MultipartFile> files) {
-        Map<FormFileRequest, InputStreamSource> result = new HashMap<>(files.size());
-        contextRequest.getServiceToFormResultMap().values().forEach((formResult) -> {
-            Iterator<JsonNode> jsonDataIterator =
-                    formResult.values().stream().map(objectMapper::readTree).iterator();
-            result.putAll(requestFileResolver.resolveAndCopyFiles(jsonDataIterator, files));
-        });
-        return result;
-    }
-
-    public Future<@Nullable Void> submitCombinedData(
-            ImportProcessContextRequest context, MultiValueMap<String, MultipartFile> files) {
-        Map<FormFileRequest, InputStreamSource> reusableFiles = resolveCombinedFiles(context, files);
-        // return mediator.submitCombinedFormResult(context, reusableFiles);
-        // TODO implement submitting combined data
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Future<@Nullable Void> submitCombinedData(ImportProcessContextRequest context) {
+        return mediator.submitCombinedFormResult(context.getSerializableImportProcessContext());
     }
 
     public Future<@Nullable Void> submitData(FormJsonDataDto jsonData, MultiValueMap<String, MultipartFile> files) {

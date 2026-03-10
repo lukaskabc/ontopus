@@ -8,9 +8,11 @@ import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedExcept
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.dto.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
@@ -35,7 +37,6 @@ import java.util.concurrent.Future;
 @Service
 public class ImportProcessMediator {
     static final CopyOption[] REPLACE_EXISTING_COPY_OPTIONS = new CopyOption[] {StandardCopyOption.REPLACE_EXISTING};
-    static final String FILE_SERVICE_PREFIX_SEPARATOR = ":";
 
     private static UploadedFile copyFile(
             FormFileRequest dto, InputStreamSource streamSource, ImportProcessContext context) {
@@ -96,38 +97,6 @@ public class ImportProcessMediator {
         return files;
     }
 
-    /**
-     * Extracts files from combined result and separate them by service class name prefixed to parameter names. The
-     * parameter name is expected to have following format {@code full.service.class.Name:ParameterName}
-     *
-     * @param combinedFormFileRequests reusable files with prefixed field names
-     * @return Map from service class name to map of file relative paths to the file
-     */
-    // private static Map<String, Map<String, FormFileRequest>>
-    // extractCombinedFiles(
-    // Map<FormFileRequest, InputStreamSource> combinedFormFileRequests,
-    // ImportProcessContext context) {
-    //
-    // // map from service names to map of relative file paths to the reusable file
-    // Map<String, Map<String, FormFileRequest>> files = new HashMap<>();
-    //
-    // for (Map.Entry<FormFileRequest, InputStreamSource> entry :
-    // combinedFormFileRequests.entrySet()) {
-    // final FormFileRequest dto = entry.getKey();
-    // final InputStreamSource streamSource = entry.getValue();
-    // String[] names = dto.getFormFieldName().split(FILE_SERVICE_PREFIX_SEPARATOR,
-    // 2);
-    // String serviceClassName = names[0];
-    // String paramName = names[1];
-    // dto.setFormFieldName(paramName);
-    //
-    // files.computeIfAbsent(serviceClassName, k -> new HashMap<>());
-    // FormFileRequest file = copyFile(dto, streamSource, context);
-    // files.get(serviceClassName).put(file.getFileName(), file);
-    // }
-    // return files;
-    // }
-
     private static Map<String, Map<String, JsonNode>> extractCombinedParams(Map<String, JsonNode> combinedFormData) {
         Map<String, Map<String, JsonNode>> params = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : combinedFormData.entrySet()) {
@@ -163,32 +132,7 @@ public class ImportProcessMediator {
         holder.close();
     }
 
-    /**
-     * Combines form data and reusable files mapped to service names to map of service names to form results.
-     *
-     * @param combinedFormData Map of service names to form data JSON
-     * @param filesMap Map of service names to map of relative file path to reusable file
-     * @return Map of service names to form result
-     */
-    // private Map<String, FormResult> extractFormResults(
-    // Map<String, JsonNode> combinedFormData, Map<String, Map<String,
-    // FormFileRequest>> filesMap) {
-    // var paramMap = extractCombinedParams(combinedFormData);
-    // Map<String, FormResult> formResults = new HashMap<>(Math.max(filesMap.size(),
-    // paramMap.size()));
-    // Set<String> serviceClassNames = new HashSet<>(filesMap.keySet());
-    // serviceClassNames.addAll(paramMap.keySet());
-    //
-    // for (String serviceClassName : serviceClassNames) {
-    // Map<String, JsonNode> params = paramMap.get(serviceClassName);
-    // Map<String, FormFileRequest> files = filesMap.get(serviceClassName);
-    // formResults.put(serviceClassName, new FormResult(params, files));
-    // }
-    //
-    // return formResults;
-    // }
-
-    private JsonNode deserializeFormDataDto(FormDataDto formDataDto) {
+    private ObjectNode deserializeFormDataDto(FormDataDto formDataDto) {
         ObjectNode data = objectMapper.createObjectNode();
         for (Map.Entry<String, String> entry : formDataDto.entrySet()) {
             data.set(entry.getKey(), objectMapper.readTree(entry.getValue()));
@@ -208,9 +152,18 @@ public class ImportProcessMediator {
         if (!context.hasUnprocessedService()) {
             finalizingService.finalizeImport(context);
             closeImportProcess();
-            throw new ImportProcessFinalizedException(
-                    context.getVersionArtifact().getIdentifier());
+            final VersionArtifactURI artifactURI = context.getVersionArtifact().getIdentifier();
+            Objects.requireNonNull(artifactURI);
+            throw new ImportProcessFinalizedException(artifactURI);
         }
+    }
+
+    private FormResult formDataToFormResult(FormDataDto formDataDto) {
+        Map<String, JsonNode> data = new HashMap<>(formDataDto.size());
+        for (Map.Entry<String, String> entry : formDataDto.entrySet()) {
+            data.put(entry.getKey(), objectMapper.readTree(entry.getValue()));
+        }
+        return new FormResult(data, Map.of());
     }
 
     /**
@@ -260,16 +213,19 @@ public class ImportProcessMediator {
         }
     }
 
-    private void processAllResults(ImportProcessContext context, Map<String, FormResult> results) {
-        int serviceId = 0;
+    private void processAllResults(
+            ImportProcessContext context, SerializableImportProcessContext serializableImportProcessContext) {
+        final Map<String, FormDataDto> serviceToFormDataMap =
+                serializableImportProcessContext.getServiceToFormResultMap();
         while (context.hasUnprocessedService()) {
-            ImportProcessingService<?> service = context.peekService();
-            String serviceIdentifier = service.getUniqueContextIdentifier(context);
-            FormResult result = results.get(serviceIdentifier);
-            if (result == null) {
-                throw new IllegalStateException(); // TODO: exception
+            final ImportProcessingService<?> service = context.peekService();
+            final String serviceId = service.getUniqueContextIdentifier(context);
+            final FormDataDto formDataDto = serviceToFormDataMap.get(serviceId);
+            if (formDataDto == null) {
+                throw new IllegalStateException("Missing form data for service with id: " + serviceId);
             }
-            context.handleResult(result);
+            final FormResult formResult = formDataToFormResult(formDataDto);
+            context.handleResult(formResult);
             processAutoServices(context);
         }
         finalizeImport(context);
@@ -286,15 +242,9 @@ public class ImportProcessMediator {
      *
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
-    // public Future<?> submitCombinedFormResult(
-    // ImportProcessContextRequest contextRequest, Map<FormFileRequest,
-    // InputStreamSource> FormFileRequests) {
-    // return holder.scheduleWithContext((context -> {
-    // Map<String, FormResult> formResults = extractFormResults(contextRequest,
-    // serviceNameToFilePathMap);
-    // processAllResults(context, formResults);
-    // }));
-    // }
+    public Future<@Nullable Void> submitCombinedFormResult(SerializableImportProcessContext serializableContext) {
+        return holder.scheduleWithContext((context -> processAllResults(context, serializableContext)));
+    }
 
     /**
      * Submits a single result to the service at the top of the service stack.

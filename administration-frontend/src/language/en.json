@@ -4,6 +4,13 @@
   "confirm": "Confirm",
   "cancel": "Cancel",
   "language": "Language",
+  "navigation": {
+    "ontologies": "Ontologies",
+    "tooltip": {
+      "ontologies": "View and manage ontologies",
+      "settings": "Settings"
+    }
+  },
   "data-format": {
     "_comment_date_reference": "https://www.i18next.com/translation-function/formatting#datetime",
     "date": "{{val, iso-date}}"

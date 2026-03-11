@@ -30,11 +30,7 @@ export function App() {
   }, [])
 
   return (
-    <WouterAppProvider
-      theme={mdTheme}
-      branding={Branding}
-      // navigation={navigation}
-    >
+    <WouterAppProvider theme={mdTheme} branding={Branding}>
       <ErrorBoundary>
         <Switch>
           <Route path={'/login'} component={Login} />

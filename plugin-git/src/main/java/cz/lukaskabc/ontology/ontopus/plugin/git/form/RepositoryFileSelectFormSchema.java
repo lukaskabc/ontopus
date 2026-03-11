@@ -1,9 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import tools.jackson.databind.JsonNode;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
+import tools.jackson.databind.JsonNode;
+
 import java.util.List;
 
 public class RepositoryFileSelectFormSchema {

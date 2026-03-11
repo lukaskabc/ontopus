@@ -13,7 +13,7 @@
     <modules>
         <module>core</module>
         <module>plugin-api</module>
-        <!--        <module>plugin-git</module>-->
+        <module>plugin-git</module>
         <module>plugin-file</module>
         <module>core-model</module>
         <module>plugin-rdf-importer</module>
@@ -40,6 +40,7 @@
         <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
         <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
         <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
+        <ontopus.plugin.owl.version>1.0-SNAPSHOT</ontopus.plugin.owl.version>
         <ontopus.plugin.rdf.version>1.0-SNAPSHOT</ontopus.plugin.rdf.version>
         <ontopus.plugin.skos.version>1.0-SNAPSHOT</ontopus.plugin.skos.version>
         <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
@@ -83,6 +84,17 @@
                 <artifactId>skos-plugin</artifactId>
                 <version>${ontopus.plugin.skos.version}</version>
             </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                <artifactId>owl-plugin</artifactId>
+                <version>${ontopus.plugin.owl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                <artifactId>git-plugin</artifactId>
+                <version>${ontopus.plugin.git.version}</version>
+            </dependency>
+
             <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>

@@ -1,11 +1,16 @@
 {
   "ontopus.plugin.git": {
-    "sourceName": "Remote git repository",
+    "service": {
+      "GitOntologyLoadingService": {
+        "name": "Remote GIT Repository",
+        "description": "Load an ontology from a remote git repository"
+      }
+    },
     "importForm": {
       "description": "Specify the remote repository to clone",
       "fields": {
         "repositoryUrl.title": "Repository URL",
-        "repositoryUrl.description": "e.g. https://github.com/lukaskabc/ontopus.git",
+        "repositoryUrl.description": "e.g. https://github.com/lukaskabc/ontopus.git or git@github.com:lukaskabc/ontopus.git",
         "branch.title": "Branch or Tag",
         "branch.description": "(optional) Enter the exact branch or tag to clone or leave empty to clone the default branch",
         "username.title": "Username",

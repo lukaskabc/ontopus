@@ -217,6 +217,14 @@
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>skos-plugin</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>git-plugin</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>owl-plugin</artifactId>
+                </dependency>
             </dependencies>
         </profile>
         <profile>

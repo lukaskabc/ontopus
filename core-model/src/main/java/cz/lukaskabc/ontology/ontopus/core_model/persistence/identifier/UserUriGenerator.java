@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -29,7 +30,7 @@ public class UserUriGenerator extends AbstractIdentifierGenerator<UserURI, User>
     public UserURI generate(User entity) {
         ensureHasUsername(entity);
         int attempt = 0;
-        final String base = User_.entityClassIRI + "_" + sanitizeString(entity.getUsername());
+        final String base = User_.entityClassIRI + "_" + StringUtils.sanitize(entity.getUsername());
         while (attempt < MAX_GENERATION_ATTEMPTS) {
             URI generated = URI.create(base + (attempt > 0 ? attempt : ""));
 

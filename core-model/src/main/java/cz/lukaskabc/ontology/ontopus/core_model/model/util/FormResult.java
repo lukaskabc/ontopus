@@ -2,6 +2,8 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.util;
 
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -52,5 +54,13 @@ public record FormResult(Map<String, JsonNode> formData, Map<String, UploadedFil
      */
     @Nullable public UploadedFile getUploadedFile(String relativePath) {
         return uploadedFiles.get(relativePath);
+    }
+
+    public ObjectNode jsonFormData(ObjectMapper objectMapper) {
+        final ObjectNode result = objectMapper.createObjectNode();
+        for (Map.Entry<String, JsonNode> entry : formData.entrySet()) {
+            result.set(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 }

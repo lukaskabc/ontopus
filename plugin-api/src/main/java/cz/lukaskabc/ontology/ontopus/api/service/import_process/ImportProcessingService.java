@@ -42,9 +42,11 @@ public interface ImportProcessingService<R> {
      * Provides the description of the Service shown in the UI.
      *
      * @return i18n translation key for the service description
+     * @implNote The default implementation replaces the last part of the i18n key with "description".
      */
     default String getServiceDescription() {
-        return getServiceName() + ".description"; // TODO implement import service description
+        final int lastDot = getServiceName().lastIndexOf(".");
+        return getServiceName().substring(0, lastDot) + ".description"; // TODO implement import service description
     }
 
     /**

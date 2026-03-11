@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FormDataDto extends HashMap<String, String> implements Serializable {
+    public static final FormDataDto EMPTY = new FormDataDto(0);
+
     public FormDataDto() {}
 
     public FormDataDto(Map<? extends String, ? extends String> m) {

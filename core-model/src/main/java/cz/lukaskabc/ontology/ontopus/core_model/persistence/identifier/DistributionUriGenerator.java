@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution_;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -20,7 +21,7 @@ public class DistributionUriGenerator extends AbstractIdentifierGenerator<Distri
     public DistributionURI generate(OntologyDistribution entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity.getTitle());
-        String format = sanitizeString(entity.getFormat());
+        String format = StringUtils.sanitize(entity.getFormat());
 
         int attempt = 0;
         final String base = OntologyDistribution_.entityClassIRI + "_" + title + "_" + format;

@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service.process;
+package cz.lukaskabc.ontology.ontopus.plugin.owl;
 
 import cz.cvut.kbss.jopa.exceptions.OWLPersistenceException;
 import cz.cvut.kbss.jopa.vocabulary.OWL;

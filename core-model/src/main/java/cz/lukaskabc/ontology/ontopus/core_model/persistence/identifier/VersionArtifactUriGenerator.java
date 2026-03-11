@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class VersionArtifactUriGenerator extends AbstractIdentifierGenerator<Ver
     public VersionArtifactURI generate(VersionArtifact entity) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity.getTitle());
-        String version = sanitizeString(entity.getVersion());
+        String version = StringUtils.sanitize(entity.getVersion());
         String baseId = VersionArtifact_.entityClassIRI + "_" + title + "_" + version;
 
         int attempt = 0;

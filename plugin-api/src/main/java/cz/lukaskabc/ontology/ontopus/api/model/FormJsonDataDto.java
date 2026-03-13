@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.rest.dto;
+package cz.lukaskabc.ontology.ontopus.api.model;
 
 import tools.jackson.databind.JsonNode;
 

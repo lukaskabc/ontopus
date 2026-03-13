@@ -25,7 +25,7 @@ export interface FileWithFieldName {
   file: File
 }
 
-function compileDataForRequest(formData: any, files: FileWithFieldName[]): string | FormData {
+export function compileDataForRequest(formData: any, files: FileWithFieldName[]): string | FormData {
   const data = new FormData()
   if (typeof formData === 'object' && !(formData instanceof Array)) {
     Object.keys(formData).forEach((key: string) => {

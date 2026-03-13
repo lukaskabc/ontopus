@@ -1,11 +1,11 @@
-function withTrailingSlash(url: string) {
+export function withTrailingSlash(url: string) {
   if (!url.endsWith('/')) {
     url = url + '/'
   }
   return new URL(url)
 }
 
-function withoutTrailingSlash(url: string) {
+export function withoutTrailingSlash(url: string) {
   if (url.endsWith('/')) {
     url = url.slice(0, -1)
   }

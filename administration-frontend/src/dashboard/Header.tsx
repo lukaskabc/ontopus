@@ -1,10 +1,10 @@
 import Stack from '@mui/material/Stack'
-import Link from '@mui/material/Link'
 import { Branding } from '@/config/theme.tsx'
 import { Button, styled, Typography, useTheme } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { useCallback } from 'preact/hooks'
 import { useLocation } from 'wouter-preact'
+import { withoutTrailingSlash } from '@/Constants.ts'
 
 const LogoContainer = styled('div')({
   position: 'relative',
@@ -37,23 +37,31 @@ function HeaderText({ children, bold = true }: { children?: React.ReactNode; bol
 // https://github.com/mui/toolpad/blob/v0.16.0/packages/toolpad-core/src/DashboardLayout/AppTitle.tsx
 function AppTitle() {
   return (
-    <Link href={Branding?.homeUrl} style={{ textDecoration: 'none' }}>
-      <Stack direction="row" alignItems="center">
-        <LogoContainer>{Branding?.logo}</LogoContainer>
-        <HeaderText>{Branding?.title}</HeaderText>
-      </Stack>
-    </Link>
+    // <Link href={Branding?.homeUrl} style={{ textDecoration: 'none' }}>
+    <Stack direction="row" alignItems="center">
+      <LogoContainer>{Branding?.logo}</LogoContainer>
+      <HeaderText>{Branding?.title}</HeaderText>
+    </Stack>
+    // </Link>
   )
 }
 
 export default function Header() {
   const { t } = useTranslation()
-  const [_, navigate] = useLocation()
+  const [dirtyLocation, navigate] = useLocation()
+  const location = withoutTrailingSlash(dirtyLocation)
   const navigateToOntologies = useCallback(() => navigate('/'), [navigate])
+
+  const isOntologiesLocation = location === '/ontologies'
+
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
       <AppTitle />
-      <Button variant={'outlined'} onClick={navigateToOntologies}>
+      <Button
+        variant={isOntologiesLocation ? 'outlined' : 'contained'}
+        onClick={navigateToOntologies}
+        disabled={isOntologiesLocation}
+      >
         <b>{t('navigation.ontologies')}</b>
       </Button>
     </Stack>

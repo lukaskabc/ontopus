@@ -31,7 +31,7 @@ export const Branding = {
   logo: <Logo class={'logo'} />,
   title: t('local:title'),
   subtitle: t('local:subtitle'),
-  homeUrl: '/',
+  homeUrl: '/ontologies',
 }
 
 export default mdTheme

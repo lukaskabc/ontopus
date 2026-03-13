@@ -57,6 +57,22 @@ ontopus:uriMappingType rdf:type owl:ObjectProperty ;
                        rdfs:label "URI Mapping Type"@en .
 
 
+###  http://ontology.lukaskabc.cz/application/ontopus#hasCondition
+ontopus:hasCondition rdf:type owl:ObjectProperty ;
+                     rdfs:domain ontopus:WebhookEntry ;
+                     rdfs:range ontopus:JsonPointerCondition ;
+                     rdfs:comment "A condition of a webhook entry."@en ;
+                     rdfs:label "Has condition"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#hasMapping
+ontopus:hasMapping rdf:type owl:ObjectProperty ;
+                   rdfs:domain ontopus:WebhookEntry ;
+                   rdfs:range ontopus:JsonMappingEntry ;
+                   rdfs:comment "A mapping of a webhook entry."@en ;
+                   rdfs:label "Has mapping"@en .
+
+
 #################################################################
 #    Data properties
 #################################################################
@@ -82,6 +98,38 @@ ontopus:serializedImportContext rdf:type owl:DatatypeProperty ;
                                 rdfs:range xsd:string ;
                                 rdfs:comment "Serialized import process context in JSON string encoded with Base64"@en ;
                                 rdfs:label "Serialized import context"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#sourceJsonPointer
+ontopus:sourceJsonPointer rdf:type owl:DatatypeProperty ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( ontopus:JsonPointerCondition
+                                                      ontopus:JsonMappingEntry
+                                                    )
+                                      ] ;
+                          rdfs:range xsd:string ;
+                          rdfs:comment "A source JSON Pointer of a webhook condition or mapping."@en ;
+                          rdfs:label "Source JSON Pointer"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#mappingTargetJsonPointer
+ontopus:mappingTargetJsonPointer rdf:type owl:DatatypeProperty ;
+                                 rdfs:domain ontopus:JsonMappingEntry ;
+                                 rdfs:range xsd:string ;
+                                 rdfs:comment "A target JSON Pointer of a JSON mapping entry."@en ;
+                                 rdfs:label "Target JSON Pointer"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#regexPattern
+ontopus:regexPattern rdf:type owl:DatatypeProperty ;
+                     rdfs:domain [ rdf:type owl:Class ;
+                                   owl:unionOf ( ontopus:JsonPointerCondition
+                                                 ontopus:JsonMappingEntry
+                                               )
+                                 ] ;
+                     rdfs:range xsd:string ;
+                     rdfs:comment "A regular expression pattern of a webhook condition or mapping."@en ;
+                     rdfs:label "Regular expression pattern"@en .
 
 
 #################################################################
@@ -140,6 +188,24 @@ ontopus:VersionSeries rdf:type owl:Class ;
                                       ] ;
                       rdfs:comment "Dataset series of ontology artifacts representing different versions of a single ontology"@en ;
                       rdfs:label "Ontology version series"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#WebhookEntry
+ontopus:WebhookEntry rdf:type owl:Class ;
+                     rdfs:comment "A webhook entry defining matching conditions and JSON mappings."@en ;
+                     rdfs:label "Webhook entry"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#JsonPointerCondition
+ontopus:JsonPointerCondition rdf:type owl:Class ;
+                             rdfs:comment "A webhook condition matching a value resolved by a JSON Pointer against a regular expression."@en ;
+                             rdfs:label "JSON Pointer condition"@en .
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#JsonMappingEntry
+ontopus:JsonMappingEntry rdf:type owl:Class ;
+                         rdfs:comment "A JSON mapping entry extracting a value from a source JSON Pointer and writing it to a target JSON Pointer."@en ;
+                         rdfs:label "JSON mapping entry"@en .
 
 
 #################################################################

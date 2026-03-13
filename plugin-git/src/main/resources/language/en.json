@@ -18,6 +18,11 @@
         "authText.title": "Authentication",
         "authText.description": "(optional)"
       }
+    },
+    "webhook": {
+      "settings": {
+        "label": "Git Webhook",
+      }
     }
   }
 }

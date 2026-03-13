@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.form;
+package cz.lukaskabc.ontology.ontopus.plugin.git.import_process;
 
 import org.jspecify.annotations.Nullable;
 

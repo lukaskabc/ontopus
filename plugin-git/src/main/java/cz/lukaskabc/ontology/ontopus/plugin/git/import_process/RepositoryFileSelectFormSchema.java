@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.form;
+package cz.lukaskabc.ontology.ontopus.plugin.git.import_process;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;

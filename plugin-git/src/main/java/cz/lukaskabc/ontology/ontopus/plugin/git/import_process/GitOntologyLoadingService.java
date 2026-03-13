@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.service;
+package cz.lukaskabc.ontology.ontopus.plugin.git.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
@@ -13,7 +13,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitRepositoryUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.exception.FileImportingException;
-import cz.lukaskabc.ontology.ontopus.plugin.git.form.GitRepositoryClonningRequest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

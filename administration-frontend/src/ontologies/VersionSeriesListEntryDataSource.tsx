@@ -10,11 +10,11 @@ import type { GridRenderCellParams } from '@mui/x-data-grid'
 import { IconButton, Tooltip } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import { useTranslation } from 'react-i18next'
-import { useLocation } from 'wouter-preact'
+import { useLocation } from '@/utils/hooks.ts'
 
 function ActionsCell(params: GridRenderCellParams) {
   const { t } = useTranslation()
-  const [_, navigate] = useLocation()
+  const { navigate } = useLocation()
   // a new cell is rendered for each row
   const onClick = () => {
     navigate('/publish/' + encodeURIComponent(params.id))

@@ -1,10 +1,9 @@
 import { type DataModel, type DataModelId, type DataSource } from '@toolpad/core'
-
-import { useLocation } from 'wouter-preact'
 import { useCallback } from 'preact/hooks'
 import type { ResourceListEntry } from '@/model/ResourceListEntry.ts'
 import type { GridFilterModel, GridSortModel } from '@mui/x-data-grid'
 import DataGridList from '@/components/DataGridList.tsx'
+import { useLocation } from '@/utils/hooks.ts'
 
 const INITIAL_PAGE_SIZE = 10
 const PAGE_SIZE_OPTIONS = new Set([10, 25, 50, 100, INITIAL_PAGE_SIZE])
@@ -22,22 +21,21 @@ export interface ResourceEntryListProps<D extends ResourceListEntry & DataModel>
 }
 
 export default function ResourceEntryList<D extends ResourceListEntry & DataModel>(props: ResourceEntryListProps<D>) {
-  if (!props.gridInitialState) {
-    props.gridInitialState = {
-      sort: [{ field: 'modifiedDate', sort: 'desc' }],
-    }
+  const { dataSource, onCreateClick } = props
+  const gridInitialState = props.gridInitialState ?? {
+    sort: [{ field: 'modifiedDate', sort: 'desc' }],
   }
 
-  const [_, navigate] = useLocation()
+  const { navigate } = useLocation()
   const onRowClick = useCallback((id: DataModelId) => navigate(`/${encodeURIComponent(id)}`), [navigate])
   return (
     <DataGridList<D>
-      dataSource={props.dataSource}
+      dataSource={dataSource}
       initialPageSize={10}
       onRowClick={onRowClick}
-      onCreateClick={props.onCreateClick}
-      initialSortModel={props.gridInitialState?.sort}
-      initialFilterModel={props.gridInitialState?.filter}
+      onCreateClick={onCreateClick}
+      initialSortModel={gridInitialState?.sort}
+      initialFilterModel={gridInitialState?.filter}
       slotProps={{
         pageContainer: {
           disableGutters: true, // removes padding on sides

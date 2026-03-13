@@ -1,6 +1,5 @@
-import type { FunctionComponent } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
-import { useLocation } from 'wouter-preact'
+import { useLocation } from '@/utils/hooks.ts'
 import { VersionSeriesResponse } from '@/model/VersionSeriesResponse.ts'
 import { Paper, Typography } from '@mui/material'
 import { findVersionSeries } from '@/ontologies/detail/series/actions.ts'
@@ -12,8 +11,8 @@ export interface VersionSeriesDetailProps {
   identifier?: string
 }
 
-export const VersionSeriesDetail: FunctionComponent<VersionSeriesDetailProps> = ({ identifier }) => {
-  const [__, navigate] = useLocation()
+export default function VersionSeriesDetail({ identifier }: VersionSeriesDetailProps) {
+  const { navigate } = useLocation()
   const versionSeriesUri = parseUri(identifier)
 
   const [versionSeries, setVersionSeries] = useState<VersionSeriesResponse | null>(null)

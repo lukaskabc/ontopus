@@ -1,12 +1,14 @@
 import type { AppProviderProps, Navigate } from '@toolpad/core'
 import { AppProvider, type Router } from '@toolpad/core/AppProvider'
-import { Link, Router as WRouter, useLocation, useSearchParams } from 'wouter-preact'
+import { Link, type LinkProps, Router as WRouter, useLocation, useSearchParams } from 'wouter-preact'
 import { useCallback, useMemo } from 'preact/hooks'
 import { forwardRef } from 'preact/compat'
 import Constants from '@/Constants.ts'
 import { createContext } from 'preact'
 
-const WouterLink = forwardRef<HTMLAnchorElement, any>((props, ref) => {
+const WouterLink = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   return <Link ref={ref} {...props} />
 })
 

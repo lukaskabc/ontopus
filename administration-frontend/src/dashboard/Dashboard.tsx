@@ -2,8 +2,6 @@ import { DashboardLayout, DialogsProvider } from '@toolpad/core'
 import TransparentPaper from '@/components/TransparentPaper.tsx'
 import { Redirect, Route, Switch } from 'wouter-preact'
 import lazy from 'preact-iso/lazy'
-import { VersionSeriesDetail } from '@/ontologies/detail/series/VersionSeriesDetail.tsx'
-import { VersionArtifactDetail } from '@/ontologies/detail/artifact/VersionArtifactDetail.tsx'
 import { Container } from '@mui/material'
 import { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 import ToolbarActions from '@/dashboard/ToolbarActions.tsx'
@@ -12,6 +10,8 @@ import Header from '@/dashboard/Header.tsx'
 const PublishStepper = lazy(() => import('@/publish/PublishStepper.tsx'))
 const VersionSeriesList = lazy(() => import('@/ontologies/VersionSeriesList.tsx'))
 const Settings = lazy(() => import('@/settings/Settings.tsx'))
+const VersionSeriesDetail = lazy(() => import('@/ontologies/detail/series/VersionSeriesDetail.tsx'))
+const VersionArtifactDetail = lazy(() => import('@/ontologies/detail/artifact/VersionArtifactDetail.tsx'))
 
 function OntologiesRoute() {
   return (

@@ -1,5 +1,6 @@
 import type { MultilingualString } from '@/model/MultilingualString.ts'
 import { validateDate, validateMultilingual, validateValue } from '@/model/ModelUtils.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 export class ResourceListEntry {
   readonly identifier: string
@@ -7,7 +8,7 @@ export class ResourceListEntry {
   readonly version: string
   readonly modifiedDate: Date
 
-  constructor(jsonObj: any) {
+  constructor(jsonObj: GenericObjectType) {
     if (!jsonObj || typeof jsonObj !== 'object') {
       throw new Error('Invalid data: Expected a JSON object for ResourceListEntry')
     }

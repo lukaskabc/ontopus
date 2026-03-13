@@ -1,7 +1,6 @@
-import type { FunctionComponent } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { parseUri } from '@/ontologies/actions.ts'
-import { useLocation } from 'wouter-preact'
+import { useLocation } from '@/utils/hooks.ts'
 import type { VersionArtifactResponse } from '@/model/VersionArtifactResponse.ts'
 import { findVersionArtifact } from '@/ontologies/detail/artifact/actions.ts'
 import { Paper, Typography } from '@mui/material'
@@ -12,11 +11,8 @@ export interface VersionArtifactDetailProps {
   versionSeriesIdentifier: string
 }
 
-export const VersionArtifactDetail: FunctionComponent<VersionArtifactDetailProps> = ({
-  identifier,
-  versionSeriesIdentifier,
-}) => {
-  const [__, navigate] = useLocation()
+export default function VersionArtifactDetail({ identifier, versionSeriesIdentifier }: VersionArtifactDetailProps) {
+  const { navigate } = useLocation()
   const versionSeriesUri = parseUri(versionSeriesIdentifier)
   const versionArtifactUri = parseUri(identifier)
 
@@ -28,7 +24,7 @@ export const VersionArtifactDetail: FunctionComponent<VersionArtifactDetailProps
       return
     }
     findVersionArtifact(versionArtifactUri, versionSeriesUri).then(setVersionArtifact)
-  }, [navigate, versionSeriesUri, setVersionArtifact])
+  }, [navigate, versionSeriesUri, setVersionArtifact, versionArtifactUri])
 
   return (
     <>

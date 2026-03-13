@@ -8,15 +8,15 @@ export abstract class OntopusError extends Error {
  * An error with additional payload, e.g. response object or parsed JSON body.
  */
 export abstract class ErrorWithPayload extends OntopusError {
-  readonly payload: any
-  protected constructor(message: string, payload: any) {
+  readonly payload: unknown
+  protected constructor(message: string, payload: unknown) {
     super(message)
     this.payload = payload
   }
 }
 
 export class UnknownError extends ErrorWithPayload {
-  constructor(message: string, payload: any) {
+  constructor(message: string, payload: unknown) {
     super(`Unknown error: ${message}`, payload)
   }
 }
@@ -34,7 +34,7 @@ export class PromiseCanceledError extends OntopusError {
  * The server returned an unexpected HTTP status code
  */
 export class UnexpectedResponseStatusError extends ErrorWithPayload {
-  constructor(message: string, payload: any) {
+  constructor(message: string, payload: unknown) {
     super(`Server error: ${message}`, payload)
   }
 }

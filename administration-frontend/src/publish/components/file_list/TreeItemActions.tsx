@@ -3,15 +3,15 @@ import { IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import type { FormFile } from '@/model/FormFile.ts'
 
-export type WithOnDelete = {
+export interface WithOnDelete {
   onDelete: (file: FormFile) => void
 }
 
-export type TreeItemActionsProps = {
+export interface TreeItemActionsProps extends WithOnDelete {
   file?: FormFile
-} & WithOnDelete
+}
 
-type FileProps = {
+interface FileProps {
   file: FormFile
 }
 

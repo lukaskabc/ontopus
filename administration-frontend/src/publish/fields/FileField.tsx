@@ -65,8 +65,13 @@ function FileField(props: FieldProps) {
       const update = acceptNewFiles(acceptedFiles, value, fileMap, name)
 
       if (!multiple && update.value.length > 1) {
-        const singleValue = update.value.pop()!
-        const singleValueFile = update.fileMap.get(singleValue.fileName)!
+        const singleValue = update.value.pop()
+        if (!singleValue) return // should never happen, length was checked
+        const singleValueFile = update.fileMap.get(singleValue.fileName)
+        if (!singleValueFile) {
+          console.error('No file value found', update)
+          return
+        }
         update.value = [singleValue]
         update.fileMap = new Map([[singleValue.fileName, singleValueFile]])
       }

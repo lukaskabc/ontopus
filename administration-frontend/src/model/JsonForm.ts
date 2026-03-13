@@ -1,12 +1,12 @@
-import type { StrictRJSFSchema, UiSchema } from '@rjsf/utils'
+import type { GenericObjectType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
 
 export interface JsonForm {
   jsonSchema: StrictRJSFSchema
   uiSchema?: UiSchema
-  formData?: any
+  formData?: GenericObjectType
 }
 
-export function makeJsonForm(json: any): JsonForm {
+export function makeJsonForm(json: GenericObjectType): JsonForm {
   if (json['jsonSchema']) {
     const jsonSchema = json['jsonSchema']
     const uiSchema = json['uiSchema'] || undefined

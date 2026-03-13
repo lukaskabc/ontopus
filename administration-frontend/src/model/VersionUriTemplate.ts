@@ -1,4 +1,5 @@
 import { validateValue } from '@/model/ModelUtils.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 export default class VersionUriTemplate {
   readonly uri: string
@@ -9,7 +10,7 @@ export default class VersionUriTemplate {
     this.version = validateValue(version, 'string', 'version')
   }
 
-  static fromJson(jsonObj: any): VersionUriTemplate {
+  static fromJson(jsonObj: GenericObjectType): VersionUriTemplate {
     if (typeof jsonObj !== 'object') {
       throw new Error(`Expected an object to create VersionUriTemplate, got ${typeof jsonObj}`)
     }

@@ -7,8 +7,9 @@ import { trackPromise } from 'react-promise-tracker'
 import { ImportProcessNotInitializedError, PromiseCanceledError } from '@/utils/errors.ts'
 import type { JsonForm } from '@/model/JsonForm.ts'
 import JsonFormElement from '@/components/JsonFormElement.tsx'
+import type { GenericObjectType } from '@rjsf/utils'
 
-export type StagedFormProps = {
+export interface StagedFormProps {
   resetForm: () => void
 }
 
@@ -41,7 +42,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
     // TODO install eslint for preact hooks validation
   }, [loadScheme, resetForm])
 
-  const onSubmit = useCallback((formData: any, files: FileWithFieldName[]) => {
+  const onSubmit = useCallback((formData: GenericObjectType, files: FileWithFieldName[]) => {
     return trackPromise(submitForm(formData, files), STAGED_FORM_PROMISE_AREA)
       .then(() => setLoadScheme(true))
       .catch((e) => {

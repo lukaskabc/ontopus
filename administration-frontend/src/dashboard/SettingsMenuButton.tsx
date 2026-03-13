@@ -34,9 +34,10 @@ export default function SettingsMenuButton() {
     [navigate, onMenuClose]
   )
 
-  if (!isLoading && !menuEntries) {
+  if (!isLoading && (!menuEntries || menuEntries.length === 0)) {
     return null
   }
+
   return (
     <>
       <Tooltip title="Settings">

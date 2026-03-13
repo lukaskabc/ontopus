@@ -1,6 +1,7 @@
 import { type PersistenceEntity } from '@/model/PersistenceEntity.ts'
 import type { MultilingualString } from '@/model/MultilingualString.ts'
 import { validateDate, validateMultilingual, validateNullableValue, validateValue } from '@/model/ModelUtils.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 /**
  * Base class corresponding to Java EntityResponse.
@@ -11,7 +12,7 @@ export class EntityResponse implements PersistenceEntity {
   readonly identifier: string;
   [key: PropertyKey]: unknown
 
-  constructor(jsonObj: any) {
+  constructor(jsonObj: GenericObjectType) {
     if (!jsonObj || typeof jsonObj !== 'object') {
       throw new Error('Invalid data: Expected a JSON object for EntityResponse')
     }
@@ -34,7 +35,7 @@ export class ResourceResponse extends EntityResponse {
   readonly previousVersion: string
   readonly version: string
 
-  constructor(jsonObj: any) {
+  constructor(jsonObj: GenericObjectType) {
     super(jsonObj)
 
     this.title = validateMultilingual(jsonObj.title, 'title')
@@ -49,7 +50,7 @@ export class ResourceResponse extends EntityResponse {
       throw new Error("Invalid data: field 'languages' must be an array")
     }
 
-    this.languages = jsonObj.languages?.map((lang: any) => String(lang))
+    this.languages = jsonObj.languages?.map((lang: unknown) => String(lang))
   }
 }
 
@@ -59,7 +60,7 @@ export class ResourceResponse extends EntityResponse {
 export class DatasetResponse extends ResourceResponse {
   readonly series: string
 
-  constructor(jsonObj: any) {
+  constructor(jsonObj: GenericObjectType) {
     super(jsonObj)
     this.series = validateNullableValue(jsonObj.series, 'string', 'series')
   }

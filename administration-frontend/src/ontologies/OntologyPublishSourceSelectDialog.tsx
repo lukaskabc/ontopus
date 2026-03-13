@@ -12,22 +12,25 @@ import { useCallback, useEffect, useState } from 'preact/hooks'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { trackPromise } from 'react-promise-tracker'
 import { fetchImportSources } from '@/ontologies/actions.ts'
-import { useLocation } from 'wouter-preact'
+import { useLocation } from '@/utils/hooks.ts'
 
 const IMPORT_SOURCES_PROMISE_AREA = 'OntologyPublishSourceSelectDialog_fetchImportSources'
 
 export default function OntologyPublishSourceSelectDialog({ open, onClose }: DialogProps) {
   const { t } = useTranslation()
-  const [_, navigate] = useLocation()
+  const { navigate } = useLocation()
   const [importSources, setImportSources] = useState<string[]>([])
 
   useEffect(() => {
     trackPromise(fetchImportSources(), IMPORT_SOURCES_PROMISE_AREA).then(setImportSources).catch(console.error)
   }, [])
 
-  const onSourceSelect = useCallback((source: string) => {
-    onClose().then(() => navigate('/publish', { state: { importSource: source } }))
-  }, [])
+  const onSourceSelect = useCallback(
+    (source: string) => {
+      onClose().then(() => navigate('/publish', { state: { importSource: source } }))
+    },
+    [navigate, onClose]
+  )
 
   return (
     <Dialog open={open} onClose={() => onClose()}>

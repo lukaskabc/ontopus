@@ -3,6 +3,7 @@ import { VersionSeriesResponse } from '@/model/VersionSeriesResponse.ts'
 import { VersionArtifactListEntry } from '@/model/VersionArtifactListEntry.ts'
 import { ArrayPage, Pageable } from '@hallysonh/pageable'
 import { toPageRequest } from '@/utils/RequestTypes.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 export function findVersionSeries(identifier: string): Promise<VersionSeriesResponse> {
   const params = new URLSearchParams({ series: identifier })
@@ -22,10 +23,10 @@ export function findVersionArtifactsForVersionSeries(
   filter?.forEach((val) => options.append('filter', val))
   return request('GET', `series/artifacts?` + options.toString())
     .then((response) => response.json())
-    .then((data: any) => {
-      const page: any = data.page
+    .then((data: GenericObjectType) => {
+      const page = data.page
       const pageable = new Pageable(page.page, page.size)
-      return new ArrayPage<any>(data.content, page.totalElements, pageable)
+      return new ArrayPage<unknown>(data.content, page.totalElements, pageable)
     })
-    .then((page) => page.map((data) => new VersionArtifactListEntry(data)))
+    .then((page) => page.map((data) => new VersionArtifactListEntry(data as GenericObjectType)))
 }

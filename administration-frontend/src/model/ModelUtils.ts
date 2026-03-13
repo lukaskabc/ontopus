@@ -17,7 +17,7 @@ export function validateNullableValue<T>(value: T, expectedType: string, fieldNa
 /**
  * Validates that the input is a MultilingualString
  */
-export function validateMultilingual(value: any, fieldName: string): MultilingualString {
+export function validateMultilingual(value: unknown, fieldName: string): MultilingualString {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`Field '${fieldName}' must be an object (MultilingualString).`)
   }
@@ -32,7 +32,7 @@ export function validateMultilingual(value: any, fieldName: string): Multilingua
   return value as MultilingualString
 }
 
-export function validateDate(value: any | undefined | null, fieldName: string) {
+export function validateDate(value: unknown, fieldName: string) {
   if (!value || (typeof value !== 'string' && typeof value !== 'number')) {
     throw new Error(`Field ${fieldName}' must be a string or number (Date).`)
   }

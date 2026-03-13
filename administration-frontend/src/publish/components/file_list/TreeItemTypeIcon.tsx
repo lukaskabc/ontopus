@@ -17,7 +17,11 @@ function resolveIconType(type?: ItemType): [ItemIconType, ItemIconType] {
   return [Fragment, Fragment]
 }
 
-type ItemTypeIconProps = { isExpanded: boolean; handleClick: (event: MouseEvent) => void; type?: ItemType }
+interface ItemTypeIconProps {
+  isExpanded: boolean
+  handleClick: (event: MouseEvent) => void
+  type?: ItemType
+}
 export const ItemTypeIcon: FunctionComponent<ItemTypeIconProps> = (props) => {
   const { isExpanded, handleClick, type } = props
   const [ItemIcon, OpenItemIcon] = resolveIconType(type)

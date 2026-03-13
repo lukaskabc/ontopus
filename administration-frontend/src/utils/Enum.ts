@@ -22,12 +22,13 @@ export type Enum<T, Brand extends string> = T & { __brand: Brand }
  * @param obj enum values
  * @param brand the name of the enum
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const makeEnum = <const T extends Record<string, string>>(obj: T, brand: string) => {
   const eObj = Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, v as Enum<typeof v, typeof brand>])) as {
     [K in keyof T]: Enum<T[K], typeof brand>
   }
   const from = (str: string) => {
-    const entry = Object.entries(obj).find(([_, v]) => v === str)
+    const entry = Object.entries(obj).find(([, v]) => v === str)
     if (entry) {
       return eObj[entry[0] as keyof T]
     }

@@ -95,8 +95,8 @@ export default function DataGridList<D extends DataModel>(props: ListProps<D>) {
 
   const cache = useMemo(() => new DataSourceCache(), [])
 
-  const { fields, validate, ...methods } = cachedDataSource
-  const { getMany, deleteOne } = methods
+  const { fields, ...methods } = cachedDataSource
+  const { getMany } = methods
 
   const routerContext = useContext(MuiRouterContext)
 
@@ -280,7 +280,7 @@ export default function DataGridList<D extends DataModel>(props: ListProps<D>) {
         editable: false,
       })),
     ]
-  }, [deleteOne, fields, slotProps?.dataGrid])
+  }, [fields])
 
   return (
     <PageContainer

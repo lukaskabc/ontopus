@@ -31,6 +31,6 @@ export function authPing(): Promise<boolean> {
   return new Promise((resolve) => {
     request('GET', 'auth-ping')
       .then((response) => resolve(response.status === 200))
-      .catch((_) => resolve(false))
+      .catch(() => resolve(false))
   })
 }

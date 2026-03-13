@@ -12,7 +12,7 @@ import type { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
-export interface PublishStepperProps extends RouteComponentProps<StringRouteParams<typeof PUBLISH_STEPPER_ROUTE>> {}
+export type PublishStepperProps = RouteComponentProps<StringRouteParams<typeof PUBLISH_STEPPER_ROUTE>>
 
 export default function PublishStepper({ params }: PublishStepperProps) {
   const { t } = useTranslation()
@@ -35,12 +35,12 @@ export default function PublishStepper({ params }: PublishStepperProps) {
       resetImportProcess(versionSeriesIdentifier).then(resetJsonForm),
       PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA
     ).then() // TODO error handle
-  }, [versionSeriesIdentifier])
+  }, [resetJsonForm, versionSeriesIdentifier])
 
   const onAbortConfirmed = useCallback(() => {
     closeAbortDialog()
     onImportProcessReset()
-  }, [onImportProcessReset, versionSeriesIdentifier])
+  }, [closeAbortDialog, onImportProcessReset])
 
   // reset import process on version series change
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function PublishStepper({ params }: PublishStepperProps) {
   return (
     <>
       <Stepper activeStep={0} sx={{ p: 2 }}>
-        {steps.map((label, _) => {
+        {steps.map((label) => {
           const stepProps: { completed?: boolean } = {}
           return (
             <Step key={label} {...stepProps}>

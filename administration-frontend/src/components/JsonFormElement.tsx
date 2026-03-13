@@ -4,13 +4,21 @@ import intlSchema from '@/publish/utils/intlSchema.ts'
 import { useTranslation } from 'react-i18next'
 import Form from '@rjsf/mui'
 import validator from '@rjsf/validator-ajv8'
-import type { RegistryFieldsType, RegistryWidgetsType, StrictRJSFSchema, UiSchema } from '@rjsf/utils'
+import type {
+  GenericObjectType,
+  RegistryFieldsType,
+  RegistryWidgetsType,
+  StrictRJSFSchema,
+  UiSchema,
+} from '@rjsf/utils'
 import RjsfForm, { type IChangeEvent } from '@rjsf/core'
 import { type FileWithFieldName } from '@/publish/actions.ts'
 import { createRef, type RefObject, type TargetedEvent } from 'preact'
-import HeadingWidget from '@/publish/widgets/HeadingWidget.tsx'
-import FileField from '@/publish/fields/FileField.tsx'
-import VersionUriField from '@/publish/fields/VersionUriField.tsx'
+import lazy from 'preact-iso/lazy'
+
+const HeadingWidget = lazy(() => import('@/publish/widgets/HeadingWidget.tsx'))
+const FileField = lazy(() => import('@/publish/fields/FileField.tsx'))
+const VersionUriField = lazy(() => import('@/publish/fields/VersionUriField.tsx'))
 
 const WIDGETS: RegistryWidgetsType = {
   headingWidget: HeadingWidget,
@@ -28,7 +36,7 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
     const fileInputs = formElement.current.querySelectorAll('input[type="file"]')
     fileInputs.forEach((input) => {
       const name = input.getAttribute('name') || ''
-      const fInput = input as any
+      const fInput = input as HTMLInputElement
       if (fInput?.files) {
         for (const file of fInput.files as FileList) {
           fileList.push({ name, file })
@@ -41,7 +49,7 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
 
 export interface JsonFormElementProps {
   jsonForm: JsonForm | null
-  onSubmit: (formData: any, files: FileWithFieldName[]) => Promise<any>
+  onSubmit: (formData: GenericObjectType, files: FileWithFieldName[]) => Promise<unknown>
 }
 
 /**
@@ -53,7 +61,7 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
   const { i18n } = useTranslation()
   const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>()
   const [uiSchema, setUiSchema] = useState<UiSchema>()
-  const [formData, setFormData] = useState<any>(null)
+  const [formData, setFormData] = useState<GenericObjectType>()
   const [isDisabled, setIsDisabled] = useState(false)
   const [formElementKey, setFormElementKey] = useState(0)
   const formRef = createRef<RjsfForm>()
@@ -69,7 +77,7 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
     setFormElementKey((k) => k + 1)
   }, [jsonForm])
 
-  const localizedSchema = useMemo(() => intlSchema(jsonSchema, i18n), [jsonSchema])
+  const localizedSchema = useMemo(() => intlSchema(jsonSchema, i18n), [i18n, jsonSchema])
 
   // using controlled form for form data propagation when the new JSON form and possibly new form data are loaded
   const onChange = useCallback(
@@ -89,7 +97,7 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
         setIsDisabled(false)
       })
     },
-    [formRef]
+    [formRef, onSubmit]
   )
 
   return (

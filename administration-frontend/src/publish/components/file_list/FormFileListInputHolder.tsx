@@ -1,7 +1,7 @@
 import type { FunctionComponent, RefCallback } from 'preact'
 import { useCallback } from 'preact/hooks'
 
-export type FormFileListInputHolderProps = {
+export interface FormFileListInputHolderProps {
   files: Map<string, File>
   name: string
 }

@@ -5,7 +5,7 @@ export class MuiModelListEntry extends ResourceListEntry implements PersistenceE
   readonly id: string;
   [key: PropertyKey]: unknown
 
-  constructor(jsonObj: any) {
+  constructor(jsonObj: unknown) {
     if (!jsonObj || typeof jsonObj !== 'object') {
       throw new Error('Invalid data: Expected a JSON object for VersionSeriesListEntry')
     }

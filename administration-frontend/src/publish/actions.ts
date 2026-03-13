@@ -7,6 +7,7 @@ import {
   UnexpectedResponseStatusError,
   UnknownError,
 } from '@/utils/errors.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 export function resetImportProcess(versionSeriesIdentifier: string | null): Promise<Response> {
   const params = new URLSearchParams()
@@ -25,14 +26,14 @@ export interface FileWithFieldName {
   file: File
 }
 
-export function compileDataForRequest(formData: any, files: FileWithFieldName[]): string | FormData {
+export function compileDataForRequest(formData: GenericObjectType, files: FileWithFieldName[]): string | FormData {
   const data = new FormData()
   if (typeof formData === 'object' && !(formData instanceof Array)) {
     Object.keys(formData).forEach((key: string) => {
       data.append(key, JSON.stringify(formData[key]))
     })
   } else {
-    data.append('data', formData)
+    data.append('data', formData as unknown as string)
   }
   files.forEach((file) => {
     if (file && file.name && file.file) {
@@ -42,7 +43,7 @@ export function compileDataForRequest(formData: any, files: FileWithFieldName[])
   return data
 }
 
-export function submitForm(formData: any, files: FileWithFieldName[]) {
+export function submitForm(formData: GenericObjectType, files: FileWithFieldName[]) {
   return request('POST', '/import', { body: compileDataForRequest(formData, files) }, [204, 202, 200])
 }
 
@@ -63,7 +64,7 @@ export function loadJsonForm() {
     repeat = false
   }
 
-  const promise: Promise<JsonForm> = new Promise((resolve, reject) => {
+  const promise = new Promise<JsonForm>((resolve, reject) => {
     const task = () => {
       if (repeat) {
         request('GET', '/import', {}, [200])

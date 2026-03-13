@@ -26,7 +26,7 @@ interface SegmentedUri {
 function parseUri(uri: string): SegmentedUri {
   // match two groups: 1) scheme + host, 2) path
   // TODO write tests
-  const schemeMatch = uri.match(/^(https?:\/\/[^\/]*)\/(.*)$/)
+  const schemeMatch = uri.match(/^(https?:\/\/[^/]*)\/(.*)$/)
   if (schemeMatch) {
     const host = schemeMatch[1]
     const path = schemeMatch[2]

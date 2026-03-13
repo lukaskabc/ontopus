@@ -1,3 +1,5 @@
+import type { GenericObjectType } from '@rjsf/utils'
+
 /**
  * {@link File} extended by DropZone with an optional path property
  */
@@ -34,7 +36,7 @@ export class FormFile {
     return new FormFile(fileName, path, formFieldName)
   }
 
-  static fromJson(jsonObj: any): FormFile | null {
+  static fromJson(jsonObj: GenericObjectType): FormFile | null {
     if (typeof jsonObj !== 'object') {
       return null
     }

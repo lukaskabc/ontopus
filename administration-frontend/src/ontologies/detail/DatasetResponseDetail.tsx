@@ -42,7 +42,7 @@ export default function DatasetResponseDetail({ dataset }: DatasetDetailProps) {
     } else if (!languages.includes(language)) {
       setLanguage(languages[0])
     }
-  }, [language, languages, setLanguage])
+  }, [i18n.language, language, languages, setLanguage])
 
   return (
     <Grid container spacing={2}>
@@ -53,7 +53,12 @@ export default function DatasetResponseDetail({ dataset }: DatasetDetailProps) {
             labelId={LANGUAGE_SELECT_LABEL_ID}
             value={language}
             label={t('language')}
-            onChange={(ev: SelectChangeEvent) => setLanguage((ev?.target as any).value as string)}
+            onChange={(ev: SelectChangeEvent) => {
+              const target = ev.target as HTMLSelectElement
+              if (target.value) {
+                setLanguage(target.value)
+              }
+            }}
           >
             {languages.map((lang) => (
               <MenuItem key={'language-select-' + lang} value={lang}>

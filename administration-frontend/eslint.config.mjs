@@ -10,5 +10,11 @@ export default defineConfig(
     eslint.configs.recommended,
     tseslint.configs.strict,
     tseslint.configs.stylistic,
-    [reactHooks.configs.flat.recommended]
+    [reactHooks.configs.flat['recommended-latest']],
+    {
+        rules: {
+            'react-hooks/rules-of-hooks': 'error',
+            'react-hooks/exhaustive-deps': 'error',
+        },
+    }
 )

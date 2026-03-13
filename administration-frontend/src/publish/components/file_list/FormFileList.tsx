@@ -20,7 +20,7 @@ import { TreeItemActions } from '@/publish/components/file_list/TreeItemActions.
 import { type ItemType, ItemTypeEnum } from '@/publish/components/file_list/ItemType.ts'
 import type { FormFile } from '@/model/FormFile.ts'
 
-export type FormFileListProps = {
+export interface FormFileListProps {
   files: FormFile[]
   onDelete: (file: FormFile) => void
 }
@@ -33,7 +33,7 @@ interface ExtendedItemProperties extends TreeViewDefaultItemModelProperties {
 }
 
 function findTreeRoot(label: string, tree: ExtendedItemProperties[]): ExtendedItemProperties | null {
-  for (let rootNode of tree) {
+  for (const rootNode of tree) {
     if (rootNode.label === label) {
       return rootNode
     }
@@ -44,7 +44,7 @@ function findTreeRoot(label: string, tree: ExtendedItemProperties[]): ExtendedIt
 
 function findTreeNodeChild(label: string, node: ExtendedItemProperties): ExtendedItemProperties | null {
   if (node && node.children) {
-    for (let child of node.children) {
+    for (const child of node.children) {
       if (child.label === label) {
         return child
       }
@@ -121,7 +121,11 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(
     children,
   })
 
-  const { type, file, onDelete } = useTreeItemModel<ExtendedItemProperties>(itemId)!
+  const model = useTreeItemModel<ExtendedItemProperties>(itemId)
+
+  if (!model) return null
+
+  const { type, file, onDelete } = model
 
   const handleClick = (event: MouseEvent) => {
     interactions.handleExpansion(event)
@@ -162,12 +166,12 @@ export default function FormFileList({ files, onDelete }: FormFileListProps) {
     const result: ExtendedItemProperties[] = []
 
     if (files) {
-      for (let f of files) {
+      for (const f of files) {
         insertToTree(f, result, onDelete)
       }
     }
     return result
-  }, [files])
+  }, [files, onDelete])
 
   return <RichTreeView items={treeData} slots={{ item: CustomTreeItem }} />
 }

@@ -2,6 +2,7 @@ import request from '@/config/rest-client.ts'
 import { ArrayPage, Pageable } from '@hallysonh/pageable'
 import { toPageRequest } from '@/utils/RequestTypes.ts'
 import { MuiModelListEntry } from '@/model/MuiModelListEntry.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 export function fetchImportSources() {
   return request('GET', 'import/source').then((response) => response.json())
@@ -12,10 +13,10 @@ export function findAllVersionSeries(pageable: Pageable, filter?: string[]): Pro
   filter?.forEach((val) => options.append('filter', val))
   return request('GET', 'series?' + options.toString())
     .then((response) => response.json())
-    .then((data: any) => {
-      const page: any = data.page
+    .then((data: GenericObjectType) => {
+      const page = data.page
       const pageable = new Pageable(page.page, page.size)
-      return new ArrayPage<any>(data.content, page.totalElements, pageable)
+      return new ArrayPage<unknown>(data.content, page.totalElements, pageable)
     })
     .then((page) => page.map((data) => new MuiModelListEntry(data)))
 }

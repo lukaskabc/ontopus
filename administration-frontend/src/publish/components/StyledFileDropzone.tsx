@@ -59,7 +59,7 @@ export const StyledFileDropzone: FunctionComponent<StyledFileDropzoneProps> = (p
       ...(isDragAccept ? acceptStyle : {}),
       ...(isDragReject ? rejectStyle : {}),
     }),
-    [isDragAccept, isDragReject]
+    [acceptStyle, baseStyle, isDragAccept, isDragReject, rejectStyle]
   )
 
   return (

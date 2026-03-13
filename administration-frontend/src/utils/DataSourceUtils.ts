@@ -4,7 +4,7 @@ import type { DataField } from '@toolpad/core'
 import { getAnyLang, type MultilingualString } from '@/model/MultilingualString.ts'
 import { type i18n } from 'i18next'
 
-export type GetManyProps = {
+export interface GetManyProps {
   paginationModel: GridPaginationModel
   sortModel: GridSortModel
   filterModel: GridFilterModel
@@ -36,7 +36,7 @@ export function defineResourceListEntryFields(i18n: i18n): DataField[] {
       headerName: i18n.t('entity.version-series.table.name'),
       flex: 2,
       valueFormatter: (value: MultilingualString) => {
-        if (value.hasOwnProperty(i18n.language)) {
+        if (Object.hasOwn(value, i18n.language)) {
           return value[i18n.language]
         }
 

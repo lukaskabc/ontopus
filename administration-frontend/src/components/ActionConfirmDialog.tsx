@@ -5,7 +5,7 @@ import { Button, DialogContent } from '@mui/material'
 import DialogActions from '@mui/material/DialogActions'
 import { useTranslation } from 'react-i18next'
 
-export type ActionConfirmDialogProps = {
+export interface ActionConfirmDialogProps {
   isOpen: boolean
   onConfirm: () => void
   onCancel: () => void

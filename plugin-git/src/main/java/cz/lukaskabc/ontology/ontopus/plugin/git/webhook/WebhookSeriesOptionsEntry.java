@@ -3,7 +3,8 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.webhook;
 import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
-import cz.lukaskabc.ontology.ontopus.api.util.SettingsEntry;
+import cz.lukaskabc.ontology.ontopus.api.util.VersionSeriesOptionsEntry;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
 import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.service.WebhookEntryService;
@@ -16,7 +17,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 
 @Component
-public class WebhookSettingsMenuEntry implements SettingsEntry {
+public class WebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
     private static final String SCHEMA_BASE_NAME = WebhookSettingsRequest.class.getSimpleName();
 
     private static JsonForm makeJsonForm() {
@@ -29,7 +30,7 @@ public class WebhookSettingsMenuEntry implements SettingsEntry {
     private final WebhookEntryService webhookEntryService;
     private final JsonForm jsonForm;
 
-    public WebhookSettingsMenuEntry(ObjectMapper objectMapper, WebhookEntryService webhookEntryService) {
+    public WebhookSeriesOptionsEntry(ObjectMapper objectMapper, WebhookEntryService webhookEntryService) {
         this.webhookEntryService = webhookEntryService;
         this.jsonForm = makeJsonForm();
         this.objectMapper = objectMapper;
@@ -51,10 +52,12 @@ public class WebhookSettingsMenuEntry implements SettingsEntry {
     }
 
     @Override
-    public void handleSubmit(FormJsonDataDto formData, MultiValueMap<String, MultipartFile> files) {
+    public void handleSubmit(
+            VersionSeriesURI artifactIdentifier, FormJsonDataDto formData, MultiValueMap<String, MultipartFile> files) {
         WebhookSettingsRequest request =
                 objectMapper.convertValue(formData.asObjectNode(objectMapper), WebhookSettingsRequest.class);
         for (WebhookEntry webhook : request.webhooks()) {
+            verifyAndSetIdentifier(webhook, artifactIdentifier);
             if (webhook.getIdentifier() == null) {
                 webhookEntryService.persist(webhook);
             } else {
@@ -67,5 +70,18 @@ public class WebhookSettingsMenuEntry implements SettingsEntry {
         final List<WebhookEntry> webhooks = webhookEntryService.findAll();
         final WebhookSettingsRequest request = new WebhookSettingsRequest(webhooks);
         return objectMapper.valueToTree(request);
+    }
+
+    @Override
+    public boolean showMenuEntry(VersionSeriesURI artifactIdentifier) {
+        return true;
+    }
+
+    private void verifyAndSetIdentifier(WebhookEntry entry, VersionSeriesURI versionSeriesURI) {
+        if (entry.getVersionSeries() == null) {
+            entry.setVersionSeries(versionSeriesURI);
+        } else if (!entry.getVersionSeries().equals(versionSeriesURI)) {
+            throw new IllegalArgumentException("Webhook entry version series does not match the artifact identifier");
+        }
     }
 }

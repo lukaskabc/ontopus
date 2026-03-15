@@ -7,7 +7,7 @@ export interface JsonForm {
 }
 
 export function makeJsonForm(json: GenericObjectType): JsonForm {
-  if (json['jsonSchema']) {
+  if (Object.hasOwn(json, 'jsonSchema')) {
     const jsonSchema = json['jsonSchema']
     const uiSchema = json['uiSchema'] || undefined
     const formData = json['formData'] || undefined

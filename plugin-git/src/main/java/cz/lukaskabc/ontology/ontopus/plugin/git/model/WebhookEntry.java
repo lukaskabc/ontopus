@@ -1,18 +1,22 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.model;
 
+import cz.cvut.kbss.jopa.model.annotations.CascadeType;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractTypedIdentifier;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.identifier.WebhookEntryURI;
 import tools.jackson.databind.JsonNode;
 
 import java.net.URI;
 import java.util.Set;
 
 @OWLClass(iri = Vocabulary.s_c_WebhookEntry)
-public class WebhookEntry extends PersistenceEntity<TypedIdentifier> {
+public class WebhookEntry extends AbstractGeneratedPersistenceEntity<WebhookEntryURI> {
+    @OWLObjectProperty(iri = Vocabulary.s_p_hasCondition, cascade = CascadeType.ALL)
     private Set<JsonPointerCondition> conditions;
+
+    @OWLObjectProperty(iri = Vocabulary.s_p_hasMapping, cascade = CascadeType.ALL)
     private Set<JsonMappingEntry> mappings;
 
     public void applyMapping(JsonNode source, JsonNode target) {
@@ -40,12 +44,7 @@ public class WebhookEntry extends PersistenceEntity<TypedIdentifier> {
     }
 
     @Override
-    protected TypedIdentifier wrapUri(URI uri) {
-        return new AbstractTypedIdentifier(uri) {
-            @Override
-            public boolean equals(Object o) {
-                return super.equals(o);
-            }
-        };
+    protected WebhookEntryURI wrapUri(URI uri) {
+        return new WebhookEntryURI(uri);
     }
 }

@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping;
 
 import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractPersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ContextToControllerMappingURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURIImpl;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * requests for the resource.
  */
 @OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
-public class ContextToControllerMapping extends PersistenceEntity<ContextToControllerMappingURI> {
+public class ContextToControllerMapping extends AbstractPersistenceEntity<ContextToControllerMappingURI> {
     /**
      * URIs of the ontology that can be handled by the controllers. Always will contain the ontology URI and optionally
      * also aliases of the ontology.

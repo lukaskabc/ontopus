@@ -11,7 +11,10 @@ import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
 import cz.lukaskabc.ontology.ontopus.core.PluginRegistryApplicationInitializer;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +32,8 @@ import java.util.Set;
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PersistenceFactoryConfig {
+
+    private static final Logger log = LogManager.getLogger(PersistenceFactoryConfig.class);
 
     @Nullable private EntityManagerFactory factory;
 
@@ -68,6 +73,14 @@ public class PersistenceFactoryConfig {
 
     @PostConstruct
     private void init() {
+        try {
+            initializeFactory();
+        } catch (Exception e) {
+            throw log.throwing(new OntopusException("Failed to initialize JOPA persistence factory", e));
+        }
+    }
+
+    private void initializeFactory() {
         final OntopusConfig.Database dbConfig = serverConfig.getDatabase();
         final Map<String, String> properties = new HashMap<>();
 

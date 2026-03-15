@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Pattern;
 import java.net.URI;
 
 @OWLClass(iri = Vocabulary.s_c_UserAccount)
-public class User extends PersistenceEntity<UserURI> {
+public class User extends AbstractPersistenceEntity<UserURI> {
 
     @NotEmpty @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_password, simpleLiteral = true)

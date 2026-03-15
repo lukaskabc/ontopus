@@ -2,7 +2,7 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false"
-                           pattern="%d{ISO8601} %highlight{%-5p} [%15.15t] %style{%-35.35c{1.}}{cyan} - %m%notEmpty{ :: %X}%n%throwable{short}"/>
+                           pattern="%d{ISO8601} %highlight{%-5p} [%15.15t] %style{%-35.35c{1.}}{cyan} - %m%notEmpty{ :: %X}%n%throwable{full}"/>
         </Console>
     </Appenders>
 

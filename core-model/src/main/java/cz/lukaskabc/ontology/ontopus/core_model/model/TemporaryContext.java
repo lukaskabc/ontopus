@@ -10,7 +10,7 @@ import java.net.URI;
 import java.time.Instant;
 
 @OWLClass(iri = Vocabulary.s_c_TemporaryContext)
-public class TemporaryContext extends PersistenceEntity<TemporaryContextURI> {
+public class TemporaryContext extends AbstractPersistenceEntity<TemporaryContextURI> {
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_sioc_created_at)
     private Instant createdAt;

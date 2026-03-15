@@ -21,7 +21,49 @@
     },
     "webhook": {
       "settings": {
-        "label": "Git Webhook",
+        "label": "Git Webhook"
+      }
+    },
+    "webhookSettings": {
+      "description": "Configure webhook mapping entries for incoming HTTP events",
+      "fields": {
+        "webhooks": {
+          "title": "Webhook Entries",
+          "fields": {
+            "conditions": {
+              "title": "Conditions",
+              "description": "All conditions must match for this entry to apply",
+              "fields": {
+                "jsonPointer": {
+                  "title": "JSON Pointer",
+                  "description": "RFC 6901 pointer to the field in the incoming payload, e.g. /ref"
+                },
+                "regex": {
+                  "title": "Pattern",
+                  "description": "Regular expression tested (partially) against the value at the pointer"
+                }
+              }
+            },
+            "mappings": {
+              "title": "Mappings",
+              "description": "Values to copy from the webhook payload to the target document",
+              "fields": {
+                "sourcePointer": {
+                  "title": "Source Pointer",
+                  "description": "JSON Pointer to the value in the incoming webhook payload"
+                },
+                "targetPointer": {
+                  "title": "Target Pointer",
+                  "description": "JSON Pointer to the field in the target document to overwrite"
+                },
+                "valuePattern": {
+                  "title": "Value Pattern",
+                  "description": "(optional) Regex to extract a match group from the source value. Defaults to .* (full value)"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

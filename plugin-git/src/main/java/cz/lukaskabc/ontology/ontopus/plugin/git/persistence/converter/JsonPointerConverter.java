@@ -4,7 +4,7 @@ import cz.cvut.kbss.jopa.model.AttributeConverter;
 import cz.cvut.kbss.jopa.model.annotations.Converter;
 import tools.jackson.core.JsonPointer;
 
-@Converter(autoApply = true)
+@Converter
 public class JsonPointerConverter implements AttributeConverter<JsonPointer, String> {
     @Override
     public JsonPointer convertToAttribute(String value) {

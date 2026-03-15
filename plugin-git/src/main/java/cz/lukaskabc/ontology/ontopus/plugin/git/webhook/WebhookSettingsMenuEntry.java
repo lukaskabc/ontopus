@@ -1,25 +1,43 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.webhook;
 
+import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.api.util.SettingsEntry;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.service.WebhookEntryService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ObjectNode;
+
+import java.util.List;
 
 @Component
 public class WebhookSettingsMenuEntry implements SettingsEntry {
-    private final JsonForm jsonForm;
-    private final ObjectMapper objectMapper;
+    private static final String SCHEMA_BASE_NAME = WebhookSettingsRequest.class.getSimpleName();
 
-    public WebhookSettingsMenuEntry(JsonForm jsonForm, ObjectMapper objectMapper) {
-        this.jsonForm = jsonForm;
+    private static JsonForm makeJsonForm() {
+        final JsonNode schema = JsonResourceLoader.loadJsonSchema(GitPlugin.FORM_RESOURCE_PATH, SCHEMA_BASE_NAME);
+        final JsonNode uiSchema = JsonResourceLoader.loadUiSchema(GitPlugin.FORM_RESOURCE_PATH, SCHEMA_BASE_NAME);
+        return new JsonForm(schema, uiSchema, null);
+    }
+
+    private final ObjectMapper objectMapper;
+    private final WebhookEntryService webhookEntryService;
+    private final JsonForm jsonForm;
+
+    public WebhookSettingsMenuEntry(ObjectMapper objectMapper, WebhookEntryService webhookEntryService) {
+        this.webhookEntryService = webhookEntryService;
+        this.jsonForm = makeJsonForm();
         this.objectMapper = objectMapper;
     }
 
     @Override
     public JsonForm getForm() {
-        return makeJsonForm();
+        return this.jsonForm.withFormData(loadCurrentData());
     }
 
     @Override
@@ -33,12 +51,21 @@ public class WebhookSettingsMenuEntry implements SettingsEntry {
     }
 
     @Override
-    public void handleSubmit(FormResult formResult) {}
+    public void handleSubmit(FormJsonDataDto formData, MultiValueMap<String, MultipartFile> files) {
+        WebhookSettingsRequest request =
+                objectMapper.convertValue(formData.asObjectNode(objectMapper), WebhookSettingsRequest.class);
+        for (WebhookEntry webhook : request.webhooks()) {
+            if (webhook.getIdentifier() == null) {
+                webhookEntryService.persist(webhook);
+            } else {
+                webhookEntryService.update(webhook);
+            }
+        }
+    }
 
-    protected JsonForm makeJsonForm() {
-        final ObjectNode schema = objectMapper.createObjectNode();
-        final ObjectNode uiSchema = objectMapper.createObjectNode();
-
-        return new JsonForm(schema, uiSchema, null);
+    private JsonNode loadCurrentData() {
+        final List<WebhookEntry> webhooks = webhookEntryService.findAll();
+        final WebhookSettingsRequest request = new WebhookSettingsRequest(webhooks);
+        return objectMapper.valueToTree(request);
     }
 }

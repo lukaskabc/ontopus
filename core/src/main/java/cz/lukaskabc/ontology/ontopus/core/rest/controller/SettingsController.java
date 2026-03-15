@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.Map;
 
 @RequestMapping("/settings")
 @RestController
-public class SettingsController {
+public class SettingsController extends AbstractJsonController {
     private final HashMap<String, SettingsEntry> entries;
 
-    public SettingsController(List<SettingsEntry> beanEntries) {
+    public SettingsController(List<SettingsEntry> beanEntries, ObjectMapper objectMapper) {
+        super(objectMapper);
         this.entries = new HashMap<>();
         for (SettingsEntry entry : beanEntries) {
             this.entries.put(entry.getIdentifier(), entry);
@@ -46,9 +48,7 @@ public class SettingsController {
     public ResponseEntity<Void> submitSettingsForm(
             @PathVariable("identifier") String identifier, MultipartHttpServletRequest request) {
         if (entries.containsKey(identifier)) {
-            // TODO delegate to settings service, parse data and construct form result
-            // entries.get(uuid).handleSubmit(new FormResult(request.getParameterMap(),
-            // request.getFileMap()));
+            entries.get(identifier).handleSubmit(parseData(request), request.getMultiFileMap());
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

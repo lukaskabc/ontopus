@@ -1,23 +1,31 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.model;
 
+import cz.cvut.kbss.jopa.model.annotations.Convert;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.converter.JsonPointerConverter;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.converter.PatternConverter;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.identifier.JsonPointerConditionURI;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonPointer;
 import tools.jackson.databind.JsonNode;
 
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Object holding a JSON pointer and regex pattern for matching the value specified by the pointer. */
 @OWLClass(iri = Vocabulary.s_c_JsonPointerCondition)
-public class JsonPointerCondition {
+public class JsonPointerCondition extends AbstractGeneratedPersistenceEntity<JsonPointerConditionURI> {
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_sourceJsonPointer)
+    @Convert(converter = JsonPointerConverter.class)
     private JsonPointer jsonPointer;
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_regexPattern)
+    @Convert(converter = PatternConverter.class)
     private Pattern regex;
 
     public JsonPointer getJsonPointer() {
@@ -71,5 +79,10 @@ public class JsonPointerCondition {
         final JsonNode target = jsonNode.at(this.jsonPointer);
         final Matcher matcher = this.matcher(target);
         return matcher != null && matcher.matches();
+    }
+
+    @Override
+    protected JsonPointerConditionURI wrapUri(URI uri) {
+        return new JsonPointerConditionURI(uri);
     }
 }

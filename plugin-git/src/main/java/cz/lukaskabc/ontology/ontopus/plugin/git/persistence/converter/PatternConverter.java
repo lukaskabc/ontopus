@@ -5,7 +5,7 @@ import cz.cvut.kbss.jopa.model.annotations.Converter;
 
 import java.util.regex.Pattern;
 
-@Converter(autoApply = true)
+@Converter
 public class PatternConverter implements AttributeConverter<Pattern, String> {
     @Override
     public Pattern convertToAttribute(String value) {

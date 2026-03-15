@@ -24,9 +24,10 @@ public abstract class AbstractRepository<
         I extends TypedIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {
     protected final D dao;
     protected final Validator validator;
-    protected final IdentifierGenerator<I, E> identifierGenerator;
 
-    public AbstractRepository(D dao, Validator validator, IdentifierGenerator<I, E> identifierGenerator) {
+    @Nullable protected final IdentifierGenerator<I, E> identifierGenerator;
+
+    public AbstractRepository(D dao, Validator validator, @Nullable IdentifierGenerator<I, E> identifierGenerator) {
         this.dao = dao;
         this.validator = validator;
         this.identifierGenerator = identifierGenerator;
@@ -122,7 +123,7 @@ public abstract class AbstractRepository<
 
     /** Sets the identifier of the given entity if it is missing. */
     protected void setIdentifierIfMissing(E entity) {
-        if (entity.getIdentifier() == null) {
+        if (entity.getIdentifier() == null && identifierGenerator != null) {
             final I identifier = identifierGenerator.generate(entity);
             if (identifier == null) {
                 throw new IllegalStateException(

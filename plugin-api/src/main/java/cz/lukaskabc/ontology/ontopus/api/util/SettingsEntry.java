@@ -1,8 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.api.util;
 
+import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * An entry in settings menu
@@ -37,10 +39,6 @@ public interface SettingsEntry {
      */
     String getLabel();
 
-    /**
-     * Handles the data submitted to the form.
-     *
-     * @param formResult the data submitted to the form
-     */
-    void handleSubmit(FormResult formResult);
+    /** Handles the data submitted to the form. */
+    void handleSubmit(FormJsonDataDto formData, MultiValueMap<String, MultipartFile> files);
 }

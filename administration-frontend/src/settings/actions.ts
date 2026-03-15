@@ -4,7 +4,9 @@ import { compileDataForRequest, type FileWithFieldName } from '@/publish/actions
 import type { GenericObjectType } from '@rjsf/utils'
 
 export function loadSettingsForm(identifier: string): Promise<JsonForm> {
-  return request('GET', '/settings/' + identifier).then(makeJsonForm)
+  return request('GET', '/settings/' + identifier)
+    .then((response) => response.json())
+    .then(makeJsonForm)
   // TODO error handling?
 }
 

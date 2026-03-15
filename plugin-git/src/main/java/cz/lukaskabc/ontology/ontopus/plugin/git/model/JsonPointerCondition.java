@@ -1,15 +1,23 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.webhook.entry;
+package cz.lukaskabc.ontology.ontopus.plugin.git.model;
 
+import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonPointer;
 import tools.jackson.databind.JsonNode;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Object holding a JSON pointer and regex pattern for matching the value specified by the pointer. */
+@OWLClass(iri = Vocabulary.s_c_JsonPointerCondition)
 public class JsonPointerCondition {
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_sourceJsonPointer)
     private JsonPointer jsonPointer;
+
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_regexPattern)
     private Pattern regex;
 
     public JsonPointer getJsonPointer() {

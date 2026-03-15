@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.webhook.persistence;
+package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.converter;
 
 import cz.cvut.kbss.jopa.model.AttributeConverter;
 import cz.cvut.kbss.jopa.model.annotations.Converter;

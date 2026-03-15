@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.webhook;
 
-import cz.lukaskabc.ontology.ontopus.plugin.git.webhook.entry.WebhookEntry;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

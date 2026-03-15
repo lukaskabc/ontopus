@@ -1,5 +1,8 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.webhook.entry;
+package cz.lukaskabc.ontology.ontopus.plugin.git.model;
 
+import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.apache.commons.lang3.RegExUtils;
 import tools.jackson.core.JsonPointer;
 import tools.jackson.databind.JsonNode;
@@ -7,6 +10,7 @@ import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +18,7 @@ import java.util.regex.Pattern;
  * JSON to JSON mapping entry, holding source and target JSON pointers and a regex pattern for matching the value
  * specified by the source pointer.
  */
+@OWLClass(iri = Vocabulary.s_c_JsonMappingEntry)
 public class JsonMappingEntry {
     private static final Pattern DEFAULT_VALUE_PATTERN = RegExUtils.dotAll(".*");
 
@@ -41,9 +46,13 @@ public class JsonMappingEntry {
         }
     }
 
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_sourceJsonPointer)
     private JsonPointer sourcePointer;
+
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_mappingTargetJsonPointer)
     private JsonPointer targetPointer;
 
+    @OWLDataProperty(iri = Vocabulary.s_p_regexPattern)
     private Pattern valuePattern = DEFAULT_VALUE_PATTERN;
 
     public void apply(JsonNode source, JsonNode target) {

@@ -16,6 +16,7 @@
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -42,5 +43,52 @@
             <version>7.5.0.202512021534-r</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- Generate entity classes from OWL integrity constraints -->
+                <groupId>cz.cvut.kbss.jopa</groupId>
+                <artifactId>jopa-maven-plugin</artifactId>
+                <version>${jopa.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-static-metamodel</id>
+                        <goals>
+                            <goal>modelgen</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <output-directory>${project.build.generated-source.directory}</output-directory>
+                            <additional-sources>${project.build.generated-source.directory}</additional-sources>
+                            <source-package>${project.groupId}.git.model</source-package>
+                            <output-property-iris>true</output-property-iris>
+                            <initialize-iris>true</initialize-iris>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Add generated sources to classpath -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.generated-source.directory}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -12,9 +12,16 @@ export class ResourceListEntry {
     if (!jsonObj || typeof jsonObj !== 'object') {
       throw new Error('Invalid data: Expected a JSON object for ResourceListEntry')
     }
-    this.identifier = validateValue(jsonObj.identifier, 'string', 'identifier')
-    this.title = validateMultilingual(jsonObj.title, 'title')
-    this.version = validateValue(jsonObj.version, 'string', 'version')
-    this.modifiedDate = validateDate(jsonObj.modifiedDate, 'modifiedDate')
+    if (jsonObj instanceof ResourceListEntry) {
+      this.identifier = jsonObj.identifier
+      this.title = jsonObj.title
+      this.version = jsonObj.version
+      this.modifiedDate = jsonObj.modifiedDate
+    } else {
+      this.identifier = validateValue(jsonObj.identifier, 'string', 'identifier')
+      this.title = validateMultilingual(jsonObj.title, 'title')
+      this.version = validateValue(jsonObj.version, 'string', 'version')
+      this.modifiedDate = validateDate(jsonObj.modifiedDate, 'modifiedDate')
+    }
   }
 }

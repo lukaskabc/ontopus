@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core.rest.response.MenuOptionResponse;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class EntityOptionsController {
     }
 
     @GetMapping("/series/options")
-    public Map<VersionSeriesURI, List<MenuOptionResponse>> findSeriesOptions(List<VersionSeriesURI> seriesIdentifiers) {
+    public Map<VersionSeriesURI, List<MenuOptionResponse>> findSeriesOptions(@RequestParam("series") List<VersionSeriesURI> seriesIdentifiers) {
         final Map<VersionSeriesURI, List<MenuOptionResponse>> result = new HashMap<>(artifactOptions.size());
         for (VersionSeriesURI uri : seriesIdentifiers) {
             final List<MenuOptionResponse> options = seriesOptions.stream()

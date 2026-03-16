@@ -17,4 +17,15 @@ public class CatalogUriUriGenerator implements IdentifierGenerator<OntopusCatalo
     public OntopusCatalogURI generate(OntopusCatalog entity) {
         return uri;
     }
+
+    @Override
+    public void setIdentifierIfMissing(OntopusCatalog entity) {
+        if (entity.getIdentifier() == null) {
+            OntopusCatalogURI uri = generate(entity);
+            if (uri == null) {
+                throw new IllegalStateException("Failed to generate ontopus catalog URI");
+            }
+            entity.setIdentifier(uri);
+        }
+    }
 }

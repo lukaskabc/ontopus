@@ -12,8 +12,7 @@ public enum MappingType {
     ONTOLOGY_DOCUMENT(Vocabulary.u_i_OntologyDocument),
     /** The mapping is for all resources defined in the ontology document */
     @Individual(iri = Vocabulary.s_i_OntologyResource)
-    RESOURCE(Vocabulary.u_i_OntologyResource),
-    ;
+    RESOURCE(Vocabulary.u_i_OntologyResource);
 
     private final URI uri;
 

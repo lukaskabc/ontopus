@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractPersistenceEntity;
+import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ControllerURI;
 import org.springframework.http.MediaType;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 
 /** Controller description capable of retrieving a resource in a supported media type */
 @OWLClass(iri = Vocabulary.s_c_Controller)
-public class Controller extends AbstractPersistenceEntity<ControllerURI> {
+public class Controller extends AbstractGeneratedPersistenceEntity<ControllerURI> {
     /** The fully qualified name of the Java class */
     @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_javaClassName, simpleLiteral = true)
     private String className;

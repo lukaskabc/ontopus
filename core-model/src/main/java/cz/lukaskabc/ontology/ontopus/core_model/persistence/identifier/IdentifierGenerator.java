@@ -12,4 +12,6 @@ import org.jspecify.annotations.Nullable;
  */
 public interface IdentifierGenerator<I extends TypedIdentifier, E extends PersistenceEntity<I>> {
     @Nullable I generate(E entity);
+
+    void setIdentifierIfMissing(E entity);
 }

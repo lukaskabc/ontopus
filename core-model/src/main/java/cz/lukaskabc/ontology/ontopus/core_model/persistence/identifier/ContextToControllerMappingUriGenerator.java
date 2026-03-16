@@ -35,7 +35,7 @@ public class ContextToControllerMappingUriGenerator
 
         int attempt = 0;
         while (attempt < MAX_GENERATION_ATTEMPTS) {
-            URI generated = URI.create(baseId + attempt);
+            URI generated = URI.create(baseId + (attempt > 0 ? attempt : ""));
 
             if (isUnique(generated)) {
                 return new ContextToControllerMappingURI(generated);

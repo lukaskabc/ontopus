@@ -1,22 +1,18 @@
 package cz.lukaskabc.ontology.ontopus.plugin.rdf.importing;
 
-import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.LinkedHashModel;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.jspecify.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,11 +28,11 @@ import java.util.List;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RDFDataImportingService implements DataFileImportingService {
     private static final Logger LOG = LogManager.getLogger(RDFDataImportingService.class);
-    private final EntityManager em;
 
-    @Autowired
-    public RDFDataImportingService(EntityManager em) {
-        this.em = em;
+    private final GraphDao graphDao;
+
+    public RDFDataImportingService(GraphDao graphDao) {
+        this.graphDao = graphDao;
     }
 
     @Transactional
@@ -47,14 +43,7 @@ public class RDFDataImportingService implements DataFileImportingService {
         }
         final Model model = loadModel(files);
         final TemporaryContextURI context = importContext.getTemporaryDatabaseContext();
-        final Repository repository = em.unwrap(org.eclipse.rdf4j.repository.Repository.class);
-        try (final RepositoryConnection conn = repository.getConnection()) {
-            conn.begin();
-            final IRI graphContext = repository.getValueFactory().createIRI(context.toString());
-            LOG.debug("Importing ontology model into temporary context <{}>", context.toString());
-            conn.add(model, graphContext);
-            conn.commit();
-        }
+        graphDao.persistModel(context, model);
     }
 
     private Model loadModel(List<File> files) throws IOException {

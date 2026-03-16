@@ -305,6 +305,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             final String orderClause = buildOrderClause(orders);
             final String limitOffsetClause = buildLimitOffsetClause(pageable);
             final String searchClause = buildFilterClause(filter);
+            // TODO use criteria query
 
             String query = """
 					SELECT DISTINCT ?entity %s FROM ?context WHERE {

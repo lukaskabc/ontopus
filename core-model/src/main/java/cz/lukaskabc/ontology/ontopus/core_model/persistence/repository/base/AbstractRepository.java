@@ -123,13 +123,8 @@ public abstract class AbstractRepository<
 
     /** Sets the identifier of the given entity if it is missing. */
     protected void setIdentifierIfMissing(E entity) {
-        if (entity.getIdentifier() == null && identifierGenerator != null) {
-            final I identifier = identifierGenerator.generate(entity);
-            if (identifier == null) {
-                throw new IllegalStateException(
-                        "Identifier generator returned null for entity of type <" + dao.getTypeUri() + ">");
-            }
-            entity.setIdentifier(identifier);
+        if (identifierGenerator != null) {
+            identifierGenerator.setIdentifierIfMissing(entity);
         }
     }
 

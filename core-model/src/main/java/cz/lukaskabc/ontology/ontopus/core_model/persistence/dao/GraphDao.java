@@ -5,6 +5,12 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.Triple;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -13,6 +19,7 @@ import java.util.stream.Stream;
 
 @Component
 public class GraphDao {
+    private static final Logger log = LogManager.getLogger(GraphDao.class);
     private final EntityManager em;
 
     public GraphDao(EntityManager em) {
@@ -148,6 +155,17 @@ public class GraphDao {
                     .executeUpdate();
         } catch (Exception e) {
             throw new PersistenceException("Failed to move graph from " + source + " to " + target, e);
+        }
+    }
+
+    public void persistModel(GraphURI context, Model rdfModel) {
+        final Repository repository = em.unwrap(org.eclipse.rdf4j.repository.Repository.class);
+        try (final RepositoryConnection conn = repository.getConnection()) {
+            conn.begin();
+            final IRI graphContext = repository.getValueFactory().createIRI(context.toString());
+            log.debug("Importing ontology model into temporary context <{}>", context.toString());
+            conn.add(rdfModel, graphContext);
+            conn.commit();
         }
     }
 }

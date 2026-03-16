@@ -10,7 +10,6 @@
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
     <artifactId>owl-plugin</artifactId>
-    <version>${ontopus.plugin.owl.version}</version>
     <description>OntoPuS plugin providing explicit support for OWL ontologies</description>
 
     <properties>

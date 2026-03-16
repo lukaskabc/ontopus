@@ -10,7 +10,6 @@
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
     <artifactId>rdf-plugin</artifactId>
-    <version>${ontopus.plugin.rdf.version}</version>
     <description>OntoPuS plugin allowing to import RDF files into the database.
         Realized using RDF4J Rio library supporting formats like RDF/XML, Turtle, N-Triples, N-Quads, TriG, and TriX</description>
 

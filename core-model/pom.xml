@@ -8,7 +8,6 @@
     </parent>
 
     <artifactId>model</artifactId>
-    <version>${ontopus.core.version}</version>
     <packaging>jar</packaging>
 
     <name>OntoPuS core data model</name>

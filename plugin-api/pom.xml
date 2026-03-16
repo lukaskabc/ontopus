@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>plugin-api</artifactId>
-    <version>${ontopus.plugin.api.version}</version>
     <packaging>jar</packaging>
 
     <dependencies>

@@ -10,7 +10,6 @@
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
     <artifactId>git-plugin</artifactId>
-    <version>${ontopus.plugin.git.version}</version>
     <packaging>jar</packaging>
 
     <properties>

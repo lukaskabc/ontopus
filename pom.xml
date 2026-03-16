@@ -30,21 +30,10 @@
         <jackson.annotations.version>2.21</jackson.annotations.version>
         <jackson.version>3.0.3</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.9.2</jopa.version>
+        <jopa.version>2.9.3</jopa.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <nullaway.version>0.12.3</nullaway.version>
-
-        <ontopus.core.version>1.0-SNAPSHOT</ontopus.core.version>
-        <ontopus.plugin.api.version>1.0-SNAPSHOT</ontopus.plugin.api.version>
-        <ontopus.plugin.example.version>1.0-SNAPSHOT</ontopus.plugin.example.version>
-        <ontopus.plugin.file.version>1.0-SNAPSHOT</ontopus.plugin.file.version>
-        <ontopus.plugin.git.version>1.0-SNAPSHOT</ontopus.plugin.git.version>
-        <ontopus.plugin.owl.version>1.0-SNAPSHOT</ontopus.plugin.owl.version>
-        <ontopus.plugin.rdf.version>1.0-SNAPSHOT</ontopus.plugin.rdf.version>
-        <ontopus.plugin.skos.version>1.0-SNAPSHOT</ontopus.plugin.skos.version>
-        <ontopus.plugin.versioning.version>1.0-SNAPSHOT</ontopus.plugin.versioning.version>
-        <ontopus.test.utils.version>1.0-SNAPSHOT</ontopus.test.utils.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rdf4j.version>5.2.2</rdf4j.version>
@@ -57,42 +46,42 @@
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus</groupId>
                 <artifactId>plugin-api</artifactId>
-                <version>${ontopus.plugin.api.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus</groupId>
                 <artifactId>model</artifactId>
-                <version>${ontopus.core.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>file-upload-plugin</artifactId>
-                <version>${ontopus.plugin.file.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>rdf-plugin</artifactId>
-                <version>${ontopus.plugin.rdf.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>versioning-plugin</artifactId>
-                <version>${ontopus.plugin.versioning.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>skos-plugin</artifactId>
-                <version>${ontopus.plugin.skos.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>owl-plugin</artifactId>
-                <version>${ontopus.plugin.owl.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>git-plugin</artifactId>
-                <version>${ontopus.plugin.git.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
@@ -171,7 +160,7 @@
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus</groupId>
                 <artifactId>test-utils</artifactId>
-                <version>${ontopus.test.utils.version}</version>
+                <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

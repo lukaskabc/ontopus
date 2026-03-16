@@ -9,7 +9,6 @@
     </parent>
 
     <artifactId>test-utils</artifactId>
-    <version>${ontopus.test.utils.version}</version>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>

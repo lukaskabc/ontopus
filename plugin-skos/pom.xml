@@ -10,7 +10,6 @@
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
     <artifactId>skos-plugin</artifactId>
-    <version>${ontopus.plugin.skos.version}</version>
     <description>OntoPuS plugin providing explicit support for SKOS ontologies</description>
 
     <properties>

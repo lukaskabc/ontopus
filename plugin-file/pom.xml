@@ -10,7 +10,6 @@
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
     <artifactId>file-upload-plugin</artifactId>
-    <version>${ontopus.plugin.file.version}</version>
     <description>OntoPuS plugin allowing user to upload local files.</description>
 
     <properties>

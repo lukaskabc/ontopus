@@ -16,5 +16,8 @@ export default defineConfig({
       ignored: ['/node_modules/**', '/dist/**'],
       usePolling: true,
     },
+    warmup: {
+      clientFiles: ['./src/**'],
+    },
   },
 })

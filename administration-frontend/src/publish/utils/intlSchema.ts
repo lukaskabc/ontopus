@@ -22,13 +22,13 @@ export default function intlSchema(schema?: RJSFSchema, i18n?: i18n, scope?: str
   if (!i18n) {
     return schema
   }
-  if (scope == null) {
-    if (schema['$translationRoot']) {
-      scope = schema['$translationRoot']
-    } else {
-      scope = ''
-    }
+
+  if (schema['$translationRoot']) {
+    scope = schema['$translationRoot']
+  } else {
+    scope = scope ?? ''
   }
+
   const newSchema = {
     ...schema,
     ...pickBy({

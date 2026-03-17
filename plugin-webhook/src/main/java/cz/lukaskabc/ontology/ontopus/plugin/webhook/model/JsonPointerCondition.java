@@ -1,13 +1,13 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.model;
+package cz.lukaskabc.ontology.ontopus.plugin.webhook.model;
 
 import cz.cvut.kbss.jopa.model.annotations.Convert;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
-import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.converter.JsonPointerConverter;
-import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.converter.PatternConverter;
-import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.identifier.JsonPointerConditionURI;
+import cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.converter.JsonPointerConverter;
+import cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.converter.PatternConverter;
+import cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.identifier.JsonPointerConditionURI;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonPointer;
 import tools.jackson.databind.JsonNode;

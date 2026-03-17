@@ -20,6 +20,7 @@
         <module>plugin-owl</module>
         <module>plugin-versioning</module>
         <module>plugin-skos</module>
+        <module>plugin-webhook</module>
         <module>test-utils</module>
     </modules>
 
@@ -81,6 +82,11 @@
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>git-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                <artifactId>webhook-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

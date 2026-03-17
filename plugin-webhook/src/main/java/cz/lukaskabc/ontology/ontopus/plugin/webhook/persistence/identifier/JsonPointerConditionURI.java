@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.identifier;
+package cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.identifier;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractTypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.EntityIdentifier;

@@ -1,10 +1,10 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.service;
+package cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
-import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
-import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.identifier.WebhookEntryURI;
-import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository.WebhookEntryRepository;
+import cz.lukaskabc.ontology.ontopus.plugin.webhook.model.WebhookEntry;
+import cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.identifier.WebhookEntryURI;
+import cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.repository.WebhookEntryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

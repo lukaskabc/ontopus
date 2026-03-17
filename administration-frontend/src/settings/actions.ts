@@ -11,5 +11,5 @@ export function loadSettingsForm(identifier: string): Promise<JsonForm> {
 }
 
 export function submitSettingsForm(identifier: string, formData: GenericObjectType, files: FileWithFieldName[]) {
-  return request('POST', '/settings/' + identifier, { body: compileDataForRequest(formData, files) })
+  return request('POST', `/settings/${identifier}`, { body: compileDataForRequest(formData, files) })
 }

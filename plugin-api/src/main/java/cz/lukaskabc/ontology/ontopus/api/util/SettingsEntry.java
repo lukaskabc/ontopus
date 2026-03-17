@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
  *     annotation)
  */
 @Component
-public interface SettingsEntry extends OptionsEntry {
+public interface SettingsEntry extends GlobalSettingsEntry {
 
     /** Handles the data submitted to the form. */
     void handleSubmit(FormJsonDataDto formData, MultiValueMap<String, MultipartFile> files);

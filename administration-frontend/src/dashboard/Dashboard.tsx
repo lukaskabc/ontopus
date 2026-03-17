@@ -9,6 +9,7 @@ import Header from '@/dashboard/Header.tsx'
 
 const PublishStepper = lazy(() => import('@/publish/PublishStepper.tsx'))
 const VersionSeriesList = lazy(() => import('@/ontologies/VersionSeriesList.tsx'))
+const VersionSeriesOptions = lazy(() => import('@/ontologies/VersionSeriesOptions.tsx'))
 const Settings = lazy(() => import('@/settings/Settings.tsx'))
 const VersionSeriesDetail = lazy(() => import('@/ontologies/detail/series/VersionSeriesDetail.tsx'))
 const VersionArtifactDetail = lazy(() => import('@/ontologies/detail/artifact/VersionArtifactDetail.tsx'))
@@ -17,6 +18,7 @@ function OntologiesRoute() {
   return (
     <Switch>
       <Route path={PUBLISH_STEPPER_ROUTE} component={PublishStepper} nest />
+      <Route path={'/options'} component={VersionSeriesOptions} nest />
       <Route path={'/:versionSeriesIdentifier'} nest>
         {({ versionSeriesIdentifier }) => (
           <Switch>

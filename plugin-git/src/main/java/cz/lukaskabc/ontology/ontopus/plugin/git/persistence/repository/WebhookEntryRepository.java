@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
 import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.dao.WebhookEntryDao;
@@ -18,7 +19,7 @@ public class WebhookEntryRepository extends AbstractRepository<WebhookEntryURI, 
     }
 
     @Transactional(readOnly = true)
-    public List<WebhookEntry> findAll() {
-        return dao.findAll();
+    public List<WebhookEntry> findAll(VersionSeriesURI seriesIdentifier) {
+        return dao.findAll(seriesIdentifier);
     }
 }

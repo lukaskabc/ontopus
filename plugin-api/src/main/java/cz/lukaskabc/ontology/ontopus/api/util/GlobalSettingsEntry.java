@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.api.util;
 
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 
-public interface OptionsEntry {
+public interface GlobalSettingsEntry {
     /**
      * Provides JSON form that will be shown to the user
      *

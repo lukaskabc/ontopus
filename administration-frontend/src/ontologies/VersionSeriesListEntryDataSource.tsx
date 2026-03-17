@@ -22,12 +22,14 @@ function ActionsCell(params: GridRenderCellParams<MuiModelListEntryWithOptions>)
   }
 
   return (
-    <Tooltip title={t('action.publish.version.artifact')} placement={'top'}>
-      <IconButton aria-label={'New version'} onClick={onClick} size={'small'}>
-        <CloudUploadIcon />
-      </IconButton>
-      <OntopusOptionsMenu options={params.row.ontopusOptions} />
-    </Tooltip>
+    <>
+      <Tooltip title={t('action.publish.version.artifact')} placement={'top'}>
+        <IconButton aria-label={'New version'} onClick={onClick} size={'small'}>
+          <CloudUploadIcon />
+        </IconButton>
+      </Tooltip>
+      <OntopusOptionsMenu options={params.row.ontopusOptions} pathPrefix={''} series={params.row.identifier} />
+    </>
   )
 }
 

@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.dao;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry_;
@@ -21,9 +22,13 @@ public class WebhookEntryDao extends AbstractDao<WebhookEntryURI, WebhookEntry> 
                 new EntityDescriptor(WebhookEntry_.entityClassIRI.toURI()));
     }
 
-    public List<WebhookEntry> findAll() {
+    public List<WebhookEntry> findAll(VersionSeriesURI seriesIdentifier) {
         try {
-            return em.createQuery("SELECT e FROM " + WebhookEntry.class.getSimpleName() + " e", WebhookEntry.class)
+            return em.createQuery(
+                            "SELECT e FROM " + WebhookEntry.class.getSimpleName()
+                                    + " e WHERE e.versionSeries = :series",
+                            WebhookEntry.class)
+                    .setParameter("series", seriesIdentifier.toURI())
                     .setDescriptor(descriptor)
                     .getResultList();
         } catch (Exception e) {

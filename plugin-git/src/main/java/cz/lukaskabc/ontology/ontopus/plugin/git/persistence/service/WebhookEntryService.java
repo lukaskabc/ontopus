@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.service;
 
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.WebhookEntry;
 import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.identifier.WebhookEntryURI;
@@ -14,7 +15,7 @@ public class WebhookEntryService extends BaseService<WebhookEntryURI, WebhookEnt
         super(repository);
     }
 
-    public List<WebhookEntry> findAll() {
-        return repository.findAll();
+    public List<WebhookEntry> findAll(VersionSeriesURI seriesIdentifier) {
+        return repository.findAll(seriesIdentifier);
     }
 }

@@ -4,6 +4,8 @@ import { toPageRequest } from '@/utils/RequestTypes.ts'
 import { MuiModelListEntry, OntopusOptionEntry } from '@/model/MuiModelListEntry.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 import { UnknownError } from '@/utils/errors.ts'
+import { makeJsonForm } from '@/model/JsonForm.ts'
+import { compileDataForRequest, type FileWithFieldName } from '@/publish/actions.ts'
 
 export function fetchImportSources() {
   return request('GET', 'import/source').then((response) => response.json())
@@ -40,7 +42,7 @@ export function findSeriesOptions(identifiers: string[]): Promise<Map<string, On
         for (const optionId in response) {
           const optionsList = response[optionId]
           if (Array.isArray(optionsList)) {
-            const data = (optionsList as Array<GenericObjectType>).map((option) => new OntopusOptionEntry(option))
+            const data = (optionsList as GenericObjectType[]).map((option) => new OntopusOptionEntry(option))
             result.set(optionId, data)
           }
         }
@@ -48,4 +50,23 @@ export function findSeriesOptions(identifiers: string[]): Promise<Map<string, On
       }
       throw new UnknownError('Unexpected response from server', response)
     })
+}
+
+export function loadSeriesOptionForm(series: string, formId: string) {
+  const params = new URLSearchParams({ series })
+  return request('GET', `/series/options/${formId}?` + params.toString())
+    .then((response) => response.json())
+    .then(makeJsonForm)
+}
+
+export function submitSeriesOptionForm(
+  series: string,
+  formId: string,
+  formData: GenericObjectType,
+  files: FileWithFieldName[]
+) {
+  const params = new URLSearchParams({ series })
+  return request('POST', `/series/options/${formId}?` + params.toString, {
+    body: compileDataForRequest(formData, files),
+  })
 }

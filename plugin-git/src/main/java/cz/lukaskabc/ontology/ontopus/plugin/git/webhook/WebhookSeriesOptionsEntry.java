@@ -37,8 +37,8 @@ public class WebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
     }
 
     @Override
-    public JsonForm getForm() {
-        return this.jsonForm.withFormData(loadCurrentData());
+    public JsonForm getForm(VersionSeriesURI seriesIdentifier) {
+        return this.jsonForm.withFormData(loadCurrentData(seriesIdentifier));
     }
 
     @Override
@@ -66,8 +66,8 @@ public class WebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
         }
     }
 
-    private JsonNode loadCurrentData() {
-        final List<WebhookEntry> webhooks = webhookEntryService.findAll();
+    private JsonNode loadCurrentData(VersionSeriesURI versionSeriesURI) {
+        final List<WebhookEntry> webhooks = webhookEntryService.findAll(versionSeriesURI);
         final WebhookSettingsRequest request = new WebhookSettingsRequest(webhooks);
         return objectMapper.valueToTree(request);
     }

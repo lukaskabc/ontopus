@@ -1,5 +1,8 @@
-import { FormControl, InputLabel, OutlinedInput } from '@mui/material'
 import { useTranslation } from 'react-i18next'
+
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import OutlinedInput from '@mui/material/OutlinedInput'
 
 export default function () {
   const { t } = useTranslation('local')

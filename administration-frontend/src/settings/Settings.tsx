@@ -1,6 +1,6 @@
-import { Paper } from '@mui/material'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import SettingsForm from '@/settings/SettingsForm.tsx'
+import Paper from '@mui/material/Paper'
 
 const SETTINGS_FORM_PROMISE_AREA = 'SETTINGS_FORM_PROMISE_AREA'
 

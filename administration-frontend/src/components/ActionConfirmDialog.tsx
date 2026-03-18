@@ -1,9 +1,10 @@
 import type { ComponentChildren, FunctionalComponent } from 'preact'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
-import { Button, DialogContent } from '@mui/material'
 import DialogActions from '@mui/material/DialogActions'
 import { useTranslation } from 'react-i18next'
+import Button from '@mui/material/Button'
+import DialogContent from '@mui/material/DialogContent'
 
 export interface ActionConfirmDialogProps {
   isOpen: boolean

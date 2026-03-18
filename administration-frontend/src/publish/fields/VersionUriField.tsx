@@ -1,9 +1,15 @@
 import { type FieldProps } from '@rjsf/utils'
 import { useCallback, useMemo, useState } from 'preact/hooks'
-import { Box, Chip, IconButton, Paper, TextField, Typography } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import VersionUriTemplate from '@/model/VersionUriTemplate.ts'
+
+import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
 const VERSION_SEGMENT = '{version}'
 

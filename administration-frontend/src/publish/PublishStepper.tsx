@@ -1,4 +1,3 @@
-import { Button, DialogContentText, Paper, Step, StepLabel, Stepper } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { useCallback, useEffect, useState } from 'preact/hooks'
@@ -9,6 +8,12 @@ import { type RouteComponentProps, type StringRouteParams } from 'wouter-preact'
 import { parseUri } from '@/ontologies/actions.ts'
 import { resetImportProcess } from '@/publish/actions.ts'
 import type { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
+import Button from '@mui/material/Button'
+import DialogContentText from '@mui/material/DialogContentText'
+import Paper from '@mui/material/Paper'
+import Step from '@mui/material/Step'
+import StepLabel from '@mui/material/StepLabel'
+import Stepper from '@mui/material/Stepper'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 

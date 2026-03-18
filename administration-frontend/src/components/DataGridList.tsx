@@ -46,8 +46,11 @@ import {
   useLocaleText,
 } from '@toolpad/core'
 import Stack from '@mui/material/Stack'
-import { Button, IconButton, Tooltip } from '@mui/material'
 import { MuiRouterContext } from '@/components/WouterAppProvider.tsx'
+
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 
 export interface ListProps<D extends DataModel> {
   /**

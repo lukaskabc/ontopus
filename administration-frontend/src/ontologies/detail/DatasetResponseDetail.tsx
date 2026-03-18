@@ -1,8 +1,12 @@
-import { FormControl, Grid, InputLabel, MenuItem, TextField } from '@mui/material'
 import Select, { type SelectChangeEvent } from '@mui/material/Select'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import type { DatasetResponse } from '@/model/DcatResponseModel.ts'
+import FormControl from '@mui/material/FormControl'
+import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
 
 const LANGUAGE_SELECT_LABEL_ID = 'label-language-select-id'
 const disabledProps = {

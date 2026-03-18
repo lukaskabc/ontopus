@@ -6,8 +6,8 @@ import type { FileWithFieldName } from '@/publish/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
 import JsonFormElement from '@/components/JsonFormElement.tsx'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
-import { Paper } from '@mui/material'
 import { loadSeriesOptionForm, parseUri, submitSeriesOptionForm } from '@/ontologies/actions.ts'
+import Paper from '@mui/material/Paper'
 
 const VERSION_SERIES_OPTIONS_FORM_PROMISE_AREA = 'VERSION_SERIES_OPTIONS_FORM_PROMISE_AREA'
 

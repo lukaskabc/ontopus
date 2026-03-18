@@ -1,7 +1,7 @@
 import { type FunctionComponent } from 'preact'
-import { IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import type { FormFile } from '@/model/FormFile.ts'
+import IconButton from '@mui/material/IconButton'
 
 export interface WithOnDelete {
   onDelete: (file: FormFile) => void

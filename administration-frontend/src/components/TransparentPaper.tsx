@@ -1,5 +1,6 @@
-import { Paper, type PaperTypeMap } from '@mui/material'
+import { type PaperTypeMap } from '@mui/material'
 import type { DefaultComponentProps } from '@mui/material/OverridableComponent'
+import Paper from '@mui/material/Paper'
 
 export default function (props: DefaultComponentProps<PaperTypeMap>) {
   return (

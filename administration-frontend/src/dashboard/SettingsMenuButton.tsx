@@ -1,10 +1,13 @@
-import { IconButton, Menu, MenuItem, Tooltip } from '@mui/material'
-import { Settings as SettingsIcon } from '@mui/icons-material'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { loadSettingsMenuEntries, type MenuEntry } from '@/dashboard/actions.ts'
 import { useLocation } from 'wouter-preact'
 import { useTranslation } from 'react-i18next'
 import type { TargetedMouseEvent } from 'preact'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
+import SettingsIcon from '@mui/icons-material/Settings'
 
 const LOCATION_PREFIX = '~/settings/'
 

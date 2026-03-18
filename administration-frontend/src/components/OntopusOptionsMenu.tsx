@@ -2,10 +2,10 @@ import { useState } from 'preact/hooks'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import type { OntopusOptionEntry } from '@/model/MuiModelListEntry.ts'
-import { IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from '@/utils/hooks.ts'
+import IconButton from '@mui/material/IconButton'
 
 interface OntopusOptionsMenuProps {
   pathPrefix: '' | '/artifact'

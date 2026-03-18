@@ -1,8 +1,9 @@
 import type { FunctionComponent } from 'preact'
 import { type DropzoneOptions, useDropzone } from 'react-dropzone'
 import { useMemo } from 'preact/hooks'
-import { type Theme, useTheme } from '@mui/material'
+import { type Theme } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import { useTheme } from '@mui/material/zero-styled'
 
 function makeStyles(theme: Theme) {
   const { palette } = theme

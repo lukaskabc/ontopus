@@ -6,13 +6,15 @@ import { type DialogProps } from '@toolpad/core'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
-import { DialogContent, ListItemText } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { trackPromise } from 'react-promise-tracker'
 import { fetchImportSources } from '@/ontologies/actions.ts'
 import { useLocation } from '@/utils/hooks.ts'
+
+import DialogContent from '@mui/material/DialogContent'
+import ListItemText from '@mui/material/ListItemText'
 
 const IMPORT_SOURCES_PROMISE_AREA = 'OntologyPublishSourceSelectDialog_fetchImportSources'
 

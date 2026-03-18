@@ -14,11 +14,11 @@ import {
   useTreeItemUtils,
 } from '@mui/x-tree-view'
 import { forwardRef, type Ref } from 'preact/compat'
-import { Box } from '@mui/material'
 import { ItemTypeIcon } from '@/publish/components/file_list/TreeItemTypeIcon.tsx'
 import { TreeItemActions } from '@/publish/components/file_list/TreeItemActions.tsx'
 import { type ItemType, ItemTypeEnum } from '@/publish/components/file_list/ItemType.ts'
 import type { FormFile } from '@/model/FormFile.ts'
+import Box from '@mui/material/Box'
 
 export interface FormFileListProps {
   files: FormFile[]

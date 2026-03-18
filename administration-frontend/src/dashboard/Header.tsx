@@ -1,10 +1,14 @@
 import Stack from '@mui/material/Stack'
 import { Branding } from '@/config/theme.tsx'
-import { Button, styled, Typography, useTheme } from '@mui/material'
 import { useTranslation } from 'react-i18next'
 import { useCallback } from 'preact/hooks'
 import { useLocation } from 'wouter-preact'
 import { withoutTrailingSlash } from '@/Constants.ts'
+
+import Button from '@mui/material/Button'
+
+import Typography from '@mui/material/Typography'
+import { styled, useTheme } from '@mui/material/zero-styled'
 
 const LogoContainer = styled('div')({
   position: 'relative',
@@ -38,11 +42,11 @@ function HeaderText({ children, bold = true }: { children?: React.ReactNode; bol
 function AppTitle() {
   return (
     // <Link href={Branding?.homeUrl} style={{ textDecoration: 'none' }}>
+    // </Link>
     <Stack direction="row" alignItems="center">
       <LogoContainer>{Branding?.logo}</LogoContainer>
       <HeaderText>{Branding?.title}</HeaderText>
     </Stack>
-    // </Link>
   )
 }
 

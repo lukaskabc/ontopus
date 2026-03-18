@@ -1,5 +1,5 @@
 import type { WidgetProps } from '@rjsf/utils'
-import { Typography } from '@mui/material'
+import Typography from '@mui/material/Typography'
 
 const HeadingWidget = (props: WidgetProps) => {
   const { component, variant } = props.options

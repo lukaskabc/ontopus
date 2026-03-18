@@ -7,11 +7,12 @@ import type { PagedResult } from '@/utils/RequestTypes.ts'
 
 import { defineResourceListEntryFields, type GetManyProps, mapSort } from '@/utils/DataSourceUtils.ts'
 import type { GridRenderCellParams } from '@mui/x-data-grid'
-import { IconButton, Tooltip } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from '@/utils/hooks.ts'
 import OntopusOptionsMenu from '@/components/OntopusOptionsMenu.tsx'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
 
 function ActionsCell(params: GridRenderCellParams<MuiModelListEntryWithOptions>) {
   const { t } = useTranslation()

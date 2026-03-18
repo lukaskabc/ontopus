@@ -3,8 +3,9 @@ import { parseUri } from '@/ontologies/actions.ts'
 import { useLocation } from '@/utils/hooks.ts'
 import type { VersionArtifactResponse } from '@/model/VersionArtifactResponse.ts'
 import { findVersionArtifact } from '@/ontologies/detail/artifact/actions.ts'
-import { Paper, Typography } from '@mui/material'
 import VersionArtifactResponseDetail from '@/ontologies/detail/artifact/VersionArtifactResponseDetail.tsx'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
 
 export interface VersionArtifactDetailProps {
   identifier?: string

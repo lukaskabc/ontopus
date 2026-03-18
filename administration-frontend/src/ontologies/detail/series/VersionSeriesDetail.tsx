@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'preact/hooks'
 import { useLocation } from '@/utils/hooks.ts'
 import { VersionSeriesResponse } from '@/model/VersionSeriesResponse.ts'
-import { Paper, Typography } from '@mui/material'
 import { findVersionSeries } from '@/ontologies/detail/series/actions.ts'
 import { parseUri } from '@/ontologies/actions.ts'
 import VersionArtifactList from '@/ontologies/detail/series/VersionArtifactList.tsx'
 import VersionSeriesResponseDetail from '@/ontologies/detail/series/VersionSeriesResponseDetail.tsx'
+
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
 
 export interface VersionSeriesDetailProps {
   identifier?: string

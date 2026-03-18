@@ -12,10 +12,10 @@
       },
       "OrderedImportPipelineService": {
         "OntologyLoadingSelectionService": {
-          "name":"Ontology source selection"
+          "name": "Ontology source selection"
         },
         "ArtifactBuildingSelectionService": {
-          "name":"Ontology source selection"
+          "name": "Ontology source selection"
         }
       }
     }

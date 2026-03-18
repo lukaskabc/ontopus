@@ -6,12 +6,14 @@ import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
+import org.jspecify.annotations.NullUnmarked;
 import org.kohsuke.github.GHEvent;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
+@NullUnmarked
 @OWLClass(iri = Vocabulary.s_c_Webhook)
 public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebhookURI> {
 

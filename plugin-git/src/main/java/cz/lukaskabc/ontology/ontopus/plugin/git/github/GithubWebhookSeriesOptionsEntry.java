@@ -20,10 +20,8 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
 
     private static JsonForm makeJsonForm() {
         final JsonNode schema = JsonResourceLoader.loadJsonSchema(GitPlugin.FORM_RESOURCE_PATH, SCHEMA_BASE_NAME);
-        // final JsonNode uiSchema =
-        // JsonResourceLoader.loadUiSchema(GitPlugin.FORM_RESOURCE_PATH,
-        // SCHEMA_BASE_NAME);
-        return new JsonForm(schema, null, null);
+        final JsonNode uiSchema = JsonResourceLoader.loadUiSchema(GitPlugin.FORM_RESOURCE_PATH, SCHEMA_BASE_NAME);
+        return new JsonForm(schema, uiSchema, null);
     }
 
     private final ObjectMapper objectMapper;

@@ -1,0 +1,15 @@
+{
+  "uri": {
+    "ui:widget": "hidden"
+  },
+  "secret": {
+    "type": "string"
+  },
+  "event": {
+    "type": "string",
+    "enum": ["push", "create"]
+  },
+  "ref": {
+    "type": "string"
+  }
+}

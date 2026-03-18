@@ -20,15 +20,9 @@
       "type": "string"
     }
   },
-  "required": [
-    "repositoryUrl"
-  ],
+  "required": ["repositoryUrl"],
   "dependencies": {
-    "password": [
-      "username"
-    ],
-    "username": [
-      "password"
-    ]
+    "password": ["username"],
+    "username": ["password"]
   }
 }

@@ -14,7 +14,7 @@
               "type": "object",
               "properties": {
                 "uri": {
-                  "type": ["null","string"]
+                  "type": ["null", "string"]
                 },
                 "jsonPointer": {
                   "type": "string"
@@ -32,7 +32,7 @@
               "type": "object",
               "properties": {
                 "uri": {
-                  "type": ["null","string"]
+                  "type": ["null", "string"]
                 },
                 "sourcePointer": {
                   "type": "string"
@@ -53,4 +53,3 @@
   },
   "required": ["webhooks"]
 }
-

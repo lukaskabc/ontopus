@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "webhook": {
+      "$translationRoot": "ontopus.plugin.git.webhook.github",
+      "type": "object",
+      "properties": {
+        "secret": {
+          "type": "string"
+        },
+        "event": {
+          "type": "string",
+          "enum": [
+            "push",
+            "create"
+          ]
+        },
+        "ref": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "secret",
+        "event",
+        "ref"
+      ]
+    }
+  },
+  "required": [
+    "webhook"
+  ]
+}
+

@@ -6,11 +6,11 @@ import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.api.util.VersionSeriesOptionsEntry;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
-import cz.lukaskabc.ontology.ontopus.plugin.webhook.model.WebhookEntry;
-import cz.lukaskabc.ontology.ontopus.plugin.webhook.persistence.service.WebhookEntryService;
+import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhook;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -27,11 +27,9 @@ public class WebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
     }
 
     private final ObjectMapper objectMapper;
-    private final WebhookEntryService webhookEntryService;
     private final JsonForm jsonForm;
 
-    public WebhookSeriesOptionsEntry(ObjectMapper objectMapper, WebhookEntryService webhookEntryService) {
-        this.webhookEntryService = webhookEntryService;
+    public WebhookSeriesOptionsEntry(ObjectMapper objectMapper) {
         this.jsonForm = makeJsonForm();
         this.objectMapper = objectMapper;
     }
@@ -54,22 +52,27 @@ public class WebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
     @Override
     public void handleSubmit(
             VersionSeriesURI artifactIdentifier, FormJsonDataDto formData, MultiValueMap<String, MultipartFile> files) {
-        WebhookSettingsRequest request =
-                objectMapper.convertValue(formData.asObjectNode(objectMapper), WebhookSettingsRequest.class);
-        for (WebhookEntry webhook : request.webhooks()) {
-            verifyAndSetIdentifier(webhook, artifactIdentifier);
-            if (webhook.getIdentifier() == null) {
-                webhookEntryService.persist(webhook);
-            } else {
-                webhookEntryService.update(webhook);
-            }
+        List<GithubWebhook> webhooks = objectMapper.convertValue(
+                formData.asObjectNode(objectMapper), new TypeReference<List<GithubWebhook>>() {});
+        for (GithubWebhook webhook : webhooks) {
+            if (webhook.getIdentifier() == null) {}
         }
+        // for (WebhookEntry webhook : request.webhooks()) {
+        // verifyAndSetIdentifier(webhook, artifactIdentifier);
+        // if (webhook.getIdentifier() == null) {
+        // webhookEntryService.persist(webhook);
+        // } else {
+        // webhookEntryService.update(webhook);
+        // }
+        // }
     }
 
     private JsonNode loadCurrentData(VersionSeriesURI versionSeriesURI) {
-        final List<WebhookEntry> webhooks = webhookEntryService.findAll(versionSeriesURI);
-        final WebhookSettingsRequest request = new WebhookSettingsRequest(webhooks);
-        return objectMapper.valueToTree(request);
+        // final List<WebhookEntry> webhooks =
+        // webhookEntryService.findAll(versionSeriesURI);
+        // final WebhookSettingsRequest request = new WebhookSettingsRequest(webhooks);
+        // return objectMapper.valueToTree(request);
+        return objectMapper.createObjectNode();
     }
 
     @Override
@@ -77,11 +80,13 @@ public class WebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
         return true;
     }
 
-    private void verifyAndSetIdentifier(WebhookEntry entry, VersionSeriesURI versionSeriesURI) {
-        if (entry.getVersionSeries() == null) {
-            entry.setVersionSeries(versionSeriesURI);
-        } else if (!entry.getVersionSeries().equals(versionSeriesURI)) {
-            throw new IllegalArgumentException("Webhook entry version series does not match the artifact identifier");
-        }
-    }
+    // private void verifyAndSetIdentifier(WebhookEntry entry, VersionSeriesURI
+    // versionSeriesURI) {
+    // if (entry.getVersionSeries() == null) {
+    // entry.setVersionSeries(versionSeriesURI);
+    // } else if (!entry.getVersionSeries().equals(versionSeriesURI)) {
+    // throw new IllegalArgumentException("Webhook entry version series does not
+    // match the artifact identifier");
+    // }
+    // }
 }

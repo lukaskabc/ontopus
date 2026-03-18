@@ -1,11 +1,16 @@
 package cz.lukaskabc.ontology.ontopus.core_model.util;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Objects;
 
 public class StringUtils extends org.springframework.util.StringUtils {
     private static final char[] SANITIZATION_ALLOWED_CHARACTERS = new char[] {'-', '_'};
+
+    public static String randomString(int length) {
+        return RandomStringUtils.secure().next(length, true, true);
+    }
 
     /**
      * Filters out all characters from the input string that are not letters, digits, or one of the allowed special

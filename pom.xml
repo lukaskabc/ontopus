@@ -20,7 +20,6 @@
         <module>plugin-owl</module>
         <module>plugin-versioning</module>
         <module>plugin-skos</module>
-        <module>plugin-webhook</module>
         <module>test-utils</module>
     </modules>
 

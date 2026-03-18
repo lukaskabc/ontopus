@@ -71,11 +71,7 @@ public class ImportFinalizationService {
         final VersionSeries series = context.getVersionSeries();
         final VersionArtifact artifact = context.getVersionArtifact();
 
-        if (series.getIdentifier() == null) {
-            versionSeriesService.persist(series);
-        } else {
-            versionSeriesService.update(series);
-        }
+        versionSeriesService.save(series);
 
         versionArtifactService.delete(artifact);
         versionArtifactService.persist(artifact);

@@ -48,6 +48,14 @@ public abstract class BaseService<
         repository.persist(entity);
     }
 
+    public void save(E entity) {
+        if (entity.getIdentifier() == null) {
+            persist(entity);
+        } else {
+            update(entity);
+        }
+    }
+
     public void update(E entity) {
         repository.update(entity);
     }

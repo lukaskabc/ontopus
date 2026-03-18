@@ -1,21 +1,21 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.github;
+package cz.lukaskabc.ontology.ontopus.plugin.git.model;
 
-import cz.cvut.kbss.jopa.model.annotations.EnumType;
-import cz.cvut.kbss.jopa.model.annotations.Enumerated;
-import cz.cvut.kbss.jopa.model.annotations.OWLClass;
-import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
+import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
-import org.jspecify.annotations.NullUnmarked;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhookURI;
 import org.kohsuke.github.GHEvent;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
-@NullUnmarked
 @OWLClass(iri = Vocabulary.s_c_Webhook)
 public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebhookURI> {
+
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_sioc_related_to)
+    private URI versionSeries;
 
     @OWLDataProperty(iri = Vocabulary.s_p_secret, simpleLiteral = true)
     @NotEmpty private String secret;
@@ -25,7 +25,7 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
     @NotNull private GHEvent event;
 
     @OWLDataProperty(iri = Vocabulary.s_p_sioc_subject, simpleLiteral = true)
-    @NotEmpty private String ref;
+    private String ref;
 
     public GHEvent getEvent() {
         return event;
@@ -39,6 +39,10 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
         return secret;
     }
 
+    public VersionSeriesURI getVersionSeries() {
+        return new VersionSeriesURI(versionSeries);
+    }
+
     public void setEvent(GHEvent event) {
         this.event = event;
     }
@@ -49,6 +53,10 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public void setVersionSeries(VersionSeriesURI versionSeries) {
+        this.versionSeries = versionSeries.toURI();
     }
 
     @Override

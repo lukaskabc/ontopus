@@ -46,8 +46,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     }
 
     public static PersistenceException persistenceException(Logger log, String message, Throwable cause) {
-        log.error(message, cause);
-        return new PersistenceException(message, cause);
+        return log.throwing(new PersistenceException(message, cause));
     }
 
     /**
@@ -305,7 +304,8 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             final String orderClause = buildOrderClause(orders);
             final String limitOffsetClause = buildLimitOffsetClause(pageable);
             final String searchClause = buildFilterClause(filter);
-            // TODO use criteria query
+            // TODO use criteria query once it supports optional
+            // https://github.com/kbss-cvut/jopa/issues/218
 
             String query = """
 					SELECT DISTINCT ?entity %s FROM ?context WHERE {
@@ -331,6 +331,9 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             setTypeParams(typedQuery, orders.keySet());
             setFilterParams(typedQuery, filter);
             queryCustomizer.accept(typedQuery);
+
+            // TODO: filtered/sorted find returns different results for repeated calls for
+            // not yet known entities
 
             return typedQuery.getResultList();
         } catch (RuntimeException e) {

@@ -328,7 +328,7 @@
                     </java>
                     <pom>
                         <includes>
-                            <include>**/pom.xml</include>
+                            <include>*/pom.xml</include>
                             <include>pom.xml</include>
                         </includes>
                         <sortPom>
@@ -336,17 +336,17 @@
                             <sortProperties>true</sortProperties>
                         </sortPom>
                     </pom>
-                    <json>
-                        <includes>
-                            <include>**/*.json</include>
-                        </includes>
-                        <excludes>
-                            <exclude>**/target/**</exclude>
-                            <exclude>**/administration-frontend/**</exclude>
-                            <exclude>**/.idea/**</exclude>
-                        </excludes>
-                        <prettier/>
-                    </json>
+                    <!--                    <json>-->
+                    <!--                        <includes>-->
+                    <!--                            <include>**/*.json</include>-->
+                    <!--                        </includes>-->
+                    <!--                        <excludes>-->
+                    <!--                            <exclude>**/target/**</exclude>-->
+                    <!--                            <exclude>**/administration-frontend/**</exclude>-->
+                    <!--                            <exclude>**/.idea/**</exclude>-->
+                    <!--                        </excludes>-->
+                    <!--                        <prettier/>-->
+                    <!--                    </json>-->
                     <yaml>
                         <includes>
                             <include>**.yaml</include>
@@ -366,7 +366,7 @@
                         <goals>
                             <goal>apply</goal>
                         </goals>
-                        <phase>validate</phase>
+                        <phase>compile</phase>
                     </execution>
                 </executions>
             </plugin>

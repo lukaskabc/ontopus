@@ -66,7 +66,7 @@ export function submitSeriesOptionForm(
   files: FileWithFieldName[]
 ) {
   const params = new URLSearchParams({ series })
-  return request('POST', `/series/options/${formId}?` + params.toString, {
+  return request('POST', `/series/options/${formId}?` + params.toString(), {
     body: compileDataForRequest(formData, files),
   })
 }

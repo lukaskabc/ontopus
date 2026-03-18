@@ -43,14 +43,25 @@ public class AbstractJsonController {
             if (values.length > 1) {
                 ArrayNode node = objectMapper.createArrayNode();
                 for (String value : values) {
-                    node.add(objectMapper.readTree(value));
+                    node.add(treeOrValue(value));
                 }
                 return node;
             } else {
-                return objectMapper.readTree(values[0]);
+                return treeOrValue(values[0]);
             }
         } catch (JacksonException e) {
             throw new RestInvalidDataException("Failed to parse string value as JSON", e);
+        }
+    }
+
+    private JsonNode treeOrValue(String json) {
+        if (json == null) {
+            return objectMapper.nullNode();
+        }
+        try {
+            return objectMapper.readTree(json);
+        } catch (JacksonException e) {
+            return objectMapper.stringNode(json);
         }
     }
 }

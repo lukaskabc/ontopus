@@ -65,7 +65,7 @@
                         <configuration>
                             <output-directory>${project.build.generated-source.directory}</output-directory>
                             <additional-sources>${project.build.generated-source.directory}</additional-sources>
-                            <source-package>${project.groupId}.webhook.model</source-package>
+                            <source-package>${project.groupId}.git.model</source-package>
                             <output-property-iris>true</output-property-iris>
                             <initialize-iris>true</initialize-iris>
                         </configuration>

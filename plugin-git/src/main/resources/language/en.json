@@ -21,6 +21,7 @@
     },
     "webhook": {
       "github": {
+        "label": "GitHub Webhook",
         "title": "GitHub Webhook",
         "description": "Configure a GitHub webhook trigger for repeating the last ontology publishing process.",
         "fields": {

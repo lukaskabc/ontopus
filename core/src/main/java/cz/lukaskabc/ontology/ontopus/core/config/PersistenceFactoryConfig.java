@@ -94,6 +94,7 @@ public class PersistenceFactoryConfig {
         properties.put(DATA_SOURCE_CLASS, dbConfig.getDriver());
         properties.put(LANG, dbConfig.getLanguage());
         properties.put(PREFER_MULTILINGUAL_STRING, Boolean.TRUE.toString());
+        properties.put(CACHE_ENABLED, Boolean.FALSE.toString());
 
         if (dbConfig.getUsername() != null) {
             properties.put(OntoDriverProperties.DATA_SOURCE_USERNAME, dbConfig.getUsername());

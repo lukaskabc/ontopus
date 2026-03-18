@@ -1,15 +1,22 @@
 {
-  "uri": {
-    "ui:widget": "hidden"
-  },
-  "secret": {
-    "type": "string"
-  },
-  "event": {
-    "type": "string",
-    "enum": ["push", "create"]
-  },
-  "ref": {
-    "type": "string"
+  "webhook": {
+    "items": {
+      "uri": {
+        "ui:widget": "hidden"
+      },
+      "secret": {
+        "type": "string"
+      },
+      "event": {
+        "type": "string",
+        "ui:enumNames": {
+          "PUSH": "Push",
+          "CREATE": "Create"
+        }
+      },
+      "ref": {
+        "type": "string"
+      }
+    }
   }
 }

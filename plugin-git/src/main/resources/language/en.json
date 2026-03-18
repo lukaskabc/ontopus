@@ -23,8 +23,9 @@
       "github": {
         "label": "GitHub Webhook",
         "title": "GitHub Webhook",
+        "items.title": "Configuration",
         "description": "Configure a GitHub webhook trigger for repeating the last ontology publishing process.",
-        "fields": {
+        "items.fields": {
           "secret": {
             "title": "Secret",
             "description": "The secret configured in the GitHub webhook must match this value for the request to be accepted"
@@ -36,6 +37,10 @@
           "ref": {
             "title": "Branch or tag ref",
             "description": "The git ref to match, e.g. refs/heads/main"
+          },
+          "refType": {
+            "title": "Ref type",
+            "description": "The type of the git ref to match"
           }
         }
       }

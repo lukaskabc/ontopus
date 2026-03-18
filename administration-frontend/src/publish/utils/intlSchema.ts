@@ -44,7 +44,7 @@ export default function intlSchema(schema?: RJSFSchema, i18n?: i18n, scope?: str
     )
   }
 
-  if (schema.type === 'object') {
+  if (schema.properties) {
     newSchema.properties = mapValues(schema.properties, (propSchema, propName) =>
       intlSchema(propSchema, i18n, getPropScope(scope!, propName))
     )
@@ -56,7 +56,7 @@ export default function intlSchema(schema?: RJSFSchema, i18n?: i18n, scope?: str
     )
   }
 
-  ;['oneOf', 'allOf', 'anyOf'].forEach((option) => {
+  ;['oneOf', 'allOf', 'anyOf', 'if', 'then'].forEach((option) => {
     if (!schema[option]) {
       return
     }
@@ -71,28 +71,12 @@ export default function intlSchema(schema?: RJSFSchema, i18n?: i18n, scope?: str
         }
       })
     } else {
-      newSchema[option] = mapValues(schema[option], (propSchema, propName) =>
-        intlSchema(propSchema, i18n, getPropScope(scope!, propName))
-      )
+      newSchema[option] = intlSchema(schema[option], i18n, `${scope}.${option}`)
     }
   })
 
-  if (schema.items && schema.type === 'array') {
-    if (schema.items.enum && !schema.items.enumNames) {
-      newSchema.items = {
-        ...newSchema.items,
-        enumNames: schema.items.enum.map((option: string) =>
-          defaultTo(tOrNull(i18n, `${scope}.options.${option}`), option)
-        ),
-      }
-    } else if (schema.items.properties && schema.items.type === 'object') {
-      newSchema.items = {
-        ...newSchema.items,
-        properties: mapValues(schema.items.properties, (propSchema, propName) =>
-          intlSchema(propSchema, i18n, getPropScope(scope!, propName))
-        ),
-      }
-    }
+  if (schema.items) {
+    newSchema.items = intlSchema(schema.items, i18n, `${scope}.items`)
   }
 
   return newSchema

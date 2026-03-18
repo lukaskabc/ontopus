@@ -4,18 +4,17 @@
       "uri": {
         "ui:widget": "hidden"
       },
-      "secret": {
-        "type": "string"
-      },
       "event": {
-        "type": "string",
         "ui:enumNames": {
           "PUSH": "Push",
           "CREATE": "Create"
         }
       },
-      "ref": {
-        "type": "string"
+      "refType": {
+        "ui:enumNames": {
+          "BRANCH": "Branch",
+          "TAG": "Tag"
+        }
       }
     }
   }

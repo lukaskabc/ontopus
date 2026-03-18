@@ -2,12 +2,11 @@
   "type": "object",
   "properties": {
     "webhook": {
+      "$translationRoot": "ontopus.plugin.git.webhook.github",
       "type": "array",
       "maxItems": 1,
-      "$translationRoot": "ontopus.plugin.git.webhook.github",
       "items": {
         "type": "object",
-        "title": "",
         "properties": {
           "uri": {
             "type": [
@@ -29,6 +28,30 @@
             "type": ["null", "string"]
           }
         },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "event": {
+                  "const": "CREATE"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "refType": {
+                  "$translationRoot": "ontopus.plugin.git.webhook.github.items.fields.refType",
+                  "type": ["null", "string"],
+                  "enum": [
+                    "BRANCH",
+                    "TAG"
+                  ]
+                }
+              },
+              "required": ["refType"]
+            }
+          }
+        ],
         "required": [
           "secret",
           "event"

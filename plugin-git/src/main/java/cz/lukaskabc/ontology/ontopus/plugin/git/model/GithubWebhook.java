@@ -27,12 +27,20 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
     @OWLDataProperty(iri = Vocabulary.s_p_sioc_subject, simpleLiteral = true)
     private String ref;
 
+    @Enumerated(EnumType.STRING)
+    @OWLDataProperty(iri = Vocabulary.s_p_sioc_about, simpleLiteral = true)
+    private RefType refType;
+
     public GHEvent getEvent() {
         return event;
     }
 
     public String getRef() {
         return ref;
+    }
+
+    public RefType getRefType() {
+        return refType;
     }
 
     public String getSecret() {
@@ -51,8 +59,16 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
         this.ref = ref;
     }
 
+    public void setRefType(RefType refType) {
+        this.refType = refType;
+    }
+
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public void setVersionSeries(URI versionSeries) {
+        this.versionSeries = versionSeries;
     }
 
     public void setVersionSeries(VersionSeriesURI versionSeries) {

@@ -297,7 +297,7 @@
                         <format>
                             <includes>
                                 <include>.gitattributes</include>
-                                <include>.gitignore</include>
+                                <include>**/.gitignore</include>
                             </includes>
                             <trimTrailingWhitespace/>
                             <endWithNewline/>
@@ -327,16 +327,37 @@
                         </importOrder>
                     </java>
                     <pom>
+                        <includes>
+                            <include>**/pom.xml</include>
+                            <include>pom.xml</include>
+                        </includes>
                         <sortPom>
                             <nrOfIndentSpace>4</nrOfIndentSpace>
                             <sortProperties>true</sortProperties>
                         </sortPom>
                     </pom>
+                    <json>
+                        <includes>
+                            <include>**/*.json</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/target/**</exclude>
+                            <exclude>**/administration-frontend/**</exclude>
+                            <exclude>**/.idea/**</exclude>
+                        </excludes>
+                        <prettier/>
+                    </json>
                     <yaml>
                         <includes>
-                            <include>src/**/*.yaml</include>
-                            <include>src/**/*.yml</include>
+                            <include>**.yaml</include>
+                            <include>**.yml</include>
                         </includes>
+                        <excludes>
+                            <exclude>**/target/**</exclude>
+                            <exclude>**/dist/**</exclude>
+                            <exclude>**/node_modules/**</exclude>
+                            <exclude>**/.idea/**</exclude>
+                        </excludes>
                         <prettier/>
                     </yaml>
                 </configuration>

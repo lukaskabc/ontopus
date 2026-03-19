@@ -8,6 +8,10 @@
       "items": {
         "type": "object",
         "properties": {
+          "description": {
+            "type": "null",
+            "description": ""
+          },
           "uri": {
             "type": [
               "null",

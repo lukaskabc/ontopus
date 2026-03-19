@@ -149,20 +149,6 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     }
 
     /**
-     * Builds a string of parameters used for SELECT clause in SPARQL query. For each attribute, a parameter in the form
-     * of "?attributeName" is created and all parameters are joined with a space.
-     *
-     * @param attributes the attributes for which to build SELECT parameters
-     * @return a string of parameters for SELECT clause in SPARQL query, e.g. "?name ?age ?email"
-     */
-    protected String buildSelectParams(Iterable<Attribute<?, ?>> attributes) {
-        return Streams.of(attributes)
-                .map(Attribute::getName)
-                .map(name -> "?" + name)
-                .collect(Collectors.joining(" "));
-    }
-
-    /**
      * Counts the number of entities matching the provided filter criteria.
      *
      * @param filter a list of strings used for filtering entities based on their properties.
@@ -308,7 +294,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             // https://github.com/kbss-cvut/jopa/issues/218
 
             String query = """
-					SELECT DISTINCT ?entity %s FROM ?context WHERE {
+					SELECT DISTINCT ?entity FROM ?context WHERE {
 					    ?entity a ?type .
 					    %s
 					    %s
@@ -317,7 +303,6 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 					%s
 					%s
 					""".formatted(
-                            buildSelectParams(orders.keySet()),
                             additionalWhereClause,
                             buildOptionalClause(orders.keySet()),
                             searchClause,

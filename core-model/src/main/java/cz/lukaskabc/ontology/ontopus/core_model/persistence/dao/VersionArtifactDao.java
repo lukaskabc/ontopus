@@ -3,6 +3,9 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.query.Parameter;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
+import cz.cvut.kbss.jopa.model.query.criteria.CriteriaBuilder;
+import cz.cvut.kbss.jopa.model.query.criteria.CriteriaQuery;
+import cz.cvut.kbss.jopa.model.query.criteria.Root;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -34,14 +37,19 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
     }
 
     public long count(VersionSeriesURI seriesURI, List<String> filter) {
-        return this.count(filter, "?entity ?inSeries ?series .", query -> {
-            bindInSeriesParam(query, seriesURI);
+        return this.count(filter, (query, cb, root) -> {
+            filterBySeries(query, cb, root, seriesURI);
         });
     }
 
+    private void filterBySeries(
+            CriteriaQuery<?> query, CriteriaBuilder cb, Root<VersionArtifact> root, VersionSeriesURI seriesURI) {
+        query.where(cb.equal(root.getAttr("series"), seriesURI.toURI()));
+    }
+
     public List<VersionArtifact> find(VersionSeriesURI seriesURI, Pageable pageable, List<String> filter) {
-        return find(pageable, filter, "?entity ?inSeries ?series .", query -> {
-            bindInSeriesParam(query, seriesURI);
+        return find(pageable, filter, (query, cb, root) -> {
+            filterBySeries(query, cb, root, seriesURI);
         });
     }
 

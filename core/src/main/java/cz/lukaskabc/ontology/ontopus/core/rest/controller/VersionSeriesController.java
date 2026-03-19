@@ -61,6 +61,9 @@ public class VersionSeriesController {
         if (seriesIdentifier != null) {
             return ResponseEntity.ok(getVersionSeries(seriesIdentifier));
         }
+        if (filter == null) {
+            filter = List.of();
+        }
 
         final Page<@NonNull VersionSeriesListEntry> page =
                 versionSeriesService.find(pageable, filter).map(dtoMapper::versionSeriesToListEntry);

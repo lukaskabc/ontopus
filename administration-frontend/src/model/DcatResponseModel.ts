@@ -39,7 +39,7 @@ export class ResourceResponse extends EntityResponse {
     super(jsonObj)
 
     this.title = validateMultilingual(jsonObj.title, 'title')
-    this.description = validateMultilingual(jsonObj.description, 'description')
+    this.description = jsonObj.description ? validateMultilingual(jsonObj.description, 'description') : {}
     this.version = validateValue(jsonObj.version, 'string', 'version')
     this.previousVersion = validateNullableValue(jsonObj.previousVersion, 'string', 'previousVersion')
 

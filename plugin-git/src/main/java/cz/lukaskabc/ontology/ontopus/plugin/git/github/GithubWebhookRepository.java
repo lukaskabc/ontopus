@@ -22,9 +22,13 @@ public class GithubWebhookRepository extends AbstractRepository<GithubWebhookURI
         return Optional.ofNullable(dao.findByVersionSeries(versionSeries));
     }
 
+    private boolean patternIsEmpty(GithubWebhook webhook) {
+        return webhook.getRef() != null && !StringUtils.hasText(webhook.getRef().pattern());
+    }
+
     @Override
     protected <T> T validated(T entity) {
-        if (entity instanceof GithubWebhook webhook && !StringUtils.hasText(webhook.getRef())) {
+        if (entity instanceof GithubWebhook webhook && patternIsEmpty(webhook)) {
             webhook.setRef(null);
         }
         return super.validated(entity);

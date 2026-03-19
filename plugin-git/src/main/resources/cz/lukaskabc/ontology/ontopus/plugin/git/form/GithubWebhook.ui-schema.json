@@ -10,6 +10,9 @@
           "CREATE": "Create"
         }
       },
+      "ref": {
+        "ui:enableMarkdownInDescription": true
+      },
       "refType": {
         "ui:enumNames": {
           "BRANCH": "Branch",

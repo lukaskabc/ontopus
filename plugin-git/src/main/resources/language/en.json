@@ -35,8 +35,8 @@
             "description": "The type of the event to match"
           },
           "ref": {
-            "title": "Branch or tag ref",
-            "description": "The git ref to match, e.g. refs/heads/main"
+            "title": "Reference pattern",
+            "description": "Regex pattern to match the git reference (e.g. `refs\\\\/heads\\\\/main)`"
           },
           "refType": {
             "title": "Ref type",

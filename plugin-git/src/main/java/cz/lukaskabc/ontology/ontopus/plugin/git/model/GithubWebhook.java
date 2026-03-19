@@ -10,6 +10,7 @@ import org.kohsuke.github.GHEvent;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
+import java.util.regex.Pattern;
 
 @OWLClass(iri = Vocabulary.s_c_Webhook)
 public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebhookURI> {
@@ -24,8 +25,8 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_type, simpleLiteral = true)
     @NotNull private GHEvent event;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_sioc_subject, simpleLiteral = true)
-    private String ref;
+    @OWLDataProperty(iri = Vocabulary.s_p_regexPattern, simpleLiteral = true)
+    private Pattern ref;
 
     @Enumerated(EnumType.STRING)
     @OWLDataProperty(iri = Vocabulary.s_p_sioc_about, simpleLiteral = true)
@@ -35,7 +36,7 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
         return event;
     }
 
-    public String getRef() {
+    public Pattern getRef() {
         return ref;
     }
 
@@ -55,7 +56,7 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
         this.event = event;
     }
 
-    public void setRef(String ref) {
+    public void setRef(Pattern ref) {
         this.ref = ref;
     }
 
@@ -65,10 +66,6 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
 
     public void setSecret(String secret) {
         this.secret = secret;
-    }
-
-    public void setVersionSeries(URI versionSeries) {
-        this.versionSeries = versionSeries;
     }
 
     public void setVersionSeries(VersionSeriesURI versionSeries) {

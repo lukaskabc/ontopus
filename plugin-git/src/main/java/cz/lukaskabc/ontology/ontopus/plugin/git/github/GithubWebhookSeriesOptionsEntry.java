@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.JsonPointer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -20,6 +21,8 @@ import tools.jackson.databind.node.ObjectNode;
 @Component
 public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntry {
     private static final String SCHEMA_BASE_NAME = GithubWebhook.class.getSimpleName();
+    private static final JsonPointer JSON_SCHEMA_WEBHOOK_SECRET_POINTER =
+            JsonPointer.compile("/properties/webhook/items/properties/secret");
 
     private static JsonForm makeJsonForm() {
         final JsonNode schema = JsonResourceLoader.loadJsonSchema(GitPlugin.FORM_RESOURCE_PATH, SCHEMA_BASE_NAME);
@@ -39,15 +42,23 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
 
     @Override
     public JsonForm getForm(VersionSeriesURI entityIdentifier) {
-        ObjectNode formData = objectMapper.createObjectNode();
-        ArrayNode arrayWrapper = formData.putArray("webhook");
+        final JsonNode jsonSchema = jsonForm.getJsonSchema();
+        final JsonNode uiSchema = jsonForm.getUiSchema();
+        if (uiSchema == null) {
+            throw new IllegalStateException("UI schema is not loaded");
+        }
+
+        final ObjectNode formData = objectMapper.createObjectNode();
+        final ArrayNode arrayWrapper = formData.putArray("webhook");
+
         webhookService
                 .findByVersionSeries(entityIdentifier)
                 .ifPresentOrElse(webhook -> arrayWrapper.add(objectMapper.valueToTree(webhook)), () -> {
-                    arrayWrapper.addObject().put("secret", StringUtils.randomString(32));
+                    ObjectNode secret = (ObjectNode) jsonSchema.at(JSON_SCHEMA_WEBHOOK_SECRET_POINTER);
+                    secret.put("default", StringUtils.randomString(32));
                 });
 
-        return jsonForm.withFormData(formData);
+        return new JsonForm(jsonSchema, uiSchema, formData);
     }
 
     @Override

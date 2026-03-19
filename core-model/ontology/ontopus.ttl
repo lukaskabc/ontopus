@@ -119,18 +119,14 @@ ontopus:serializedImportContext rdf:type owl:DatatypeProperty ;
 ##                                  rdfs:comment "A target JSON Pointer of a JSON mapping entry."@en ;
 ##                                  rdfs:label "Target JSON Pointer"@en .
 ##
-##
-## ###  http://ontology.lukaskabc.cz/application/ontopus#regexPattern
-## ontopus:regexPattern rdf:type owl:DatatypeProperty ;
-##                      rdfs:domain [ rdf:type owl:Class ;
-##                                    owl:unionOf ( ontopus:JsonPointerCondition
-##                                                  ontopus:JsonMappingEntry
-##                                                )
-##                                  ] ;
-##                      rdfs:range xsd:string ;
-##                      rdfs:comment "A regular expression pattern of a webhook condition or mapping."@en ;
-##                      rdfs:label "Regular expression pattern"@en .
-##
+
+
+###  http://ontology.lukaskabc.cz/application/ontopus#regexPattern
+ontopus:regexPattern rdf:type owl:DatatypeProperty ;
+                     rdfs:range xsd:string ;
+                     rdfs:comment "A regular expression pattern of a webhook condition or mapping."@en ;
+                     rdfs:label "Regular expression pattern"@en .
+
 
 ###  http://ontology.lukaskabc.cz/application/ontopus#secret
 ontopus:secret rdf:type owl:DatatypeProperty ;

@@ -28,7 +28,7 @@
 
         <error-prone.version>2.36.0</error-prone.version>
         <jackson.annotations.version>2.21</jackson.annotations.version>
-        <jackson.version>3.0.3</jackson.version>
+        <jackson.version>3.1.0</jackson.version>
         <java.version>25</java.version>
         <jopa.version>2.9.3</jopa.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -195,17 +195,6 @@
         </dependency>
         <!-- Serialization -->
         <!-- JSON -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${jackson.annotations.version}.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.annotations.version}.0</version>
-            <!--            TODO: fix jackson versions-->
-        </dependency>
         <dependency>
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

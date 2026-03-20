@@ -9,9 +9,8 @@ import ListItemButton from '@mui/material/ListItemButton'
 import { useTranslation } from 'react-i18next'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
-import { trackPromise } from 'react-promise-tracker'
+import { trackPromise, useLocation } from '@/utils/hooks.ts'
 import { fetchImportSources } from '@/ontologies/actions.ts'
-import { useLocation } from '@/utils/hooks.ts'
 
 import DialogContent from '@mui/material/DialogContent'
 import ListItemText from '@mui/material/ListItemText'
@@ -24,7 +23,8 @@ export default function OntologyPublishSourceSelectDialog({ open, onClose }: Dia
   const [importSources, setImportSources] = useState<string[]>([])
 
   useEffect(() => {
-    trackPromise(fetchImportSources(), IMPORT_SOURCES_PROMISE_AREA).then(setImportSources).catch(console.error)
+    return trackPromise(fetchImportSources(), IMPORT_SOURCES_PROMISE_AREA).then(setImportSources).catch(console.error)
+      .abort
   }, [])
 
   const onSourceSelect = useCallback(

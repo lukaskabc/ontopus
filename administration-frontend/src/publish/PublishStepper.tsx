@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { useCallback, useEffect, useState } from 'preact/hooks'
-import { trackPromise } from 'react-promise-tracker'
+import { trackPromise } from '@/utils/hooks.ts'
 import { ActionConfirmDialog } from '@/components/ActionConfirmDialog.tsx'
 import { StagedForm } from '@/publish/StagedForm.tsx'
 import { type RouteComponentProps, type StringRouteParams } from 'wouter-preact'

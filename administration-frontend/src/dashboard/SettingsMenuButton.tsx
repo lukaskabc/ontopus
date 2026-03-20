@@ -20,9 +20,9 @@ export default function SettingsMenuButton() {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
 
   useEffect(() => {
-    loadSettingsMenuEntries()
+    return loadSettingsMenuEntries()
       .then(setMenuEntries)
-      .finally(() => setIsLoading(false))
+      .finally(() => setIsLoading(false)).abort
   }, [setIsLoading, setMenuEntries])
 
   const onMenuOpen = useCallback(

@@ -3,11 +3,11 @@ import mdTheme, { Branding } from '@/config/theme.tsx'
 import { SignInPage } from '@toolpad/core/SignInPage'
 import PasswordField from './PasswordField.tsx'
 import UsernameField from './UsernameField.tsx'
-import { trackPromise } from 'react-promise-tracker'
+import { useLocation } from '@/utils/hooks.ts'
 import PromiseAreas from '@/PromiseAreas.ts'
 import { authPing, submitLoginForm } from '@/login/actions.ts'
-import { useLocation } from '@/utils/hooks.ts'
 import { useEffect } from 'preact/hooks'
+import { trackPromise } from 'react-promise-tracker'
 
 const credentialsProvider = { id: 'credentials', name: 'Provider name' }
 

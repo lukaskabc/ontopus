@@ -1,11 +1,10 @@
-import { useLocation, useRoute } from '@/utils/hooks.ts'
+import { trackPromise, useLocation, useRoute } from '@/utils/hooks.ts'
 import JsonFormElement from '@/components/JsonFormElement.tsx'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import type { JsonForm } from '@/model/JsonForm.ts'
 import type { FileWithFieldName } from '@/publish/actions.ts'
 import { loadSettingsForm, submitSettingsForm } from '@/settings/actions.ts'
-import { trackPromise } from 'react-promise-tracker'
 import type { GenericObjectType } from '@rjsf/utils'
 import Constants from '@/Constants.ts'
 
@@ -24,9 +23,9 @@ export default function SettingsForm() {
       return
     }
     if (loadForm) {
-      loadSettingsForm(identifier)
+      return loadSettingsForm(identifier)
         .then(setJsonForm)
-        .finally(() => setLoadForm(false))
+        .finally(() => setLoadForm(false)).abort
     }
     // TODO error handling?
   }, [identifier, loadForm, navigate])

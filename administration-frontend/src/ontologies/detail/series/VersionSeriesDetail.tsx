@@ -24,7 +24,7 @@ export default function VersionSeriesDetail({ identifier }: VersionSeriesDetailP
       navigate('/')
       return
     }
-    findVersionSeries(versionSeriesUri).then(setVersionSeries)
+    return findVersionSeries(versionSeriesUri).then(setVersionSeries).abort
   }, [navigate, versionSeriesUri, setVersionSeries])
 
   return (

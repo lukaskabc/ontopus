@@ -1,4 +1,4 @@
-import request from '@/config/rest-client.ts'
+import request, { type CancellablePromise } from '@/config/rest-client.ts'
 
 /**
  * A pair of strings [UUID, label]
@@ -7,7 +7,7 @@ import request from '@/config/rest-client.ts'
  */
 export type MenuEntry = [string, string]
 
-export function loadSettingsMenuEntries(): Promise<MenuEntry[]> {
+export function loadSettingsMenuEntries(): CancellablePromise<MenuEntry[]> {
   return request('GET', '/settings')
     .then((response) => response.json())
     .then((data) => {

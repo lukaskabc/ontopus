@@ -1,4 +1,4 @@
-import request from '@/config/rest-client.ts'
+import request, { type CancellablePromise } from '@/config/rest-client.ts'
 import { ArrayPage, Pageable } from '@hallysonh/pageable'
 import { toPageRequest } from '@/utils/RequestTypes.ts'
 import { MuiModelListEntry, OntopusOptionEntry } from '@/model/MuiModelListEntry.ts'
@@ -7,11 +7,14 @@ import { UnknownError } from '@/utils/errors.ts'
 import { makeJsonForm } from '@/model/JsonForm.ts'
 import { compileDataForRequest, type FileWithFieldName } from '@/publish/actions.ts'
 
-export function fetchImportSources() {
+export function fetchImportSources(): CancellablePromise<string[]> {
   return request('GET', 'import/source').then((response) => response.json())
 }
 
-export function findAllVersionSeries(pageable: Pageable, filter?: string[]): Promise<ArrayPage<MuiModelListEntry>> {
+export function findAllVersionSeries(
+  pageable: Pageable,
+  filter?: string[]
+): CancellablePromise<ArrayPage<MuiModelListEntry>> {
   const options = toPageRequest(pageable)
   filter?.forEach((val) => options.append('filter', val))
   return request('GET', 'series?' + options.toString())
@@ -31,7 +34,7 @@ export function parseUri(identifier?: string) {
   return null
 }
 
-export function findSeriesOptions(identifiers: string[]): Promise<Map<string, OntopusOptionEntry[]>> {
+export function findSeriesOptions(identifiers: string[]): CancellablePromise<Map<string, OntopusOptionEntry[]>> {
   const options = new URLSearchParams()
   identifiers.forEach((id) => options.append('series', id))
   return request('GET', 'series/options?' + options.toString())

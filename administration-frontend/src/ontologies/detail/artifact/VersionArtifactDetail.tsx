@@ -24,7 +24,7 @@ export default function VersionArtifactDetail({ identifier, versionSeriesIdentif
       navigate('/')
       return
     }
-    findVersionArtifact(versionArtifactUri, versionSeriesUri).then(setVersionArtifact)
+    return findVersionArtifact(versionArtifactUri, versionSeriesUri).then(setVersionArtifact).abort
   }, [navigate, versionSeriesUri, setVersionArtifact, versionArtifactUri])
 
   return (

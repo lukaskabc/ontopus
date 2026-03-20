@@ -1,4 +1,4 @@
-import request from '@/config/rest-client.ts'
+import request, { type CancellablePromise, makeCancellable } from '@/config/rest-client.ts'
 import { type JsonForm, makeJsonForm } from '@/model/JsonForm.ts'
 import {
   ImportProcessNotInitializedError,
@@ -9,7 +9,7 @@ import {
 } from '@/utils/errors.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 
-export function resetImportProcess(versionSeriesIdentifier: string | null): Promise<Response> {
+export function resetImportProcess(versionSeriesIdentifier: string | null): CancellablePromise<Response> {
   const params = new URLSearchParams()
   if (versionSeriesIdentifier) {
     params.append('series', versionSeriesIdentifier)
@@ -57,19 +57,15 @@ export function submitForm(formData: GenericObjectType, files: FileWithFieldName
  * Returns Promise resolved with the JSON form or rejected with null
  * and cleanup function.
  */
-export function loadJsonForm() {
-  let repeat = true
-
-  const cleanup = () => {
-    repeat = false
-  }
+export function loadJsonForm(): CancellablePromise<JsonForm> {
+  const abortController = new AbortController()
 
   const promise = new Promise<JsonForm>((resolve, reject) => {
     const task = () => {
-      if (repeat) {
-        request('GET', '/import', {}, [200])
+      if (!abortController.signal.aborted) {
+        request('GET', '/import', {}, [200], abortController)
           .then((response) => {
-            if (repeat) {
+            if (!abortController.signal.aborted) {
               return response.json()
             }
             throw new PromiseCanceledError()
@@ -102,9 +98,5 @@ export function loadJsonForm() {
     }
     task()
   })
-
-  return {
-    promise,
-    cleanup,
-  }
+  return makeCancellable(promise, abortController)
 }

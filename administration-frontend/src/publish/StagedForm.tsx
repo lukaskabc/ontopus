@@ -3,7 +3,7 @@ import { type FunctionComponent } from 'preact'
 
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import { type FileWithFieldName, loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/publish/actions.ts'
-import { trackPromise } from 'react-promise-tracker'
+import { trackPromise } from '@/utils/hooks.ts'
 import { ImportProcessNotInitializedError, PromiseCanceledError } from '@/utils/errors.ts'
 import type { JsonForm } from '@/model/JsonForm.ts'
 import JsonFormElement from '@/components/JsonFormElement.tsx'
@@ -23,9 +23,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
       return
     }
 
-    const { promise, cleanup } = loadJsonForm()
-
-    trackPromise(promise, STAGED_FORM_PROMISE_AREA)
+    return trackPromise(loadJsonForm(), STAGED_FORM_PROMISE_AREA)
       .then(setJsonForm)
       .catch((e) => {
         if (e instanceof ImportProcessNotInitializedError) {
@@ -37,9 +35,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
           console.error(e)
         }
       })
-      .finally(() => setLoadScheme(false))
-    return cleanup
-    // TODO install eslint for preact hooks validation
+      .finally(() => setLoadScheme(false)).abort
   }, [loadScheme, resetForm])
 
   const onSubmit = useCallback((formData: GenericObjectType, files: FileWithFieldName[]) => {

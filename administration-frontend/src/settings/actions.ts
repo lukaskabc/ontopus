@@ -1,9 +1,9 @@
 import { type JsonForm, makeJsonForm } from '@/model/JsonForm.ts'
-import request from '@/config/rest-client.ts'
+import request, { type CancellablePromise } from '@/config/rest-client.ts'
 import { compileDataForRequest, type FileWithFieldName } from '@/publish/actions.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 
-export function loadSettingsForm(identifier: string): Promise<JsonForm> {
+export function loadSettingsForm(identifier: string): CancellablePromise<JsonForm> {
   return request('GET', '/settings/' + identifier)
     .then((response) => response.json())
     .then(makeJsonForm)

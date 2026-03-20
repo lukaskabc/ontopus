@@ -60,9 +60,9 @@ const request = (
   path: string,
   options: RequestInit = {},
   expectedStatus: number[] = [200],
+  abortController: AbortController = new AbortController(),
   base = Constants.BACKEND_URL
 ): CancellablePromise<Response> => {
-  const abortController = new AbortController()
   const promise = fetch(
     new URL(path, base),
     Object.assign(
@@ -78,7 +78,7 @@ const request = (
       return Promise.reject(new PromiseCanceledError())
     }
     if (response.status === 403) {
-      navigate('/admin/login', { replace: true })
+      navigate(Constants.BASE_URL + '/login', { replace: true })
       return Promise.reject()
     }
     if (!expectedStatus.includes(response.status)) {

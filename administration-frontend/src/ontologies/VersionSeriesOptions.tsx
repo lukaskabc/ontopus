@@ -1,9 +1,8 @@
-import { useLocation, useRoute } from '@/utils/hooks.ts'
+import { trackPromise, useLocation, useRoute } from '@/utils/hooks.ts'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import type { JsonForm } from '@/model/JsonForm.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 import type { FileWithFieldName } from '@/publish/actions.ts'
-import { trackPromise } from 'react-promise-tracker'
 import JsonFormElement from '@/components/JsonFormElement.tsx'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { loadSeriesOptionForm, parseUri, submitSeriesOptionForm } from '@/ontologies/actions.ts'
@@ -26,9 +25,9 @@ export default function VersionSeriesOptions() {
       return
     }
     if (loadForm) {
-      loadSeriesOptionForm(series, identifier)
+      return loadSeriesOptionForm(series, identifier)
         .then(setJsonForm)
-        .finally(() => setLoadForm(false))
+        .finally(() => setLoadForm(false)).abort
     }
     // TODO error handling?
   }, [identifier, loadForm, navigate, series])

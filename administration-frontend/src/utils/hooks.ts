@@ -1,5 +1,7 @@
 import type { DefaultParams, PathPattern, RegexRouteParams, StringRouteParams } from 'wouter-preact'
 import { useLocation as useWouterLocation, useRoute as useWouterRoute } from 'wouter-preact'
+import { trackPromise as trackReactPromise } from 'react-promise-tracker'
+import { type CancellablePromise, makeCancellable } from '@/config/rest-client.ts'
 
 type RouteParamsFor<T extends DefaultParams | undefined, RoutePath extends PathPattern> = T extends DefaultParams
   ? T
@@ -24,4 +26,8 @@ export function useRoute<T extends DefaultParams | undefined = undefined, RouteP
   }
 
   return { match, params }
+}
+
+export function trackPromise<T>(promise: CancellablePromise<T>, area?: string): CancellablePromise<T> {
+  return makeCancellable(trackReactPromise(promise, area), promise.abortController)
 }

@@ -1,5 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
+import cz.lukaskabc.ontology.ontopus.api.service.core.ImportInitiationService;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
@@ -7,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 @Component
 public class WebhookHandler {
@@ -17,6 +24,14 @@ public class WebhookHandler {
             return false;
         }
         return ref == null || !webhook.getRef().matcher(ref).matches();
+    }
+
+    private final ImportInitiationService importService;
+    private final VersionSeriesService versionSeriesService;
+
+    public WebhookHandler(ImportInitiationService importService, VersionSeriesService versionSeriesService) {
+        this.importService = importService;
+        this.versionSeriesService = versionSeriesService;
     }
 
     public void handleGHEvent(GithubWebhook webhook, GithubCreateEvent createEvent) {
@@ -34,7 +49,7 @@ public class WebhookHandler {
             return;
         }
         log.info("Received create event with ref '{}'", createEvent.getRef());
-        // TODO start import process
+        initiateImport(webhook.getVersionSeries());
     }
 
     public void handleGHEvent(GithubWebhook webhook, GithubPushEvent pushEvent) {
@@ -49,7 +64,16 @@ public class WebhookHandler {
             return;
         }
         log.info("Received push event with ref '{}'", pushEvent.getRef());
-        // TODO: start import process
+        initiateImport(webhook.getVersionSeries());
+    }
+
+    private void initiateImport(VersionSeriesURI seriesURI) {
+        Objects.requireNonNull(seriesURI, "Version series URI must not be null");
+        final VersionSeries series = versionSeriesService.findRequiredById(seriesURI);
+        final ImportProcessContextRequest contextRequest = new ImportProcessContextRequest();
+        contextRequest.setVersionSeriesURI(seriesURI);
+        contextRequest.setSerializableImportProcessContext(series.getSerializableImportProcessContext());
+        importService.submitCombinedData(contextRequest);
     }
 
     private boolean refTypeDoesNotMatch(GithubWebhook webhook, @Nullable String refType) {

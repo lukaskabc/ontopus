@@ -2,10 +2,10 @@ package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
-import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.ImportService;
 import cz.lukaskabc.ontology.ontopus.core.util.ImportProcessMediatorFutureHandler;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import tools.jackson.databind.ObjectMapper;
 
 import jakarta.validation.Valid;
-import java.net.URI;
 import java.util.concurrent.Future;
 
 @NullMarked
@@ -57,12 +56,8 @@ public class ImportController extends AbstractJsonController {
                     + "If the version series is not specified, a new one will be created.")
     @PostMapping("initialize")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void initialize(@Nullable @RequestParam(required = false, name = "series") URI versionSeries) {
-        VersionSeriesURI uri = null;
-        if (versionSeries != null) {
-            uri = new VersionSeriesURI(versionSeries);
-        }
-        importService.initializeImport(uri);
+    public void initialize(@Nullable @RequestParam(required = false, name = "series") VersionSeriesURI versionSeries) {
+        importService.initializeImport(versionSeries);
     }
 
     /**
@@ -78,8 +73,6 @@ public class ImportController extends AbstractJsonController {
     public ResponseEntity<?> onCombinedFormSubmit(
             @Parameter(description = "Import context") @RequestParam(name = "context") @Valid ImportProcessContextRequest contextRequest)
             throws Throwable {
-        initialize(contextRequest.getVersionSeriesURI().toURI());
-
         return ImportProcessMediatorFutureHandler.handleFuture(importService.submitCombinedData(contextRequest));
     }
 

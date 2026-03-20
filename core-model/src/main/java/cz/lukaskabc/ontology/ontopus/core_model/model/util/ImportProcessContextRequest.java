@@ -1,13 +1,14 @@
-package cz.lukaskabc.ontology.ontopus.core.rest.request;
+package cz.lukaskabc.ontology.ontopus.core_model.model.util;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
+import org.jspecify.annotations.NullUnmarked;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.net.URI;
 
+@NullUnmarked
 public class ImportProcessContextRequest implements Serializable {
     @NotNull private URI versionSeriesURI;
 

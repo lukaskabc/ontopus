@@ -14,6 +14,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ import java.util.concurrent.Future;
 @Service
 public class ImportProcessMediator {
     static final CopyOption[] REPLACE_EXISTING_COPY_OPTIONS = new CopyOption[] {StandardCopyOption.REPLACE_EXISTING};
+    private static final Logger log = LogManager.getLogger(ImportProcessMediator.class);
 
     private static UploadedFile copyFile(
             FormFileRequest dto, InputStreamSource streamSource, ImportProcessContext context) {
@@ -222,7 +225,7 @@ public class ImportProcessMediator {
             final String serviceId = service.getUniqueContextIdentifier(context);
             final FormDataDto formDataDto = serviceToFormDataMap.get(serviceId);
             if (formDataDto == null) {
-                throw new IllegalStateException("Missing form data for service with id: " + serviceId);
+                throw log.throwing(new IllegalStateException("Missing form data for service with id: " + serviceId));
             }
             final FormResult formResult = formDataToFormResult(formDataDto);
             context.handleResult(formResult);

@@ -2,24 +2,28 @@ package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.service.core.ImportInitiationService;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
-import cz.lukaskabc.ontology.ontopus.core.rest.request.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.util.RequestFileResolver;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-@NullMarked
 @Service
-public class ImportService {
+@Validated
+@NullMarked
+public class ImportService implements ImportInitiationService {
 
     private final ImportProcessMediator mediator;
     private final RequestFileResolver requestFileResolver;
@@ -33,14 +37,21 @@ public class ImportService {
         return mediator.getCurrentForm(); // TODO include form data when publishing new version of
     }
 
+    @Override
     public void initializeImport(@Nullable VersionSeriesURI uri) {
         mediator.initialize(uri);
     }
 
-    public Future<@Nullable Void> submitCombinedData(ImportProcessContextRequest context) {
+    @Override
+    public Future<@Nullable Void> submitCombinedData(@Valid ImportProcessContextRequest context) {
+        if (context.getVersionSeriesURI() == null) {
+            throw new IllegalArgumentException("Version series URI must be provided in the context");
+        }
+        initializeImport(context.getVersionSeriesURI());
         return mediator.submitCombinedFormResult(context.getSerializableImportProcessContext());
     }
 
+    @Override
     public Future<@Nullable Void> submitData(FormJsonDataDto jsonData, MultiValueMap<String, MultipartFile> files) {
         Map<FormFileRequest, InputStreamSource> reusableFiles =
                 requestFileResolver.resolveAndCopyFiles(jsonData.values().iterator(), files);

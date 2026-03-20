@@ -9,7 +9,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import tools.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
@@ -34,14 +33,14 @@ public class DateVersioningService implements OntologyVersioningService {
             previousVersion = artifactRepository.findRequired(latestVersionUri).getVersion();
         }
         versionValue = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        if (previousVersion != null && previousVersion.startsWith(versionValue)) {
-            String suffix = previousVersion.substring(versionValue.length() + 1);
-            if (!StringUtils.hasText(suffix)) {
-                suffix = "1";
-            }
-            int value = Integer.parseInt(suffix) + 1;
-            versionValue += SEPARATOR + value;
-        }
+        // if (previousVersion != null && previousVersion.startsWith(versionValue)) {
+        // String suffix = previousVersion.substring(versionValue.length() + 1);
+        // if (!StringUtils.hasText(suffix)) {
+        // suffix = "1";
+        // }
+        // int value = Integer.parseInt(suffix) + 1;
+        // versionValue += SEPARATOR + value;
+        // }
     }
 
     @Override

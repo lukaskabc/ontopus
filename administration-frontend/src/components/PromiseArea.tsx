@@ -25,7 +25,7 @@ export const PromiseArea: FunctionComponent<PromiseAreaProps> = ({
     return children
   }
   return (
-    <Box sx={{ my: 4 }}>
+    <Box sx={{ my: 4, mx: 'auto', width: 'fit-content' }}>
       {useCircleLoading ? <CircularProgress {...circularProps} /> : <LinearProgress {...linearProps} />}
     </Box>
   )

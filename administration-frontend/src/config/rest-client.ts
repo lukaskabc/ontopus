@@ -1,6 +1,6 @@
 import Constants from '@/Constants.ts'
 import { navigate } from 'wouter-preact/use-browser-location'
-import { PromiseCanceledError, UnexpectedResponseStatusError } from '@/utils/errors.ts'
+import { NotLoggedInError, PromiseCanceledError, UnexpectedResponseStatusError } from '@/utils/errors.ts'
 
 export type RESTMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -79,7 +79,7 @@ const request = (
     }
     if (response.status === 403) {
       navigate(Constants.BASE_URL + '/login', { replace: true })
-      return Promise.reject()
+      return Promise.reject(new NotLoggedInError())
     }
     if (!expectedStatus.includes(response.status)) {
       return Promise.reject(new UnexpectedResponseStatusError('Unexpected server response status', response))

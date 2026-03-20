@@ -16,6 +16,7 @@
     "date": "{{val, iso-date}}"
   },
   "login": {
+    "error": "Login failed. Please check your credentials and try again.",
     "button.submit": "Login",
     "field": {
       "password.title": "Password",

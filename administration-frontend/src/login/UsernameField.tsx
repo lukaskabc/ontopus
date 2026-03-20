@@ -19,7 +19,6 @@ export default function () {
         size="small"
         required={true}
         label={label}
-        value={'admin'} // TODO remove
       />
     </FormControl>
   )

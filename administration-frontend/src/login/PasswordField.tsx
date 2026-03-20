@@ -26,7 +26,6 @@ export default function () {
         label={label}
         size="small"
         required={true}
-        value={'abeceda'} // TODO remove
         endAdornment={
           <InputAdornment position="end">
             <IconButton

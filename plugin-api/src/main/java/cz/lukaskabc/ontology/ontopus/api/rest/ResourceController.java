@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
  *
  * @implSpec Must be registered in Spring context (e.g. with
  *     {@link org.springframework.stereotype.Controller @Controller} annotation)
- * @param <R> the type of the response body, {@link StreamingResponseBody StreamingResponseBody} is preferred
+ * @param <R> the type of the response body
  * @see <a href=
  *     "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/return-types.html">Spring
  *     MVC Return Values</a>
  */
-public interface ResourceController<R> extends NegotiableController {
+public interface ResourceController<R extends StreamingResponseBody> extends NegotiableController {
     ResponseEntity<R> handleResourceRequest(OntopusRequest requestContext);
 }

@@ -1,9 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
-import cz.lukaskabc.ontology.ontopus.api.rest.NegotiableController;
-import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
-import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
-import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
+import cz.lukaskabc.ontology.ontopus.api.rest.*;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ControllerCandidate;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
@@ -19,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.Optional;
 
@@ -79,11 +75,12 @@ public class ResourceService {
     private ResponseEntity<StreamingResponseBody> handleRequest(
             ControllerCandidate candidate, MappingType mappingType, OntopusRequest ontopusRequest) {
         NegotiableController controller = applicationContext.getBean(getControllerClass(candidate.controller()));
-        if (mappingType == MappingType.RESOURCE && controller instanceof ResourceController<?> resourceController) {
+        if (mappingType == MappingType.RESOURCE
+                && controller instanceof ResourceController<? extends StreamingResponseBody> resourceController) {
             return (ResponseEntity<StreamingResponseBody>) resourceController.handleResourceRequest(ontopusRequest);
         }
         if (mappingType == MappingType.ONTOLOGY_DOCUMENT
-                && controller instanceof OntologyController<?> ontologyController) {
+                && controller instanceof OntologyController<? extends StreamingResponseBody> ontologyController) {
             return (ResponseEntity<StreamingResponseBody>) ontologyController.handleOntologyRequest(ontopusRequest);
         }
         throw new OntopusException(
@@ -91,6 +88,6 @@ public class ResourceService {
     }
 
     private ResponseEntity<StreamingResponseBody> multipleChoice() {
-        return (ResponseEntity<StreamingResponseBody>) ResponseEntity.notFound();
+        return ResponseEntity.notFound().build();
     }
 }

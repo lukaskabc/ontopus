@@ -14,6 +14,6 @@ import org.springframework.http.ResponseEntity;
  *     "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/return-types.html">Spring
  *     MVC Return Values</a> (Note that annotations are not supported)
  */
-public interface OntologyController<R> extends NegotiableController {
+public interface OntologyController<R extends StreamingResponseBody> extends NegotiableController {
     ResponseEntity<R> handleOntologyRequest(OntopusRequest requestContext);
 }

@@ -5,7 +5,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhookURI;
-import org.kohsuke.github.GHEvent;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +22,7 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
 
     @Enumerated(EnumType.STRING)
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_type, simpleLiteral = true)
-    @NotNull private GHEvent event;
+    @NotNull private GithubEvent event;
 
     @OWLDataProperty(iri = Vocabulary.s_p_regexPattern, simpleLiteral = true)
     private Pattern ref;
@@ -32,7 +31,7 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
     @OWLDataProperty(iri = Vocabulary.s_p_sioc_about, simpleLiteral = true)
     private RefType refType;
 
-    public GHEvent getEvent() {
+    public GithubEvent getEvent() {
         return event;
     }
 
@@ -52,7 +51,7 @@ public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebh
         return new VersionSeriesURI(versionSeries);
     }
 
-    public void setEvent(GHEvent event) {
+    public void setEvent(GithubEvent event) {
         this.event = event;
     }
 

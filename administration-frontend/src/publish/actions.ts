@@ -28,7 +28,6 @@ export interface FileWithFieldName {
 
 export function compileDataForRequest(formData: GenericObjectType, files: FileWithFieldName[]): string | FormData {
   const data = new FormData()
-  console.debug(typeof formData, formData)
   if (typeof formData === 'object') {
     Object.keys(formData).forEach((key: string) => {
       data.append(key, JSON.stringify(formData[key]))

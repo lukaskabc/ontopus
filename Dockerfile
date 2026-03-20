@@ -1,4 +1,8 @@
 # syntax=docker/dockerfile:1.20
+
+ARG ONTOPUS_SYSTEM_URL=http://localhost:8080/
+
+
 FROM node:25-alpine AS frontend
 
 WORKDIR /administration-frontend
@@ -8,7 +12,7 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY administration-frontend .
 
-ENV VITE_ONTOPUS_URL=http://ontopus.local:8080/
+ENV VITE_ONTOPUS_URL=${ONTOPUS_SYSTEM_URL}
 
 RUN --mount=type=cache,target=/root/.npm \
     npm run build -- --base=/admin/
@@ -40,6 +44,7 @@ WORKDIR /ontopus
 RUN mkdir plugins
 
 ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
+ENV ONTOPUS_SYSTEM_URL=${ONTOPUS_SYSTEM_URL}
 
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/

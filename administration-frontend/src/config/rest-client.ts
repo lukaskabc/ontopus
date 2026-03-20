@@ -1,5 +1,6 @@
 import Constants from '@/Constants.ts'
 import { navigate } from 'wouter-preact/use-browser-location'
+import { PromiseCanceledError, UnexpectedResponseStatusError } from '@/utils/errors.ts'
 
 export type RESTMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -11,31 +12,81 @@ export function jsonBody(body: unknown): RequestInit {
   }
 }
 
+export interface CancellablePromise<T> extends Promise<T> {
+  abortController: AbortController
+  abort: (reason?: unknown) => void
+
+  then<TResult1 = T, TResult2 = never>(
+    onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | undefined | null
+  ): CancellablePromise<TResult1 | TResult2>
+
+  catch<TResult = never>(
+    onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | undefined | null
+  ): CancellablePromise<T | TResult>
+
+  finally(onfinally?: (() => void) | undefined | null): CancellablePromise<T>
+}
+
+export function makeCancellable<T>(
+  promise: Promise<T>,
+  abortController: AbortController = new AbortController()
+): CancellablePromise<T> {
+  // Hard-bind the abort method so it doesn't lose context when detached
+  const boundAbort = () => {
+    abortController.abort.bind(abortController)
+  }
+
+  const cancellable = Object.assign(promise, {
+    abortController,
+    abort: boundAbort,
+  }) as CancellablePromise<T>
+
+  // Store the original methods
+  const originalThen = cancellable.then.bind(cancellable)
+  const originalCatch = cancellable.catch.bind(cancellable)
+  const originalFinally = cancellable.finally.bind(cancellable)
+
+  // Override them to recursively apply the controller and bound abort
+  cancellable.then = (...args) => makeCancellable(originalThen(...args), abortController)
+  cancellable.catch = (...args) => makeCancellable(originalCatch(...args), abortController)
+  cancellable.finally = (...args) => makeCancellable(originalFinally(...args), abortController)
+
+  return cancellable
+}
+
 const request = (
   method: RESTMethod,
   path: string,
   options: RequestInit = {},
   expectedStatus: number[] = [200],
   base = Constants.BACKEND_URL
-): Promise<Response> =>
-  fetch(
+): CancellablePromise<Response> => {
+  const abortController = new AbortController()
+  const promise = fetch(
     new URL(path, base),
     Object.assign(
       {
         credentials: 'include',
         method,
+        signal: abortController.signal,
       },
       options
     )
   ).then((response): Promise<Response> => {
+    if (abortController.signal.aborted) {
+      return Promise.reject(new PromiseCanceledError())
+    }
     if (response.status === 403) {
-      console.debug('Not logged in')
-      navigate('/login', { replace: true })
+      navigate('/admin/login', { replace: true })
+      return Promise.reject()
     }
     if (!expectedStatus.includes(response.status)) {
-      return Promise.reject(response) // TODO type errors
+      return Promise.reject(new UnexpectedResponseStatusError('Unexpected server response status', response))
     }
     return Promise.resolve(response)
   })
+  return makeCancellable(promise, abortController)
+}
 
 export default request

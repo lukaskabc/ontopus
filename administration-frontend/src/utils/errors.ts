@@ -21,6 +21,12 @@ export class UnknownError extends ErrorWithPayload {
   }
 }
 
+export class NotLoggedInError extends OntopusError {
+  constructor() {
+    super('Not logged in')
+  }
+}
+
 /**
  * The promise was canceled and could not be fulfilled
  */

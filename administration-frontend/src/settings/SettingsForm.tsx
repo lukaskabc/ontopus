@@ -7,6 +7,7 @@ import type { FileWithFieldName } from '@/publish/actions.ts'
 import { loadSettingsForm, submitSettingsForm } from '@/settings/actions.ts'
 import { trackPromise } from 'react-promise-tracker'
 import type { GenericObjectType } from '@rjsf/utils'
+import Constants from '@/Constants.ts'
 
 const SETTINGS_FORM_PROMISE_AREA = 'SETTINGS_FORM_PROMISE_AREA'
 
@@ -19,7 +20,7 @@ export default function SettingsForm() {
 
   useEffect(() => {
     if (!identifier) {
-      navigate('~/')
+      navigate('~' + Constants.BASE_URL)
       return
     }
     if (loadForm) {

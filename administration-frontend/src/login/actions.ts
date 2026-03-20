@@ -1,6 +1,6 @@
 import Constants from '@/Constants.ts'
 import type { AuthResponse } from '@toolpad/core'
-import request from '@/config/rest-client.ts'
+import request, { type CancellablePromise } from '@/config/rest-client.ts'
 
 export function submitLoginForm(formData: FormData): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
@@ -27,10 +27,8 @@ export function submitLoginForm(formData: FormData): Promise<AuthResponse> {
   })
 }
 
-export function authPing(): Promise<boolean> {
-  return new Promise((resolve) => {
-    request('GET', 'auth-ping')
-      .then((response) => resolve(response.status === 200))
-      .catch(() => resolve(false))
-  })
+export function authPing(): CancellablePromise<boolean> {
+  return request('GET', 'auth-ping')
+    .then((response) => response.status === 200)
+    .catch(() => false)
 }

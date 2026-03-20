@@ -5,9 +5,9 @@ import PasswordField from './PasswordField.tsx'
 import UsernameField from './UsernameField.tsx'
 import { trackPromise } from 'react-promise-tracker'
 import PromiseAreas from '@/PromiseAreas.ts'
-import { useEffect } from 'preact/hooks'
 import { authPing, submitLoginForm } from '@/login/actions.ts'
 import { useLocation } from '@/utils/hooks.ts'
+import { useEffect } from 'preact/hooks'
 
 const credentialsProvider = { id: 'credentials', name: 'Provider name' }
 
@@ -20,12 +20,8 @@ export default function LoginForm() {
   const { navigate } = useLocation()
 
   useEffect(() => {
-    authPing().then((loggedIn) => {
-      if (loggedIn) {
-        navigate('/ontologies')
-      }
-    })
-  })
+    return authPing().abort
+  }, [navigate])
 
   return (
     <AppProvider theme={mdTheme} branding={Branding}>

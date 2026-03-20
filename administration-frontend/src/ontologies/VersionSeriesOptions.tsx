@@ -8,6 +8,7 @@ import JsonFormElement from '@/components/JsonFormElement.tsx'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { loadSeriesOptionForm, parseUri, submitSeriesOptionForm } from '@/ontologies/actions.ts'
 import Paper from '@mui/material/Paper'
+import Constants from '@/Constants.ts'
 
 const VERSION_SERIES_OPTIONS_FORM_PROMISE_AREA = 'VERSION_SERIES_OPTIONS_FORM_PROMISE_AREA'
 
@@ -21,7 +22,7 @@ export default function VersionSeriesOptions() {
 
   useEffect(() => {
     if (!identifier || !series) {
-      navigate('~/')
+      navigate('~' + Constants.BASE_URL)
       return
     }
     if (loadForm) {

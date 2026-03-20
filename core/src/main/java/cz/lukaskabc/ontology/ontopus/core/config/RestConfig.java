@@ -26,7 +26,7 @@ public class RestConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String frontendDirectory = frontendIndexFile.getFile().getParentFile().getAbsolutePath() + File.separator;
 
-        registry.addResourceHandler("/admin/", "/admin/**")
+        registry.addResourceHandler("/admin", "/admin/", "/admin/**")
                 .addResourceLocations(new FileSystemResource(frontendDirectory))
                 .resourceChain(true)
                 .addResolver(new IndexFallbackPathResolver());

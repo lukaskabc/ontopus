@@ -1,8 +1,13 @@
-export function withTrailingSlash(url: string) {
+export function withTrailingSlashString(url: string) {
   if (!url.endsWith('/')) {
     url = url + '/'
   }
-  return new URL(url)
+  return url
+}
+
+export function withTrailingSlash(url: string) {
+  const withTrailing = withTrailingSlashString(url)
+  return new URL(withTrailing)
 }
 
 export function withoutTrailingSlash(url: string) {

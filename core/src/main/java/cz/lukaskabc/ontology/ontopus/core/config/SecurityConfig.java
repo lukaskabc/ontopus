@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.config;
 
+import cz.lukaskabc.ontology.ontopus.core.rest.utils.SystemUriSecurityMatcher;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.service.UserService;
 import org.springframework.context.annotation.Bean;
@@ -28,26 +29,18 @@ public class SecurityConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain administrationSecurityFilter(
-            HttpSecurity http, AuthenticationManager authenticationManager) {
-        http.securityMatcher("/login", "/logout", "/import", "/import/**", "/auth-ping")
+            HttpSecurity http, AuthenticationManager authenticationManager, OntopusConfig config) {
+        http.securityMatcher(new SystemUriSecurityMatcher(config))
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults()) // TODO configure cors for
-                // administration
+                .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authenticationManager(authenticationManager)
                 .logout(LogoutConfigurer::permitAll)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .with(new UsernamePasswordAuthenticationConfigurer<>()) // configure /login endpoint handling
+                .with(new UsernamePasswordAuthenticationConfigurer<>())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/login").permitAll().anyRequest().permitAll()); // TODO:
-        // for
-        // dev
-        // permitAll,
-        // change
-        // to
-        // authenticated()
-        // TODO: review authentication stack
+                        auth.requestMatchers("/login").permitAll().anyRequest().authenticated());
         return http.build();
     }
 
@@ -62,13 +55,9 @@ public class SecurityConfig {
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource(OntopusConfig config) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:8080",
-                config.getSystemURI().toString())); // TODO
+        configuration.setAllowedOrigins(List.of(config.getSystemURI().toString()));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("ONTOPUS-Next-Form-Location")); // TODO use constants
+        // configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE", "PUT"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -85,7 +74,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable) // disable csrf
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults()) // TODO: allow cors for all?
+                .cors(AbstractHttpConfigurer::disable) // TODO: allow cors for all?
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();

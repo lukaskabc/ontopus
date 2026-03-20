@@ -15,7 +15,7 @@ import java.nio.file.Path;
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
-    @NotNull private URI systemURI = URI.create("http://ontopus.local");
+    @NotNull private URI systemURI = URI.create("http://localhost");
 
     @NotNull private File frontendIndexFile =
             Path.of("./administration-frontend/dist/index.html").toFile();

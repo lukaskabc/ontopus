@@ -6,6 +6,9 @@ import { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 import ToolbarActions from '@/dashboard/ToolbarActions.tsx'
 import Header from '@/dashboard/Header.tsx'
 import Container from '@mui/material/Container'
+import { useLocation } from '@/utils/hooks'
+import { useEffect } from 'preact/hooks'
+import { authPing } from '@/login/actions.ts'
 
 const PublishStepper = lazy(() => import('@/publish/PublishStepper.tsx'))
 const VersionSeriesList = lazy(() => import('@/ontologies/VersionSeriesList.tsx'))
@@ -42,6 +45,12 @@ function OntologiesRoute() {
 }
 
 export default function Dashboard() {
+  const { navigate } = useLocation()
+
+  useEffect(() => {
+    return authPing().abort
+  }, [navigate])
+
   return (
     <DashboardLayout
       disableCollapsibleSidebar={true}
@@ -67,7 +76,9 @@ export default function Dashboard() {
               </Route>
               <Route path={'/settings'} component={Settings} nest />
               {/* Default route: redirect to dashboard, keep as last item*/}
-              <Redirect to={'/ontologies'} />
+              <Route>
+                <Redirect to={'/ontologies'} />
+              </Route>
             </Switch>
           </Container>
         </DialogsProvider>

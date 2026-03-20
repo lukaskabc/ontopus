@@ -5,6 +5,8 @@ services:
       context: "."
       dockerfile: "./Dockerfile"
       target: "ontopus"
+      args:
+        - "ONTOPUS_SYSTEM_URL=${ONTOPUS_SYSTEM_URL}"
     container_name: "ontopus"
     hostname: "ontopus"
     depends_on:
@@ -12,6 +14,7 @@ services:
         condition: "service_started"
     environment:
       ONTOPUS_DATABASE_URL: "http://graphdb:7200/repositories/ontopus"
+      ONTOPUS_SYSTEM_URL: "${ONTOPUS_SYSTEM_URL}"
     ports:
       - "8080:8080"
     read_only: true

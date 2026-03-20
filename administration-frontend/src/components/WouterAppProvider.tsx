@@ -1,6 +1,6 @@
 import type { AppProviderProps, Navigate } from '@toolpad/core'
 import { AppProvider, type Router } from '@toolpad/core/AppProvider'
-import { Link, type LinkProps, Router as WRouter, useLocation, useSearchParams } from 'wouter-preact'
+import { Link, type LinkProps, useLocation, useSearchParams } from 'wouter-preact'
 import { useCallback, useMemo } from 'preact/hooks'
 import { forwardRef } from 'preact/compat'
 import Constants from '@/Constants.ts'
@@ -30,11 +30,12 @@ export default function (props: AppProviderProps) {
 
   const navigateImpl = useCallback<Navigate>(
     (url, { history = 'auto' } = {}) => {
+      const destination = appendBaseUrl(url)
       if (history === 'auto' || history === 'push') {
-        return navigate(appendBaseUrl(url))
+        return navigate(destination)
       }
       if (history === 'replace') {
-        return navigate(appendBaseUrl(url), { replace: true })
+        return navigate(destination, { replace: true })
       }
       throw new Error(`Invalid history option: ${history}`)
     },
@@ -51,10 +52,8 @@ export default function (props: AppProviderProps) {
     [pathname, searchParams, navigateImpl]
   )
   return (
-    <WRouter base={Constants.BASE_URL}>
-      <MuiRouterContext.Provider value={routerImpl}>
-        <AppProvider router={routerImpl} {...props} />
-      </MuiRouterContext.Provider>
-    </WRouter>
+    <MuiRouterContext.Provider value={routerImpl}>
+      <AppProvider router={routerImpl} {...props} />
+    </MuiRouterContext.Provider>
   )
 }

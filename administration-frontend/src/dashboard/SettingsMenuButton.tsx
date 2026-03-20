@@ -8,8 +8,9 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import SettingsIcon from '@mui/icons-material/Settings'
+import Constants from '@/Constants.ts'
 
-const LOCATION_PREFIX = '~/settings/'
+const LOCATION_PREFIX = '~' + Constants.BASE_URL + '/settings/'
 
 export default function SettingsMenuButton() {
   const { t } = useTranslation()

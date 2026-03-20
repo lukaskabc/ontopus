@@ -16,7 +16,7 @@ services:
       - "8080:8080"
     read_only: true
     tmpfs:
-      - "/tmp:size=1g,mode=1700,noexec,nosuid,nodev"
+      - "/tmp:size=1g,mode=1777,noexec,nosuid,nodev"
   graphdb:
     image: "ontotext/graphdb:10.8.9"
     container_name: "graphdb"

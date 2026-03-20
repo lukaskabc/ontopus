@@ -3,12 +3,14 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.SecurityException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubEvent;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubRefEventBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
-import org.kohsuke.github.GHEventPayload;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import javax.crypto.Mac;
@@ -35,9 +38,10 @@ public class GithubWebhookController {
     private static final int MAX_GH_PAYLOAD = 1; // payloads are capped at 25 MB, allowing 1 MB at most, only small
     // events should be sent
     private static final int REQUEST_BODY_CACHE_LIMIT = MAX_GH_PAYLOAD * 1024 * 1024; // bytes
+    private static final String SIGNATURE_HEADER_PREFIX = "sha256=";
     private static final Logger log = LogManager.getLogger(GithubWebhookController.class);
 
-    static String computeSignature(String secret, ByteBuffer body)
+    static byte[] computeSignatureBytes(String secret, ByteBuffer body)
             throws NoSuchAlgorithmException, InvalidKeyException {
         Objects.requireNonNull(secret, "Expected secret cannot be null");
 
@@ -46,14 +50,7 @@ public class GithubWebhookController {
         hmac.init(secretKeySpec);
         hmac.update(body);
         body.rewind();
-        final byte[] hash = hmac.doFinal();
-
-        StringBuilder expectedSignature = new StringBuilder("sha256=");
-        for (byte b : hash) {
-            expectedSignature.append(String.format("%02x", b));
-        }
-
-        return expectedSignature.toString();
+        return hmac.doFinal();
     }
 
     @Nullable private static GithubEvent getEventType(HttpServletRequest httpRequest) {
@@ -68,14 +65,12 @@ public class GithubWebhookController {
         }
     }
 
-    static void validate(String eventSignature, String secret, ByteBuffer body) throws Exception {
+    static void validate(byte[] eventSignature, String secret, ByteBuffer body) throws Exception {
         try {
             Objects.requireNonNull(eventSignature, "Event signature cannot be null");
-            final String expectedSignature = computeSignature(secret, body);
+            final byte[] expectedSignature = computeSignatureBytes(secret, body);
 
-            boolean isSignatureValid = MessageDigest.isEqual(
-                    expectedSignature.getBytes(StandardCharsets.UTF_8),
-                    eventSignature.getBytes(StandardCharsets.UTF_8));
+            boolean isSignatureValid = MessageDigest.isEqual(expectedSignature, eventSignature);
 
             if (!isSignatureValid) {
                 throw new SecurityException("Missing or invalid X-Hub-Signature-256");
@@ -83,6 +78,17 @@ public class GithubWebhookController {
         } catch (InvalidKeyException e) {
             throw new SecurityException("Failed to calculate webhook signature", e);
         }
+    }
+
+    static void validateEventSignature(String secret, String eventSignature, ByteBuffer bodyBuffer) throws Exception {
+        if (secret == null
+                || secret.isEmpty()
+                || eventSignature == null
+                || !eventSignature.startsWith(SIGNATURE_HEADER_PREFIX)) {
+            throw new SecurityException("Missing or invalid X-Hub-Signature-256");
+        }
+        final byte[] signature = HexFormat.of().parseHex(eventSignature.substring(SIGNATURE_HEADER_PREFIX.length()));
+        validate(signature, secret, bodyBuffer);
     }
 
     private final WebhookHandler webhookHandler;
@@ -124,22 +130,22 @@ public class GithubWebhookController {
             bodyBuffer.flip();
         }
 
-        validate(httpRequest, webhook, bodyBuffer);
+        validateRequest(httpRequest, webhook, bodyBuffer);
 
         switch (type) {
-            case CREATE ->
-                handleGHEvent(bodyBuffer, webhook, GHEventPayload.Create.class, webhookHandler::handleGHEvent);
-            case PUSH -> handleGHEvent(bodyBuffer, webhook, GHEventPayload.Push.class, webhookHandler::handleGHEvent);
+            case CREATE -> handleGHEvent(bodyBuffer, webhook, GithubCreateEvent.class, webhookHandler::handleGHEvent);
+            case PUSH -> handleGHEvent(bodyBuffer, webhook, GithubPushEvent.class, webhookHandler::handleGHEvent);
             default -> throw new IllegalStateException("Unsupported GitHub event type: " + type);
         }
     }
 
-    private <T extends GHEventPayload> void handleGHEvent(
+    private <T extends GithubRefEventBase> void handleGHEvent(
             ByteBuffer bodyBuffer, GithubWebhook webhook, Class<T> payloadClass, BiConsumer<GithubWebhook, T> handler) {
         log.debug(
                 "Received GitHub webhook event {} for version series {}",
                 webhook.getEvent().name(),
                 webhook.getVersionSeries());
+
         final T payload = objectMapper.readValue(
                 bodyBuffer.array(),
                 bodyBuffer.arrayOffset() + bodyBuffer.position(),
@@ -148,12 +154,10 @@ public class GithubWebhookController {
         handler.accept(webhook, payload);
     }
 
-    private void validate(HttpServletRequest request, GithubWebhook webhook, ByteBuffer bodyBuffer) throws Exception {
+    private void validateRequest(HttpServletRequest request, GithubWebhook webhook, ByteBuffer bodyBuffer)
+            throws Exception {
         final String secret = webhook.getSecret();
         final String eventSignature = request.getHeader("X-Hub-Signature-256");
-        if (secret == null || eventSignature == null) {
-            throw new SecurityException("Missing or invalid X-Hub-Signature-256");
-        }
-        validate(eventSignature, secret, bodyBuffer);
+        validateEventSignature(secret, eventSignature, bodyBuffer);
     }
 }

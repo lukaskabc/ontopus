@@ -1,10 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
-import org.kohsuke.github.GHEventPayload;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,36 +19,36 @@ public class WebhookHandler {
         return ref == null || !webhook.getRef().matcher(ref).matches();
     }
 
-    public void handleGHEvent(GithubWebhook webhook, GHEventPayload.Create createEvent) {
+    public void handleGHEvent(GithubWebhook webhook, GithubCreateEvent createEvent) {
         if (refTypeDoesNotMatch(webhook, createEvent.getRefType())) {
             log.debug(
-                    "Received create event with ref type {} does not match required ref type {}, ignoring",
+                    "Received create event with ref type '{}' does not match required ref type '{}', ignoring",
                     createEvent.getRefType(),
                     webhook.getRefType());
             return;
         }
         if (refDoesNotMatch(webhook, createEvent.getRef())) {
             log.debug(
-                    "Received create event with ref {} that does not match required pattern, ignoring",
+                    "Received create event with ref '{}' that does not match required pattern, ignoring",
                     createEvent.getRef());
             return;
         }
-        log.info("Received create event with ref {}, {}", webhook.getRef(), createEvent.getRef());
+        log.info("Received create event with ref '{}'", createEvent.getRef());
         // TODO start import process
     }
 
-    public void handleGHEvent(GithubWebhook webhook, GHEventPayload.Push pushEvent) {
+    public void handleGHEvent(GithubWebhook webhook, GithubPushEvent pushEvent) {
         if (pushEvent.getRef() == null) {
             log.warn("Received push event with null ref, ignoring");
             return;
         }
         if (refDoesNotMatch(webhook, pushEvent.getRef())) {
             log.debug(
-                    "Received push event with ref {} that does not match required pattern, ignoring",
+                    "Received push event with ref '{}' that does not match required pattern, ignoring",
                     pushEvent.getRef());
             return;
         }
-        log.info("Received push event with ref {}, {}", pushEvent.getRef(), pushEvent.getHead());
+        log.info("Received push event with ref '{}'", pushEvent.getRef());
         // TODO: start import process
     }
 

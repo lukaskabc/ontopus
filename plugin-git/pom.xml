@@ -25,12 +25,6 @@
             <artifactId>plugin-api</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.kohsuke</groupId>
-            <artifactId>github-api</artifactId>
-            <version>1.330</version>
-        </dependency>
-
         <!-- Spring dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>

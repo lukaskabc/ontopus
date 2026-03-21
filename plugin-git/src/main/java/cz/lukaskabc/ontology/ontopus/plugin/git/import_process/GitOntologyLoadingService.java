@@ -41,12 +41,17 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
     private final ObjectMapper objectMapper;
     private final Validator validator;
     private final List<DataFileImportingService> dataFileImportingServices;
+    private final GitRepositoryUtils gitRepositoryUtils;
 
     public GitOntologyLoadingService(
-            ObjectMapper objectMapper, Validator validator, List<DataFileImportingService> dataFileImportingServices) {
+            ObjectMapper objectMapper,
+            Validator validator,
+            List<DataFileImportingService> dataFileImportingServices,
+            GitRepositoryUtils gitRepositoryUtils) {
         this.objectMapper = objectMapper;
         this.validator = validator;
         this.dataFileImportingServices = dataFileImportingServices;
+        this.gitRepositoryUtils = gitRepositoryUtils;
     }
 
     @Override
@@ -64,7 +69,7 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
         final GitRepositoryClonningRequest request = parseFormData(formResult);
         final String canonicalRepoUrl = StringUtils.sanitize(request.repositoryUrl());
         final Path targetDir = context.createTempFolder(Path.of(canonicalRepoUrl));
-        GitRepositoryUtils.cloneRepository(request, targetDir.toFile());
+        gitRepositoryUtils.cloneRepository(request, targetDir.toFile());
 
         try {
             final List<File> files = FileUtils.listFilesRecursively(targetDir).stream()

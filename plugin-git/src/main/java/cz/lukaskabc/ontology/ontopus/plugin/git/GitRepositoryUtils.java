@@ -9,13 +9,23 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 
+@Component
 public class GitRepositoryUtils {
 
     private static final Logger log = LogManager.getLogger(GitRepositoryUtils.class);
+
+    @Value("${ontopus.plugin.git.timeout:15}")
+    private int timeout;
+
+    private GitRepositoryUtils() {
+        throw new AssertionError();
+    }
 
     /**
      * Clones the Git repository specified by the user in the import form. The repository is cloned with a depth of 1
@@ -23,9 +33,10 @@ public class GitRepositoryUtils {
      *
      * @param formData the submitted to the form
      */
-    public static void cloneRepository(GitRepositoryClonningRequest formData, File targetDirectory) {
+    public void cloneRepository(GitRepositoryClonningRequest formData, File targetDirectory) {
         final CloneCommand cmd =
                 Git.cloneRepository().setDirectory(targetDirectory).setDepth(1).setURI(formData.repositoryUrl());
+        cmd.setTimeout(timeout);
 
         if (StringUtils.hasText(formData.branch())) {
             cmd.setBranch(formData.branch());
@@ -50,9 +61,5 @@ public class GitRepositoryUtils {
             FileSystemUtils.deleteRecursively(targetDirectory);
             throw new GitException("Failed to clone repository from " + formData.repositoryUrl(), e);
         }
-    }
-
-    private GitRepositoryUtils() {
-        throw new AssertionError();
     }
 }

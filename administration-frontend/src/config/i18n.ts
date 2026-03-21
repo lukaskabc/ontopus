@@ -21,6 +21,7 @@ if (!i18n.isInitialized && !i18n.isInitializing) {
     // init i18next
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init<ChainedBackendOptions>({
+      showSupportNotice: false,
       lng: 'en',
       fallbackLng: 'en',
       ns: ['local', 'server'],

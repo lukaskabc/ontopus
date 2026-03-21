@@ -16,6 +16,8 @@ services:
     environment:
       ONTOPUS_DATABASE_URL: "http://graphdb:7200/repositories/ontopus"
       ONTOPUS_SYSTEM_URI: "${ONTOPUS_SYSTEM_URI}"
+      # Enable processing of forwarded headers (e.g. X-Forwarded-For) by TomCat
+      SERVER_FORWARD_HEADERS_STRATEGY: "NATIVE"
     ports:
       - "8080:8080"
     read_only: true

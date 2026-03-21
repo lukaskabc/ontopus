@@ -12,6 +12,7 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY administration-frontend .
 
+ARG ONTOPUS_SYSTEM_URL
 ENV VITE_ONTOPUS_URL=${ONTOPUS_SYSTEM_URL}
 
 RUN --mount=type=cache,target=/root/.npm \
@@ -43,6 +44,7 @@ USER ontopus:ontopus
 WORKDIR /ontopus
 RUN mkdir plugins
 
+ARG ONTOPUS_SYSTEM_URL
 ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
 ENV ONTOPUS_SYSTEM_URL=${ONTOPUS_SYSTEM_URL}
 

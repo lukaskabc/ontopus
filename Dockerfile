@@ -36,6 +36,8 @@ COPY --exclude=administration-frontend . .
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw clean package -Dspotless.skip -DskipTests
 
+RUN rm ./*/target/original-*.jar
+
 FROM eclipse-temurin:25-jre-alpine as ontopus
 
 RUN addgroup -S ontopus && adduser -S ontopus -G ontopus

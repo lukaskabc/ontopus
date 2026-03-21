@@ -36,11 +36,18 @@ public class ContextToControllerMappingService
         return createMapping(contextURI, controllers, MappingType.RESOURCE);
     }
 
-    public ContextToControllerMapping findOntologyMappingByContext(GraphURI graphURI) {
-        return repository.findByTypeAndContext(MappingType.ONTOLOGY_DOCUMENT, graphURI);
+    public ContextToControllerMapping findByTypeAndContext(MappingType type, GraphURI contextURI) {
+        return repository.findByTypeAndContext(type, contextURI);
     }
 
-    public ContextToControllerMapping findResourceMappingByContext(GraphURI graphURI) {
-        return repository.findByTypeAndContext(MappingType.RESOURCE, graphURI);
-    }
+    // public ContextToControllerMapping findOntologyMappingByContext(GraphURI
+    // graphURI) {
+    // return repository.findByTypeAndContext(MappingType.ONTOLOGY_DOCUMENT,
+    // graphURI);
+    // }
+    //
+    // public ContextToControllerMapping findResourceMappingByContext(GraphURI
+    // graphURI) {
+    // return repository.findByTypeAndContext(MappingType.RESOURCE, graphURI);
+    // }
 }

@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core.rest.utils.StreamingResponseBodyAdapte
 import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,13 @@ public class ResourceController {
 
     public ResourceController(ResourceService resourceService) {
         this.resourceService = resourceService;
+    }
+
+    @Nullable private StreamingResponseBodyAdapter adaptBody(@Nullable StreamingResponseBody body) {
+        if (body == null) {
+            return null;
+        }
+        return new StreamingResponseBodyAdapter(body);
     }
 
     private Charset getCharset(HttpServletRequest request) {
@@ -44,8 +52,7 @@ public class ResourceController {
 
         final ResponseEntity<StreamingResponseBody> response =
                 resourceService.getResource(requestedURI, requestedTypes);
-        final StreamingResponseBodyAdapter adaptedBody =
-                response.getBody() != null ? new StreamingResponseBodyAdapter(response.getBody()) : null;
+        final StreamingResponseBodyAdapter adaptedBody = adaptBody(response.getBody());
 
         return ResponseEntity.status(response.getStatusCode())
                 .headers(response.getHeaders())

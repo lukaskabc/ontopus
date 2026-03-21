@@ -11,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingType;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,23 +27,24 @@ public class ResourceService {
     private final ContentNegotiationResolver contentNegotiationResolver;
     private final ResourceInContextMappingService resourceInContextMappingService;
     private final ContextToControllerMappingService contextToControllerMappingService;
+    private final VersionSeriesService versionSeriesService;
 
     public ResourceService(
             ApplicationContext applicationContext,
             ContentNegotiationResolver contentNegotiationResolver,
             ResourceInContextMappingService resourceInContextMappingService,
-            ContextToControllerMappingService contextToControllerMappingService) {
+            ContextToControllerMappingService contextToControllerMappingService,
+            VersionSeriesService versionSeriesService) {
         this.applicationContext = applicationContext;
         this.contentNegotiationResolver = contentNegotiationResolver;
         this.resourceInContextMappingService = resourceInContextMappingService;
         this.contextToControllerMappingService = contextToControllerMappingService;
+        this.versionSeriesService = versionSeriesService;
     }
 
     private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {
-        if (requestedURI.equals(graphURI)) {
-            return contextToControllerMappingService.findOntologyMappingByContext(graphURI);
-        }
-        return contextToControllerMappingService.findResourceMappingByContext(graphURI);
+        final MappingType mappingType = resolveMappingType(requestedURI, graphURI);
+        return contextToControllerMappingService.findByTypeAndContext(mappingType, graphURI);
     }
 
     private Class<? extends NegotiableController> getControllerClass(Controller controller) {
@@ -65,11 +67,7 @@ public class ResourceService {
                     return this.handleRequest(candidate, mapping.getMappingType(), request);
                 });
 
-        if (result.isPresent()) {
-            return result.get();
-        } else {
-            return multipleChoice();
-        }
+        return result.orElseGet(this::multipleChoice);
     }
 
     private ResponseEntity<StreamingResponseBody> handleRequest(
@@ -89,5 +87,16 @@ public class ResourceService {
 
     private ResponseEntity<StreamingResponseBody> multipleChoice() {
         return ResponseEntity.notFound().build();
+    }
+
+    private MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {
+        if (requestedURI.equals(graphURI)) {
+            return MappingType.ONTOLOGY_DOCUMENT;
+        }
+        final boolean isOntologyURI = versionSeriesService.isOntologyURI(requestedURI);
+        if (isOntologyURI) {
+            return MappingType.ONTOLOGY_DOCUMENT;
+        }
+        return MappingType.RESOURCE;
     }
 }

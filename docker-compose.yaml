@@ -12,7 +12,7 @@ services:
     domainname: "ontopus"
     depends_on:
       graphdb:
-        condition: "service_started"
+        condition: "service_healthy"
     environment:
       ONTOPUS_DATABASE_URL: "http://graphdb:7200/repositories/ontopus"
       ONTOPUS_SYSTEM_URI: "${ONTOPUS_SYSTEM_URI}"
@@ -32,6 +32,12 @@ services:
       - "7200:7200"
     volumes:
       - "graphdb-data:/opt/graphdb/home"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7200/rest/monitor/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
 
 volumes:
   graphdb-data: null

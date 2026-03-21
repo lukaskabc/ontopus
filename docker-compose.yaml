@@ -9,6 +9,7 @@ services:
         - "ONTOPUS_SYSTEM_URL=${ONTOPUS_SYSTEM_URL}"
     container_name: "ontopus"
     hostname: "ontopus"
+    domainname: "ontopus"
     depends_on:
       graphdb:
         condition: "service_started"
@@ -24,9 +25,11 @@ services:
     image: "ontotext/graphdb:10.8.9"
     container_name: "graphdb"
     hostname: "graphdb"
+    domainname: "graphdb"
     ports:
       - "7200:7200"
     volumes:
       - "graphdb-data:/opt/graphdb/home"
+
 volumes:
   graphdb-data: null

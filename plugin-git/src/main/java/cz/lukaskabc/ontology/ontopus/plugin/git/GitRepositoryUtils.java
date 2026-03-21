@@ -23,10 +23,6 @@ public class GitRepositoryUtils {
     @Value("${ontopus.plugin.git.timeout:15}")
     private int timeout;
 
-    private GitRepositoryUtils() {
-        throw new AssertionError();
-    }
-
     /**
      * Clones the Git repository specified by the user in the import form. The repository is cloned with a depth of 1
      * (without history).

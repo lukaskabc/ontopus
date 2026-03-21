@@ -17,9 +17,9 @@ import java.util.List;
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
-    @NotNull private URI systemURI = URI.create("http://localhost");
+    @NotNull private URI systemUri = URI.create("http://localhost");
 
-    @NotEmpty private List<URI> administrationAllowedOrigins = List.of(systemURI);
+    @NotEmpty private List<URI> administrationAllowedOrigins = List.of(systemUri);
 
     @NotNull private File frontendIndexFile =
             Path.of("./administration-frontend/dist/index.html").toFile();
@@ -50,8 +50,8 @@ public class OntopusConfig {
         return frontendIndexFile;
     }
 
-    public URI getSystemURI() {
-        return systemURI;
+    public URI getSystemUri() {
+        return systemUri;
     }
 
     public void setAdministrationAllowedOrigins(List<URI> administrationAllowedOrigins) {
@@ -74,8 +74,8 @@ public class OntopusConfig {
         this.frontendIndexFile = frontendIndexFile;
     }
 
-    public void setSystemURI(URI systemURI) {
-        this.systemURI = systemURI;
+    public void setSystemUri(URI systemUri) {
+        this.systemUri = systemUri;
     }
 
     public static class Database {

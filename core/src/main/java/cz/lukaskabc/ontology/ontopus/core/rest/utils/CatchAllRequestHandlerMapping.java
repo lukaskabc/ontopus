@@ -33,7 +33,7 @@ public class CatchAllRequestHandlerMapping extends RequestMappingHandlerMapping 
                     ResourceController.class.getMethod("getResource", MediaType[].class, HttpServletRequest.class);
 
             RequestMappingInfo mappingInfo = RequestMappingInfo.paths("/**")
-                    .customCondition(new RequestUrlNotStartsWithCondition(ontopusConfig.getSystemURI()))
+                    .customCondition(new RequestUrlNotStartsWithCondition(ontopusConfig.getSystemUri()))
                     .methods(RequestMethod.GET)
                     .build();
 

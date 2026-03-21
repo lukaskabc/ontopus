@@ -45,7 +45,7 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
         this.objectMapper = objectMapper;
         this.webhookService = webhookService;
         this.jsonForm = makeJsonForm();
-        this.webhookUrl = UriComponentsBuilder.fromUri(config.getSystemURI())
+        this.webhookUrl = UriComponentsBuilder.fromUri(config.getSystemUri())
                 .path(GithubWebhookController.PATH)
                 .queryParam("series", "{series}")
                 .build();

@@ -12,7 +12,7 @@ public class SystemUriSecurityMatcher implements RequestMatcher {
     private final RequestUrlNotStartsWithCondition requestUrlNotStartsWithCondition;
 
     public SystemUriSecurityMatcher(OntopusConfig config) {
-        this.requestUrlNotStartsWithCondition = new RequestUrlNotStartsWithCondition(config.getSystemURI());
+        this.requestUrlNotStartsWithCondition = new RequestUrlNotStartsWithCondition(config.getSystemUri());
     }
 
     @Override

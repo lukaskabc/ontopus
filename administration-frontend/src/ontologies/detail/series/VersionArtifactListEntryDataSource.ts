@@ -12,7 +12,9 @@ export class VersionArtifactListEntryDataSource implements DataSource<VersionArt
   readonly versionSeriesUri: string | null
 
   constructor(versionSeriesUri: string | null, i18n: i18n) {
-    this.fields = defineResourceListEntryFields(i18n)
+    this.fields = defineResourceListEntryFields(i18n).filter((field) =>
+      ['version', 'modifiedDate'].includes(field.field)
+    )
     this.versionSeriesUri = versionSeriesUri
   }
 

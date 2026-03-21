@@ -33,7 +33,7 @@ export function defineResourceListEntryFields(i18n: i18n): DataField[] {
     {
       field: 'title',
       type: 'string',
-      headerName: i18n.t('entity.version-series.table.name'),
+      headerName: i18n.t('entity.table.name'),
       flex: 2,
       valueFormatter: (value: MultilingualString) => {
         if (Object.hasOwn(value, i18n.language)) {
@@ -51,13 +51,13 @@ export function defineResourceListEntryFields(i18n: i18n): DataField[] {
     {
       field: 'version',
       type: 'string',
-      headerName: i18n.t('entity.version-series.table.version'),
+      headerName: i18n.t('entity.table.version'),
       flex: 1,
     },
     {
       field: 'modifiedDate',
       type: 'date',
-      headerName: i18n.t('entity.version-series.table.modified'),
+      headerName: i18n.t('entity.table.modified'),
       flex: 1,
       valueFormatter: (val: Date) => i18n.t('data-format.date', { val }),
     },

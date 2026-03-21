@@ -49,7 +49,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
   return (
     <>
       <JsonFormElement jsonForm={jsonForm} onSubmit={onSubmit} />
-      <PromiseArea area={STAGED_FORM_PROMISE_AREA} />
+      <PromiseArea area={STAGED_FORM_PROMISE_AREA} boxProps={{ sx: { width: '100%', marginY: '1em' } }} />
     </>
   )
 }

@@ -84,7 +84,7 @@ export function loadJsonForm(): CancellablePromise<JsonForm> {
                   setTimeout(task, NEXT_FORM_RETRY_DELAY)
                   return
                 default:
-                  reject(new UnexpectedResponseStatusError(`Unexpected response status: ${res.status}`, res))
+                  reject(error)
                   return
               }
             } else if (error instanceof OntopusError) {

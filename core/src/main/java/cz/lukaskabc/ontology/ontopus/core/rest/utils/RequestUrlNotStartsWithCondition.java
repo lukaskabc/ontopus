@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
@@ -11,6 +13,7 @@ import java.net.URI;
 
 /** Excludes requests to URI that starts with the provided value */
 public class RequestUrlNotStartsWithCondition implements RequestCondition<@NonNull RequestUrlNotStartsWithCondition> {
+    private static final Logger log = LogManager.getLogger(RequestUrlNotStartsWithCondition.class);
     private final String startWithURI;
 
     public RequestUrlNotStartsWithCondition(URI startWithURI) {
@@ -36,8 +39,11 @@ public class RequestUrlNotStartsWithCondition implements RequestCondition<@NonNu
                 .encode();
 
         if (requestedURI.toUriString().startsWith(startWithURI)) {
+            log.trace("Requested URI {} DOES start with {}", requestedURI.toUriString(), startWithURI);
             return null;
         }
+
+        log.trace("Requested URI {} does NOT start with {}", requestedURI.toUriString(), startWithURI);
 
         // Otherwise, return this condition to ACCEPT the mapping
         return this;

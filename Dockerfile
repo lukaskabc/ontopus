@@ -50,6 +50,9 @@ ARG ONTOPUS_SYSTEM_URI
 ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
 ENV ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI}
 
+# Change ~/.config to /tmp/xdg_config
+ENV XDG_CONFIG_HOME=/tmp/xdg_config
+
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
 COPY --from=backend /build/plugin-*/target/*.jar /ontopus/plugins/

@@ -22,6 +22,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.net.URI;
 import java.util.List;
 
 @Configuration
@@ -55,7 +56,9 @@ public class SecurityConfig {
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource(OntopusConfig config) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(config.getSystemURI().toString()));
+        configuration.setAllowedOrigins(config.getAdministrationAllowedOrigins().stream()
+                .map(URI::toString)
+                .toList());
         configuration.setAllowCredentials(true);
         // configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE", "PUT"));

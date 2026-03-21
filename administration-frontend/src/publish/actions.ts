@@ -72,8 +72,9 @@ export function loadJsonForm(): CancellablePromise<JsonForm> {
           })
           .then(makeJsonForm)
           .then(resolve)
-          .catch((res) => {
-            if (res instanceof Response) {
+          .catch((error) => {
+            if (error instanceof UnexpectedResponseStatusError) {
+              const res = error.payload
               switch (res.status) {
                 case 205:
                   reject(new ImportProcessNotInitializedError())
@@ -86,10 +87,10 @@ export function loadJsonForm(): CancellablePromise<JsonForm> {
                   reject(new UnexpectedResponseStatusError(`Unexpected response status: ${res.status}`, res))
                   return
               }
-            } else if (res instanceof OntopusError) {
-              reject(res)
+            } else if (error instanceof OntopusError) {
+              reject(error)
             } else {
-              reject(new UnknownError('Returned object is not a response', res))
+              reject(new UnknownError('Unknown object returned', error))
             }
           })
       } else {

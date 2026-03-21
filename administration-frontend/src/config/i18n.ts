@@ -37,7 +37,9 @@ if (!i18n.isInitialized && !i18n.isInitializing) {
           {
             loadPath: new URL('locale', Constants.BACKEND_URL.toString()).toString() + '/{{ns}}/{{lng}}.json',
             crossDomain: true,
-            withCredentials: true,
+            requestOptions: {
+              credentials: 'include',
+            },
           } as HttpBackendOptions,
         ],
       },

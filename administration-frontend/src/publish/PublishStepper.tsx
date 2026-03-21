@@ -11,9 +11,6 @@ import type { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 import Button from '@mui/material/Button'
 import DialogContentText from '@mui/material/DialogContentText'
 import Paper from '@mui/material/Paper'
-import Step from '@mui/material/Step'
-import StepLabel from '@mui/material/StepLabel'
-import Stepper from '@mui/material/Stepper'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
@@ -26,7 +23,7 @@ export default function PublishStepper({ params }: PublishStepperProps) {
   const [stagedFormElementKey, setStagedFormElementKey] = useState(0)
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)
 
-  const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
+  // const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
   // TODO publish steps
 
   const closeAbortDialog = useCallback(() => setIsAbortDialogOpen(false), [setIsAbortDialogOpen])
@@ -54,16 +51,16 @@ export default function PublishStepper({ params }: PublishStepperProps) {
 
   return (
     <>
-      <Stepper activeStep={0} sx={{ p: 2 }}>
-        {steps.map((label) => {
-          const stepProps: { completed?: boolean } = {}
-          return (
-            <Step key={label} {...stepProps}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          )
-        })}
-      </Stepper>
+      {/*<Stepper activeStep={0} sx={{ p: 2 }}>*/}
+      {/*  {steps.map((label) => {*/}
+      {/*    const stepProps: { completed?: boolean } = {}*/}
+      {/*    return (*/}
+      {/*      <Step key={label} {...stepProps}>*/}
+      {/*        <StepLabel>{label}</StepLabel>*/}
+      {/*      </Step>*/}
+      {/*    )*/}
+      {/*  })}*/}
+      {/*</Stepper>*/}
 
       <Paper sx={{ p: 2 }}>
         <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>

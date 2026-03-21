@@ -6,16 +6,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.List;
 
 @Validated
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
     @NotNull private URI systemURI = URI.create("http://localhost");
+
+    @NotEmpty private List<URI> administrationAllowedOrigins = List.of(systemURI);
 
     @NotNull private File frontendIndexFile =
             Path.of("./administration-frontend/dist/index.html").toFile();
@@ -25,6 +29,10 @@ public class OntopusConfig {
     @Valid private DcatCatalog dcatCatalog = new DcatCatalog();
 
     @Valid private Files files = new Files();
+
+    public List<URI> getAdministrationAllowedOrigins() {
+        return administrationAllowedOrigins;
+    }
 
     public Database getDatabase() {
         return database;
@@ -44,6 +52,10 @@ public class OntopusConfig {
 
     public URI getSystemURI() {
         return systemURI;
+    }
+
+    public void setAdministrationAllowedOrigins(List<URI> administrationAllowedOrigins) {
+        this.administrationAllowedOrigins = administrationAllowedOrigins;
     }
 
     public void setDatabase(Database database) {

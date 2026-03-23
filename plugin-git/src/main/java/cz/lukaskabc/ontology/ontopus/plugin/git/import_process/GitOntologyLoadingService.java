@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.import_process;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
+import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
@@ -13,7 +13,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitRepositoryUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.exception.FileImportingException;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -27,7 +26,6 @@ import tools.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,17 +38,17 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
-    private final List<DataFileImportingService> dataFileImportingServices;
+    private final FileToDatabaseImportingService fileImportingService;
     private final GitRepositoryUtils gitRepositoryUtils;
 
     public GitOntologyLoadingService(
             ObjectMapper objectMapper,
             Validator validator,
-            List<DataFileImportingService> dataFileImportingServices,
+            FileToDatabaseImportingService fileImportingService,
             GitRepositoryUtils gitRepositoryUtils) {
         this.objectMapper = objectMapper;
         this.validator = validator;
-        this.dataFileImportingServices = dataFileImportingServices;
+        this.fileImportingService = fileImportingService;
         this.gitRepositoryUtils = gitRepositoryUtils;
     }
 
@@ -76,32 +74,12 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
                     .filter(path -> !path.toString().contains(File.separator + ".git" + File.separator))
                     .map(Path::toFile)
                     .toList();
-            importFiles(files, context);
+            fileImportingService.importFiles(files, context);
         } catch (IOException e) {
             throw new FileImportingException("Failed to import files from cloned repository", e);
         }
 
         return null;
-    }
-
-    private void importFiles(List<File> files, ImportProcessContext context) throws IOException {
-        final ArrayList<File> remainingFiles = new ArrayList<>(files);
-        final ArrayList<File> toImport = new ArrayList<>(files.size());
-        for (DataFileImportingService importingService : dataFileImportingServices) {
-            for (File file : remainingFiles) {
-                if (importingService.supports(file)) {
-                    toImport.add(file);
-                }
-            }
-            if (!toImport.isEmpty()) {
-                importingService.importFiles(toImport, context);
-                remainingFiles.removeAll(toImport);
-                toImport.clear();
-            }
-        }
-        if (!remainingFiles.isEmpty()) {
-            log.trace("Failed to import files from cloned repository: {}", ArrayUtils.toString(files.toArray()));
-        }
     }
 
     private GitRepositoryClonningRequest parseFormData(FormResult formResult) {

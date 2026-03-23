@@ -38,6 +38,14 @@ public class FileUtils {
         }
     }
 
+    public static Stream<Path> listRecursively(Path directory) {
+        try {
+            return Files.walk(directory);
+        } catch (IOException e) {
+            throw new OntopusException(e);
+        }
+    }
+
     /**
      * Resolves an untrusted user-specified path against the API's base directory. Paths that try to escape the base
      * directory are rejected.

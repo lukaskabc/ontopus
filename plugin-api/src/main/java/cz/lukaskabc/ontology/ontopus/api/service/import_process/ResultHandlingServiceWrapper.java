@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
@@ -42,7 +43,7 @@ public class ResultHandlingServiceWrapper<R> implements ImportProcessingService<
     }
 
     @Override
-    public R handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public R handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         final R result = processingService.handleSubmit(formResult, context);
         resultConsumer.accept(result, context);
         return result;

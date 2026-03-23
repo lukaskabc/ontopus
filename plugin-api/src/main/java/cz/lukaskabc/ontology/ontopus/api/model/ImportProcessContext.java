@@ -1,6 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -8,6 +10,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -24,6 +28,7 @@ import java.util.*;
  */
 @NullMarked
 public class ImportProcessContext implements ReadOnlyImportProcessContext {
+    private static final Logger log = LogManager.getLogger(ImportProcessContext.class);
     /** Series of ontology versions of a single ontology */
     private final VersionSeries versionSeries;
     /** Temporary database context */
@@ -158,10 +163,16 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     public void handleResult(FormResult formResult) {
         if (hasUnprocessedService()) {
             ImportProcessingService<?> service = peekService();
-            service.handleSubmit(formResult, this);
-            processedResults.add(new ServiceAwareFormResult(service, formResult));
-            if (service == peekService()) {
-                popService();
+            try {
+                service.handleSubmit(formResult, this);
+                processedResults.add(new ServiceAwareFormResult(service, formResult));
+                if (service == peekService()) {
+                    popService();
+                }
+            } catch (JsonFormSubmitException e) {
+                log.error("Failed to process import form result: {}", e.getMessage());
+                // TODO: show error to the user
+                throw new OntopusException(e);
             }
         } else {
             throw new IllegalStateException(); // TODO exception

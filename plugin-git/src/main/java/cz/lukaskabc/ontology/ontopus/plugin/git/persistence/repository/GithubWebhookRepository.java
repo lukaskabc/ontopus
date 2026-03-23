@@ -1,9 +1,11 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.github;
+package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhookURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.dao.GithubWebhookDao;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;

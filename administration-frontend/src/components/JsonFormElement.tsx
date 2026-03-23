@@ -15,18 +15,17 @@ import RjsfForm, { type IChangeEvent } from '@rjsf/core'
 import { type FileWithFieldName } from '@/publish/actions.ts'
 import { createRef, type RefObject, type TargetedEvent } from 'preact'
 import lazy from 'preact-iso/lazy'
+import TypographyField from '@/publish/fields/TypographyField.tsx'
 
-const HeadingWidget = lazy(() => import('@/publish/widgets/HeadingWidget.tsx'))
 const FileField = lazy(() => import('@/publish/fields/FileField.tsx'))
 const VersionUriField = lazy(() => import('@/publish/fields/VersionUriField.tsx'))
 
-const WIDGETS: RegistryWidgetsType = {
-  headingWidget: HeadingWidget,
-}
+const WIDGETS: RegistryWidgetsType = {}
 
 const FIELDS: RegistryFieldsType = {
   fileField: FileField,
   versionUriField: VersionUriField,
+  typographyField: TypographyField,
 }
 
 function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {

@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.file;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
+import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
@@ -24,15 +24,12 @@ import java.util.Map;
 @Service
 public class FileUploadOntologyLoadingService implements OntologyLoadingService {
     private final FileUploadProcessingService fileUploadService;
-    private final List<DataFileImportingService> dataFileImportingServices;
+    private final FileToDatabaseImportingService fileImportingService;
 
     public FileUploadOntologyLoadingService(
-            FileUploadProcessingService fileUploadService, List<DataFileImportingService> dataFileImportingServices) {
+            FileUploadProcessingService fileUploadService, FileToDatabaseImportingService fileImportingService) {
         this.fileUploadService = fileUploadService;
-        this.dataFileImportingServices = dataFileImportingServices;
-        if (dataFileImportingServices.isEmpty()) {
-            throw new IllegalArgumentException("No data file importing service found!");
-        }
+        this.fileImportingService = fileImportingService;
     }
 
     @Override
@@ -56,19 +53,7 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
                 .map(UploadedFile::fsPath)
                 .map(Path::toFile)
                 .toList());
-        List<File> toImport = new ArrayList<>(files.size());
-        for (DataFileImportingService importingService : dataFileImportingServices) {
-            for (File file : files) {
-                if (importingService.supports(file)) {
-                    toImport.add(file);
-                }
-            }
-            if (!toImport.isEmpty()) {
-                importingService.importFiles(toImport, context);
-                files.removeAll(toImport);
-                toImport.clear();
-            }
-        }
+        fileImportingService.importFiles(files, context);
     }
 
     @Override

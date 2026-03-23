@@ -22,6 +22,7 @@ export default function PublishStepper({ params }: PublishStepperProps) {
 
   const [stagedFormElementKey, setStagedFormElementKey] = useState(0)
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)
+  const [lastVersionSeriesIdentifier, setLastVersionSeriesIdentifier] = useState(versionSeriesIdentifier)
 
   // const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
   // TODO publish steps
@@ -46,8 +47,11 @@ export default function PublishStepper({ params }: PublishStepperProps) {
 
   // reset import process on version series change
   useEffect(() => {
-    onImportProcessReset()
-  }, [onImportProcessReset, versionSeriesIdentifier])
+    if (versionSeriesIdentifier != lastVersionSeriesIdentifier) {
+      setLastVersionSeriesIdentifier(versionSeriesIdentifier)
+      onImportProcessReset()
+    }
+  }, [onImportProcessReset, versionSeriesIdentifier, lastVersionSeriesIdentifier])
 
   return (
     <>

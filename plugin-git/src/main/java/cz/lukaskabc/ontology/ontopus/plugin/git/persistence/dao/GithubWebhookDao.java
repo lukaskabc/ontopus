@@ -1,9 +1,10 @@
-package cz.lukaskabc.ontology.ontopus.plugin.git.github;
+package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhookURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook_;
 import org.apache.logging.log4j.LogManager;

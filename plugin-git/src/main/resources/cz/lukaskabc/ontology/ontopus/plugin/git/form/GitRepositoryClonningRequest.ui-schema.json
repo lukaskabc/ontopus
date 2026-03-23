@@ -3,7 +3,7 @@
     "ui:inputType": "password"
   },
   "authText": {
-    "ui:widget": "headingWidget",
+    "ui:widget": "typographyWidget",
     "ui:options": {
       "variant": "h5",
       "component": "h2"

@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
+import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository.GithubWebhookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

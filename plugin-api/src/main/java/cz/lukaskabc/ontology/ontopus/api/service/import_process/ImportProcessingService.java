@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
@@ -77,7 +78,9 @@ public interface ImportProcessingService<R> {
      * @param formResult The data submitted in the form
      * @param context The import process context
      * @return The result of the operation
+     * @throws JsonFormSubmitException when the submitted form data is invalid. When the exception is thrown, the form
+     *     result won't be saved in the context and the service will remain on the stack.
      * @implSpec The caller is responsible for invoking this method asynchronously if blocking operation is not desired.
      */
-    R handleSubmit(FormResult formResult, ImportProcessContext context);
+    R handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException;
 }

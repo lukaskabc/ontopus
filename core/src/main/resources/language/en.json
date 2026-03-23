@@ -16,6 +16,26 @@
         },
         "ArtifactBuildingSelectionService": {
           "name": "Ontology source selection"
+        },
+        "FileImportSelectionService": {
+          "name": "File import selection",
+          "fields": {
+            "pattern": {
+              "title": "Regex pattern",
+              "description": "Regex pattern matching files that will be imported into the database."
+            },
+            "preview": {
+              "title": "Preview matching files",
+              "description": "When enabled, files matching the regex pattern will be displayed after submit:"
+            },
+            "files_list": {
+              "title": "List of all files"
+            },
+            "files_preview": {
+              "title": "Matching files",
+              "description": "List of files that matched the pattern."
+            }
+          }
         }
       }
     }

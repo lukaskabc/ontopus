@@ -76,6 +76,15 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
             formData.put(ID_FIELD, stringIds.getFirst());
         }
 
-        return new JsonForm(scheme, null, formData);
+        ObjectNode uiSchema = objectMapper.createObjectNode();
+        uiSchema.putObject(ID_FIELD)
+                .put("ui:widget", "autocompleteWidget")
+                .putObject("ui:options")
+                .put("freeSolo", true)
+                .put("openOnFocus", true)
+                .put("disableClearable", true)
+                .put("autoHighlight", true);
+
+        return new JsonForm(scheme, uiSchema, formData);
     }
 }

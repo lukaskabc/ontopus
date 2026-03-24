@@ -4,8 +4,7 @@
   "$translationRoot": "ontopus.plugin.git.importForm",
   "properties": {
     "repositoryUrl": {
-      "type": "string",
-      "format": "uri"
+      "type": "string"
     },
     "branch": {
       "type": "string"

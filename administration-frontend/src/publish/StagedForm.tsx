@@ -29,8 +29,11 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
       return
     }
 
+    const finishLoading = () => setLoadScheme(false)
+
     return trackPromise(loadJsonForm(), STAGED_FORM_PROMISE_AREA)
       .then(setJsonForm)
+      .then(finishLoading)
       .catch((e) => {
         if (e instanceof ImportProcessNotInitializedError) {
           resetForm()
@@ -40,13 +43,12 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
           // import process finished
           const location = e.payload.headers.get('Location') ?? ''
           navigate('~' + Constants.BASE_URL + '/ontologies/' + encodeURIComponent(decodeURI(location)))
-          return
         } else {
           // TODO handle error, propagate to user
           console.error(e)
+          finishLoading()
         }
-      })
-      .finally(() => setLoadScheme(false)).abort
+      }).abort
   }, [loadScheme, resetForm, navigate])
 
   const onSubmit = useCallback((formData: GenericObjectType, files: FileWithFieldName[]) => {

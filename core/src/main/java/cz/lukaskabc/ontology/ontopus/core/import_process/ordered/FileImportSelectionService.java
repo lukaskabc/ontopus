@@ -54,7 +54,15 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
         final ObjectNode properties = (ObjectNode) jsonSchema.get("properties");
 
         if (isPreviewEnabled(previousFormData)) {
-
+            // properties
+            // .putObject("files_preview")
+            // .put("type", "null")
+            // .put("title", TRANSLATION_ROOT + "title")
+            // .put("description", String.join("\n", listFiles(context)));
+            // uiSchema.putObject("files_list")
+            // .put("ui:field", "typographyField")
+            // .put("variant", "body1")
+            // .put("ui:enableMarkdownInDescription", true);
         } else {
             properties
                     .putObject("files_list")

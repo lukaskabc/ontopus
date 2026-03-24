@@ -1,13 +1,14 @@
 package cz.lukaskabc.ontology.ontopus.core_model.service;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.Triple;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.GraphRepository;
+import org.eclipse.rdf4j.model.Statement;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -39,12 +40,12 @@ public class GraphService {
     }
 
     /** @see GraphDao#findAllTriples(GraphURI) */
-    public Stream<Triple> findAllTriples(GraphURI contextUri) {
+    public List<Statement> findAllTriples(GraphURI contextUri) {
         return graphRepository.findAllTriples(contextUri);
     }
 
     /** @see GraphDao#findAllWithSubject(GraphURI, ResourceURI) */
-    public Stream<Triple> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
+    public List<Statement> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
         return graphRepository.findAllWithSubject(contextUri, subject);
     }
 

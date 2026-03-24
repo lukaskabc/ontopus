@@ -40,6 +40,7 @@ public class RequestUrlNotStartsWithCondition implements RequestCondition<@NonNu
 
         if (requestedURI.toUriString().startsWith(startWithURI)) {
             log.trace("Requested URI {} DOES start with {}", requestedURI.toUriString(), startWithURI);
+            // TODO: remove trace logging?
             return null;
         }
 

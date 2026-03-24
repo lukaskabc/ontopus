@@ -2,18 +2,21 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.Triple;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -97,39 +100,31 @@ public class GraphDao {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Stream<Triple> findAllTriples(GraphURI contextUri) {
+    public List<Statement> findAllTriples(GraphURI contextUri) {
         Objects.requireNonNull(contextUri);
-        try {
-            return em.createNativeQuery("""
-					SELECT ?subject ?predicate ?object ?context FROM NAMED ?graph WHERE {
-					    GRAPH ?context {
-					        ?subject ?predicate ?object .
-					    }
-					}
-					""", Triple.MAPPING_NAME)
-                    .setParameter("graph", contextUri.toURI())
-                    .getResultStream();
+        final Repository repository = em.unwrap(Repository.class);
+        final ValueFactory vf = repository.getValueFactory();
+
+        final IRI contextIri = vf.createIRI(contextUri.toString());
+
+        try (RepositoryConnection conn = repository.getConnection()) {
+            return Iterations.asList(conn.getStatements(null, null, null, contextIri));
         } catch (Exception e) {
             throw new PersistenceException("Failed to find all triples of graph " + contextUri, e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public Stream<Triple> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
+    public List<Statement> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
         Objects.requireNonNull(contextUri);
         Objects.requireNonNull(subject);
-        try {
-            return em.createNativeQuery("""
-					SELECT ?subject ?predicate ?object ?context FROM NAMED ?graph WHERE {
-					    GRAPH ?context {
-					        ?subject ?predicate ?object .
-					    }
-					}
-					""", Triple.MAPPING_NAME)
-                    .setParameter("graph", contextUri.toURI())
-                    .setParameter("subject", subject.toURI())
-                    .getResultStream();
+        final Repository repository = em.unwrap(Repository.class);
+        final ValueFactory vf = repository.getValueFactory();
+
+        final IRI subjectIri = vf.createIRI(subject.toString());
+        final IRI contextIri = vf.createIRI(contextUri.toString());
+
+        try (RepositoryConnection conn = repository.getConnection()) {
+            return Iterations.asList(conn.getStatements(subjectIri, null, null, contextIri));
         } catch (Exception e) {
             throw new PersistenceException(
                     "Failed to find all subject of graph " + contextUri + " with subject " + subject, e);

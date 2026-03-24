@@ -181,6 +181,7 @@ public class ImportProcessMediator {
         if (context.hasUnprocessedService()) {
             final ImportProcessingService<?> service = context.peekService();
             final JsonNode defaultFormData = getDefaultFormData(context, service);
+            // TODO: create readonly json node
 
             return service.getJsonForm(context, defaultFormData);
         }

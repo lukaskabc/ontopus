@@ -22,6 +22,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
   const [jsonForm, setJsonForm] = useState<JsonForm | null>(null)
   const [loadScheme, setLoadScheme] = useState<boolean>(true)
   const { navigate } = useLocation()
+  const [triggerLoadScheme, setTriggerLoadScheme] = useState(false)
 
   // load JSON form when loadScheme is true
   useEffect(() => {
@@ -43,6 +44,9 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
           // import process finished
           const location = e.payload.headers.get('Location') ?? ''
           navigate('~' + Constants.BASE_URL + '/ontologies/' + encodeURIComponent(decodeURI(location)))
+        } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
+          finishLoading()
+          setTriggerLoadScheme(true)
         } else {
           // TODO handle error, propagate to user
           console.error(e)
@@ -51,11 +55,23 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
       }).abort
   }, [loadScheme, resetForm, navigate])
 
+  useEffect(() => {
+    if (triggerLoadScheme) {
+      setLoadScheme(true)
+      setTriggerLoadScheme(false)
+    }
+  }, [triggerLoadScheme])
+
   const onSubmit = useCallback((formData: GenericObjectType, files: FileWithFieldName[]) => {
     return trackPromise(submitForm(formData, files), STAGED_FORM_PROMISE_AREA)
       .then(() => setLoadScheme(true))
       .catch((e) => {
-        console.error(e)
+        if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
+          // TODO show error
+          setLoadScheme(true)
+        } else {
+          console.error(e)
+        }
       }) // TODO handle and show errors
   }, [])
 

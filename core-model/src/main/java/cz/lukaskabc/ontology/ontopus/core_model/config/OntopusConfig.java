@@ -185,8 +185,18 @@ public class OntopusConfig {
         /** Directory for storing files used with ontology importing. */
         private Path importFilesDirectory = Path.of("./");
 
+        private String defaultGlobPattern = "**.{nt,rdf,ttl,trig,trigs,brf,ttls}";
+
+        public String getDefaultGlobPattern() {
+            return defaultGlobPattern;
+        }
+
         public Path getImportFilesDirectory() {
             return importFilesDirectory;
+        }
+
+        public void setDefaultGlobPattern(String defaultGlobPattern) {
+            this.defaultGlobPattern = defaultGlobPattern;
         }
 
         public void setImportFilesDirectory(Path importFilesDirectory) {

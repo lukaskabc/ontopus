@@ -21,19 +21,20 @@
           "name": "File import selection",
           "fields": {
             "pattern": {
-              "title": "Regex pattern",
-              "description": "Regex pattern matching files that will be imported into the database."
+              "title": "Glob pattern",
+              "description": "[Glob](https://en.wikipedia.org/wiki/Glob_(programming)#Syntax) pattern matching files that will be imported into the database."
             },
             "preview": {
               "title": "Preview matching files",
               "description": "When enabled, files matching the regex pattern will be displayed after submit:"
             },
             "files_list": {
-              "title": "List of all files"
+              "title": "List of all files:",
+              "help": "List of all files available in the context."
             },
             "files_preview": {
-              "title": "Matching files",
-              "description": "List of files that matched the pattern."
+              "title": "List of matching files:",
+              "help": "List of files that matched the pattern."
             }
           }
         }

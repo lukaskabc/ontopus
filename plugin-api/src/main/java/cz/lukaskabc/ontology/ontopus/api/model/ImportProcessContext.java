@@ -2,7 +2,6 @@ package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -172,7 +171,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
             } catch (JsonFormSubmitException e) {
                 log.error("Failed to process import form result: {}", e.getMessage());
                 // TODO: show error to the user
-                throw new OntopusException(e);
+                throw e.asRuntimeException();
             }
         } else {
             throw new IllegalStateException(); // TODO exception

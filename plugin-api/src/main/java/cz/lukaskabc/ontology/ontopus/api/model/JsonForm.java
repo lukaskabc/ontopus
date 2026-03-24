@@ -37,15 +37,21 @@ public class JsonForm {
     }
 
     public @Nullable JsonNode getFormData() {
-        return formData;
+        if (formData == null) {
+            return null;
+        }
+        return formData.deepCopy();
     }
 
     public JsonNode getJsonSchema() {
-        return jsonSchema;
+        return jsonSchema.deepCopy();
     }
 
     public @Nullable JsonNode getUiSchema() {
-        return uiSchema;
+        if (uiSchema == null) {
+            return null;
+        }
+        return uiSchema.deepCopy();
     }
 
     public JsonForm withFormData(@Nullable JsonNode formData) {

@@ -12,11 +12,17 @@ const TypographyField = (props: FieldProps) => {
   const { component = 'p', variant = 'body1' } = props.uiSchema as TypographyFieldUiSchema
   const title = props.uiSchema?.['ui:title'] ?? props.schema.title
   const description = props.uiSchema?.['ui:description'] ?? props.schema.description
+  const help = props.uiSchema?.['ui:help'] ?? props.schema.help
   return (
     <>
       {title && (
-        <Typography variant={variant} component={component}>
+        <Typography variant={variant} component={component} fontWeight={'bold'}>
           {title}
+        </Typography>
+      )}
+      {help && (
+        <Typography variant={variant} component={component} color={'textSecondary'}>
+          {help}
         </Typography>
       )}
       {description && (

@@ -8,7 +8,6 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -154,10 +153,9 @@ public class ImportProcessMediator {
     private void finalizeImport(ImportProcessContext context) {
         if (!context.hasUnprocessedService()) {
             finalizingService.finalizeImport(context);
+            final VersionSeriesURI seriesURI = context.getVersionSeries().getIdentifier();
             closeImportProcess();
-            final VersionArtifactURI artifactURI = context.getVersionArtifact().getIdentifier();
-            Objects.requireNonNull(artifactURI);
-            throw new ImportProcessFinalizedException(artifactURI);
+            throw new ImportProcessFinalizedException(seriesURI);
         }
     }
 

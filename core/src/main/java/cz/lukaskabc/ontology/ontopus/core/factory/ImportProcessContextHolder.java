@@ -45,6 +45,12 @@ public class ImportProcessContextHolder implements AutoCloseable {
     private static final String TEMPORARY_FOLDER_PREFIX = "OntoPuS-import-process-";
     private static final Logger log = LogManager.getLogger(ImportProcessContextHolder.class);
 
+    private static boolean isFinalizedFuture(@Nullable Future<?> future) {
+        return future != null
+                && future.state() == Future.State.FAILED
+                && future.exceptionNow() instanceof ImportProcessFinalizedException;
+    }
+
     private Future<?> future;
 
     @Nullable private ImportProcessContext instance = null;
@@ -53,6 +59,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
     private final ListableBeanFactory beanFactory;
     private final ExecutorService executor;
     private final VersionSeriesService versionSeriesService;
+
     /** Files and directories that will be deleted when the context is closed */
     private final Set<File> toDelete = new HashSet<>();
 
@@ -140,14 +147,13 @@ public class ImportProcessContextHolder implements AutoCloseable {
                 throw e; // expected exception
             } catch (RuntimeException e) { // TODO perhaps only for debug?
                 log.error("Asynchronous task execution failed with exception: {}", e.getMessage(), e);
-                e.printStackTrace();
-                throw e;
+                throw log.throwing(e);
             }
         };
     }
 
-    private void ensureInitialized() {
-        if (instance == null) {
+    private void ensureInitializedOrFinalized() {
+        if (instance == null && !isFinalizedFuture(future)) {
             throw new ImportProcessNotInitializedException();
         }
     }
@@ -199,7 +205,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
     public <R extends @Nullable Object> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
         lock.lock();
         try {
-            ensureInitialized();
+            ensureInitializedOrFinalized();
             switch (future.state()) {
                 case FAILED:
                     Future<R> result = CompletableFuture.failedFuture(future.exceptionNow());
@@ -226,7 +232,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
     public Future<@Nullable Void> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
         lock.lock();
         try {
-            ensureInitialized();
+            ensureInitializedOrFinalized();
             Future<Void> result;
             switch (future.state()) {
                 case FAILED:

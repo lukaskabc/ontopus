@@ -10,7 +10,6 @@ export interface TypographyFieldUiSchema extends UiSchema {
 
 const TypographyField = (props: FieldProps) => {
   const { component = 'p', variant = 'body1' } = props.uiSchema as TypographyFieldUiSchema
-  console.debug(props)
   const title = props.uiSchema?.['ui:title'] ?? props.schema.title
   const description = props.uiSchema?.['ui:description'] ?? props.schema.description
   return (

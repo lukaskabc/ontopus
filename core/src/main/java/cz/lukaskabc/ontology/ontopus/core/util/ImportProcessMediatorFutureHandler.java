@@ -25,7 +25,7 @@ public class ImportProcessMediatorFutureHandler {
         try {
             return resolveFuture(future);
         } catch (ImportProcessFinalizedException e) {
-            return ResponseEntity.created(e.getVersionArtifactURI().toURI()).build();
+            return ResponseEntity.created(e.getVersionSeriesURI().toURI()).build();
         }
     }
 

@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .map(URI::toString)
                 .toList());
         configuration.setAllowCredentials(true);
-        // configuration.setAllowedHeaders(List.of("*"));
+        configuration.addExposedHeader("Location");
         configuration.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE", "PUT"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

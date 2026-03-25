@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToC
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -15,6 +16,8 @@ import java.util.Set;
  * guaranteed to be immutable.
  */
 public interface ReadOnlyImportProcessContext {
+    <T> Optional<T> getAdditionalProperty(Object key, Class<T> type);
+
     Set<ContextToControllerMapping> getControllerMappings();
 
     List<ImportProcessingService<?>> getPendingServicesStack();

@@ -41,6 +41,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     private final ArrayList<ImportProcessingService<?>> processedServices;
     private final Set<String> processedServiceIdentifiers;
     private final List<ServiceAwareFormResult> processedResults;
+    private final Map<Object, Object> additionalProperties;
 
     private final Set<ContextToControllerMapping> controllerMappings;
 
@@ -60,6 +61,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.processedServiceIdentifiers = new HashSet<>(other.getProcessedServiceIdentifiers());
         this.processedResults = new ArrayList<>(other.getProcessedResults());
         this.controllerMappings = new HashSet<>(other.getControllerMappings());
+        this.additionalProperties = new HashMap<>(other.getAdditionalProperties());
     }
 
     public ImportProcessContext(
@@ -76,6 +78,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.processedServiceIdentifiers = new HashSet<>();
         this.processedResults = new ArrayList<>();
         this.controllerMappings = new HashSet<>();
+        this.additionalProperties = new HashMap<>();
     }
 
     public void addControllerMapping(ContextToControllerMapping mapping) {
@@ -94,6 +97,19 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO exception
         }
+    }
+
+    protected Map<Object, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public <T> Optional<T> getAdditionalProperty(Object key, Class<T> type) {
+        Object value = additionalProperties.get(key);
+        if (value == null || type.isInstance(value.getClass())) {
+            return Optional.ofNullable(type.cast(value));
+        }
+        throw new IllegalStateException("Additional property %s is not of type %s".formatted(key, type.getName()));
     }
 
     @Override
@@ -222,6 +238,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     public void pushService(ImportProcessingService<?> service) {
         pendingServicesStack.addLast(service);
         service.afterStackPush(this);
+    }
+
+    public void setAdditionalProperty(Object key, Object value) {
+        additionalProperties.put(key, value);
     }
 
     public void setServiceToDefaultFormDataMap(Map<String, FormDataDto> serviceToDefaultFormDataMap) {

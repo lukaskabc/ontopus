@@ -10,9 +10,9 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.SessionScope;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
 import java.io.IOException;
@@ -21,15 +21,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-@SessionScope
 @Order(ImportProcessServiceOrder.DATA_LOADING_SELECTION_SERVICE + 1)
 public class FileImportSelectionService implements OrderedImportPipelineService<Void> {
     private static final String TRANSLATION_ROOT =
             "ontopus.core.service.OrderedImportPipelineService.FileImportSelectionService";
+    static final Object CONTEXT_LAST_FORM_DATA_PROPERTY = new Object();
 
     protected static JsonForm makeJsonForm(ObjectMapper objectMapper) {
         final ObjectNode jsonSchema = objectMapper.createObjectNode();
@@ -51,8 +52,6 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
 
     private final String defaultGlobPattern;
 
-    @Nullable private ObjectNode lastFormData = null;
-
     public FileImportSelectionService(ObjectMapper objectMapper, OntopusConfig config) {
         this.objectMapper = objectMapper;
         this.defaultGlobPattern = config.getFiles().getDefaultGlobPattern();
@@ -64,9 +63,26 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
         final JsonNode jsonSchema = this.jsonForm.getJsonSchema();
         final ObjectNode uiSchema = objectMapper.createObjectNode();
         final ObjectNode properties = (ObjectNode) jsonSchema.get("properties");
-        lastFormData = Optional.ofNullable(lastFormData)
+        final ObjectNode lastFormData = context.getAdditionalProperty(CONTEXT_LAST_FORM_DATA_PROPERTY, ObjectNode.class)
                 .or(() -> Optional.ofNullable(previousFormData).map(JsonNode::asObject))
                 .orElseGet(objectMapper::createObjectNode);
+        Objects.requireNonNull(lastFormData);
+
+        final ObjectNode layout = uiSchema.put("ui:field", "LayoutGridField").putObject("ui:layoutGrid");
+
+        final ArrayNode mainRow = layout.putObject("ui:col").putArray("children");
+
+        mainRow.add("pattern").add("preview");
+
+        final ObjectNode row = mainRow.addObject().putObject("ui:row");
+        row.putObject("style").put("justify-content", "space-between");
+
+        final ObjectNode columns = row.putArray("children").addObject().putObject("ui:columns");
+
+        columns.put("className", "col-xs-6")
+                .putArray("children")
+                .add("files_list")
+                .add("files_preview");
 
         uiSchema.putObject("pattern").put("ui:enableMarkdownInDescription", true);
 
@@ -86,6 +102,7 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
                     .put("variant", "body1")
                     .put("ui:enableMarkdownInDescription", true);
         }
+
         properties
                 .putObject("files_list")
                 .put("type", "null")
@@ -103,8 +120,9 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
-        this.lastFormData = formResult.jsonFormData(objectMapper);
-        JsonNode doPreview = lastFormData.get("preview");
+        JsonNode formData = formResult.jsonFormData(objectMapper);
+        context.setAdditionalProperty(CONTEXT_LAST_FORM_DATA_PROPERTY, formData);
+        JsonNode doPreview = formData.get("preview");
         if (doPreview != null && doPreview.isBoolean() && doPreview.asBoolean()) {
             throw new JsonFormSubmitException("Preview files");
         }

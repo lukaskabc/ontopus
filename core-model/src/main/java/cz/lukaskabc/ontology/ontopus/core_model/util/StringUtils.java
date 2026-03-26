@@ -8,6 +8,19 @@ import java.util.Objects;
 public class StringUtils extends org.springframework.util.StringUtils {
     private static final char[] SANITIZATION_ALLOWED_CHARACTERS = new char[] {'-', '_'};
 
+    public static final String MARKDOWN_SPECIAL_CHARACTERS = "\\`*_{}[]()#+-.!";
+
+    public static String escapeMarkdown(String input) {
+        final StringBuilder escaped = new StringBuilder(input.length());
+        for (char c : input.toCharArray()) {
+            if (MARKDOWN_SPECIAL_CHARACTERS.indexOf(c) > -1) {
+                escaped.append('\\');
+            }
+            escaped.append(c);
+        }
+        return escaped.toString();
+    }
+
     public static String randomString(int length) {
         return RandomStringUtils.secure().next(length, true, true);
     }

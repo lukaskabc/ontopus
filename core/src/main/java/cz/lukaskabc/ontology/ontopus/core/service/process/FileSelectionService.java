@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -162,6 +163,7 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
         final List<String> files = listFiles(glob).stream()
                 .map(rootDirectory::relativize)
                 .map(Path::toString)
+                .map(StringUtils::escapeMarkdown)
                 .map("`%s`"::formatted)
                 .toList();
         return files.isEmpty() ? "No files found" : " \\- " + String.join("\n \\- ", files);

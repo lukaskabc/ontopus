@@ -62,7 +62,7 @@ public class ImportProcessMediator {
             InputStreamSource source, FormFileRequest fileDto, ImportProcessContext context) {
         Objects.requireNonNull(context.getTempFolder());
         final Path safeDestination =
-                FileUtils.resolvePath(context.getTempFolder(), FileUtils.forceRelativePath(fileDto.getFileName()));
+                FileUtils.resolvePath(context.getTempFolder(), FileUtils.forceRelativePath(fileDto.getPath()));
 
         try {
             Files.createDirectories(safeDestination.getParent());
@@ -154,6 +154,7 @@ public class ImportProcessMediator {
         if (!context.hasUnprocessedService()) {
             finalizingService.finalizeImport(context);
             final VersionSeriesURI seriesURI = context.getVersionSeries().getIdentifier();
+            Objects.requireNonNull(seriesURI, "Version series URI cannot be null when finalizing import process");
             closeImportProcess();
             throw new ImportProcessFinalizedException(seriesURI);
         }

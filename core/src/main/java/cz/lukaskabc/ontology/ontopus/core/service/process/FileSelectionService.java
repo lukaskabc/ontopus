@@ -68,6 +68,8 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                 .orElseGet(objectMapper::createObjectNode);
         Objects.requireNonNull(lastFormData);
 
+        uiSchema.putObject("ui:globalOptions").put("enableMarkdownInDescription", true);
+
         final ObjectNode layout = uiSchema.put("ui:field", "LayoutGridField").putObject("ui:layoutGrid");
 
         final ArrayNode mainRow = layout.putObject("ui:col").putArray("children");
@@ -84,8 +86,6 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                 .add("files_list")
                 .add("files_preview");
 
-        uiSchema.putObject("pattern").put("ui:enableMarkdownInDescription", true);
-
         JsonNode patternNode = lastFormData.get("pattern");
         if (patternNode == null || !patternNode.isString()) {
             patternNode = lastFormData.put("pattern", defaultGlobPattern);
@@ -99,8 +99,7 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                     .put("description", listFilesAsString(patternNode.asString()));
             uiSchema.putObject("files_preview")
                     .put("ui:field", "typographyField")
-                    .put("variant", "body1")
-                    .put("ui:enableMarkdownInDescription", true);
+                    .put("variant", "body1");
         }
 
         properties
@@ -149,7 +148,7 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
         try (Stream<Path> stream = Files.walk(rootDirectory)) {
             return stream.filter(Files::isRegularFile)
                     .filter(path -> {
-                        final Path subpath = rootRelative(path);
+                        final Path subpath = rootDirectory.relativize(path);
                         return globMatcher.matches(subpath);
                     })
                     .toList();
@@ -161,13 +160,10 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
 
     private String listFilesAsString(String glob) {
         final List<String> files = listFiles(glob).stream()
-                .map(this::rootRelative)
+                .map(rootDirectory::relativize)
                 .map(Path::toString)
+                .map("`%s`"::formatted)
                 .toList();
-        return files.isEmpty() ? "No files found" : " - " + String.join("\n - ", files);
-    }
-
-    private Path rootRelative(Path path) {
-        return path.subpath(rootDirectory.getNameCount(), path.getNameCount());
+        return files.isEmpty() ? "No files found" : " \\- " + String.join("\n \\- ", files);
     }
 }

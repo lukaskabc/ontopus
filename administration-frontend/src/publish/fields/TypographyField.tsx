@@ -2,6 +2,7 @@ import type { FieldProps, UiSchema } from '@rjsf/utils'
 import Typography from '@mui/material/Typography'
 import type { TypographyVariant } from '@mui/material'
 import type { ElementType } from 'preact/compat'
+import { RichDescription } from '@rjsf/core'
 
 export interface TypographyFieldUiSchema extends UiSchema {
   component?: ElementType
@@ -27,7 +28,7 @@ const TypographyField = (props: FieldProps) => {
       )}
       {description && (
         <Typography variant={variant} component={component} whiteSpace={'preserve-breaks'}>
-          {description}
+          <RichDescription description={description} uiSchema={props.uiSchema} registry={props.registry} />
         </Typography>
       )}
     </>

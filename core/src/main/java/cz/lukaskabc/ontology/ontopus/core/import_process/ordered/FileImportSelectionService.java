@@ -5,152 +5,62 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
+import cz.lukaskabc.ontology.ontopus.core.service.process.FileImportingService;
+import cz.lukaskabc.ontology.ontopus.core.service.process.FileSelectionService;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
+import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @Order(ImportProcessServiceOrder.DATA_LOADING_SELECTION_SERVICE + 1)
 public class FileImportSelectionService implements OrderedImportPipelineService<Void> {
-    private static final String TRANSLATION_ROOT =
-            "ontopus.core.service.OrderedImportPipelineService.FileImportSelectionService";
-    static final Object CONTEXT_LAST_FORM_DATA_PROPERTY = new Object();
-
-    protected static JsonForm makeJsonForm(ObjectMapper objectMapper) {
-        final ObjectNode jsonSchema = objectMapper.createObjectNode();
-        jsonSchema.put("$translationRoot", TRANSLATION_ROOT);
-        final ObjectNode properties = jsonSchema.put("type", "object").putObject("properties");
-        final ObjectNode pattern = properties.putObject("pattern");
-        pattern.put("type", "string");
-
-        properties.putObject("preview").put("type", "boolean");
-
-        jsonSchema.putArray("required").add("pattern");
-
-        return new JsonForm(jsonSchema, null, null);
-    }
-
     private final ObjectMapper objectMapper;
+    private final OntopusConfig config;
+    private final FileImportingService fileImportingService;
 
-    private final JsonForm jsonForm;
-
-    private final String defaultGlobPattern;
-
-    public FileImportSelectionService(ObjectMapper objectMapper, OntopusConfig config) {
+    public FileImportSelectionService(
+            ObjectMapper objectMapper, OntopusConfig config, FileImportingService fileImportingService) {
         this.objectMapper = objectMapper;
-        this.defaultGlobPattern = config.getFiles().getDefaultGlobPattern();
-        this.jsonForm = makeJsonForm(objectMapper);
+        this.config = config;
+        this.fileImportingService = fileImportingService;
     }
 
     @Override
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
-        final JsonNode jsonSchema = this.jsonForm.getJsonSchema();
-        final ObjectNode uiSchema = objectMapper.createObjectNode();
-        final ObjectNode properties = (ObjectNode) jsonSchema.get("properties");
-        final ObjectNode lastFormData = context.getAdditionalProperty(CONTEXT_LAST_FORM_DATA_PROPERTY, ObjectNode.class)
-                .or(() -> Optional.ofNullable(previousFormData).map(JsonNode::asObject))
-                .orElseGet(objectMapper::createObjectNode);
-        Objects.requireNonNull(lastFormData);
-
-        final ObjectNode layout = uiSchema.put("ui:field", "LayoutGridField").putObject("ui:layoutGrid");
-
-        final ArrayNode mainRow = layout.putObject("ui:col").putArray("children");
-
-        mainRow.add("pattern").add("preview");
-
-        final ObjectNode row = mainRow.addObject().putObject("ui:row");
-        row.putObject("style").put("justify-content", "space-between");
-
-        final ObjectNode columns = row.putArray("children").addObject().putObject("ui:columns");
-
-        columns.put("className", "col-xs-6")
-                .putArray("children")
-                .add("files_list")
-                .add("files_preview");
-
-        uiSchema.putObject("pattern").put("ui:enableMarkdownInDescription", true);
-
-        JsonNode patternNode = lastFormData.get("pattern");
-        if (patternNode == null || !patternNode.isString()) {
-            patternNode = lastFormData.put("pattern", defaultGlobPattern);
-        }
-
-        if (isPreviewEnabled(lastFormData)) {
-            properties
-                    .putObject("files_preview")
-                    .put("type", "null")
-                    .put("title", TRANSLATION_ROOT + "title")
-                    .put("description", listFiles(context, patternNode.asString()));
-            uiSchema.putObject("files_preview")
-                    .put("ui:field", "typographyField")
-                    .put("variant", "body1")
-                    .put("ui:enableMarkdownInDescription", true);
-        }
-
-        properties
-                .putObject("files_list")
-                .put("type", "null")
-                .put("title", TRANSLATION_ROOT + "title")
-                .put("description", listFiles(context, "**"));
-        uiSchema.putObject("files_list").put("ui:field", "typographyField").put("variant", "body1");
-
-        return new JsonForm(jsonSchema, uiSchema, lastFormData);
+        return null;
     }
 
     @Override
     public String getServiceName() {
-        return TRANSLATION_ROOT + ".name";
+        return this.getClass().getSimpleName();
     }
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
-        JsonNode formData = formResult.jsonFormData(objectMapper);
-        context.setAdditionalProperty(CONTEXT_LAST_FORM_DATA_PROPERTY, formData);
-        JsonNode doPreview = formData.get("preview");
-        if (doPreview != null && doPreview.isBoolean() && doPreview.asBoolean()) {
-            throw new JsonFormSubmitException("Preview files");
-        }
-
-        // TODO finish implementation and import selected files
+        context.popService(); // pop self
+        final FileSelectionService selectionService =
+                new FileSelectionService(context.getTempFolder(), objectMapper, config);
+        context.pushService(new ResultHandlingServiceWrapper<>(selectionService, this::importFiles));
         return null;
     }
 
-    private boolean isPreviewEnabled(@Nullable JsonNode previousFormData) {
-        if (previousFormData == null) {
-            return false;
-        }
-        final JsonNode preview = previousFormData.get("preview");
-        return preview != null && preview.isBoolean() && preview.asBoolean();
-    }
-
-    private String listFiles(ReadOnlyImportProcessContext context, String glob) {
-        final PathMatcher globMatcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
-        try (Stream<Path> stream = Files.walk(context.getTempFolder())) {
-            final List<String> files = stream.filter(Files::isRegularFile)
-                    .map(path -> path.subpath(context.getTempFolder().getNameCount(), path.getNameCount()))
-                    .filter(globMatcher::matches)
-                    .map(Path::toString)
-                    .toList();
-            return files.isEmpty() ? "No files found" : " - " + String.join("\n - ", files);
-            // TODO: file structure of uploaded files is not preserved
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private void importFiles(List<Path> pathsToImports, ImportProcessContext context) {
+        final List<File> filesToImport =
+                pathsToImports.stream().map(Path::toFile).toList();
+        try {
+            fileImportingService.importFiles(filesToImport, context);
+        } catch (Exception e) {
+            throw new OntopusException("Failed to import files: " + e.getMessage(), e);
         }
     }
 }

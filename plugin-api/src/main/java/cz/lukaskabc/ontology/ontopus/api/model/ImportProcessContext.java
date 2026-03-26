@@ -106,8 +106,11 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     @Override
     public <T> Optional<T> getAdditionalProperty(Object key, Class<T> type) {
         Object value = additionalProperties.get(key);
-        if (value == null || type.isInstance(value.getClass())) {
-            return Optional.ofNullable(type.cast(value));
+        if (value == null) {
+            return Optional.empty();
+        }
+        if (type.isInstance(value)) {
+            return Optional.of(type.cast(value));
         }
         throw new IllegalStateException("Additional property %s is not of type %s".formatted(key, type.getName()));
     }

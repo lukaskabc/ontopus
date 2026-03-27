@@ -5,8 +5,10 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyPublishingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ControllerURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing.RDFController;
@@ -32,6 +34,8 @@ public class RDFPublishingService implements OntologyPublishingService, OrderedI
 
     private Set<Controller> controllerDescriptions() {
         final Controller controller = new Controller();
+        final ControllerURI identifier = new ControllerURI(Controller_.entityClassIRI + "_pluginRdfController");
+        controller.setIdentifier(identifier);
         controller.setClassName(rdfController.getClass().getName());
         controller.setSupportedMediaTypes(rdfController.getSupportedMediaTypes());
         return Set.of(controller);

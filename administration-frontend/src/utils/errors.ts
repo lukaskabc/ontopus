@@ -41,7 +41,7 @@ export class PromiseCanceledError extends OntopusError {
  */
 export class UnexpectedResponseStatusError extends ErrorWithPayload<Response> {
   constructor(message: string, payload: Response) {
-    super(`Server error: ${message}`, payload)
+    super(`Server error: ${message} (${payload.status})`, payload)
   }
 }
 

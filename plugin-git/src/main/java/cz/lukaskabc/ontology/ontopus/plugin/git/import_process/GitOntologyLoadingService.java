@@ -5,14 +5,13 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
-import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitRepositoryUtils;
-import cz.lukaskabc.ontology.ontopus.plugin.git.exception.FileImportingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -23,10 +22,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.nio.file.StandardCopyOption;
 
 @Service
 public class GitOntologyLoadingService implements OntologyLoadingService {
@@ -66,17 +65,15 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
         final GitRepositoryClonningRequest request = parseFormData(formResult);
         final String canonicalRepoUrl = StringUtils.sanitize(request.repositoryUrl());
-        final Path targetDir = context.createTempFolder(Path.of(canonicalRepoUrl));
-        gitRepositoryUtils.cloneRepository(request, targetDir.toFile());
 
         try {
-            final List<File> files = FileUtils.listFilesRecursively(targetDir).stream()
-                    .filter(path -> !path.toString().contains(File.separator + ".git" + File.separator))
-                    .map(Path::toFile)
-                    .toList();
-            fileImportingService.importFiles(files, context);
+            Path temp = Files.createTempDirectory("ontopus-git-plugin-" + canonicalRepoUrl);
+            gitRepositoryUtils.cloneRepository(request, temp.toFile());
+            Files.deleteIfExists(temp.resolve(".git"));
+            Files.move(
+                    temp, context.getTempFolder(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
-            throw new FileImportingException("Failed to import files from cloned repository", e);
+            throw new OntopusException("Failed to move cloned repository to import context temp folder", e);
         }
 
         return null;

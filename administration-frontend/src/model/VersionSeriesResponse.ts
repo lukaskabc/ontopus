@@ -8,11 +8,13 @@ import type { GenericObjectType } from '@rjsf/utils'
 export class VersionSeriesResponse extends DatasetResponse {
   readonly last: string
   readonly first: string
+  readonly ontologyURI: string
 
   constructor(jsonObj: GenericObjectType) {
     super(jsonObj)
 
     this.last = validateValue(jsonObj.last, 'string', 'last')
     this.first = validateValue(jsonObj.first, 'string', 'first')
+    this.ontologyURI = validateValue(jsonObj.ontologyURI, 'string', 'ontologyURI')
   }
 }

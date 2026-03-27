@@ -6,12 +6,9 @@ import FormControl from '@mui/material/FormControl'
 import Grid from '@mui/material/Grid'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
+import ReadOnlyField from '@/components/ReadOnlyField.tsx'
 
 const LANGUAGE_SELECT_LABEL_ID = 'label-language-select-id'
-const disabledProps = {
-  input: { readOnly: true },
-}
 
 export interface DatasetDetailProps {
   dataset: DatasetResponse | null
@@ -46,12 +43,12 @@ export default function DatasetResponseDetail({ dataset }: DatasetDetailProps) {
     } else if (!languages.includes(language)) {
       setLanguage(languages[0])
     }
-  }, [i18n.language, language, languages, setLanguage])
+  }, [i18n.language, language, languages])
 
   return (
     <Grid container spacing={2}>
       <Grid size={2}>
-        <FormControl fullWidth>
+        <FormControl fullWidth variant={'standard'}>
           <InputLabel id={LANGUAGE_SELECT_LABEL_ID}>{t('language')}</InputLabel>
           <Select
             labelId={LANGUAGE_SELECT_LABEL_ID}
@@ -72,68 +69,34 @@ export default function DatasetResponseDetail({ dataset }: DatasetDetailProps) {
           </Select>
         </FormControl>
       </Grid>
+
       <Grid size={10}>
-        <TextField
-          fullWidth
-          id="standard-basic"
-          label={t('entity.version-series.detail.identifier')}
-          variant="standard"
-          slotProps={disabledProps}
-          value={dataset?.identifier || ' '}
-        />
+        <ReadOnlyField label={t('entity.dataset.detail.dcat-identifier')} value={dataset?.identifier} isCode={true} />
       </Grid>
+
       <Grid size={6}>
-        <TextField
-          fullWidth
-          id="standard-basic"
-          label={t('entity.version-series.detail.title')}
-          variant="standard"
-          slotProps={disabledProps}
-          value={dataset?.title[language] || ' '}
-        />
+        <ReadOnlyField label={t('entity.dataset.detail.title')} value={dataset?.title[language]} />
       </Grid>
+
       <Grid size={12}>
-        <TextField
-          fullWidth
-          multiline
-          id="standard-basic"
-          label={t('entity.version-series.detail.description')}
-          variant="standard"
-          slotProps={disabledProps}
-          value={dataset?.description[language] || ' '}
-        />
+        <ReadOnlyField label={t('entity.dataset.detail.description')} value={dataset?.description[language]} />
       </Grid>
-      <Grid size={3}>
-        <TextField
-          fullWidth
-          multiline
-          id="standard-basic"
-          label={t('entity.version-series.detail.release-date')}
-          variant="standard"
-          slotProps={disabledProps}
-          value={t('data-format.date', { val: dataset?.releaseDate }) || ' '}
-        />
-      </Grid>
-      <Grid size={3}>
-        <TextField
-          fullWidth
-          multiline
-          id="standard-basic"
-          label={t('entity.version-series.detail.modified-date')}
-          variant="standard"
-          slotProps={disabledProps}
-          value={t('data-format.date', { val: dataset?.modifiedDate }) || ' '}
-        />
-      </Grid>
+
       <Grid size={6}>
-        <TextField
-          fullWidth
-          multiline
-          id="standard-basic"
-          label={t('entity.version-series.detail.version')}
-          variant="standard"
-          slotProps={disabledProps}
-          value={dataset?.version || ' '}
+        <ReadOnlyField label={t('entity.dataset.detail.version')} value={dataset?.version} />
+      </Grid>
+
+      <Grid size={3}>
+        <ReadOnlyField
+          label={t('entity.dataset.detail.release-date')}
+          value={dataset?.releaseDate ? t('data-format.date', { val: dataset.releaseDate }) : undefined}
+        />
+      </Grid>
+
+      <Grid size={3}>
+        <ReadOnlyField
+          label={t('entity.dataset.detail.modified-date')}
+          value={dataset?.modifiedDate ? t('data-format.date', { val: dataset.modifiedDate }) : undefined}
         />
       </Grid>
     </Grid>

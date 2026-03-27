@@ -52,14 +52,19 @@
       "version": "Version",
       "modified": "Modified date"
     },
-    "version-series": {
+    "dataset": {
       "detail": {
+        "dcat-identifier": "Internal identifier",
         "title": "Title",
         "description": "Description",
-        "identifier": "Identifier",
         "release-date": "Release date",
         "modified-date": "Last modification",
         "version": "Latest version"
+      }
+    },
+    "version-series": {
+      "detail": {
+        "ontologyIdentifier": "Ontology identifier"
       }
     }
   }

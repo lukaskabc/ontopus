@@ -132,7 +132,6 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
             pattern = objectMapper.stringNode(defaultGlobPattern);
         }
 
-        // TODO finish implementation and import selected files
         return listFiles(pattern.asString());
     }
 
@@ -153,7 +152,6 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                         return globMatcher.matches(subpath);
                     })
                     .toList();
-            // TODO: file structure of uploaded files is not preserved
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

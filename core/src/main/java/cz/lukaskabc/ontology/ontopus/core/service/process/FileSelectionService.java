@@ -69,13 +69,19 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                 .orElseGet(objectMapper::createObjectNode);
         Objects.requireNonNull(lastFormData);
 
+        JsonNode patternNode = lastFormData.get("pattern");
+        if (patternNode == null || !patternNode.isString()) {
+            patternNode = objectMapper.stringNode(defaultGlobPattern);
+            lastFormData.set("pattern", patternNode);
+        }
+
         uiSchema.putObject("ui:globalOptions").put("enableMarkdownInDescription", true);
 
         final ObjectNode layout = uiSchema.put("ui:field", "LayoutGridField").putObject("ui:layoutGrid");
+        final ObjectNode outerCol = layout.putObject("ui:col");
+        final ArrayNode mainRow = outerCol.putArray("children");
 
-        final ArrayNode mainRow = layout.putObject("ui:col").putArray("children");
-
-        mainRow.add("pattern").add("preview");
+        mainRow.add("pattern");
 
         final ObjectNode row = mainRow.addObject().putObject("ui:row");
         row.putObject("style").put("justify-content", "space-between");
@@ -87,21 +93,12 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                 .add("files_list")
                 .add("files_preview");
 
-        JsonNode patternNode = lastFormData.get("pattern");
-        if (patternNode == null || !patternNode.isString()) {
-            patternNode = lastFormData.put("pattern", defaultGlobPattern);
-        }
-
-        if (isPreviewEnabled(lastFormData)) {
-            properties
-                    .putObject("files_preview")
-                    .put("type", "null")
-                    .put("title", TRANSLATION_ROOT + "title")
-                    .put("description", listFilesAsString(patternNode.asString()));
-            uiSchema.putObject("files_preview")
-                    .put("ui:field", "typographyField")
-                    .put("variant", "body1");
-        }
+        properties
+                .putObject("files_preview")
+                .put("type", "null")
+                .put("title", TRANSLATION_ROOT + "title")
+                .put("description", listFilesAsString(patternNode.asString()));
+        uiSchema.putObject("files_preview").put("ui:field", "typographyField").put("variant", "body1");
 
         properties
                 .putObject("files_list")
@@ -109,6 +106,8 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
                 .put("title", TRANSLATION_ROOT + "title")
                 .put("description", listFilesAsString("**"));
         uiSchema.putObject("files_list").put("ui:field", "typographyField").put("variant", "body1");
+
+        mainRow.add("preview");
 
         return new JsonForm(jsonSchema, uiSchema, lastFormData);
     }

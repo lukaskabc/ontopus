@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service.content_negotiation;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 @Component
 public class ContentNegotiationResolver {
-    @Nullable private ControllerCandidate constructCandidate(MediaType requestedType, Controller controller) {
+    @Nullable private ControllerCandidate constructCandidate(MediaType requestedType, ControllerDescription controller) {
         ControllerCandidate candidate = constructCandidateMatching(requestedType, controller);
         if (candidate != null) {
             return candidate;
@@ -20,7 +20,8 @@ public class ContentNegotiationResolver {
         return constructCandidateBestCompatible(requestedType, controller);
     }
 
-    @Nullable private ControllerCandidate constructCandidateBestCompatible(MediaType requestedType, Controller controller) {
+    @Nullable private ControllerCandidate constructCandidateBestCompatible(
+            MediaType requestedType, ControllerDescription controller) {
         List<MediaType> compatibleTypes =
                 new ArrayList<>(controller.getSupportedMediaTypes().size());
         controller.getSupportedMediaTypes().forEach(supportedType -> {
@@ -45,7 +46,7 @@ public class ContentNegotiationResolver {
      * @return a candidate for the given controller and media type if the controller supports the exact media type, null
      *     otherwise
      */
-    @Nullable private ControllerCandidate constructCandidateMatching(MediaType requestedType, Controller controller) {
+    @Nullable private ControllerCandidate constructCandidateMatching(MediaType requestedType, ControllerDescription controller) {
         if (controller.getSupportedMediaTypes().contains(requestedType)) {
             return new ControllerCandidate(requestedType, controller);
         }
@@ -53,20 +54,20 @@ public class ContentNegotiationResolver {
     }
 
     private Stream<@Nullable ControllerCandidate> resolveCandidates(
-            MediaType requestedTypes, Collection<Controller> controllers) {
+            MediaType requestedTypes, Collection<ControllerDescription> controllers) {
         return controllers.stream()
                 .<@Nullable ControllerCandidate>map(controller -> constructCandidate(requestedTypes, controller));
     }
 
     private Stream<ControllerCandidate> resolveCandidates(
-            MediaType[] requestedTypes, Collection<Controller> controllers) {
+            MediaType[] requestedTypes, Collection<ControllerDescription> controllers) {
         return Arrays.stream(requestedTypes)
                 .flatMap(requestedType -> resolveCandidates(requestedType, controllers))
                 .filter(Objects::nonNull);
     }
 
     public Optional<ControllerCandidate> resolveController(
-            MediaType[] requestedTypes, Collection<Controller> controllers) {
+            MediaType[] requestedTypes, Collection<ControllerDescription> controllers) {
         AtomicReference<ControllerCandidate> bestCandidate = new AtomicReference<>();
         resolveCandidates(requestedTypes, controllers).forEach(candidate -> {
             final ControllerCandidate currentBest = bestCandidate.get();

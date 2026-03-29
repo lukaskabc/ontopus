@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.service;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ContextToControllerMappingURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
-import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingType;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.ContextToControllerMappingRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
@@ -20,7 +20,7 @@ public class ContextToControllerMappingService
     }
 
     protected ContextToControllerMapping createMapping(
-            GraphURI contextURI, Set<Controller> controllers, MappingType mappingType) {
+            GraphURI contextURI, Set<ControllerDescription> controllers, MappingType mappingType) {
         final ContextToControllerMapping mapping = new ContextToControllerMapping();
         mapping.addSubject(contextURI);
         mapping.setMappingType(mappingType);
@@ -28,11 +28,13 @@ public class ContextToControllerMappingService
         return mapping;
     }
 
-    public ContextToControllerMapping createOntologyMapping(GraphURI contextURI, Set<Controller> controllers) {
+    public ContextToControllerMapping createOntologyMapping(
+            GraphURI contextURI, Set<ControllerDescription> controllers) {
         return createMapping(contextURI, controllers, MappingType.ONTOLOGY_DOCUMENT);
     }
 
-    public ContextToControllerMapping createResourceMapping(GraphURI contextURI, Set<Controller> controllers) {
+    public ContextToControllerMapping createResourceMapping(
+            GraphURI contextURI, Set<ControllerDescription> controllers) {
         return createMapping(contextURI, controllers, MappingType.RESOURCE);
     }
 

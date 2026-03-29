@@ -5,39 +5,54 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyPublishingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.ControllerURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ControllerDescriptionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
-import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller;
-import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.ControllerDescriptionService;
 import cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing.RDFController;
 import org.jspecify.annotations.Nullable;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 
 import java.util.Set;
 
-@Order
+@Order(Ordered.LOWEST_PRECEDENCE)
 @Service
 public class RDFPublishingService implements OntologyPublishingService, OrderedImportPipelineService<Void> {
     private final ContextToControllerMappingService mappingService;
     private final RDFController rdfController;
-    private final Set<Controller> controllerDescriptions;
+    private final Set<ControllerDescription> controllerDescriptions;
+    private final ControllerDescriptionService controllerDescriptionService;
 
-    public RDFPublishingService(ContextToControllerMappingService mappingService, RDFController rdfController) {
+    public RDFPublishingService(
+            ContextToControllerMappingService mappingService,
+            RDFController rdfController,
+            ControllerDescriptionService controllerDescriptionService) {
         this.mappingService = mappingService;
         this.rdfController = rdfController;
+        this.controllerDescriptionService = controllerDescriptionService;
         this.controllerDescriptions = controllerDescriptions();
     }
 
-    private Set<Controller> controllerDescriptions() {
-        final Controller controller = new Controller();
-        final ControllerURI identifier = new ControllerURI(Controller_.entityClassIRI + "_pluginRdfController");
-        controller.setIdentifier(identifier);
-        controller.setClassName(rdfController.getClass().getName());
-        controller.setSupportedMediaTypes(rdfController.getSupportedMediaTypes());
+    private Set<ControllerDescription> controllerDescriptions() {
+        final ControllerDescriptionURI identifier =
+                new ControllerDescriptionURI(ControllerDescription_.entityClassIRI + "_pluginRdfController");
+
+        final ControllerDescription controller = controllerDescriptionService
+                .findById(identifier)
+                .orElseGet(() -> {
+                    final ControllerDescription newController = new ControllerDescription();
+                    newController.setIdentifier(identifier);
+                    newController.setClassName(rdfController.getClass().getName());
+                    newController.setSupportedMediaTypes(rdfController.getSupportedMediaTypes());
+                    controllerDescriptionService.persist(newController);
+                    return newController;
+                });
         return Set.of(controller);
     }
 

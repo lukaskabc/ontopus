@@ -28,15 +28,15 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
     private Set<URI> subjects = new HashSet<>();
 
     /** The controller capable of handling the resource */
-    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Controller> controllers = new HashSet<>();
+    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy, fetch = FetchType.EAGER)
+    private Set<ControllerDescription> controllers = new HashSet<>();
 
     /** The type of the mapping */
     @NotNull @Enumerated(EnumType.OBJECT_ONE_OF)
     @OWLObjectProperty(iri = Vocabulary.s_p_uriMappingType)
     private MappingType mappingType;
 
-    public void addController(Controller controller) {
+    public void addController(ControllerDescription controller) {
         this.controllers.add(controller);
     }
 
@@ -44,7 +44,7 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         this.subjects.add(subject.toURI());
     }
 
-    public Set<Controller> getControllers() {
+    public Set<ControllerDescription> getControllers() {
         return controllers;
     }
 
@@ -56,7 +56,7 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         return subjects.stream().map(GraphURIImpl::new).collect(Collectors.toUnmodifiableSet());
     }
 
-    public void removeController(Controller controller) {
+    public void removeController(ControllerDescription controller) {
         this.controllers.remove(controller);
     }
 
@@ -64,7 +64,7 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         this.subjects.remove(subject.toURI());
     }
 
-    public void setControllers(Set<Controller> controllers) {
+    public void setControllers(Set<ControllerDescription> controllers) {
         this.controllers = controllers;
     }
 

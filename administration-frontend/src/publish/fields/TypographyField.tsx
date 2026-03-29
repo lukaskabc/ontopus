@@ -27,7 +27,7 @@ const TypographyField = (props: FieldProps) => {
         </Typography>
       )}
       {description && (
-        <Typography variant={variant} component={component} whiteSpace={'preserve-breaks'}>
+        <Typography variant={variant} component={props?.uiSchema?.component ?? 'div'} whiteSpace={'preserve-breaks'}>
           <RichDescription description={description} uiSchema={props.uiSchema} registry={props.registry} />
         </Typography>
       )}

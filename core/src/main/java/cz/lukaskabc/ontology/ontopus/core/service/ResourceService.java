@@ -7,7 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
-import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.Controller;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingType;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
@@ -47,7 +47,7 @@ public class ResourceService {
         return contextToControllerMappingService.findByTypeAndContext(mappingType, graphURI);
     }
 
-    private Class<? extends NegotiableController> getControllerClass(Controller controller) {
+    private Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
         try {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
         } catch (ClassNotFoundException e) {

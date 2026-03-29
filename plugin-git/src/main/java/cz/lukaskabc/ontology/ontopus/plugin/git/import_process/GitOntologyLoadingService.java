@@ -14,6 +14,7 @@ import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitRepositoryUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jgit.util.FileUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -22,6 +23,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -69,9 +71,16 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
         try {
             Path temp = Files.createTempDirectory("ontopus-git-plugin-" + canonicalRepoUrl);
             gitRepositoryUtils.cloneRepository(request, temp.toFile());
-            Files.deleteIfExists(temp.resolve(".git"));
-            Files.move(
-                    temp, context.getTempFolder(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            final File gitDir = temp.resolve(".git").toFile();
+            if (gitDir.isDirectory()) {
+                FileUtils.delete(temp.resolve(".git").toFile(), FileUtils.RECURSIVE);
+            }
+            for (File file : temp.toFile().listFiles()) {
+                Files.move(
+                        file.toPath(),
+                        context.getTempFolder().resolve(file.getName()),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException e) {
             throw new OntopusException("Failed to move cloned repository to import context temp folder", e);
         }

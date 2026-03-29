@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@NullMarked
 public abstract class AbstractRepository<
         I extends TypedIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {
     protected final D dao;

@@ -8,7 +8,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToC
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingType;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.ContextToControllerMappingDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.ContextToControllerMappingUriGenerator;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.MappingControllerUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,15 +19,12 @@ import java.util.Optional;
 public class ContextToControllerMappingRepository
         extends AbstractRepository<
                 ContextToControllerMappingURI, ContextToControllerMapping, ContextToControllerMappingDao> {
-    private final MappingControllerUriGenerator controllerUriGenerator;
 
     public ContextToControllerMappingRepository(
             ContextToControllerMappingDao dao,
             Validator validator,
-            ContextToControllerMappingUriGenerator identifierGenerator,
-            MappingControllerUriGenerator controllerUriGenerator) {
+            ContextToControllerMappingUriGenerator identifierGenerator) {
         super(dao, validator, identifierGenerator);
-        this.controllerUriGenerator = controllerUriGenerator;
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +37,6 @@ public class ContextToControllerMappingRepository
     @Override
     protected void setIdentifierIfMissing(ContextToControllerMapping entity) {
         super.setIdentifierIfMissing(entity);
-        entity.getControllers().forEach(controllerUriGenerator::setIdentifierIfMissing);
     }
 
     @Override

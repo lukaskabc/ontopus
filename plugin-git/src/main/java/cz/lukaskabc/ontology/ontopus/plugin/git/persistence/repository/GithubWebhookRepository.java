@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhookURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.dao.GithubWebhookDao;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
@@ -29,7 +30,7 @@ public class GithubWebhookRepository extends AbstractRepository<GithubWebhookURI
     }
 
     @Override
-    protected <T> T validated(T entity) {
+    protected <T> @NonNull T validated(@NonNull T entity) {
         if (entity instanceof GithubWebhook webhook && patternIsEmpty(webhook)) {
             webhook.setRef(null);
         }

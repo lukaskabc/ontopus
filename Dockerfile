@@ -38,7 +38,8 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 RUN rm ./*/target/original-*.jar
 
-FROM eclipse-temurin:25-jre-alpine as ontopus
+FROM eclipse-temurin:25-jre-alpine as ontopus-base
+# OntoPuS Core, Core model and plugin api, with no additional plugins and without frontend
 
 RUN addgroup -S ontopus && adduser -S ontopus -G ontopus
 USER ontopus:ontopus
@@ -47,7 +48,6 @@ WORKDIR /ontopus
 RUN mkdir plugins
 
 ARG ONTOPUS_SYSTEM_URI
-ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
 ENV ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI}
 
 # Change ~/.config to /tmp/xdg_config
@@ -55,10 +55,26 @@ ENV XDG_CONFIG_HOME=/tmp/xdg_config
 
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
-COPY --from=backend /build/plugin-*/target/*.jar /ontopus/plugins/
-
-COPY --from=frontend /administration-frontend/dist /ontopus/admin
-
-RUN ls -la --recursive /ontopus
+COPY --from=backend /build/plugin-api/target/*.jar /ontopus/plugins/
 
 ENTRYPOINT ["java", "-jar", "./core.jar"]
+
+FROM ontopus-base as ontopus-fe-base
+# OntoPuS Core, Core model, plugin API and frontend, with no additional plugins
+USER ontopus:ontopus
+WORKDIR /ontopus
+
+ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
+COPY --from=frontend /administration-frontend/dist /ontopus/admin
+
+FROM ontopus-base as ontopus-full
+# OntoPuS Core, Core model, plugin API, frontend and all plugins
+USER ontopus:ontopus
+WORKDIR /ontopus
+
+ENV ONTOPUS_PLUGIN_WIDOCO_PATH=/ontopus/plugins/widoco-plugin-*.jar
+
+COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
+COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
+COPY --from=backend /build/plugin-*/target/*.jar /ontopus/plugins/
+

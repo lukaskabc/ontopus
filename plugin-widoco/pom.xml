@@ -25,6 +25,12 @@
             <artifactId>plugin-api</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.dgarijo</groupId>
+            <artifactId>Widoco</artifactId>
+            <version>v1.4.25</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

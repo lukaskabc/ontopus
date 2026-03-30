@@ -25,7 +25,11 @@
             <artifactId>plugin-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.6.0</version>
+        </dependency>
         <dependency>
             <groupId>com.github.dgarijo</groupId>
             <artifactId>Widoco</artifactId>

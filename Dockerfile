@@ -29,7 +29,7 @@ COPY pom.xml .
 COPY --parents ./*/pom.xml .
 
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw dependency:go-offline -B
+    ./mvnw -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
 
 COPY --exclude=administration-frontend . .
 

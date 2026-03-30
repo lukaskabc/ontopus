@@ -10,7 +10,7 @@
       "description": "Specify the remote repository to clone",
       "fields": {
         "repositoryUrl.title": "Repository URL",
-        "repositoryUrl.description": "e.g. https://github.com/lukaskabc/ontopus.git or git@github.com:lukaskabc/ontopus.git",
+        "repositoryUrl.description": "e.g. https://github.com/lukaskabc/ontopus.git (cloning with SSH is not supported)",
         "branch.title": "Branch or Tag",
         "branch.description": "(optional) Enter the exact branch or tag to clone or leave empty to clone the default branch",
         "username.title": "Username",

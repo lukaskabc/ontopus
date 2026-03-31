@@ -23,20 +23,24 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>model</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!-- RDF/XML export -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-rio-rdfxml</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!-- RDF4J repository -->
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-repository-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

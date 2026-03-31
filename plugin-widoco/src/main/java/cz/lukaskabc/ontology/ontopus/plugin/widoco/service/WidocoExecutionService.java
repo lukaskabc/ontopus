@@ -7,7 +7,6 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.springframework.stereotype.Service;
-import widoco.gui.GuiController;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,11 +24,10 @@ public class WidocoExecutionService {
         this.config = config;
         executor = Executors.newSingleThreadExecutor(
                 Thread.ofPlatform().name("widoco-executor").factory());
-        ensureWidocoExists();
     }
 
     private void ensureWidocoExists() {
-        final File executable = config.getPath();
+        final File executable = config.getPath().toFile();
         if (!executable.exists()) {
             throw new IllegalStateException("Widoco executable not found at " + executable.getAbsolutePath());
         }
@@ -55,9 +53,8 @@ public class WidocoExecutionService {
 
     private void executeWidoco(WidocoArguments arguments) {
         CommandLine cmd = new CommandLine("java")
-                .addArgument("-cp")
-                .addArgument(config.getPath().getAbsolutePath())
-                .addArgument(GuiController.class.getName());
+                .addArgument("-jar")
+                .addArgument(config.getPath().toFile().getAbsolutePath());
 
         arguments.forEachArgument(arg -> {
             cmd.addArgument(arg.name()).addArgument(arg.variable());

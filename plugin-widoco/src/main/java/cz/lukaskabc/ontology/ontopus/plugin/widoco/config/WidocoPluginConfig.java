@@ -7,7 +7,9 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Map;
 
 @Validated
 @NullUnmarked
@@ -21,7 +23,21 @@ public class WidocoPluginConfig {
     @NotNull private Duration executionTimeout = Duration.ofMinutes(1);
 
     /** Path to widoco executable jar */
-    @NotNull private File path;
+    @NotNull private Path path;
+
+    /** Widoco version to automatically download */
+    private Map<String, String> downloadUrlParameters = Map.of("version", "1.4.25");
+
+    private String downloadUrl =
+            "https://github.com/dgarijo/Widoco/releases/download/v{version}/widoco-{version}-jar-with-dependencies_JDK-17.jar";
+
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
+
+    public Map<String, String> getDownloadUrlParameters() {
+        return downloadUrlParameters;
+    }
 
     public Duration getExecutionTimeout() {
         return executionTimeout;
@@ -31,8 +47,16 @@ public class WidocoPluginConfig {
         return filesDirectory;
     }
 
-    public File getPath() {
+    public Path getPath() {
         return path;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
+
+    public void setDownloadUrlParameters(Map<String, String> downloadUrlParameters) {
+        this.downloadUrlParameters = downloadUrlParameters;
     }
 
     public void setExecutionTimeout(Duration executionTimeout) {
@@ -43,7 +67,7 @@ public class WidocoPluginConfig {
         this.filesDirectory = filesDirectory;
     }
 
-    public void setPath(File path) {
+    public void setPath(Path path) {
         this.path = path;
     }
 }

@@ -2,12 +2,14 @@ package cz.lukaskabc.ontology.ontopus.plugin.widoco.service.init;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Files;
 
 /** Ensures that {@link WidocoPluginConfig#filesDirectory} exists and is writable and readable directory */
+@Order(500)
 @Component
 public class FilesDirectoryInitializationService implements InitializationService {
     private final WidocoPluginConfig config;

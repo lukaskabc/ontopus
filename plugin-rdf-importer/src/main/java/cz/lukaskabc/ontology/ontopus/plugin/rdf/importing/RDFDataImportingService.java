@@ -29,6 +29,33 @@ import java.util.List;
 public class RDFDataImportingService implements DataFileImportingService {
     private static final Logger LOG = LogManager.getLogger(RDFDataImportingService.class);
 
+    public static Model loadModel(List<File> files) throws IOException {
+        RDFFormat rdfFormat = resolveFormat(files.getFirst());
+        if (rdfFormat == null) {
+            throw new IllegalStateException("Unable to resolve file type to supported RDF format"); // TODO exception
+        }
+        final Model model = new LinkedHashModel();
+        final RDFParser parser = Rio.createParser(rdfFormat);
+        parser.setRDFHandler(new StatementCollector(model));
+
+        for (File file : files) {
+            parser.parse(new FileInputStream(file));
+        }
+        return model;
+    }
+
+    @Nullable private static RDFFormat resolveFormat(File file) throws IOException {
+        RDFFormat format = null;
+        String contentType = Files.probeContentType(file.toPath());
+        if (contentType != null) {
+            format = Rio.getParserFormatForMIMEType(contentType).orElse(null);
+        }
+        if (format == null) {
+            format = Rio.getParserFormatForFileName(file.getName()).orElse(null);
+        }
+        return format;
+    }
+
     private final GraphDao graphDao;
 
     public RDFDataImportingService(GraphDao graphDao) {
@@ -44,33 +71,6 @@ public class RDFDataImportingService implements DataFileImportingService {
         final Model model = loadModel(files);
         final TemporaryContextURI context = importContext.getTemporaryDatabaseContext();
         graphDao.persistModel(context, model);
-    }
-
-    private Model loadModel(List<File> files) throws IOException {
-        RDFFormat rdfFormat = resolveFormat(files.getFirst());
-        if (rdfFormat == null) {
-            throw new IllegalStateException("Unable to resolve file type to supported RDF format"); // TODO exception
-        }
-        final Model model = new LinkedHashModel();
-        final RDFParser parser = Rio.createParser(rdfFormat);
-        parser.setRDFHandler(new StatementCollector(model));
-
-        for (File file : files) {
-            parser.parse(new FileInputStream(file));
-        }
-        return model;
-    }
-
-    @Nullable private RDFFormat resolveFormat(File file) throws IOException {
-        RDFFormat format = null;
-        String contentType = Files.probeContentType(file.toPath());
-        if (contentType != null) {
-            format = Rio.getParserFormatForMIMEType(contentType).orElse(null);
-        }
-        if (format == null) {
-            format = Rio.getParserFormatForFileName(file.getName()).orElse(null);
-        }
-        return format;
     }
 
     @Override

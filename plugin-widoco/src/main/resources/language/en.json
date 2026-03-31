@@ -1,5 +1,10 @@
 {
   "ontopus.plugin.widoco": {
-
+    "service": {
+      "WidocoPublishingService": {
+        "name": "Generate documentation with Widoco",
+        "description": "Generates documentation for an ontology using the Wizard for documenting ontologies."
+      }
+    }
   }
 }

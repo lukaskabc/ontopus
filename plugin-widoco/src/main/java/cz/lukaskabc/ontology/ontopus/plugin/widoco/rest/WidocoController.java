@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/public/widoco")
+@RequestMapping(WidocoController.PATH)
 @RestController
 public class WidocoController {
+    static final String PATH = "/public/widoco";
     private static final Logger log = LogManager.getLogger(WidocoController.class);
 
     public WidocoController() {

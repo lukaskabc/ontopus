@@ -6,6 +6,8 @@ import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -14,9 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service
 public class WidocoExecutionService {
+    private static final Logger log = LogManager.getLogger(WidocoExecutionService.class);
+    private static final String WIDOCO_OUTPUT_DIR = "widoco_output";
     private final WidocoPluginConfig config;
     private final ExecutorService executor;
 
@@ -36,28 +41,36 @@ public class WidocoExecutionService {
         }
     }
 
-    private void execute(CommandLine cmd, Path workingDirectory) {
+    private Path execute(CommandLine cmd, Path workingDirectory) {
+        log.debug("Running Widoco in {} with {}", workingDirectory, cmd.toString());
+        final Path outputFolder = workingDirectory.resolve(WIDOCO_OUTPUT_DIR);
+
+        cmd.addArgument("-outFolder").addArgument(outputFolder.toString());
+
         ExecuteWatchdog watchdog = ExecuteWatchdog.builder()
                 .setTimeout(config.getExecutionTimeout())
                 .get();
+
         DefaultExecutor executor =
                 DefaultExecutor.builder().setWorkingDirectory(workingDirectory).get();
         executor.setExitValue(0);
         executor.setWatchdog(watchdog);
+
         try {
             int exitCode = executor.execute(cmd);
+            return outputFolder;
         } catch (IOException e) {
             throw new OntopusException(e); // TODO exception
         }
     }
 
-    private void executeWidoco(WidocoArguments arguments) {
+    public Future<Path> execute(WidocoArguments arguments) {
         CommandLine cmd = new CommandLine("java")
                 .addArgument("-jar")
                 .addArgument(config.getPath().toFile().getAbsolutePath());
 
         arguments.forEachArgument((arg, value) -> {
-            cmd.addArgument(arg.name());
+            cmd.addArgument(arg.argument());
             if (value != null && !value.isEmpty()) {
                 cmd.addArgument(arg.variable());
             }
@@ -67,7 +80,7 @@ public class WidocoExecutionService {
         cmd.setSubstitutionMap(arguments);
         try {
             final Path tmp = Files.createTempDirectory("widoco-working-dir");
-            executor.submit(() -> execute(cmd, tmp));
+            return executor.submit(() -> execute(cmd, tmp));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /** Import processing service that allows to select files from the specified directory using Glob pattern. */
-public class FileSelectionService implements ImportProcessingService<List<Path>> {
+public class GlobFileSelectionService implements ImportProcessingService<List<Path>> {
     private static final String TRANSLATION_ROOT =
-            "ontopus.core.service.OrderedImportPipelineService.FileImportSelectionService";
+            "ontopus.core.service.OrderedImportPipelineService.GlobFileSelectionService";
     static final Object CONTEXT_LAST_FORM_DATA_PROPERTY = new Object();
 
     protected static JsonForm makeJsonForm(ObjectMapper objectMapper) {
@@ -52,7 +52,7 @@ public class FileSelectionService implements ImportProcessingService<List<Path>>
 
     private final Path rootDirectory;
 
-    public FileSelectionService(Path rootDirectory, ObjectMapper objectMapper, OntopusConfig config) {
+    public GlobFileSelectionService(Path rootDirectory, ObjectMapper objectMapper, OntopusConfig config) {
         this.rootDirectory = rootDirectory;
         this.objectMapper = objectMapper;
         this.defaultGlobPattern = config.getFiles().getDefaultGlobPattern();

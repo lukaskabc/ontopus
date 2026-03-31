@@ -3,7 +3,15 @@
     "service": {
       "WidocoPublishingService": {
         "name": "Generate documentation with Widoco",
-        "description": "Generates documentation for an ontology using the Wizard for documenting ontologies."
+        "description": "Generates documentation for an ontology using the Wizard for documenting ontologies.",
+        "fields": {
+          "ONT_FILE": {
+            "title": "Ontology file"
+          },
+          "CONF_FILE": {
+            "title": "Configuration file"
+          }
+        }
       }
     }
   }

@@ -48,6 +48,8 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     /** Service identifier to default form data mapping. */
     private Map<String, FormDataDto> serviceToDefaultFormDataMap = Map.of();
 
+    @Nullable private Path ontologyFilePath;
+
     // TODO add import process context bootstraper API that will allow to subclass
     // the import process context
     // the hard part will be handling the serialization
@@ -62,6 +64,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.processedResults = new ArrayList<>(other.getProcessedResults());
         this.controllerMappings = new HashSet<>(other.getControllerMappings());
         this.additionalProperties = new HashMap<>(other.getAdditionalProperties());
+        this.ontologyFilePath = other.getOntologyFilePath();
     }
 
     public ImportProcessContext(
@@ -124,6 +127,11 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         final GraphURI versionUri = versionArtifact.getVersionURI();
         Objects.requireNonNull(versionUri, "Version URI is not set");
         return versionUri;
+    }
+
+    @Override
+    public @Nullable Path getOntologyFilePath() {
+        return ontologyFilePath;
     }
 
     @Override
@@ -245,6 +253,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     public void setAdditionalProperty(Object key, Object value) {
         additionalProperties.put(key, value);
+    }
+
+    public void setOntologyFilePath(@Nullable Path ontologyFilePath) {
+        this.ontologyFilePath = ontologyFilePath;
     }
 
     public void setServiceToDefaultFormDataMap(Map<String, FormDataDto> serviceToDefaultFormDataMap) {

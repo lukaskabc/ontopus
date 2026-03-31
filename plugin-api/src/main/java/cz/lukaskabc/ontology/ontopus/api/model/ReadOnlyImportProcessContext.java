@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -19,6 +20,8 @@ public interface ReadOnlyImportProcessContext {
     <T> Optional<T> getAdditionalProperty(Object key, Class<T> type);
 
     Set<ContextToControllerMapping> getControllerMappings();
+
+    @Nullable Path getOntologyFilePath();
 
     List<ImportProcessingService<?>> getPendingServicesStack();
 

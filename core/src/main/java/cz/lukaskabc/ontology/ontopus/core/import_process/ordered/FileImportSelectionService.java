@@ -7,7 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.FileImportingService;
-import cz.lukaskabc.ontology.ontopus.core.service.process.FileSelectionService;
+import cz.lukaskabc.ontology.ontopus.core.service.process.SingleFileSelectionService;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -48,17 +48,17 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         context.popService(); // pop self
-        final FileSelectionService selectionService =
-                new FileSelectionService(context.getTempFolder(), objectMapper, config);
-        context.pushService(new ResultHandlingServiceWrapper<>(selectionService, this::importFiles));
+        final SingleFileSelectionService selectionService =
+                new SingleFileSelectionService(objectMapper, "ontopus.core.service.OntologyFileSelection");
+        context.pushService(new ResultHandlingServiceWrapper<>(selectionService, this::importFile));
         return null;
     }
 
-    private void importFiles(List<Path> pathsToImports, ImportProcessContext context) {
-        final List<File> filesToImport =
-                pathsToImports.stream().map(Path::toFile).toList();
+    private void importFile(Path pathToImport, ImportProcessContext context) {
+        final File fileToImport = pathToImport.toFile();
         try {
-            fileImportingService.importFiles(filesToImport, context);
+            fileImportingService.importFiles(List.of(fileToImport), context);
+            context.setOntologyFilePath(pathToImport);
         } catch (Exception e) {
             throw new OntopusException("Failed to import files: " + e.getMessage(), e);
         }

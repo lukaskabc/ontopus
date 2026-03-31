@@ -15,7 +15,7 @@ public class WidocoArguments implements Map<String, String> {
     }
 
     public boolean containsKey(Argument key) {
-        return delegate.containsKey(key.name());
+        return delegate.containsKey(key.argument());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class WidocoArguments implements Map<String, String> {
     }
 
     public @Nullable String get(Argument key) {
-        return delegate.get(key.name());
+        return delegate.get(key.argument());
     }
 
     @Nullable @Override
@@ -64,7 +64,7 @@ public class WidocoArguments implements Map<String, String> {
     }
 
     public @Nullable String put(Argument key, String value) {
-        return delegate.put(key.name(), value);
+        return delegate.put(key.argument(), value);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class WidocoArguments implements Map<String, String> {
     @Override
     public String remove(Object key) {
         Argument arg = validateAndParseKey(key);
-        return delegate.remove(arg.name());
+        return delegate.remove(arg.argument());
     }
 
     @Override
@@ -115,42 +115,5 @@ public class WidocoArguments implements Map<String, String> {
     @Override
     public @NonNull Collection<String> values() {
         return delegate.values();
-    }
-
-    public enum Argument {
-        CONF_FILE("confFile", "string"),
-        ONT_FILE("ontFile", "string"),
-        UNITE_SECTIONS("uniteSections", "boolean"),
-        ANALYTICS("analytics", "string"),
-        CROSS_REF("crossRef", "boolean"),
-        DISPLAY_DIRECT_IMPORTS_ONLY("displayDirectImportsOnly", "boolean"),
-        DO_NOT_DISPLAY_SERIALIZATIONS("doNotDisplaySerializations", "boolean"),
-        ;
-
-        private final String argument;
-        /** Type for JSON schema */
-        private final String schemaType;
-
-        Argument(String argument, String schemaType) {
-            this.argument = argument;
-            this.schemaType = schemaType;
-        }
-
-        public String argument() {
-            return "-" + argument;
-        }
-
-        public String schemaType() {
-            return schemaType;
-        }
-
-        /**
-         * Variable expression using the name of the argument
-         *
-         * @return String: {@code ${name()}} e.g. {@code ${CONF_FILE}}
-         */
-        public String variable() {
-            return "${" + name() + "}";
-        }
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotNull;
-import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
@@ -18,7 +17,7 @@ import java.util.Map;
 public class WidocoPluginConfig {
     /** Persistent directory for generated files */
     // @NotNull
-    private File filesDirectory;
+    private Path filesDirectory;
 
     @NotNull private Duration executionTimeout = Duration.ofMinutes(1);
 
@@ -43,7 +42,7 @@ public class WidocoPluginConfig {
         return executionTimeout;
     }
 
-    public File getFilesDirectory() {
+    public Path getFilesDirectory() {
         return filesDirectory;
     }
 
@@ -63,7 +62,7 @@ public class WidocoPluginConfig {
         this.executionTimeout = executionTimeout;
     }
 
-    public void setFilesDirectory(File filesDirectory) {
+    public void setFilesDirectory(Path filesDirectory) {
         this.filesDirectory = filesDirectory;
     }
 

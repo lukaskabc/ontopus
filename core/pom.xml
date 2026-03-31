@@ -26,10 +26,12 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>model</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Database dependencies -->
@@ -176,15 +178,6 @@
                 <configuration>
                     <layout>ZIP</layout>
                     <!-- TDOO: check impact of ZIP packages, investigate options to package as jar with required CLI arguments handled by docker image -->
-                    <additionalClasspathElements>
-                        <element>./model.jar</element>
-                    </additionalClasspathElements>
-                    <excludes>
-                        <exclude>
-                            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
-                            <artifactId>model</artifactId>
-                        </exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>

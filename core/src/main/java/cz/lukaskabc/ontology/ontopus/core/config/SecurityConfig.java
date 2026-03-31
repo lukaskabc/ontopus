@@ -40,8 +40,14 @@ public class SecurityConfig {
                 .logout(LogoutConfigurer::permitAll)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .with(new UsernamePasswordAuthenticationConfigurer<>())
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/login").permitAll().anyRequest().authenticated());
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/login")
+                        .permitAll()
+                        .requestMatchers("/admin/**")
+                        .permitAll()
+                        .requestMatchers("/public/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated());
         return http.build();
     }
 

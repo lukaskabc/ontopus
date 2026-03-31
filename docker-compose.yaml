@@ -21,6 +21,8 @@ services:
     ports:
       - "8080:8080"
     read_only: true
+    volumes:
+      - "ontopus-data:/data:rw"
     tmpfs:
       - "/tmp:size=1g,mode=1777,noexec,nosuid,nodev"
   graphdb:
@@ -42,3 +44,4 @@ services:
 
 volumes:
   graphdb-data: null
+  ontopus-data: null

@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1.20
 
 ARG ONTOPUS_SYSTEM_URI=http://localhost:8080/
-
+ARG ONTOPUS_PERSISTENT_DATA_DIR=/data
+ARG ONTOPUS_VERSION=1.0.0-dev
 
 FROM node:25-alpine AS frontend
 
@@ -28,13 +29,15 @@ COPY "mvnw.cmd" .
 COPY pom.xml .
 COPY --parents ./*/pom.xml .
 
+ARG ONTOPUS_VERSION
+
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+    ./mvnw -Drevision=${ONTOPUS_VERSION} -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
 
 COPY --exclude=administration-frontend . .
 
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw clean package -Dspotless.skip -DskipTests
+    ./mvnw clean package -Drevision=${ONTOPUS_VERSION} -Dspotless.skip -DskipTests
 
 RUN rm ./*/target/original-*.jar
 
@@ -44,6 +47,7 @@ FROM eclipse-temurin:25-jre-alpine as ontopus-base
 RUN addgroup -S ontopus && adduser -S ontopus -G ontopus
 USER ontopus:ontopus
 
+WORKDIR /data
 WORKDIR /ontopus
 RUN mkdir plugins
 
@@ -72,7 +76,11 @@ FROM ontopus-base as ontopus-full
 USER ontopus:ontopus
 WORKDIR /ontopus
 
-ENV ONTOPUS_PLUGIN_WIDOCO_PATH=/ontopus/plugins/widoco-plugin-*.jar
+ARG ONTOPUS_VERSION
+ARG ONTOPUS_PERSISTENT_DATA_DIR
+
+ENV ONTOPUS_PLUGIN_WIDOCO_PATH=/ontopus/plugins/widoco-plugin-${ONTOPUS_VERSION}.jar
+ENV ONTOPUS_PLUGIN_WIDOCO_FILES_DIRECTORY=${ONTOPUS_PERSISTENT_DATA_DIR}/widoco
 
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/

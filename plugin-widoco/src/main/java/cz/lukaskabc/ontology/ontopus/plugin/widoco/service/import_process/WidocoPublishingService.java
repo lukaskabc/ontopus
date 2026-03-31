@@ -4,25 +4,47 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyPublishingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
-import cz.lukaskabc.ontology.ontopus.core_model.util.JsonFormUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
 import org.jspecify.annotations.Nullable;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import java.nio.file.Path;
+
+@Order(Ordered.LOWEST_PRECEDENCE)
 @Service
-public class WidocoPublishingService implements OntologyPublishingService {
+public class WidocoPublishingService implements OntologyPublishingService, OrderedImportPipelineService<Void> {
     private static JsonForm makeForm(ObjectMapper mapper) {
         final ObjectNode schema = mapper.createObjectNode();
+        final ObjectNode uiSchema = mapper.createObjectNode();
+        schema.put("type", "object");
+        schema.put("$translationRoot", "ontopus.plugin.widoco.service.WidocoPublishingService");
+        final ObjectNode properties = schema.putObject("properties");
+
         for (WidocoArguments.Argument arg : WidocoArguments.Argument.values()) {
-            final WidocoArguments.Key<?> key = WidocoArguments.Key.from(arg);
-            schema.putObject(arg.name()).put("type", JsonFormUtils.schemaTypeForClass(key.type()));
+            properties.putObject(arg.name()).put("type", arg.schemaType());
         }
 
-        return new JsonForm(schema, null, null);
+        ObjectNode autocompleteWidget = mapper.createObjectNode()
+                .put("ui:widget", "autocompleteWidget")
+                .putObject("ui:options")
+                .put("freeSolo", false)
+                .put("openOnFocus", true)
+                .put("disableClearable", true)
+                .put("autoHighlight", true);
+
+        uiSchema.set(WidocoArguments.Argument.CONF_FILE.name(), autocompleteWidget);
+        uiSchema.set(WidocoArguments.Argument.ONT_FILE.name(), autocompleteWidget);
+
+        return new JsonForm(schema, uiSchema, null);
     }
 
     private final ObjectMapper mapper;
@@ -44,7 +66,21 @@ public class WidocoPublishingService implements OntologyPublishingService {
      */
     @Override
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
-        return jsonForm;
+        final JsonNode schema = jsonForm.getJsonSchema().asObject();
+        final JsonNode uiSchema = jsonForm.getUiSchema();
+
+        ArrayNode examples = mapper.createArrayNode();
+
+        FileUtils.listRecursively(context.getTempFolder())
+                .map(context.getTempFolder()::relativize)
+                .map(Path::toString)
+                .forEach(examples::add);
+
+        final JsonNode properties = schema.get("properties");
+        properties.get(WidocoArguments.Argument.CONF_FILE.name()).asObject().set("examples", examples);
+        properties.get(WidocoArguments.Argument.ONT_FILE.name()).asObject().set("examples", examples);
+
+        return new JsonForm(schema, uiSchema, null);
     }
 
     /**
@@ -68,6 +104,14 @@ public class WidocoPublishingService implements OntologyPublishingService {
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
         WidocoArguments arguments = new WidocoArguments();
+        formResult.formData().forEach((keyName, value) -> {
+            WidocoArguments.Argument arg = WidocoArguments.Argument.valueOf(keyName);
+            if (value.isString() || value.isNumber()) {
+                arguments.put(arg, value.asString());
+            } else if (value.isBoolean() || value.asBoolean()) {
+                arguments.put(arg, "");
+            }
+        });
 
         return null;
     }

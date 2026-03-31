@@ -56,9 +56,13 @@ public class WidocoExecutionService {
                 .addArgument("-jar")
                 .addArgument(config.getPath().toFile().getAbsolutePath());
 
-        arguments.forEachArgument(arg -> {
-            cmd.addArgument(arg.name()).addArgument(arg.variable());
+        arguments.forEachArgument((arg, value) -> {
+            cmd.addArgument(arg.name());
+            if (value != null && !value.isEmpty()) {
+                cmd.addArgument(arg.variable());
+            }
         });
+
         // TODO resolve ontology main file
         cmd.setSubstitutionMap(arguments);
         try {

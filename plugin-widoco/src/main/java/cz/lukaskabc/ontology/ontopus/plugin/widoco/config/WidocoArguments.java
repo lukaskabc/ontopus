@@ -1,13 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.config;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-public class WidocoArguments implements Map<String, Object> {
-    private final HashMap<String, Object> delegate = new HashMap<>();
+public class WidocoArguments implements Map<String, String> {
+    private final HashMap<String, String> delegate = new HashMap<>();
 
     @Override
     public void clear() {
@@ -30,31 +30,27 @@ public class WidocoArguments implements Map<String, Object> {
     }
 
     @Override
-    public Set<Entry<String, Object>> entrySet() {
+    public @NonNull Set<Entry<String, String>> entrySet() {
         return delegate.entrySet();
     }
 
-    public void forEachArgument(Consumer<Argument> action) {
+    public void forEachArgument(BiConsumer<Argument, String> action) {
         Objects.requireNonNull(action);
         for (Argument arg : Argument.values()) {
             if (containsKey(arg)) {
-                action.accept(arg);
+                action.accept(arg, get(arg));
             }
         }
     }
 
-    public <T> @Nullable T get(Key<T> key) {
-        Object value = delegate.get(key.argument().name());
-        if (value == null) {
-            return null;
-        }
-        return key.cast(value);
+    public @Nullable String get(Argument key) {
+        return delegate.get(key.name());
     }
 
     @Nullable @Override
-    public Object get(Object key) {
+    public String get(Object key) {
         Argument arg = validateAndParseKey(key);
-        return delegate.get(arg.name());
+        return get(arg);
     }
 
     @Override
@@ -67,32 +63,31 @@ public class WidocoArguments implements Map<String, Object> {
         return delegate.keySet();
     }
 
-    public <T> @Nullable Object put(Key<T> key, T value) {
-        return delegate.put(key.argument().name(), value);
+    public @Nullable String put(Argument key, String value) {
+        return delegate.put(key.name(), value);
     }
 
     @Override
-    public Object put(String key, Object value) {
+    public String put(String key, String value) {
         Argument arg = validateAndParseKey(key);
-        Key<?> expectedKey = Key.from(arg);
 
-        if (expectedKey != null && value != null) {
+        if (arg != null && value != null) {
             // throws ClassCastException if the type is wrong
-            expectedKey.cast(value);
+            return delegate.put(arg.argument(), value);
         }
 
-        return delegate.put(arg.name(), value);
+        throw new IllegalArgumentException("Key is not a valid Argument");
     }
 
     @Override
-    public void putAll(Map<? extends String, ?> m) {
-        for (Map.Entry<? extends String, ?> entry : m.entrySet()) {
+    public void putAll(Map<? extends String, ? extends String> m) {
+        for (Map.Entry<? extends String, ? extends String> entry : m.entrySet()) {
             this.put(entry.getKey(), entry.getValue());
         }
     }
 
     @Override
-    public Object remove(Object key) {
+    public String remove(Object key) {
         Argument arg = validateAndParseKey(key);
         return delegate.remove(arg.name());
     }
@@ -118,65 +113,44 @@ public class WidocoArguments implements Map<String, Object> {
     }
 
     @Override
-    public Collection<Object> values() {
+    public @NonNull Collection<String> values() {
         return delegate.values();
     }
 
     public enum Argument {
-        CONF_FILE("-confFile"),
-        ONT_FILE("-ontFile");
+        CONF_FILE("confFile", "string"),
+        ONT_FILE("ontFile", "string"),
+        UNITE_SECTIONS("uniteSections", "boolean"),
+        ANALYTICS("analytics", "string"),
+        CROSS_REF("crossRef", "boolean"),
+        DISPLAY_DIRECT_IMPORTS_ONLY("displayDirectImportsOnly", "boolean"),
+        DO_NOT_DISPLAY_SERIALIZATIONS("doNotDisplaySerializations", "boolean"),
+        ;
 
-        private final String name;
+        private final String argument;
+        /** Type for JSON schema */
+        private final String schemaType;
 
-        Argument(String name) {
-            this.name = name;
+        Argument(String argument, String schemaType) {
+            this.argument = argument;
+            this.schemaType = schemaType;
+        }
+
+        public String argument() {
+            return "-" + argument;
+        }
+
+        public String schemaType() {
+            return schemaType;
         }
 
         /**
          * Variable expression using the name of the argument
          *
-         * @return String: {@code ${argumentName}}
+         * @return String: {@code ${name()}} e.g. {@code ${CONF_FILE}}
          */
         public String variable() {
-            return "${" + name + "}";
-        }
-    }
-
-    public static class Key<T> {
-        private static final Map<Argument, Key<?>> REGISTRY = new HashMap<>();
-        public static final Key<File> CONF_FILE = makeRegistered(Argument.CONF_FILE, File.class);
-        public static final Key<File> ONT_FILE = makeRegistered(Argument.ONT_FILE, File.class);
-
-        /** Retrieves the registered Key for a given argument */
-        public static Key<?> from(Argument argument) {
-            return Objects.requireNonNull(REGISTRY.get(argument));
-        }
-
-        private static <T> Key<T> makeRegistered(Argument argument, Class<T> type) {
-            final Key<T> key = new Key<>(argument, type);
-            REGISTRY.put(argument, key);
-            return key;
-        }
-
-        private final Argument argument;
-
-        private final Class<T> type;
-
-        private Key(Argument argument, Class<T> type) {
-            this.argument = argument;
-            this.type = type;
-        }
-
-        public Argument argument() {
-            return argument;
-        }
-
-        public T cast(Object value) {
-            return type.cast(value);
-        }
-
-        public Class<T> type() {
-            return type;
+            return "${" + name() + "}";
         }
     }
 }

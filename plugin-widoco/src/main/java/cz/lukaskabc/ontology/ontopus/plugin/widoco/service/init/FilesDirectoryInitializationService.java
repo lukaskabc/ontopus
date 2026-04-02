@@ -20,7 +20,7 @@ public class FilesDirectoryInitializationService implements InitializationServic
 
     @Override
     public void initialize() {
-        final File filesDirectory = config.getFilesDirectory();
+        final File filesDirectory = config.getFilesDirectory().toFile();
         if (!filesDirectory.exists()) {
             final boolean success = filesDirectory.mkdirs();
             if (!success) {

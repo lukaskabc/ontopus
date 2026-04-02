@@ -56,7 +56,7 @@ public class WidocoController {
         }
     }
 
-    @GetMapping
+    @GetMapping("**")
     public FileSystemResource getOntologyFile(
             @RequestParam(ONTOLOGY_QUERY_PARAM) VersionArtifactURI artifactURI, HttpServletRequest request) {
         final Path directoryName = Path.of(StringUtils.sanitize(artifactURI.toString()));

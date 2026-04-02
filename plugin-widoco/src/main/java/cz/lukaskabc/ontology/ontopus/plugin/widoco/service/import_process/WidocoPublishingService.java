@@ -8,11 +8,14 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyPublishi
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.Argument;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoControllerRegistrationService;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoExecutionService;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
@@ -37,6 +40,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private static final String TRANSLATION_ROOT = "ontopus.plugin.widoco.service.WidocoPublishingService";
     private static final Set<String> WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE = Set.of("jsonld", "nt", "owl", "ttl");
     private static final String REDIRECT_SERIALIZATION_FIELD = "RedirectSerializationToOntopus";
+    private static final Set<String> WIDOCO_OUTPUT_DIRECTORIES = Set.of("provenance", "sections", "resources");
 
     private static JsonForm makeForm(ObjectMapper mapper) {
         final ObjectNode schema = mapper.createObjectNode();
@@ -66,19 +70,28 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         return new JsonForm(schema, uiSchema, null);
     }
 
+    private final ContextToControllerMappingService mappingService;
+
     private final WidocoPluginConfig config;
 
     private final ObjectMapper mapper;
 
     private final JsonForm jsonForm;
     private final WidocoExecutionService widocoExecutionService;
+    private final WidocoControllerRegistrationService widocoControllerRegistrationService;
 
     public WidocoPublishingService(
-            ObjectMapper mapper, WidocoExecutionService widocoExecutionService, WidocoPluginConfig config) {
+            ContextToControllerMappingService mappingService,
+            ObjectMapper mapper,
+            WidocoExecutionService widocoExecutionService,
+            WidocoPluginConfig config,
+            WidocoControllerRegistrationService widocoControllerRegistrationService) {
+        this.mappingService = mappingService;
         this.mapper = mapper;
         this.widocoExecutionService = widocoExecutionService;
         this.config = config;
         this.jsonForm = makeForm(mapper);
+        this.widocoControllerRegistrationService = widocoControllerRegistrationService;
     }
 
     private void deleteUnusedWidocoFiles(Path widocoRoot, boolean deleteSerializations) throws IOException {
@@ -180,6 +193,19 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             final Path outputRoot = resolveWidocoOutputRoot(output);
             deleteUnusedWidocoFiles(outputRoot, redirectSerialization);
             persistOutput(outputRoot, context);
+            // TODO: reduce size of this service
+            // TODO: mappings throws because of duplicated individuals (RDF controller maps
+            // resources nad this maps them again)
+            final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(
+                    context.getFinalDatabaseContext(),
+                    widocoControllerRegistrationService.getControllerDescriptions(),
+                    context.getControllerMappings());
+            final ContextToControllerMapping resourceMapping = mappingService.createResourceMapping(
+                    context.getFinalDatabaseContext(),
+                    widocoControllerRegistrationService.getControllerDescriptions(),
+                    context.getControllerMappings());
+            context.addControllerMapping(ontologyMapping);
+            context.addControllerMapping(resourceMapping);
         } catch (Exception e) {
             throw new OntopusException(e);
         }
@@ -202,7 +228,8 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
 
     private Path resolveWidocoOutputRoot(Path output) {
         return FileUtils.listRecursively(output)
-                .filter(path -> path.getFileName().toString().equals("sections"))
+                .filter(path ->
+                        WIDOCO_OUTPUT_DIRECTORIES.contains(path.getFileName().toString()))
                 .findAny()
                 .map(Path::getParent)
                 .orElseThrow(() -> new OntopusException("Failed to find widoco output root folder"));

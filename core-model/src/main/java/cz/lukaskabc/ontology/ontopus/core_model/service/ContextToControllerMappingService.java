@@ -9,6 +9,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.ContextTo
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -20,22 +21,39 @@ public class ContextToControllerMappingService
     }
 
     protected ContextToControllerMapping createMapping(
-            GraphURI contextURI, Set<ControllerDescription> controllers, MappingType mappingType) {
-        final ContextToControllerMapping mapping = new ContextToControllerMapping();
-        mapping.addSubject(contextURI);
-        mapping.setMappingType(mappingType);
-        mapping.setControllers(controllers);
-        return mapping;
+            GraphURI contextURI,
+            Set<ControllerDescription> controllers,
+            MappingType mappingType,
+            Set<ContextToControllerMapping> existingMappings) {
+        return existingMappings.stream()
+                .filter(mapping -> mapping.getMappingType().equals(mappingType))
+                .filter(mapping -> mapping.getSubjects().contains(contextURI))
+                .findAny()
+                .map(mapping -> {
+                    mapping.getControllers().addAll(controllers);
+                    return mapping;
+                })
+                .orElseGet(() -> {
+                    final ContextToControllerMapping mapping = new ContextToControllerMapping();
+                    mapping.addSubject(contextURI);
+                    mapping.setMappingType(mappingType);
+                    mapping.setControllers(new HashSet<>(controllers));
+                    return mapping;
+                });
     }
 
     public ContextToControllerMapping createOntologyMapping(
-            GraphURI contextURI, Set<ControllerDescription> controllers) {
-        return createMapping(contextURI, controllers, MappingType.ONTOLOGY_DOCUMENT);
+            GraphURI contextURI,
+            Set<ControllerDescription> controllers,
+            Set<ContextToControllerMapping> existingMappings) {
+        return createMapping(contextURI, controllers, MappingType.ONTOLOGY_DOCUMENT, existingMappings);
     }
 
     public ContextToControllerMapping createResourceMapping(
-            GraphURI contextURI, Set<ControllerDescription> controllers) {
-        return createMapping(contextURI, controllers, MappingType.RESOURCE);
+            GraphURI contextURI,
+            Set<ControllerDescription> controllers,
+            Set<ContextToControllerMapping> existingMappings) {
+        return createMapping(contextURI, controllers, MappingType.RESOURCE, existingMappings);
     }
 
     public ContextToControllerMapping findByTypeAndContext(MappingType type, GraphURI contextURI) {

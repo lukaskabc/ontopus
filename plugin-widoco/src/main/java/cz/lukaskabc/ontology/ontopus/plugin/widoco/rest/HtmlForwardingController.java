@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Set;
 
@@ -27,8 +28,11 @@ public class HtmlForwardingController
     /** Forwards to {@link WidocoController} which serves the HTML documentation */
     @Override
     public ResponseEntity<StreamingResponseBody> handleOntologyRequest(OntopusRequest requestContext) {
+        final String destination = UriComponentsBuilder.fromPath(WidocoController.PATH)
+                .queryParam(WidocoController.ONTOLOGY_QUERY_PARAM, requestContext.graphURI())
+                .toUriString();
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", WidocoController.PATH + "")
+                .header("Location", destination)
                 .build();
     }
 

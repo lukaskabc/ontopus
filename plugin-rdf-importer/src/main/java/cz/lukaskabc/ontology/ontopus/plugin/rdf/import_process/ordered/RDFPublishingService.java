@@ -68,10 +68,10 @@ public class RDFPublishingService implements OntologyPublishingService, OrderedI
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        final ContextToControllerMapping ontologyMapping =
-                mappingService.createOntologyMapping(context.getFinalDatabaseContext(), controllerDescriptions);
-        final ContextToControllerMapping resourceMapping =
-                mappingService.createResourceMapping(context.getFinalDatabaseContext(), controllerDescriptions);
+        final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(
+                context.getFinalDatabaseContext(), controllerDescriptions, context.getControllerMappings());
+        final ContextToControllerMapping resourceMapping = mappingService.createResourceMapping(
+                context.getFinalDatabaseContext(), controllerDescriptions, context.getControllerMappings());
         context.addControllerMapping(ontologyMapping);
         context.addControllerMapping(resourceMapping);
         return null;

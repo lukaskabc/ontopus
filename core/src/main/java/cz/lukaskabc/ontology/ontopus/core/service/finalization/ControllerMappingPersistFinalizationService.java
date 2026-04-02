@@ -27,7 +27,7 @@ public class ControllerMappingPersistFinalizationService implements ImportFinali
     @Override
     public void finalizeImport(ImportProcessContext context) {
         try {
-            context.getControllerMappings().forEach(contextToControllerMappingService::persist);
+            context.getControllerMappings().forEach(contextToControllerMappingService::save);
         } catch (Exception e) {
             throw log.throwing(new OntopusException("Failed to persist controller mappings", e));
         }

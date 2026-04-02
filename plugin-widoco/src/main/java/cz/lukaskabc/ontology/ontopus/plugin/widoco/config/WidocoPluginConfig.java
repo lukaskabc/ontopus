@@ -16,8 +16,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "ontopus.plugin.widoco")
 public class WidocoPluginConfig {
     /** Persistent directory for generated files */
-    // @NotNull
-    private Path filesDirectory;
+    @NotNull private Path filesDirectory;
 
     @NotNull private Duration executionTimeout = Duration.ofMinutes(1);
 

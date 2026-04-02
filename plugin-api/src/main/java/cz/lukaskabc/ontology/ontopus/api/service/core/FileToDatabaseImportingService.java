@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+// TODO this vs dat afile importing servcice???
 
 /** Service capable of importing provided files into the databse context */
 public interface FileToDatabaseImportingService {

@@ -48,8 +48,8 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         context.popService(); // pop self
-        final SingleFileSelectionService selectionService =
-                new SingleFileSelectionService(objectMapper, "ontopus.core.service.OntologyFileSelection");
+        final SingleFileSelectionService selectionService = new SingleFileSelectionService(
+                objectMapper, "ontopus.core.service.OntologyFileSelection", fileImportingService::supports);
         context.pushService(new ResultHandlingServiceWrapper<>(selectionService, this::importFile));
         return null;
     }

@@ -15,7 +15,7 @@
         "fields": {
           "file": {
             "title": "Ontology File",
-            "description": "Select the ontology file to be imported."
+            "description": "Select the ontology file to be imported (only supported files are listed)."
           }
         }
       },

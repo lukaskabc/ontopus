@@ -15,15 +15,19 @@ import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 public class SingleFileSelectionService implements ImportProcessingService<Path> {
     private final JsonForm jsonForm;
     private final String translationRoot;
     private final ObjectMapper objectMapper;
+    private final Predicate<Path> fileFilter;
 
-    public SingleFileSelectionService(ObjectMapper objectMapper, String translationRoot) {
+    public SingleFileSelectionService(ObjectMapper objectMapper, String translationRoot, Predicate<Path> fileFilter) {
         this.objectMapper = objectMapper;
         this.translationRoot = translationRoot;
+        this.fileFilter = fileFilter;
         this.jsonForm = makeJsonForm();
     }
 
@@ -31,16 +35,24 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         final JsonNode schema = jsonForm.getJsonSchema();
         final JsonNode uiSchema = jsonForm.getUiSchema();
+        final ObjectNode formData = Optional.ofNullable(previousFormData)
+                .orElseGet(objectMapper::createObjectNode)
+                .asObject();
 
         final ArrayNode examples =
                 schema.get("properties").get("file").get("examples").asArray();
 
         FileUtils.listRecursively(context.getTempFolder())
+                .filter(this.fileFilter)
                 .map(context.getTempFolder()::relativize)
                 .map(Path::toString)
                 .forEach(examples::add);
 
-        return new JsonForm(schema, uiSchema, previousFormData);
+        if (!formData.hasNonNull("file") && !examples.isEmpty()) {
+            formData.set("file", examples.get(0));
+        }
+
+        return new JsonForm(schema, uiSchema, formData);
     }
 
     @Override

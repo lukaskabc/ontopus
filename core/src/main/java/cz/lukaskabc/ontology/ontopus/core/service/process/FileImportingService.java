@@ -59,4 +59,17 @@ public class FileImportingService implements FileToDatabaseImportingService {
         }
         return importedFiles;
     }
+
+    public boolean supports(File file) {
+        for (DataFileImportingService importingService : dataFileImportingServices) {
+            if (!importingService.supports(file)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean supports(Path path) {
+        return supports(path.toFile());
+    }
 }

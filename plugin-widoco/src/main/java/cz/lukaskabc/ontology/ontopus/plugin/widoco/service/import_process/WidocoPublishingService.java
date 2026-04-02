@@ -18,19 +18,25 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Service
 public class WidocoPublishingService implements OntologyPublishingService, OrderedImportPipelineService<Void> {
     private static final String TRANSLATION_ROOT = "ontopus.plugin.widoco.service.WidocoPublishingService";
+    private static final Set<String> WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE = Set.of("jsonld", "nt", "owl", "ttl");
+    private static final String REDIRECT_SERIALIZATION_FIELD = "RedirectSerializationToOntopus";
 
     private static JsonForm makeForm(ObjectMapper mapper) {
         final ObjectNode schema = mapper.createObjectNode();
@@ -42,6 +48,8 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         for (Argument arg : Argument.values()) {
             properties.putObject(arg.name()).put("type", arg.schemaType());
         }
+
+        properties.putObject(REDIRECT_SERIALIZATION_FIELD).put("type", "boolean");
 
         ObjectNode autocompleteWidget = mapper.createObjectNode();
         autocompleteWidget
@@ -72,6 +80,17 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         this.config = config;
         this.jsonForm = makeForm(mapper);
     }
+
+    private void deleteUnusedWidocoFiles(Path widocoRoot, boolean deleteSerializations) throws IOException {
+        Files.deleteIfExists(widocoRoot.resolve("readme.md"));
+        if (deleteSerializations) {
+            for (String ext : WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE) {
+                Path path = widocoRoot.resolve("ontology." + ext);
+                Files.deleteIfExists(path);
+            }
+        }
+    }
+
     /**
      * Provides a JSON form which will be shown to the user.
      *
@@ -132,6 +151,9 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         WidocoArguments arguments = new WidocoArguments();
         formResult.formData().forEach((keyName, value) -> {
+            if (keyName.equals(REDIRECT_SERIALIZATION_FIELD)) {
+                return;
+            }
             Argument arg = Argument.valueOf(keyName);
 
             if (Argument.FILES.contains(arg) && value.isString()) {
@@ -145,11 +167,19 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             }
         });
 
+        boolean redirectSerialization = formResult
+                .formData()
+                .getOrDefault(
+                        REDIRECT_SERIALIZATION_FIELD, mapper.getNodeFactory().booleanNode(false))
+                .asBoolean();
+
         try {
             final Path output = widocoExecutionService
                     .execute(arguments)
                     .get(config.getExecutionTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
-            persistOutput(output, context);
+            final Path outputRoot = resolveWidocoOutputRoot(output);
+            deleteUnusedWidocoFiles(outputRoot, redirectSerialization);
+            persistOutput(outputRoot, context);
         } catch (Exception e) {
             throw new OntopusException(e);
         }
@@ -161,5 +191,20 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         final String persistentContext =
                 StringUtils.sanitize(context.getFinalDatabaseContext().toString());
         final Path filesDestination = FileUtils.resolvePath(config.getFilesDirectory(), Path.of(persistentContext));
+        try {
+            FileSystemUtils.deleteRecursively(filesDestination);
+            // TODO move?
+            FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
+        } catch (IOException e) {
+            throw new OntopusException("Failed to persist widoco output", e);
+        }
+    }
+
+    private Path resolveWidocoOutputRoot(Path output) {
+        return FileUtils.listRecursively(output)
+                .filter(path -> path.getFileName().toString().equals("sections"))
+                .findAny()
+                .map(Path::getParent)
+                .orElseThrow(() -> new OntopusException("Failed to find widoco output root folder"));
     }
 }

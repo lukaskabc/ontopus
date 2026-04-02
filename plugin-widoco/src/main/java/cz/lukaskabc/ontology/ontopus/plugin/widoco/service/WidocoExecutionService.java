@@ -42,7 +42,9 @@ public class WidocoExecutionService {
     }
 
     private Path execute(CommandLine cmd, Path workingDirectory) {
-        log.debug("Running Widoco in {} with {}", workingDirectory, cmd.toString());
+        ensureWidocoExists();
+        // TODO: run widoco in some jail/chroot to prevent it from accessing file out of
+        // the working directory (firejail, bwrap) - but watch the licenses?
         final Path outputFolder = workingDirectory.resolve(WIDOCO_OUTPUT_DIR);
 
         cmd.addArgument("-outFolder").addArgument(outputFolder.toString());
@@ -55,6 +57,8 @@ public class WidocoExecutionService {
                 DefaultExecutor.builder().setWorkingDirectory(workingDirectory).get();
         executor.setExitValue(0);
         executor.setWatchdog(watchdog);
+
+        log.debug("Running Widoco in {} with {}", workingDirectory, cmd.toString());
 
         try {
             int exitCode = executor.execute(cmd);

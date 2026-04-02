@@ -71,7 +71,7 @@ WORKDIR /ontopus
 ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
 COPY --from=frontend /administration-frontend/dist /ontopus/admin
 
-FROM ontopus-base as ontopus-full
+FROM ontopus-fe-base as ontopus-full
 # OntoPuS Core, Core model, plugin API, frontend and all plugins
 USER ontopus:ontopus
 WORKDIR /ontopus

@@ -1,7 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core.config;
 
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -15,15 +18,25 @@ import java.io.IOException;
 @NullMarked
 @Configuration
 public class RestConfig implements WebMvcConfigurer {
+    private static final Logger log = LogManager.getLogger(RestConfig.class);
+    @Nullable
     private final FileSystemResource frontendIndexFile;
 
     public RestConfig(OntopusConfig config) {
-        this.frontendIndexFile =
+        if (config.getFrontendIndexFile() == null) {
+            this.frontendIndexFile = null;
+        } else {
+            this.frontendIndexFile =
                 new FileSystemResource(config.getFrontendIndexFile().getAbsolutePath());
+        }
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        if (frontendIndexFile == null) {
+            log.warn("No frontend index file configured, skipping frontend resource handler setup");
+            return;
+        }
         String frontendDirectory = frontendIndexFile.getFile().getParentFile().getAbsolutePath() + File.separator;
 
         registry.addResourceHandler("/admin", "/admin/", "/admin/**")

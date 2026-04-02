@@ -21,8 +21,7 @@ public class OntopusConfig {
 
     @NotEmpty private List<URI> administrationAllowedOrigins = List.of(systemUri);
 
-    @NotNull private File frontendIndexFile =
-            Path.of("./administration-frontend/dist/index.html").toFile();
+    @Nullable private File frontendIndexFile;
 
     @Valid private Database database = new Database();
 
@@ -46,7 +45,7 @@ public class OntopusConfig {
         return files;
     }
 
-    public File getFrontendIndexFile() {
+    public @Nullable File getFrontendIndexFile() {
         return frontendIndexFile;
     }
 

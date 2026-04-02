@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class StringUtils extends org.springframework.util.StringUtils {
     private static final char[] SANITIZATION_ALLOWED_CHARACTERS = new char[] {'-', '_'};
@@ -65,6 +66,16 @@ public class StringUtils extends org.springframework.util.StringUtils {
             throw new IllegalArgumentException("Sanitized string cannot be empty");
         }
         return sanitized.toString();
+    }
+
+    private static final Pattern SLASH_PLUS = Pattern.compile("/+");
+    private static final Pattern MINUS_PLUS = Pattern.compile("-+");
+
+    public static String sanitizeUriAsComponent(String uri) {
+            final String formatted = SLASH_PLUS.matcher(uri).replaceAll("-");
+            final String deduplicated = MINUS_PLUS.matcher(formatted).replaceAll("-");;
+            return StringUtils.sanitize(deduplicated);
+
     }
 
     private StringUtils() {

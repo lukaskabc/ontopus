@@ -215,7 +215,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private void persistOutput(Path widocoOutput, ImportProcessContext context) {
         // TODO: persist output to persistent context
         final String persistentContext =
-                StringUtils.sanitize(context.getFinalDatabaseContext().toString());
+                StringUtils.sanitizeUriAsComponent(context.getFinalDatabaseContext().toString());
         final Path filesDestination = FileUtils.resolvePath(config.getFilesDirectory(), Path.of(persistentContext));
         try {
             FileSystemUtils.deleteRecursively(filesDestination);

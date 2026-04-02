@@ -66,7 +66,7 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
         final GitRepositoryClonningRequest request = parseFormData(formResult);
-        final String canonicalRepoUrl = StringUtils.sanitize(request.repositoryUrl());
+        final String canonicalRepoUrl = StringUtils.sanitizeUriAsComponent(request.repositoryUrl());
 
         try {
             Path temp = Files.createTempDirectory("ontopus-git-plugin-" + canonicalRepoUrl);

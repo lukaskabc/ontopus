@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,7 +37,8 @@ public class HtmlForwardingController
     public ResponseEntity<StreamingResponseBody> handleOntologyRequest(OntopusRequest requestContext) {
         final String destination = UriComponentsBuilder.fromUri(ontopusConfig.getSystemUri())
                 .path(WidocoController.PATH)
-                .queryParam(WidocoController.ONTOLOGY_QUERY_PARAM, requestContext.graphURI())
+            .path("/")
+            .path(StringUtils.sanitizeUriAsComponent(requestContext.graphURI().toString()))
                 .toUriString();
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", destination)

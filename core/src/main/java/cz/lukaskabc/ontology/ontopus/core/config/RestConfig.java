@@ -20,15 +20,15 @@ import java.io.IOException;
 @Configuration
 public class RestConfig implements WebMvcConfigurer {
     private static final Logger log = LogManager.getLogger(RestConfig.class);
-    @Nullable
-    private final FileSystemResource frontendIndexFile;
+
+    @Nullable private final FileSystemResource frontendIndexFile;
 
     public RestConfig(OntopusConfig config) {
         if (config.getFrontendIndexFile() == null) {
             this.frontendIndexFile = null;
         } else {
             this.frontendIndexFile =
-                new FileSystemResource(config.getFrontendIndexFile().getAbsolutePath());
+                    new FileSystemResource(config.getFrontendIndexFile().getAbsolutePath());
         }
     }
 

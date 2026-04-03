@@ -4,8 +4,6 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,8 +29,6 @@ import java.util.stream.Stream;
 public class WidocoController {
     private static final Path ROOT_PATH = Path.of("/");
     static final String PATH = "/public/widoco";
-    public static final String ONTOLOGY_QUERY_PARAM = "ontology";
-    private static final Logger log = LogManager.getLogger(WidocoController.class);
     static final PathMatcher DEFAULT_FILE_MATCHER = FileSystems.getDefault().getPathMatcher("glob:**index*.html");
 
     private static String resolveRequestedPath(HttpServletRequest request) {

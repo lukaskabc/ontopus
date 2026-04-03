@@ -27,6 +27,20 @@ public class HtmlForwardingController
         this.ontopusConfig = ontopusConfig;
     }
 
+    private UriComponentsBuilder buildRedirectDestination(OntopusRequest requestContext) {
+        return UriComponentsBuilder.fromUri(ontopusConfig.getSystemUri())
+                .path(WidocoController.PATH)
+                .path("/")
+                .path(StringUtils.sanitizeUriAsComponent(
+                        requestContext.graphURI().toString()));
+    }
+
+    private <T> ResponseEntity<T> found(String destination) {
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", destination)
+                .build();
+    }
+
     @Override
     public Set<MediaType> getSupportedMediaTypes() {
         return SUPPORTED_MEDIA_TYPES;
@@ -35,20 +49,16 @@ public class HtmlForwardingController
     /** Forwards to {@link WidocoController} which serves the HTML documentation */
     @Override
     public ResponseEntity<StreamingResponseBody> handleOntologyRequest(OntopusRequest requestContext) {
-        final String destination = UriComponentsBuilder.fromUri(ontopusConfig.getSystemUri())
-                .path(WidocoController.PATH)
-                .path("/")
-                .path(StringUtils.sanitizeUriAsComponent(
-                        requestContext.graphURI().toString()))
-                .toUriString();
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", destination)
-                .build();
+        final String destination = buildRedirectDestination(requestContext).toUriString();
+        return found(destination);
     }
 
     /** Forwards requests for resource to requests of the ontology */
     @Override
     public ResponseEntity<StreamingResponseBody> handleResourceRequest(OntopusRequest requestContext) {
-        return handleOntologyRequest(requestContext);
+        final String destination = buildRedirectDestination(requestContext)
+                .fragment(requestContext.requestedURI().toString())
+                .toUriString();
+        return found(destination);
     }
 }

@@ -49,6 +49,12 @@ public class ResourceController {
         final Charset charset = getCharset(request);
         final String decodedUrl = URLDecoder.decode(request.getRequestURL().toString(), charset);
         final ResourceURI requestedURI = new ResourceURI(decodedUrl);
+        // TODO does not account for leading slash
+        // e.g. http://purl.org/dc/terms/.ttl works
+        // http://purl.org/dc/terms.ttl does not
+        // TODO: slash URLs to specific resource gets redirected to HTML but the
+        // information about the resource is lost
+        // should be mapped to fragment somehow?
 
         final ResponseEntity<StreamingResponseBody> response =
                 resourceService.getResource(requestedURI, requestedTypes);

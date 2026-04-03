@@ -18,7 +18,7 @@ import java.util.Optional;
 public class MediaTypeResolverService extends MappingMediaTypeFileExtensionResolver implements MediaTypeResolver {
 
     private static Optional<MediaType> resolveMediaTypeFromFactory(String fileExtension) {
-        return MediaTypeFactory.getMediaType("file" + fileExtension);
+        return MediaTypeFactory.getMediaType("file." + fileExtension);
     }
 
     public MediaTypeResolverService(ContentNegotiationManager manager) {

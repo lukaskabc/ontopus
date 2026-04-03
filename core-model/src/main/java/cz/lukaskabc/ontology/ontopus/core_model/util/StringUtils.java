@@ -11,6 +11,10 @@ public class StringUtils extends org.springframework.util.StringUtils {
 
     public static final String MARKDOWN_SPECIAL_CHARACTERS = "\\`*_{}[]()#+-.!";
 
+    private static final Pattern SLASH_PLUS = Pattern.compile("/+");
+
+    private static final Pattern MINUS_PLUS = Pattern.compile("-+");
+
     public static String escapeMarkdown(String input) {
         final StringBuilder escaped = new StringBuilder(input.length());
         for (char c : input.toCharArray()) {
@@ -40,7 +44,6 @@ public class StringUtils extends org.springframework.util.StringUtils {
     public static String sanitize(String input) {
         return sanitize(input, SANITIZATION_ALLOWED_CHARACTERS);
     }
-
     /**
      * Filters out all characters from the input string that are not letters, digits, or one of the allowed special
      * characters.
@@ -68,14 +71,11 @@ public class StringUtils extends org.springframework.util.StringUtils {
         return sanitized.toString();
     }
 
-    private static final Pattern SLASH_PLUS = Pattern.compile("/+");
-    private static final Pattern MINUS_PLUS = Pattern.compile("-+");
-
     public static String sanitizeUriAsComponent(String uri) {
-            final String formatted = SLASH_PLUS.matcher(uri).replaceAll("-");
-            final String deduplicated = MINUS_PLUS.matcher(formatted).replaceAll("-");;
-            return StringUtils.sanitize(deduplicated);
-
+        final String formatted = SLASH_PLUS.matcher(uri).replaceAll("-");
+        final String deduplicated = MINUS_PLUS.matcher(formatted).replaceAll("-");
+        ;
+        return StringUtils.sanitize(deduplicated);
     }
 
     private StringUtils() {

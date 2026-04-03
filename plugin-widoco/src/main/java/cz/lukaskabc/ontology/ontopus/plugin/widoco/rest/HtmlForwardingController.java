@@ -37,8 +37,9 @@ public class HtmlForwardingController
     public ResponseEntity<StreamingResponseBody> handleOntologyRequest(OntopusRequest requestContext) {
         final String destination = UriComponentsBuilder.fromUri(ontopusConfig.getSystemUri())
                 .path(WidocoController.PATH)
-            .path("/")
-            .path(StringUtils.sanitizeUriAsComponent(requestContext.graphURI().toString()))
+                .path("/")
+                .path(StringUtils.sanitizeUriAsComponent(
+                        requestContext.graphURI().toString()))
                 .toUriString();
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", destination)

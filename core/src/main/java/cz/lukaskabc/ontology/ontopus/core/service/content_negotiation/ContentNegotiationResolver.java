@@ -12,29 +12,28 @@ import java.util.stream.Stream;
 
 @Component
 public class ContentNegotiationResolver {
+
+    /**
+     * Constructs controller candidate with the most specific media type supported by the controller that is compatible
+     * with the requested type.
+     *
+     * @param requestedType the requested media type
+     * @param controller the controller
+     * @return the controller candidate or {@code null} if the controller is not able to produce any media compatible
+     *     with the requested type.
+     */
     @Nullable private ControllerCandidate constructCandidate(MediaType requestedType, ControllerDescription controller) {
         ControllerCandidate candidate = constructCandidateMatching(requestedType, controller);
         if (candidate != null) {
             return candidate;
         }
-        return constructCandidateBestCompatible(requestedType, controller);
-    }
 
-    @Nullable private ControllerCandidate constructCandidateBestCompatible(
-            MediaType requestedType, ControllerDescription controller) {
-        List<MediaType> compatibleTypes =
-                new ArrayList<>(controller.getSupportedMediaTypes().size());
-        controller.getSupportedMediaTypes().forEach(supportedType -> {
-            if (supportedType.isCompatibleWith(requestedType)) {
-                compatibleTypes.add(supportedType);
-            }
-        });
-        if (compatibleTypes.isEmpty()) {
-            return null;
+        final MediaType bestCompatibleType = findMostSpecific(requestedType, controller);
+        if (bestCompatibleType != null) {
+            return new ControllerCandidate(bestCompatibleType, controller);
         }
-        MimeTypeUtils.sortBySpecificity(compatibleTypes);
-        assert compatibleTypes.getFirst().isMoreSpecific(compatibleTypes.getLast());
-        return new ControllerCandidate(compatibleTypes.getFirst(), controller);
+
+        return null;
     }
 
     /**
@@ -53,22 +52,68 @@ public class ContentNegotiationResolver {
         return null;
     }
 
-    private Stream<@Nullable ControllerCandidate> resolveCandidates(
-            MediaType requestedTypes, Collection<ControllerDescription> controllers) {
-        return controllers.stream()
-                .<@Nullable ControllerCandidate>map(controller -> constructCandidate(requestedTypes, controller));
+    /**
+     * Finds the most specific media type supported by the controller that is compatible with the requested type.
+     *
+     * @param requestedType the requested media type
+     * @param controller the controller
+     * @return the most specific media type supported by the controller that is compatible with the requested type or
+     *     {@code null} if the controller is not able to produce any media compatible with the requested type.
+     */
+    @Nullable private MediaType findMostSpecific(MediaType requestedType, ControllerDescription controller) {
+        List<MediaType> compatibleTypes =
+                new ArrayList<>(controller.getSupportedMediaTypes().size());
+        for (MediaType supportedType : controller.getSupportedMediaTypes()) {
+            if (supportedType.isCompatibleWith(requestedType)) {
+                compatibleTypes.add(supportedType);
+            }
+        }
+        if (compatibleTypes.isEmpty()) {
+            return null;
+        }
+        MimeTypeUtils.sortBySpecificity(compatibleTypes);
+        assert compatibleTypes.getFirst().isMoreSpecific(compatibleTypes.getLast());
+        return compatibleTypes.getFirst();
     }
 
+    /**
+     * Maps the requested media type to supported controllers.
+     *
+     * @param requestedType requested media type
+     * @param controllers available controllers
+     * @return Unordered (and possibly unstable) stream of controllers capable of producing the requested type.
+     */
+    private Stream<ControllerCandidate> resolveCandidates(
+            MediaType requestedType, Collection<ControllerDescription> controllers) {
+        return controllers.stream()
+                .map(controller -> constructCandidate(requestedType, controller))
+                .filter(Objects::nonNull);
+    }
+
+    /**
+     * Maps requested media types to the provided controllers that are capable of producing the media type.
+     *
+     * @param requestedTypes ordered array of requested media types
+     * @param controllers available controllers
+     * @return Sorted stream of candidates
+     */
     private Stream<ControllerCandidate> resolveCandidates(
             MediaType[] requestedTypes, Collection<ControllerDescription> controllers) {
         return Arrays.stream(requestedTypes)
                 .flatMap(requestedType -> resolveCandidates(requestedType, controllers))
-                .filter(Objects::nonNull);
+                .sorted(Comparator.comparing(candidate -> candidate.controller().getClassName()));
     }
 
+    /**
+     * Finds the best suitable controller capable of producing one of the requested media types.
+     *
+     * @param requestedTypes ordered array of requested types
+     * @param controllers available controllers
+     * @return the controller and chosen media type
+     */
     public Optional<ControllerCandidate> resolveController(
             MediaType[] requestedTypes, Collection<ControllerDescription> controllers) {
-        AtomicReference<ControllerCandidate> bestCandidate = new AtomicReference<>();
+        AtomicReference<@Nullable ControllerCandidate> bestCandidate = new AtomicReference<>();
         resolveCandidates(requestedTypes, controllers).forEach(candidate -> {
             final ControllerCandidate currentBest = bestCandidate.get();
             if (currentBest == null || candidate.mediaType().isMoreSpecific(currentBest.mediaType())) {

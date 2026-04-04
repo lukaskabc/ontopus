@@ -32,6 +32,15 @@ public class ResourceController {
         return new StreamingResponseBodyAdapter(body);
     }
 
+    private String decodeUrl(HttpServletRequest request) {
+        final Charset charset = getCharset(request);
+        final String decodedUrl = URLDecoder.decode(request.getRequestURL().toString(), charset);
+        // if (decodedUrl.endsWith("/")) {
+        // return decodedUrl.substring(0, decodedUrl.length() - 1);
+        // }
+        return decodedUrl;
+    }
+
     private Charset getCharset(HttpServletRequest request) {
         String encoding = request.getCharacterEncoding();
         if (encoding != null) {
@@ -46,15 +55,11 @@ public class ResourceController {
 
     public ResponseEntity<StreamingResponseBodyAdapter> getResource(
             @RequestHeader("Accept") MediaType[] requestedTypes, HttpServletRequest request) {
-        final Charset charset = getCharset(request);
-        final String decodedUrl = URLDecoder.decode(request.getRequestURL().toString(), charset);
+        final String decodedUrl = decodeUrl(request);
         final ResourceURI requestedURI = new ResourceURI(decodedUrl);
         // TODO does not account for leading slash
         // e.g. http://purl.org/dc/terms/.ttl works
         // http://purl.org/dc/terms.ttl does not
-        // TODO: slash URLs to specific resource gets redirected to HTML but the
-        // information about the resource is lost
-        // should be mapped to fragment somehow?
 
         final ResponseEntity<StreamingResponseBody> response =
                 resourceService.getResource(requestedURI, requestedTypes);

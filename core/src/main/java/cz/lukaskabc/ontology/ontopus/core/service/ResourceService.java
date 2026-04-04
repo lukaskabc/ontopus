@@ -81,6 +81,9 @@ public class ResourceService {
                     return this.handleRequest(candidate, mapping.getMappingType(), request);
                 });
 
+        // TODO fallback trailing slash to without slash and vice versa
+        // TODO HTTP vs HTTPS fallback
+
         return result.orElseGet(this::multipleChoice);
     }
 

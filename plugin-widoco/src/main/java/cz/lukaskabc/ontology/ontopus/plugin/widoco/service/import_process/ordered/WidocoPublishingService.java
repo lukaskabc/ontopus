@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.widoco.service.import_process;
+package cz.lukaskabc.ontology.ontopus.plugin.widoco.service.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;

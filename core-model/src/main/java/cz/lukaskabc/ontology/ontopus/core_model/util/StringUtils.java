@@ -2,7 +2,10 @@ package cz.lukaskabc.ontology.ontopus.core_model.util;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jspecify.annotations.Nullable;
+import org.springframework.lang.Contract;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -71,11 +74,63 @@ public class StringUtils extends org.springframework.util.StringUtils {
         return sanitized.toString();
     }
 
+    /**
+     * Sanitizes the uri by replacing all slashes with {@code -} and deduplicating multiple {@code -} characters into a
+     * single one, then applying the default sanitization.
+     *
+     * @see #sanitize(String)
+     * @param uri the URI to sanitize as an URI component
+     * @return sanitized URI component
+     */
     public static String sanitizeUriAsComponent(String uri) {
         final String formatted = SLASH_PLUS.matcher(uri).replaceAll("-");
         final String deduplicated = MINUS_PLUS.matcher(formatted).replaceAll("-");
-        ;
+
         return StringUtils.sanitize(deduplicated);
+    }
+
+    /**
+     * Removes any number of trailing slashes from the value. If the value does not contain a trailing slash or is
+     * empty, the same object is returned.
+     *
+     * @param value the value to trim
+     * @return The {@code value} if its null, empty or does not contain a trailing slash, or a new string without
+     *     trailing slashes otherwise.
+     */
+    @Contract("null -> param1; !null -> !null")
+    public static @Nullable String withoutTrailingSlash(@Nullable String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        int i = value.length() - 1;
+        while (i >= 0 && value.charAt(i) == '/') {
+            i--;
+        }
+        if (i == value.length() - 1) {
+            return value;
+        }
+        return i < 0 ? "" : value.substring(0, i + 1);
+    }
+
+    /**
+     * Removes trailing slashes from the URI
+     *
+     * @param uri the uri to trim
+     * @return a new uri without trailing slashes or the {@code uri} object if there is no trailing slash
+     */
+    @SuppressWarnings("StringEquality")
+    public static URI withoutTrailingSlash(URI uri) {
+        final String str = uri.toString();
+        final String withoutTrailingSlash = withoutTrailingSlash(str);
+        // withoutTrailingSlash guarantees to return the param1 if no change is required
+        if (str == withoutTrailingSlash) {
+            return uri;
+        }
+        try {
+            return new URI(withoutTrailingSlash);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid URI: " + uri, e);
+        }
     }
 
     private StringUtils() {

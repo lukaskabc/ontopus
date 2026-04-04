@@ -3,13 +3,88 @@
     "service": {
       "WidocoPublishingService": {
         "name": "Generate documentation with Widoco",
-        "description": "Generates documentation for an ontology using the Wizard for documenting ontologies.",
+        "title": "Generate documentation with Widoco",
+        "description": "[Wizard for documenting ontologies](https://github.com/dgarijo/Widoco). WIDOCO is a step by step generator of HTML templates with the documentation of your ontology. It uses the [LODE](https://github.com/essepuntato/LODE) environment to create part of the template.\n\nThe options below allows to customize the supported options.",
         "fields": {
-          "ONT_FILE": {
-            "title": "Ontology file"
+          "ANALYTICS": {
+            "title": "Google Analytics ID",
+            "description": "Add a code snippet for Google analytics to track your HTML documentation. You need to add your CODE next to the flag. For example: UA-1234"
           },
           "CONF_FILE": {
-            "title": "Configuration file"
+            "title": "Configuration file",
+            "description": "Load your own configuration file for the ontology metadata. Use this option if you want to load your own HTML sections as well. Incompatible with `-getOntologyMetadata`. See the [configuration documentation](https://github.com/dgarijo/Widoco/blob/v1.4.25/doc/configuration/configuration_doc.md) for more information about the accepted fields."
+          },
+          "DISPLAY_DIRECT_IMPORTS_ONLY": {
+            "title": "Display direct imports only",
+            "description": "Only those imported ontologies that are directly imported in the ontology being documented."
+          },
+          "DO_NOT_DISPLAY_SERIALIZATIONS": {
+            "title": "Do not display serializations",
+            "description": "The serializations of the ontology will not be displayed."
+          },
+          "EXCLUDE_INTRODUCTION": {
+            "title": "Exclude introduction",
+            "description": "Skip the introduction section in the documentation."
+          },
+          "EXCLUDE_PROVENANCE": {
+            "title": "Exclude provenance",
+            "description": "Do not add the link \"Provenance of this page\" in the metadata header section"
+          },
+          "GET_ONTOLOGY_METADATA": {
+            "title": "Get ontology metadata",
+            "description": "Extract ontology metadata from the given ontology"
+          },
+          "IGNORE_INDIVIDUALS": {
+            "title": "Ignore individuals",
+            "description": "Individuals will not be included in the documentation."
+          },
+          "INCLUDE_ANNOTATION_PROPERTIES": {
+            "title": "Include annotation properties",
+            "description": "Include annotation properties defined in your ontology in the documentation (by default they are not included)."
+          },
+          "INCLUDE_IMPORTED_ONTOLOGIES": {
+            "title": "Include imported ontologies",
+            "description": "Indicates whether the terms of the imported ontologies of the current ontology should be documented as well or not."
+          },
+          "IMPORT": {
+            "title": "Import local ontology",
+            "description": "Imports a local ontology (e.g., if you don't want to load an online ontology, you may load its local version)"
+          },
+          "LANG": {
+            "title": "Languages",
+            "description": "Generate documentation in multiple languages. Note that if the language is not supported, the system will load the labels in english."
+          },
+          "LICENSIUS": {
+            "title": "Licensius",
+            "description": "Use the Licensius web services (http://licensius.com/apidoc/index.html) to retrieve license metadata. Only works if the -getOntologyMetadata flag is enabled."
+          },
+          "NO_PLACEHOLDER_TEXT": {
+            "title": "No placeholder text",
+            "description": "Do not add any placeholder text (this will remove intro, abstract (if empty) and description sections)."
+          },
+          "ONT_FILE": {
+            "title": "Ontology file",
+            "description": "Load a local ontology file to document."
+          },
+          "OOPS": {
+            "title": "OOPS!",
+            "description": "Create an html page with the evaluation from the OntOlogy Pitfall Scanner! service (http://oops.linkeddata.es/)"
+          },
+          "UNITE_SECTIONS": {
+            "title": "Unite sections",
+            "description": "Write all HTML sections into a single HTML document."
+          },
+          "USE_CUSTOM_STYLE": {
+            "title": "Use custom style",
+            "description": "Export the documentation using **alternate** css files (by Daniel Vila)."
+          },
+          "WEB_VOWL": {
+            "title": "WebVowl",
+            "description": "Create a graph visualization based on [WebVowl](https://github.com/VisualDataWeb/WebVOWL) in the documentation."
+          },
+          "RedirectSerializationToOntopus": {
+            "title": "Redirect serialization to Ontopus",
+            "description": "Removes serializations generated by Widoco and redirects them to standard OntoPuS endpoint."
           }
         }
       }

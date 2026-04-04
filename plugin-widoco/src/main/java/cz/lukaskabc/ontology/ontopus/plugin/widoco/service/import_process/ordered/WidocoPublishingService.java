@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyPublishingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
+import cz.lukaskabc.ontology.ontopus.api.util.JsonUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -26,13 +27,16 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Service
@@ -42,6 +46,22 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private static final String REDIRECT_SERIALIZATION_FIELD = "RedirectSerializationToOntopus";
     private static final Set<String> WIDOCO_OUTPUT_DIRECTORIES = Set.of("provenance", "sections", "resources");
 
+    private static void applyOrder(ObjectNode uiSchema, Collection<String> propertyNames) {
+        ArrayNode order = uiSchema.putArray("ui:order")
+                .add(Argument.ONT_FILE.name())
+                .add(Argument.GET_ONTOLOGY_METADATA.name())
+                .add(Argument.CONF_FILE.name())
+                .add(Argument.LANG.name());
+
+        propertyNames.forEach(propertyName -> {
+            StringNode node = order.stringNode(propertyName);
+            if (order.values().contains(node)) {
+                return;
+            }
+            order.add(node);
+        });
+    }
+
     private static JsonForm makeForm(ObjectMapper mapper) {
         final ObjectNode schema = mapper.createObjectNode();
         final ObjectNode uiSchema = mapper.createObjectNode();
@@ -50,8 +70,17 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         final ObjectNode properties = schema.putObject("properties");
 
         for (Argument arg : Argument.values()) {
-            properties.putObject(arg.name()).put("type", arg.schemaType());
+            final ObjectNode property = properties.putObject(arg.name()).put("type", arg.schemaType());
+            if (arg.schemaType().startsWith("array")) {
+                property.put("type", "array");
+                property.putObject("items").put("type", arg.schemaType().substring("array_".length()));
+            }
         }
+
+        JsonUtils.getOrPutObject(properties, Argument.LANG.name()).put("uniqueItems", true);
+        JsonUtils.getOrPutObject(uiSchema, Argument.LANG.name())
+                .putObject("items")
+                .put("ui:label", false);
 
         properties.putObject(REDIRECT_SERIALIZATION_FIELD).put("type", "boolean");
 
@@ -66,6 +95,13 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
 
         uiSchema.set(Argument.CONF_FILE.name(), autocompleteWidget);
         uiSchema.set(Argument.ONT_FILE.name(), autocompleteWidget);
+        uiSchema.set(Argument.IMPORT.name(), autocompleteWidget);
+
+        uiSchema.putObject("ui:globalOptions").put("enableMarkdownInDescription", true);
+
+        JsonUtils.getOrPutObject(uiSchema, Argument.LANG.name()).put("ui:orderable", false);
+
+        applyOrder(uiSchema, properties.propertyNames());
 
         return new JsonForm(schema, uiSchema, null);
     }
@@ -175,8 +211,16 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                 arguments.put(arg, inContext.toString());
             } else if (value.isString() || value.isNumber()) {
                 arguments.put(arg, value.asString());
-            } else if (value.isBoolean() || value.asBoolean()) {
+            } else if (value.isBoolean() && value.asBoolean()) {
                 arguments.put(arg, "");
+            } else if (arg.equals(Argument.LANG) && value.isArray()) {
+                final String param = value.asArray().values().stream()
+                        .filter(JsonNode::isString)
+                        .map(JsonNode::asString)
+                        .collect(Collectors.joining("-"));
+                arguments.put(arg, StringUtils.sanitize(param));
+            } else {
+                throw new IllegalArgumentException("Unknown argument: " + arg + " with value " + value.toString());
             }
         });
 

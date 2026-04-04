@@ -11,7 +11,6 @@ import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.rio.helpers.StatementCollector;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -36,7 +35,7 @@ public class RDFDataImportingService implements DataFileImportingService {
         }
         final Model model = new LinkedHashModel();
         final RDFParser parser = Rio.createParser(rdfFormat);
-        parser.setRDFHandler(new StatementCollector(model));
+        parser.setRDFHandler(new NormalizingStatementCollector(model));
 
         for (File file : files) {
             parser.parse(new FileInputStream(file));

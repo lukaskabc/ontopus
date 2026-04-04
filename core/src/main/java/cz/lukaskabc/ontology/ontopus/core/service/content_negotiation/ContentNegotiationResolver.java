@@ -13,6 +13,9 @@ import java.util.stream.Stream;
 @Component
 public class ContentNegotiationResolver {
 
+    private static final Comparator<ControllerDescription> CONTROLLER_CLASSNAME_COMPARATOR =
+            Comparator.comparing(ControllerDescription::getClassName);
+
     /**
      * Constructs controller candidate with the most specific media type supported by the controller that is compatible
      * with the requested type.
@@ -81,7 +84,6 @@ public class ContentNegotiationResolver {
      *
      * @param requestedType requested media type
      * @param controllers available controllers
-     * @return Unordered (and possibly unstable) stream of controllers capable of producing the requested type.
      */
     private Stream<ControllerCandidate> resolveCandidates(
             MediaType requestedType, Collection<ControllerDescription> controllers) {
@@ -95,13 +97,10 @@ public class ContentNegotiationResolver {
      *
      * @param requestedTypes ordered array of requested media types
      * @param controllers available controllers
-     * @return Sorted stream of candidates
      */
     private Stream<ControllerCandidate> resolveCandidates(
             MediaType[] requestedTypes, Collection<ControllerDescription> controllers) {
-        return Arrays.stream(requestedTypes)
-                .flatMap(requestedType -> resolveCandidates(requestedType, controllers))
-                .sorted(Comparator.comparing(candidate -> candidate.controller().getClassName()));
+        return Arrays.stream(requestedTypes).flatMap(requestedType -> resolveCandidates(requestedType, controllers));
     }
 
     /**
@@ -113,8 +112,11 @@ public class ContentNegotiationResolver {
      */
     public Optional<ControllerCandidate> resolveController(
             MediaType[] requestedTypes, Collection<ControllerDescription> controllers) {
+        List<ControllerDescription> controllerList = new ArrayList<>(controllers);
+        // sorting controllers to keep the results stable
+        controllerList.sort(CONTROLLER_CLASSNAME_COMPARATOR);
         AtomicReference<@Nullable ControllerCandidate> bestCandidate = new AtomicReference<>();
-        resolveCandidates(requestedTypes, controllers).forEach(candidate -> {
+        resolveCandidates(requestedTypes, controllerList).forEach(candidate -> {
             final ControllerCandidate currentBest = bestCandidate.get();
             if (currentBest == null || candidate.mediaType().isMoreSpecific(currentBest.mediaType())) {
                 bestCandidate.set(candidate);

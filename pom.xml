@@ -16,7 +16,7 @@
         <module>plugin-git</module>
         <module>plugin-file</module>
         <module>core-model</module>
-        <module>plugin-rdf-importer</module>
+        <module>plugin-rdf</module>
         <module>plugin-owl</module>
         <module>plugin-versioning</module>
         <module>plugin-skos</module>

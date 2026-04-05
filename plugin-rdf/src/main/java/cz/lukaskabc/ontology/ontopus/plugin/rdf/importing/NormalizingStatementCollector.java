@@ -37,9 +37,6 @@ public class NormalizingStatementCollector extends StatementCollector {
                 String iri = StringUtils.withoutTrailingSlash(value.stringValue());
                 return SimpleValueFactory.getInstance().createIRI(iri);
             }
-            case BNode -> {
-                return value;
-            }
             case Triple -> {
                 Triple triple = (Triple) value;
                 Resource subject = (Resource) normalize(triple.getSubject());

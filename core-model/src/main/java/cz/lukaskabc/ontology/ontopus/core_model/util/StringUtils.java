@@ -4,12 +4,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.lang.Contract;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -21,18 +17,6 @@ public class StringUtils extends org.springframework.util.StringUtils {
     private static final Pattern SLASH_PLUS = Pattern.compile("/+");
 
     private static final Pattern MINUS_PLUS = Pattern.compile("-+");
-
-    /** Decodes the given URL with {@link URLDecoder} and transforms the scheme to HTTP if HTTPS is used. */
-    public static String decodeUrlAsHttp(URI uri, Charset charset) {
-        UriComponents components = UriComponentsBuilder.fromUri(uri).build();
-        String uriString = components.toUriString();
-        if (components.getScheme() != null && components.getScheme().equalsIgnoreCase("https")) {
-            uriString = UriComponentsBuilder.fromUri(components.toUri())
-                    .scheme("http")
-                    .toUriString();
-        }
-        return URLDecoder.decode(uriString, charset);
-    }
 
     public static String escapeMarkdown(String input) {
         final StringBuilder escaped = new StringBuilder(input.length());
@@ -48,6 +32,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
     public static String randomString(int length) {
         return RandomStringUtils.secure().next(length, true, true);
     }
+
     /**
      * Filters out all characters from the input string that are not letters, digits, or one of the allowed special
      * characters.
@@ -62,7 +47,6 @@ public class StringUtils extends org.springframework.util.StringUtils {
     public static String sanitize(String input) {
         return sanitize(input, SANITIZATION_ALLOWED_CHARACTERS);
     }
-
     /**
      * Filters out all characters from the input string that are not letters, digits, or one of the allowed special
      * characters.

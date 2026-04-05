@@ -4,7 +4,6 @@ import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core.rest.utils.StreamingResponseBodyAdapter;
 import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
-import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
@@ -13,30 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 @NullMarked
 @Controller
 public class ResourceController {
-    private static String decodeUrl(HttpServletRequest request) {
-        final URI uri = URI.create(request.getRequestURL().toString());
-        return StringUtils.decodeUrlAsHttp(uri, getCharset(request));
-    }
-
-    private static Charset getCharset(HttpServletRequest request) {
-        String encoding = request.getCharacterEncoding();
-        if (encoding != null) {
-            try {
-                return Charset.forName(encoding);
-            } catch (Exception e) {
-                // fallback to UTF-8
-            }
-        }
-        return StandardCharsets.UTF_8;
-    }
-
     private final ResourceService resourceService;
 
     public ResourceController(ResourceService resourceService) {
@@ -48,6 +30,27 @@ public class ResourceController {
             return null;
         }
         return new StreamingResponseBodyAdapter(body);
+    }
+
+    private String decodeUrl(HttpServletRequest request) {
+        final Charset charset = getCharset(request);
+        final String decodedUrl = URLDecoder.decode(request.getRequestURL().toString(), charset);
+        // if (decodedUrl.endsWith("/")) {
+        // return decodedUrl.substring(0, decodedUrl.length() - 1);
+        // }
+        return decodedUrl;
+    }
+
+    private Charset getCharset(HttpServletRequest request) {
+        String encoding = request.getCharacterEncoding();
+        if (encoding != null) {
+            try {
+                return Charset.forName(encoding);
+            } catch (Exception e) {
+                // fallback to UTF-8
+            }
+        }
+        return StandardCharsets.UTF_8;
     }
 
     public ResponseEntity<StreamingResponseBodyAdapter> getResource(

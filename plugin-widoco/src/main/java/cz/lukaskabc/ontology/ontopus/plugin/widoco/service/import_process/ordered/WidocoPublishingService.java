@@ -51,7 +51,6 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private static void applyOrder(ObjectNode uiSchema, Collection<String> propertyNames) {
         ArrayNode order = uiSchema.putArray("ui:order")
                 .add(Argument.ONT_FILE.name())
-                .add(Argument.GET_ONTOLOGY_METADATA.name())
                 .add(Argument.CONF_FILE.name())
                 .add(Argument.LANG.name());
 
@@ -253,8 +252,6 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             deleteUnusedWidocoFiles(outputRoot, redirectSerialization);
             persistOutput(outputRoot, context);
             // TODO: reduce size of this service
-            // TODO: mappings throws because of duplicated individuals (RDF controller maps
-            // resources nad this maps them again)
             final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(
                     context.getFinalDatabaseContext(),
                     widocoControllerRegistrationService.getControllerDescriptions(),

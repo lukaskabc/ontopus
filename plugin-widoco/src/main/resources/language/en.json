@@ -30,10 +30,6 @@
             "title": "Exclude provenance",
             "description": "Do not add the link \"Provenance of this page\" in the metadata header section"
           },
-          "GET_ONTOLOGY_METADATA": {
-            "title": "Get ontology metadata",
-            "description": "Extract ontology metadata from the given ontology"
-          },
           "IGNORE_INDIVIDUALS": {
             "title": "Ignore individuals",
             "description": "Individuals will not be included in the documentation."

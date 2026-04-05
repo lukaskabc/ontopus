@@ -13,7 +13,8 @@ public enum Argument {
     DO_NOT_DISPLAY_SERIALIZATIONS("doNotDisplaySerializations", "boolean"),
     EXCLUDE_INTRODUCTION("excludeIntroduction", "boolean"),
     EXCLUDE_PROVENANCE("excludeProvenance", "boolean"),
-    GET_ONTOLOGY_METADATA("getOntologyMetadata", "boolean", true),
+    // not including getOntologyMetadata enabled by default, disabled when using
+    // conf file by widoco
     // not including help
     // not including htaccess (unused in ontopus)
     IGNORE_INDIVIDUALS("ignoreIndividuals", "boolean"),

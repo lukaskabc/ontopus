@@ -44,4 +44,19 @@ public class TemporaryContextRepository
     public void deleteAll() {
         dao.findAll().forEach(this::delete);
     }
+
+    /**
+     * Persists a new entity, setting its identifier if it is missing.
+     *
+     * @param entity the entity to persist
+     */
+    @Override
+    @Transactional
+    public void persist(TemporaryContext entity) {
+        Objects.requireNonNull(entity);
+        setIdentifierIfMissing(entity);
+        Objects.requireNonNull(entity.getIdentifier(), "Failed to generate temporary context identifier");
+        graphDao.delete(entity.getIdentifier());
+        dao.persist(validated(entity));
+    }
 }

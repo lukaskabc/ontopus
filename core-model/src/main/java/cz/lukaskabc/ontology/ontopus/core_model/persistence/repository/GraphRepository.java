@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import org.eclipse.rdf4j.model.Statement;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,10 @@ public class GraphRepository {
     @Transactional
     public void copy(GraphURI source, GraphURI target) {
         graphDao.copy(source, target);
+    }
+
+    public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
+        return graphDao.exists(resource, temporaryDatabaseContext);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */

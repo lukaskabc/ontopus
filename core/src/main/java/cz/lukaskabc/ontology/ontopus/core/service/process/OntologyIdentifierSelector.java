@@ -1,11 +1,14 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -22,10 +25,18 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
     private static final String ID_FIELD = "identifier";
     private final JsonForm jsonForm;
     private final ObjectMapper objectMapper;
+    private final GraphService graphService;
 
-    public OntologyIdentifierSelector(ObjectMapper objectMapper, Set<URI> identifiers) {
+    public OntologyIdentifierSelector(ObjectMapper objectMapper, GraphService graphService, Set<URI> identifiers) {
         this.objectMapper = objectMapper;
+        this.graphService = graphService;
         this.jsonForm = makeJsonForm(identifiers);
+    }
+
+    private void ensureExists(ResourceURI resource, ImportProcessContext context) throws JsonFormSubmitException {
+        if (!graphService.exists(resource, context.getTemporaryDatabaseContext())) {
+            throw new JsonFormSubmitException("Resource does not exists in the ontology");
+        }
     }
 
     @Override
@@ -46,7 +57,9 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
         try {
             String identifier = formResult.getStringValue(ID_FIELD);
             Objects.requireNonNull(identifier);
-            return URI.create(identifier);
+            final URI uri = URI.create(identifier);
+            ensureExists(new ResourceURI(uri), context);
+            return uri;
         } catch (Exception e) {
             throw new OntopusException(e); // TODO exception
         }

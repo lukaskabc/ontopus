@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingSe
 import cz.lukaskabc.ontology.ontopus.core.service.process.OntologyIdentifierSelector;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,17 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
         context.getVersionSeries().setOntologyURI(new OntologyURI(identifier));
     }
 
+    private final GraphService graphService;
+
     private final List<OntologyIdentifierResolvingService> resolvers;
 
     private final ObjectMapper objectMapper;
 
     public OntologyIdentifierProcessingService(
-            List<OntologyIdentifierResolvingService> resolvers, ObjectMapper objectMapper) {
+            List<OntologyIdentifierResolvingService> resolvers, ObjectMapper objectMapper, GraphService graphService) {
         this.resolvers = resolvers;
         this.objectMapper = objectMapper;
+        this.graphService = graphService;
     }
 
     /**
@@ -76,8 +80,16 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
                 .map(Map.Entry::getKey)
                 .collect(LinkedHashSet::new, Set::add, Set::addAll);
 
+        if (identifiers.isEmpty()) {
+            // list all identifiers if no identifier was returned from resolvers
+            identifiers = graphService
+                    .findAllSubjects(context.getTemporaryDatabaseContext())
+                    .sorted()
+                    .collect(LinkedHashSet::new, Set::add, Set::addAll);
+        }
+
         ImportProcessingService<URI> selector = new ResultHandlingServiceWrapper<>(
-                new OntologyIdentifierSelector(objectMapper, identifiers),
+                new OntologyIdentifierSelector(objectMapper, graphService, identifiers),
                 OntologyIdentifierProcessingService::setOntologyIdentifier);
 
         if (context.peekService() != this) {

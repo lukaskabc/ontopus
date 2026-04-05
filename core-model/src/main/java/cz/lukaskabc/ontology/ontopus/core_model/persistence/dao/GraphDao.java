@@ -4,6 +4,7 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -64,6 +65,22 @@ public class GraphDao {
 					""").setParameter("graph", graphUri.toURI()).executeUpdate();
         } catch (Exception e) {
             throw new PersistenceException("Failed to delete graph " + graphUri, e);
+        }
+    }
+
+    public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
+        try {
+            return em.createNativeQuery("""
+					ASK FROM ?context WHERE {
+					    ?resource a ?type .
+					}
+					""", Boolean.class)
+                    .setParameter("context", temporaryDatabaseContext.toURI())
+                    .setParameter("resource", resource.toURI())
+                    .getSingleResult();
+        } catch (Exception e) {
+            throw new PersistenceException(
+                    "Failed to check existence of resource " + resource + " in context " + temporaryDatabaseContext, e);
         }
     }
 

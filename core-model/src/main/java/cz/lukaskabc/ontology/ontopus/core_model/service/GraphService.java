@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.GraphRepository;
 import org.eclipse.rdf4j.model.Statement;
@@ -29,6 +30,10 @@ public class GraphService {
      */
     public void copy(GraphURI source, GraphURI target) {
         graphRepository.copy(source, target);
+    }
+
+    public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
+        return graphRepository.exists(resource, temporaryDatabaseContext);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */

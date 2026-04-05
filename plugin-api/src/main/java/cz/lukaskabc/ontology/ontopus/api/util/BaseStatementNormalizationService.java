@@ -1,8 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.util;
 
 import org.eclipse.rdf4j.model.*;
-import org.jspecify.annotations.Nullable;
-import org.springframework.lang.Contract;
 
 /** Service capable of normalization of the RDF data. Defaults to no operation. */
 public abstract class BaseStatementNormalizationService {
@@ -88,14 +86,13 @@ public abstract class BaseStatementNormalizationService {
      * @param value the value to normalize
      * @return Normalized value
      */
-    @Nullable @Contract("null -> null; !null -> !null")
     protected Value normalize(Value value) {
         return switch (value.getType()) {
             case IRI -> normalize((IRI) value);
             case Triple -> normalize((Triple) value);
             case BNode -> normalize((BNode) value);
             case Literal -> normalize((Literal) value);
-            case null -> null;
+            default -> throw new IllegalArgumentException("Unsupported value type: " + value.getType());
         };
     }
 
@@ -107,6 +104,16 @@ public abstract class BaseStatementNormalizationService {
      */
     protected Resource normalizeContext(Resource context) {
         return context;
+    }
+
+    /**
+     * Normalizes the given URI from namespace statement
+     *
+     * @param uri the uri to normalize
+     * @return Normalized URI
+     */
+    public String normalizeNamespaceUri(String uri) {
+        return normalize(valueFactory.createIRI(uri)).stringValue();
     }
 
     /**

@@ -11,6 +11,8 @@ import java.util.List;
  *
  * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
  *     annotation)
+ *     <p>Must utilize {@link cz.lukaskabc.ontology.ontopus.api.service.core.StatementNormalizationCollectorFactory
+ *     StatementNormalizationCollectorFactory} for RDF normalization.
  */
 public interface DataFileImportingService {
 

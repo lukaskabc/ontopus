@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.rdf.importing;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
+import cz.lukaskabc.ontology.ontopus.api.service.core.StatementNormalizationCollectorFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import org.apache.logging.log4j.LogManager;
@@ -12,8 +13,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.jspecify.annotations.Nullable;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,24 +23,8 @@ import java.nio.file.Files;
 import java.util.List;
 
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RDFDataImportingService implements DataFileImportingService {
     private static final Logger LOG = LogManager.getLogger(RDFDataImportingService.class);
-
-    public static Model loadModel(List<File> files) throws IOException {
-        RDFFormat rdfFormat = resolveFormat(files.getFirst());
-        if (rdfFormat == null) {
-            throw new IllegalStateException("Unable to resolve file type to supported RDF format"); // TODO exception
-        }
-        final Model model = new LinkedHashModel();
-        final RDFParser parser = Rio.createParser(rdfFormat);
-        parser.setRDFHandler(new NormalizingStatementCollector(model));
-
-        for (File file : files) {
-            parser.parse(new FileInputStream(file));
-        }
-        return model;
-    }
 
     @Nullable private static RDFFormat resolveFormat(File file) throws IOException {
         RDFFormat format = null;
@@ -55,9 +38,13 @@ public class RDFDataImportingService implements DataFileImportingService {
         return format;
     }
 
+    private final StatementNormalizationCollectorFactory statementNormalizationCollectorFactory;
+
     private final GraphDao graphDao;
 
-    public RDFDataImportingService(GraphDao graphDao) {
+    public RDFDataImportingService(
+            StatementNormalizationCollectorFactory statementNormalizationCollectorFactory, GraphDao graphDao) {
+        this.statementNormalizationCollectorFactory = statementNormalizationCollectorFactory;
         this.graphDao = graphDao;
     }
 
@@ -70,6 +57,21 @@ public class RDFDataImportingService implements DataFileImportingService {
         final Model model = loadModel(files);
         final TemporaryContextURI context = importContext.getTemporaryDatabaseContext();
         graphDao.persistModel(context, model);
+    }
+
+    public Model loadModel(List<File> files) throws IOException {
+        RDFFormat rdfFormat = resolveFormat(files.getFirst());
+        if (rdfFormat == null) {
+            throw new IllegalStateException("Unable to resolve file type to supported RDF format"); // TODO exception
+        }
+        final Model model = new LinkedHashModel();
+        final RDFParser parser = Rio.createParser(rdfFormat);
+        parser.setRDFHandler(statementNormalizationCollectorFactory.create(model));
+
+        for (File file : files) {
+            parser.parse(new FileInputStream(file));
+        }
+        return model;
     }
 
     @Override

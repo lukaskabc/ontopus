@@ -67,6 +67,31 @@ public class GraphDao {
         }
     }
 
+    /**
+     * Finds all non-empty language tags present on object values.
+     *
+     * @param contextUri the database context graph
+     * @return the list of language tags
+     */
+    public List<String> findAllLanguageTags(GraphURI contextUri) {
+        Objects.requireNonNull(contextUri);
+        try {
+            return em.createNativeQuery("""
+					SELECT DISTINCT ?language FROM ?context
+					WHERE {
+					    ?s ?p ?o.
+					    BIND(LANG(?o) AS ?language)
+					    FILTER(BOUND(?language))
+					   	FILTER(?language != "")
+					} ORDER BY ?language
+					""", String.class)
+                    .setParameter("context", contextUri.toURI())
+                    .getResultList();
+        } catch (Exception e) {
+            throw new PersistenceException("Failed to find language tags of graph " + contextUri, e);
+        }
+    }
+
     public Stream<URI> findAllSubjects(GraphURI contextUri) {
         Objects.requireNonNull(contextUri);
         try {

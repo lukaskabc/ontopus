@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
+import org.apache.commons.lang3.stream.Streams;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +23,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.List;
 import java.util.stream.Stream;
 
 @RequestMapping(WidocoController.PATH)
@@ -52,12 +54,11 @@ public class WidocoController {
         final String requestedPath = resolveRequestedPath(request);
         final Path relativeRequestedPath = ROOT_PATH.relativize(Path.of(requestedPath));
         final Path absolutePath = FileUtils.resolvePath(filesDirectory, relativeRequestedPath);
-        // TODO: handle requested language?
 
         if (Files.isRegularFile(absolutePath)) {
             return serveFile(absolutePath);
         } else if (Files.isDirectory(absolutePath)) {
-            final Path index = resolveDefaultFileName(absolutePath);
+            final Path index = resolveDefaultFileName(absolutePath, request);
             return redirectTo(requestedPath, index.toString());
         } else {
             throw new NotFoundException("Requested resource not found");
@@ -77,14 +78,28 @@ public class WidocoController {
                 .build();
     }
 
-    Path resolveDefaultFileName(Path safeDirectory) {
+    Path resolveDefaultFileName(Path safeDirectory, HttpServletRequest request) {
+        final Stream<String> languages = Streams.of(request.getLocales())
+                .flatMap(locale -> Stream.of(locale.getCountry(), locale.getLanguage()))
+                .distinct();
+
         try (Stream<Path> stream = Files.list(safeDirectory)) {
-            final Path index = stream.filter(DEFAULT_FILE_MATCHER::matches)
-                    .findAny()
-                    .orElseThrow(() -> new NotFoundException("No default file found in the requested directory"));
-            // TODO: redirect to absolute path
+            final List<Path> indexFiles =
+                    stream.filter(DEFAULT_FILE_MATCHER::matches).toList();
+            if (indexFiles.isEmpty()) {
+                throw new NotFoundException("No default file found in the requested directory");
+            }
+            final Path index = languages
+                    // map languages to index files (preserving order of languages)
+                    .flatMap(lang ->
+                            indexFiles.stream()
+                                    .filter(path -> path.endsWith("index-" + lang + ".html"))
+                                    .findFirst()
+                                    .stream())
+                    .findFirst()
+                    .orElseGet(indexFiles::getFirst);
             return index.getFileName();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new NotFoundException("Error while resolving default file in the requested directory", e);
         }
     }

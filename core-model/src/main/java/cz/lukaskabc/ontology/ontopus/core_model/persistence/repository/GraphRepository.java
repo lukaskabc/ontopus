@@ -25,6 +25,12 @@ public class GraphRepository {
         graphDao.copy(source, target);
     }
 
+    /** @see GraphDao#findAllLanguageTags(GraphURI) */
+    @Transactional(readOnly = true)
+    public List<String> findAllLanguageTags(GraphURI graph) {
+        return graphDao.findAllLanguageTags(graph);
+    }
+
     /** @see GraphDao#findAllSubjects(GraphURI) */
     @Transactional(readOnly = true)
     public Stream<URI> findAllSubjects(GraphURI graph) {

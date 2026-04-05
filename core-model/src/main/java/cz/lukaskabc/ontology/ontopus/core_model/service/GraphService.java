@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.GraphRepository;
 import org.eclipse.rdf4j.model.Statement;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.util.List;
@@ -28,6 +29,12 @@ public class GraphService {
      */
     public void copy(GraphURI source, GraphURI target) {
         graphRepository.copy(source, target);
+    }
+
+    /** @see GraphDao#findAllLanguageTags(GraphURI) */
+    @Transactional(readOnly = true)
+    public List<String> findAllLanguageTags(GraphURI graph) {
+        return graphRepository.findAllLanguageTags(graph);
     }
 
     /** @see GraphDao#findAllSubjects(GraphURI) */

@@ -12,6 +12,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.Argument;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -115,19 +117,22 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private final JsonForm jsonForm;
     private final WidocoExecutionService widocoExecutionService;
     private final WidocoControllerRegistrationService widocoControllerRegistrationService;
+    private final GraphService graphService;
 
     public WidocoPublishingService(
             ContextToControllerMappingService mappingService,
             ObjectMapper mapper,
             WidocoExecutionService widocoExecutionService,
             WidocoPluginConfig config,
-            WidocoControllerRegistrationService widocoControllerRegistrationService) {
+            WidocoControllerRegistrationService widocoControllerRegistrationService,
+            GraphService graphService) {
         this.mappingService = mappingService;
         this.mapper = mapper;
         this.widocoExecutionService = widocoExecutionService;
         this.config = config;
         this.jsonForm = makeForm(mapper);
         this.widocoControllerRegistrationService = widocoControllerRegistrationService;
+        this.graphService = graphService;
     }
 
     private void deleteUnusedWidocoFiles(Path widocoRoot, boolean deleteSerializations) throws IOException {
@@ -175,6 +180,14 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             formData.put(Argument.ONT_FILE.name(), ontologyFile);
         }
 
+        if (previousFormData == null || previousFormData.get(Argument.LANG.name()) == null) {
+            final List<String> languages = graphService.findAllLanguageTags(context.getTemporaryDatabaseContext());
+            if (!languages.isEmpty()) {
+                ArrayNode langArray = formData.putArray(Argument.LANG.name());
+                languages.forEach(langArray::add);
+            }
+        }
+
         return new JsonForm(schema, uiSchema, formData);
     }
 
@@ -211,8 +224,10 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                 arguments.put(arg, inContext.toString());
             } else if (value.isString() || value.isNumber()) {
                 arguments.put(arg, value.asString());
-            } else if (value.isBoolean() && value.asBoolean()) {
-                arguments.put(arg, "");
+            } else if (value.isBoolean()) {
+                if (value.asBoolean()) {
+                    arguments.put(arg, "");
+                }
             } else if (arg.equals(Argument.LANG) && value.isArray()) {
                 final String param = value.asArray().values().stream()
                         .filter(JsonNode::isString)

@@ -34,11 +34,7 @@ public class ResourceController {
 
     private String decodeUrl(HttpServletRequest request) {
         final Charset charset = getCharset(request);
-        final String decodedUrl = URLDecoder.decode(request.getRequestURL().toString(), charset);
-        // if (decodedUrl.endsWith("/")) {
-        // return decodedUrl.substring(0, decodedUrl.length() - 1);
-        // }
-        return decodedUrl;
+        return URLDecoder.decode(request.getRequestURL().toString(), charset);
     }
 
     private Charset getCharset(HttpServletRequest request) {

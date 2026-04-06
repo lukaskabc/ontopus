@@ -4,6 +4,9 @@ import cz.lukaskabc.ontology.ontopus.api.rest.*;
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ControllerCandidate;
+import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.HttpsSchemaFallbackService;
+import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.LeadingSlashFallbackService;
+import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.ResourceRequestFallbackService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
@@ -26,7 +29,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @Service
-public class ResourceService {
+public class ResourceService extends ResourceRequestFallbackService {
 
     private final ApplicationContext applicationContext;
     private final ContentNegotiationResolver contentNegotiationResolver;
@@ -35,6 +38,8 @@ public class ResourceService {
     private final VersionSeriesService versionSeriesService;
     private final MediaTypeResolver mediaTypeResolver;
 
+    private final ResourceRequestFallbackService resourceRequestFallbackService;
+
     public ResourceService(
             ApplicationContext applicationContext,
             ContentNegotiationResolver contentNegotiationResolver,
@@ -42,17 +47,31 @@ public class ResourceService {
             ContextToControllerMappingService contextToControllerMappingService,
             VersionSeriesService versionSeriesService,
             MediaTypeResolver mediaTypeResolver) {
+        super(null);
         this.applicationContext = applicationContext;
         this.contentNegotiationResolver = contentNegotiationResolver;
         this.resourceInContextMappingService = resourceInContextMappingService;
         this.contextToControllerMappingService = contextToControllerMappingService;
         this.versionSeriesService = versionSeriesService;
         this.mediaTypeResolver = mediaTypeResolver;
+
+        resourceRequestFallbackService = new HttpsSchemaFallbackService(new LeadingSlashFallbackService(this));
     }
 
     private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {
         final MappingType mappingType = resolveMappingType(requestedURI, graphURI);
         return contextToControllerMappingService.findByTypeAndContext(mappingType, graphURI);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<StreamingResponseBody> findResource(
+            ResourceURI requestedResource, MediaType[] requestedTypes) {
+        final Optional<MediaType> suffixType = resolveSuffixType(requestedResource);
+        final MediaType[] mediaTypes =
+                suffixType.map(type -> prepend(requestedTypes, type)).orElse(requestedTypes);
+        final ResourceURI resourceURI = suffixType.isPresent() ? withoutSuffix(requestedResource) : requestedResource;
+
+        return resourceRequestFallbackService.getResource(resourceURI, mediaTypes);
     }
 
     private Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
@@ -63,14 +82,8 @@ public class ResourceService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public ResponseEntity<StreamingResponseBody> getResource(
-            ResourceURI requestedResource, MediaType[] requestedTypes) {
-        final Optional<MediaType> suffixType = resolveSuffixType(requestedResource);
-        final MediaType[] mediaTypes =
-                suffixType.map(type -> prepend(requestedTypes, type)).orElse(requestedTypes);
-        final ResourceURI resourceURI = suffixType.isPresent() ? withoutSuffix(requestedResource) : requestedResource;
-
+    @Override
+    public ResponseEntity<StreamingResponseBody> getResource(ResourceURI resourceURI, MediaType[] mediaTypes) {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);
         ContextToControllerMapping mapping = findControllerMapping(resourceURI, graphURI);
 
@@ -80,9 +93,6 @@ public class ResourceService {
                     final OntopusRequest request = new OntopusRequest(candidate.mediaType(), resourceURI, graphURI);
                     return this.handleRequest(candidate, mapping.getMappingType(), request);
                 });
-
-        // TODO fallback trailing slash to without slash and vice versa
-        // TODO HTTP vs HTTPS fallback
 
         return result.orElseGet(this::multipleChoice);
     }

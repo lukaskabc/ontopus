@@ -26,6 +26,7 @@ public class GraphRepository {
         graphDao.copy(source, target);
     }
 
+    @Transactional(readOnly = true)
     public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
         return graphDao.exists(resource, temporaryDatabaseContext);
     }

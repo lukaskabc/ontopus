@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.net.URI;

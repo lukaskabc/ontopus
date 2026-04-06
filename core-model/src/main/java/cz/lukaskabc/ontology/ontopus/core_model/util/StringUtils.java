@@ -2,7 +2,6 @@ package cz.lukaskabc.ontology.ontopus.core_model.util;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.jspecify.annotations.Nullable;
 import org.springframework.lang.Contract;
 
 import java.net.URI;
@@ -97,8 +96,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
      * @return The {@code value} if its null, empty or does not contain a trailing slash, or a new string without
      *     trailing slashes otherwise.
      */
-    @Contract("null -> param1; !null -> !null")
-    public static @Nullable String withoutTrailingSlash(@Nullable String value) {
+    @Contract("null -> null; !null -> !null")
+    public static String withoutTrailingSlash(String value) {
         if (value == null || value.isEmpty()) {
             return value;
         }

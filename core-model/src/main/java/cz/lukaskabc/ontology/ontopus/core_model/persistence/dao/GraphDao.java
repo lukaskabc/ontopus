@@ -72,7 +72,7 @@ public class GraphDao {
         try {
             return em.createNativeQuery("""
 					ASK FROM ?context WHERE {
-					    ?resource a ?type .
+					    ?resource ?p ?o .
 					}
 					""", Boolean.class)
                     .setParameter("context", temporaryDatabaseContext.toURI())

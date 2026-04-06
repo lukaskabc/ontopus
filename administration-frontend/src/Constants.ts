@@ -1,12 +1,12 @@
 export function withTrailingSlash(url: string) {
-  if (!url.endsWith('/')) {
+  if (url && !url.endsWith('/')) {
     url = url + '/'
   }
   return url
 }
 
 export function withoutTrailingSlash(url: string) {
-  if (url.endsWith('/')) {
+  if (url && url.endsWith('/')) {
     url = url.slice(0, -1)
   }
   return url

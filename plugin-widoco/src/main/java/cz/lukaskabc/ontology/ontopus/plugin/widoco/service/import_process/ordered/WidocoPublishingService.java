@@ -183,7 +183,9 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             final List<String> languages = graphService.findAllLanguageTags(context.getTemporaryDatabaseContext());
             if (!languages.isEmpty()) {
                 ArrayNode langArray = formData.putArray(Argument.LANG.name());
-                languages.forEach(langArray::add);
+                languages.stream()
+                    .filter(lang -> !lang.contains("-"))
+                    .forEach(langArray::add);
             }
         }
 

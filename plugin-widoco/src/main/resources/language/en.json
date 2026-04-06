@@ -48,7 +48,7 @@
           },
           "LANG": {
             "title": "Languages",
-            "description": "Generate documentation in multiple languages. Note that if the language is not supported, the system will load the labels in english."
+            "description": "Generate documentation in multiple languages. If the language is not supported, the system will load the labels in english. Note that only basic language tags not containing \"-\" are supported due to Widoco limitations (instead of en-US, only en must be used)."
           },
           "LICENSIUS": {
             "title": "Licensius",

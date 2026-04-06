@@ -12,12 +12,12 @@ public abstract class AbstractTypedIdentifier implements TypedIdentifier {
     private final URI uri;
 
     protected AbstractTypedIdentifier(String uri) {
-        this(URI.create(StringUtils.withoutTrailingSlash(uri)));
+        this(URI.create(uri));
     }
 
     protected AbstractTypedIdentifier(URI uri) {
         Objects.requireNonNull(uri);
-        this.uri = StringUtils.withoutTrailingSlash(uri);
+        this.uri = uri;
     }
 
     @Override

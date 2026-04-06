@@ -5,8 +5,9 @@ import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ControllerCandidate;
 import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.HttpsSchemaFallbackService;
-import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.LeadingSlashFallbackService;
 import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.ResourceRequestFallbackService;
+import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.TrailingSlashFallbackService;
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
@@ -46,7 +47,8 @@ public class ResourceService extends ResourceRequestFallbackService {
             ResourceInContextMappingService resourceInContextMappingService,
             ContextToControllerMappingService contextToControllerMappingService,
             VersionSeriesService versionSeriesService,
-            MediaTypeResolver mediaTypeResolver) {
+            MediaTypeResolver mediaTypeResolver,
+            OntopusConfig ontopusConfig) {
         super(null);
         this.applicationContext = applicationContext;
         this.contentNegotiationResolver = contentNegotiationResolver;
@@ -55,7 +57,8 @@ public class ResourceService extends ResourceRequestFallbackService {
         this.versionSeriesService = versionSeriesService;
         this.mediaTypeResolver = mediaTypeResolver;
 
-        resourceRequestFallbackService = new HttpsSchemaFallbackService(new LeadingSlashFallbackService(this));
+        resourceRequestFallbackService =
+                new HttpsSchemaFallbackService(new TrailingSlashFallbackService(this, ontopusConfig), ontopusConfig);
     }
 
     private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {

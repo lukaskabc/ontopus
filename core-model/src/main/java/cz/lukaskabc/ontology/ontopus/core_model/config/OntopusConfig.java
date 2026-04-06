@@ -29,6 +29,8 @@ public class OntopusConfig {
 
     @Valid private Files files = new Files();
 
+    @Valid private Resource resource = new Resource();
+
     public List<URI> getAdministrationAllowedOrigins() {
         return administrationAllowedOrigins;
     }
@@ -47,6 +49,10 @@ public class OntopusConfig {
 
     public @Nullable File getFrontendIndexFile() {
         return frontendIndexFile;
+    }
+
+    public Resource getResource() {
+        return resource;
     }
 
     public URI getSystemUri() {
@@ -71,6 +77,10 @@ public class OntopusConfig {
 
     public void setFrontendIndexFile(File frontendIndexFile) {
         this.frontendIndexFile = frontendIndexFile;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
     public void setSystemUri(URI systemUri) {
@@ -200,6 +210,61 @@ public class OntopusConfig {
 
         public void setImportFilesDirectory(Path importFilesDirectory) {
             this.importFilesDirectory = importFilesDirectory;
+        }
+    }
+
+    public static class Resource {
+        /**
+         * Request to {@code https} prefixed resource that does not exist, will fall back to the same resource with
+         * {@code http}.
+         */
+        private boolean HttpsFallsBackToHttp = true;
+        /**
+         * Request to {@code http} prefixed resource that does not exist, will fall back to the same resource with
+         * {@code https}.
+         */
+        private boolean HttpFallsBackToHttps = false;
+        /**
+         * Request to resource with trailing slash that does not exist, will fall back to the same resource without
+         * trailing slash.
+         */
+        private boolean TrailingSlashFallsBackToNoSlash = true;
+        /**
+         * Request to resource without trailing slash that does not exist, will fall back to the same resource with
+         * trailing slash.
+         */
+        private boolean NoSlashFallsBackToTrailingSlash = true;
+
+        public boolean isHttpFallsBackToHttps() {
+            return HttpFallsBackToHttps;
+        }
+
+        public boolean isHttpsFallsBackToHttp() {
+            return HttpsFallsBackToHttp;
+        }
+
+        public boolean isNoSlashFallsBackToTrailingSlash() {
+            return NoSlashFallsBackToTrailingSlash;
+        }
+
+        public boolean isTrailingSlashFallsBackToNoSlash() {
+            return TrailingSlashFallsBackToNoSlash;
+        }
+
+        public void setHttpFallsBackToHttps(boolean httpFallsBackToHttps) {
+            HttpFallsBackToHttps = httpFallsBackToHttps;
+        }
+
+        public void setHttpsFallsBackToHttp(boolean httpsFallsBackToHttp) {
+            HttpsFallsBackToHttp = httpsFallsBackToHttp;
+        }
+
+        public void setNoSlashFallsBackToTrailingSlash(boolean noSlashFallsBackToTrailingSlash) {
+            NoSlashFallsBackToTrailingSlash = noSlashFallsBackToTrailingSlash;
+        }
+
+        public void setTrailingSlashFallsBackToNoSlash(boolean trailingSlashFallsBackToNoSlash) {
+            TrailingSlashFallsBackToNoSlash = trailingSlashFallsBackToNoSlash;
         }
     }
 }

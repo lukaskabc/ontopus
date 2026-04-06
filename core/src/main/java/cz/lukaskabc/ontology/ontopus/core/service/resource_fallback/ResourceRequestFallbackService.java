@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service.resource_fallback;
 
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
@@ -17,8 +18,13 @@ public abstract class ResourceRequestFallbackService {
         if (fallbackService == null) {
             return getResourceWithFallback(resourceURI, mediaTypes);
         }
-        final ResponseEntity<StreamingResponseBody> result = fallbackService.getResource(resourceURI, mediaTypes);
-        if (result.getStatusCode().is4xxClientError()) {
+        ResponseEntity<StreamingResponseBody> result = null;
+        try {
+            result = fallbackService.getResource(resourceURI, mediaTypes);
+        } catch (NotFoundException e) {
+            // err 404
+        }
+        if (result == null || result.getStatusCode().is4xxClientError()) {
             return getResourceWithFallback(resourceURI, mediaTypes);
         }
         return result;

@@ -58,7 +58,7 @@ public class ResourceController {
         // http://purl.org/dc/terms.ttl does not
 
         final ResponseEntity<StreamingResponseBody> response =
-                resourceService.getResource(requestedURI, requestedTypes);
+                resourceService.findResource(requestedURI, requestedTypes);
         final StreamingResponseBodyAdapter adaptedBody = adaptBody(response.getBody());
 
         return ResponseEntity.status(response.getStatusCode())

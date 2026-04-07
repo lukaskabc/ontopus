@@ -1,12 +1,22 @@
 import type { FieldProps } from '@rjsf/utils'
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
+import FormHelperText from '@mui/material/FormHelperText'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { RichDescription } from '@rjsf/core'
 import { useEffect, useMemo, useState } from 'preact/hooks'
 import type { JSX } from 'preact'
 
 type MultilingualValue = Record<string, string>
+
+interface MultilingualUiOptions {
+  multiline?: boolean
+  rows?: number
+  minRows?: number
+  maxRows?: number
+}
 
 // Bridge Preact+MUI typing differences for Autocomplete render params.
 type CompatibleTextFieldProps = Record<string, unknown>
@@ -57,11 +67,17 @@ function getSchemaLanguageOptions(schema: unknown): string[] {
 }
 
 function MultilingualStringField(props: FieldProps) {
-  const { formData, onChange, disabled, readonly, fieldPathId, schema } = props
+  const { formData, onChange, disabled, readonly, fieldPathId, schema, required, rawErrors } = props
   const value = useMemo(() => asMultilingualValue(formData), [formData])
   const isDisabled = !!(disabled || readonly)
   const [translations, setTranslations] = useState<MultilingualValue>(value)
   const [selectedLanguage, setSelectedLanguage] = useState<string>(Object.keys(value)[0] ?? '')
+
+  const title = props.uiSchema?.['ui:title'] ?? props.schema.title
+  const description = props.uiSchema?.['ui:description'] ?? props.schema.description
+  const help = props.uiSchema?.['ui:help'] ?? props.schema.help
+  const uiOptions = (props.uiSchema?.['ui:options'] ?? {}) as MultilingualUiOptions
+  const isMultiline = !!uiOptions.multiline
 
   const schemaLanguageOptions = useMemo(() => getSchemaLanguageOptions(schema), [schema])
 
@@ -115,33 +131,48 @@ function MultilingualStringField(props: FieldProps) {
   }
 
   return (
-    <Stack spacing={1.5} direction={'row'}>
-      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-        <Autocomplete
-          size="small"
-          freeSolo
-          options={languageOptions}
-          value={selectedLanguage || null}
-          onChange={onLanguageChange}
-          onInputChange={(_, newInput, reason) => {
-            if (reason === 'input' || reason === 'clear') {
-              setSelectedLanguage(newInput.trim())
-            }
-          }}
-          disabled={isDisabled}
-          sx={{ minWidth: 200 }}
-          renderInput={(params) => <CompatibleTextField {...params} label={'Language'} />}
-        />
-      </Box>
+    <Stack spacing={1.5}>
+      {description && (
+        <Typography variant="body2" color={'text.secondary'} component={'div'}>
+          <RichDescription description={description} uiSchema={props.uiSchema} registry={props.registry} />
+        </Typography>
+      )}
 
-      <TextField
-        size="small"
-        label={'Value'}
-        value={selectedLanguage.trim() ? (translations[selectedLanguage.trim()] ?? '') : ''}
-        onChange={(e) => onValueChange(e.currentTarget.value)}
-        disabled={isDisabled || selectedLanguage.trim() === ''}
-        fullWidth
-      />
+      <Stack spacing={1.5} direction={'row'}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Autocomplete
+            size="small"
+            freeSolo
+            options={languageOptions}
+            value={selectedLanguage || null}
+            onChange={onLanguageChange}
+            onInputChange={(_, newInput, reason) => {
+              if (reason === 'input' || reason === 'clear') {
+                setSelectedLanguage(newInput.trim())
+              }
+            }}
+            disabled={isDisabled}
+            sx={{ minWidth: 200 }}
+            renderInput={(params) => <CompatibleTextField {...params} label={'Language'} />}
+          />
+        </Box>
+
+        <TextField
+          size="small"
+          label={title ?? 'Value'}
+          value={selectedLanguage.trim() ? (translations[selectedLanguage.trim()] ?? '') : ''}
+          onChange={(e) => onValueChange(e.currentTarget.value)}
+          disabled={isDisabled || selectedLanguage.trim() === ''}
+          multiline={isMultiline}
+          rows={isMultiline ? uiOptions.rows : undefined}
+          minRows={isMultiline ? uiOptions.minRows : undefined}
+          maxRows={isMultiline ? uiOptions.maxRows : undefined}
+          fullWidth
+        />
+      </Stack>
+
+      {help && <FormHelperText>{String(help)}</FormHelperText>}
+      {rawErrors?.length ? <FormHelperText error>{rawErrors.join(', ')}</FormHelperText> : null}
     </Stack>
   )
 }

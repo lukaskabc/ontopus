@@ -19,6 +19,7 @@ import TypographyField from '@/publish/fields/TypographyField.tsx'
 
 const FileField = lazy(() => import('@/publish/fields/FileField.tsx'))
 const VersionUriField = lazy(() => import('@/publish/fields/VersionUriField.tsx'))
+const MultilingualStringField = lazy(() => import('@/publish/fields/MultilingualStringField.tsx'))
 const AutocompleteWidget = lazy(() => import('@/publish/widgets/AutocompleteWidget.tsx'))
 
 const WIDGETS: RegistryWidgetsType = {
@@ -28,6 +29,7 @@ const WIDGETS: RegistryWidgetsType = {
 const FIELDS: RegistryFieldsType = {
   fileField: FileField,
   versionUriField: VersionUriField,
+  multilingualStringField: MultilingualStringField,
   typographyField: TypographyField,
 }
 

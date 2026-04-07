@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
     @OWLObjectProperty(iri = Vocabulary.s_p_ontologyVersionIdentifier)
-    private URI versionURI;
+    private URI versionUri;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
@@ -38,11 +38,11 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
         return new VersionSeriesURI(getSeriesURI());
     }
 
-    public OntologyVersionURI getVersionURI() {
-        if (versionURI == null) {
+    public OntologyVersionURI getVersionUri() {
+        if (versionUri == null) {
             return null;
         }
-        return new OntologyVersionURI(versionURI);
+        return new OntologyVersionURI(versionUri);
     }
 
     @Override
@@ -59,8 +59,8 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
         setSeriesURI(series.toURI());
     }
 
-    public void setVersionURI(OntologyVersionURI versionURI) {
-        this.versionURI = versionURI.toURI();
+    public void setVersionUri(OntologyVersionURI versionUri) {
+        this.versionUri = versionUri.toURI();
     }
 
     @Override

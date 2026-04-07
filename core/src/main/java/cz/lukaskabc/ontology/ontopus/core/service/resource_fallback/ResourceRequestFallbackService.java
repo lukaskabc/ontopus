@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+// TODO needs a review for duplicated calls
 
 public abstract class ResourceRequestFallbackService {
     @Nullable private final ResourceRequestFallbackService fallbackService;

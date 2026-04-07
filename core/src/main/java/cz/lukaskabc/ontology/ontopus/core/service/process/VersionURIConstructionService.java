@@ -80,7 +80,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
         final String version = version(formResult);
         final URI versionURI = versionURI(formResult).buildAndExpand(version).toUri();
 
-        context.getVersionArtifact().setVersionURI(new OntologyVersionURI(versionURI));
+        context.getVersionArtifact().setVersionUri(new OntologyVersionURI(versionURI));
         return null;
     }
 

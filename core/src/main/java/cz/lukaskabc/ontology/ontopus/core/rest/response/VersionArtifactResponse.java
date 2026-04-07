@@ -20,6 +20,7 @@ public class VersionArtifactResponse extends DatasetResponse {
      *
      * public Set<DistributionResponse> getDistributions() { return distributions; }
      */
+    private final URI versionUri;
 
     public VersionArtifactResponse(
             URI uri,
@@ -31,7 +32,8 @@ public class VersionArtifactResponse extends DatasetResponse {
             Set<String> languages,
             URI previousVersion,
             String version,
-            URI series) {
+            URI series,
+            URI versionUri) {
         super(
                 uri,
                 identifier,
@@ -43,5 +45,10 @@ public class VersionArtifactResponse extends DatasetResponse {
                 previousVersion,
                 version,
                 series);
+        this.versionUri = versionUri;
+    }
+
+    public URI getVersionUri() {
+        return versionUri;
     }
 }

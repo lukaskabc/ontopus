@@ -124,7 +124,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     }
 
     public GraphURI getFinalDatabaseContext() {
-        final GraphURI versionUri = versionArtifact.getVersionURI();
+        final GraphURI versionUri = versionArtifact.getVersionUri();
         Objects.requireNonNull(versionUri, "Version URI is not set");
         return versionUri;
     }

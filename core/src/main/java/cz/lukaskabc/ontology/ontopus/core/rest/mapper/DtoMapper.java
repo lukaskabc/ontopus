@@ -8,7 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = {VersionArtifactMapper.class, IdentifierMapper.class})
+@Mapper(uses = {IdentifierMapper.class})
 public interface DtoMapper {
 
     @Mapping(target = "optionIdentifier", source = "identifier")

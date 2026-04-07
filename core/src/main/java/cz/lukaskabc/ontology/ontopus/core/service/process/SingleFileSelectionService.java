@@ -14,6 +14,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -65,7 +66,11 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
         final String file = formResult.getStringValue("file");
         if (StringUtils.hasText(file)) {
             final Path relativePath = Path.of(file);
-            return context.getTempFolder().resolve(relativePath);
+            final Path absolutePath = context.getTempFolder().resolve(relativePath);
+            if (Files.exists(absolutePath)) {
+                return absolutePath;
+            }
+            throw new JsonFormSubmitException("File does not exist: " + file);
         }
         throw new JsonFormSubmitException("File path cannot be empty");
     }

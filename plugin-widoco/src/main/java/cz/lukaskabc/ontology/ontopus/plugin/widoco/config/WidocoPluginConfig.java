@@ -18,7 +18,7 @@ public class WidocoPluginConfig {
     /** Persistent directory for generated files */
     @NotNull private Path filesDirectory;
 
-    @NotNull private Duration executionTimeout = Duration.ofMinutes(1);
+    @NotNull private Duration executionTimeout = Duration.ofMinutes(10);
 
     /** Path to widoco executable jar */
     @NotNull private Path path;

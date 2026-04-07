@@ -160,6 +160,7 @@ function MultilingualStringField(props: FieldProps) {
         <TextField
           size="small"
           label={title ?? 'Value'}
+          required={required}
           value={selectedLanguage.trim() ? (translations[selectedLanguage.trim()] ?? '') : ''}
           onChange={(e) => onValueChange(e.currentTarget.value)}
           disabled={isDisabled || selectedLanguage.trim() === ''}

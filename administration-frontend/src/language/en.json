@@ -64,9 +64,10 @@
     },
     "version-artifact": {
       "title": "Version artifact",
-      "description": "[DCAT](http://www.w3.org/ns/dcat) dataset representing the specific version of an ontology.",
+      "description": "[DCAT](http://www.w3.org/ns/dcat) dataset representing the ontology.",
       "detail": {
-        "versionUri": "Version URI"
+        "versionUri": "Version identifier",
+        "version": "Version"
       }
     },
     "version-series": {

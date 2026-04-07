@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import org.eclipse.rdf4j.model.Statement;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +38,10 @@ public class GraphRepository {
         return graphDao.findAllLanguageTags(graph);
     }
 
-    /** @see GraphDao#findAllSubjects(GraphURI) */
+    /** @see GraphDao#findAllSubjects(GraphURI, Pageable) */
     @Transactional(readOnly = true)
-    public Stream<URI> findAllSubjects(GraphURI graph) {
-        return graphDao.findAllSubjects(graph);
+    public Stream<URI> findAllSubjects(GraphURI graph, Pageable pageable) {
+        return graphDao.findAllSubjects(graph, pageable);
     }
 
     /** @see GraphDao#findAllSubjectsOfType(URI, GraphURI) */

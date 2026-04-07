@@ -14,6 +14,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -109,15 +110,17 @@ public class GraphDao {
         }
     }
 
-    public Stream<URI> findAllSubjects(GraphURI contextUri) {
+    public Stream<URI> findAllSubjects(GraphURI contextUri, Pageable pageable) {
         Objects.requireNonNull(contextUri);
         try {
             return em.createNativeQuery("""
 					SELECT DISTINCT ?subject FROM ?context WHERE {
 					    ?subject ?predicate ?object .
-					}
+					} ORDER BY ?subject
 					""", URI.class)
                     .setParameter("context", contextUri.toURI())
+                    .setMaxResults(pageable.getPageSize())
+                    .setFirstResult((int) pageable.getOffset())
                     .getResultStream();
         } catch (Exception e) {
             throw new PersistenceException("Failed to find all subject of graph " + contextUri, e);

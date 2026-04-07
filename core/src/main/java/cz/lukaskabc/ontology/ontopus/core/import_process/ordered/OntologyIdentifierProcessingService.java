@@ -13,6 +13,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -83,7 +84,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
         if (identifiers.isEmpty()) {
             // list all identifiers if no identifier was returned from resolvers
             identifiers = graphService
-                    .findAllSubjects(context.getTemporaryDatabaseContext())
+                    .findAllSubjects(context.getTemporaryDatabaseContext(), Pageable.ofSize(100))
                     .sorted()
                     .collect(LinkedHashSet::new, Set::add, Set::addAll);
         }

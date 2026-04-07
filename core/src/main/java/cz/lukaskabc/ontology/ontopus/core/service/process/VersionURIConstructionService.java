@@ -34,10 +34,27 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
     static final String URI_FIELD_NAME = "uri";
     static final String VERSION_FIELD_NAME = "version";
     private static final Logger log = LogManager.getLogger(VersionURIConstructionService.class);
+
+    private static JsonForm makeForm(ObjectMapper objectMapper) {
+        ObjectNode scheme = objectMapper.createObjectNode();
+        scheme.put("type", "object");
+        ObjectNode properties = scheme.putObject("properties");
+        properties.putObject(URI_FIELD_NAME).put("type", "string");
+        properties.putObject(VERSION_FIELD_NAME).put("type", "string");
+
+        ObjectNode uiSchema = objectMapper.createObjectNode();
+        uiSchema.put("ui:field", "versionUriField");
+
+        return new JsonForm(scheme, uiSchema, null);
+    }
+
     private final ObjectMapper objectMapper;
+
+    private final JsonForm jsonForm;
 
     public VersionURIConstructionService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        this.jsonForm = makeForm(objectMapper);
     }
 
     @Override
@@ -47,12 +64,6 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
                 .pathSegment(VERSION_SEGMENT)
                 .build()
                 .toUriString();
-
-        ObjectNode scheme = objectMapper.createObjectNode();
-        scheme.put("type", "object");
-        ObjectNode properties = scheme.putObject("properties");
-        properties.putObject(URI_FIELD_NAME).put("type", "string");
-        properties.putObject(VERSION_FIELD_NAME).put("type", "string");
 
         ObjectNode formData = objectMapper.createObjectNode();
 
@@ -64,10 +75,7 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
         // always set new version
         formData.put(VERSION_FIELD_NAME, version);
 
-        ObjectNode uiSchema = objectMapper.createObjectNode();
-        uiSchema.put("ui:field", "versionUriField");
-
-        return new JsonForm(scheme, uiSchema, formData);
+        return this.jsonForm.withFormData(formData);
     }
 
     @Override

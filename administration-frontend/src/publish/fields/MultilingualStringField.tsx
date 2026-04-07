@@ -76,7 +76,7 @@ function MultilingualStringField(props: FieldProps) {
   const title = props.uiSchema?.['ui:title'] ?? props.schema.title
   const description = props.uiSchema?.['ui:description'] ?? props.schema.description
   const help = props.uiSchema?.['ui:help'] ?? props.schema.help
-  const uiOptions = (props.uiSchema?.['ui:options'] ?? {}) as MultilingualUiOptions
+  const uiOptions = (props.uiSchema ?? {}) as MultilingualUiOptions
   const isMultiline = !!uiOptions.multiline
 
   const schemaLanguageOptions = useMemo(() => getSchemaLanguageOptions(schema), [schema])

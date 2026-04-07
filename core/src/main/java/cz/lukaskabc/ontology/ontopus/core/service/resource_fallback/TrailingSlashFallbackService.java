@@ -29,7 +29,7 @@ public class TrailingSlashFallbackService extends ResourceRequestFallbackService
 
         if (resourceConfig.isTrailingSlashFallsBackToNoSlash() && path.endsWith("/")) {
             final String withoutSlash = StringUtils.withoutTrailingSlash(path);
-            builder.path(withoutSlash);
+            builder.replacePath(withoutSlash);
         } else if (resourceConfig.isNoSlashFallsBackToTrailingSlash() && !path.endsWith("/")) {
             builder.replacePath(path + "/");
         }

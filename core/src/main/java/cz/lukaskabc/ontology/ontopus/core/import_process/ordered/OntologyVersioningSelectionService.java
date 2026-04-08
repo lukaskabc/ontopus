@@ -22,7 +22,7 @@ public class OntologyVersioningSelectionService extends ImportProcessNextService
             List<OntologyVersioningService> services,
             ObjectMapper objectMapper,
             VersionURIConstructionService versionURIConstructionService) {
-        super(services, objectMapper);
+        super(services, true, objectMapper);
         this.versionURIConstructionService = versionURIConstructionService;
     }
 

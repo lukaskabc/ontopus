@@ -18,7 +18,7 @@ public class OntologyLoadingSelectionService extends ImportProcessNextServiceSel
 
     public OntologyLoadingSelectionService(
             List<OntologyLoadingService> fileLoadingServices, ObjectMapper objectMapper) {
-        super(fileLoadingServices, objectMapper);
+        super(fileLoadingServices, true, objectMapper);
     }
 
     @Override

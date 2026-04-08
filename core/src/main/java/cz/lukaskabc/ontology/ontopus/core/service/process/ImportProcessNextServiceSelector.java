@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -19,19 +20,21 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
     protected final List<S> services;
     protected final ObjectMapper objectMapper;
     protected final JsonForm jsonForm;
+    protected final boolean showDescription;
 
-    public ImportProcessNextServiceSelector(List<S> services, ObjectMapper objectMapper) {
+    public ImportProcessNextServiceSelector(List<S> services, boolean showDescription, ObjectMapper objectMapper) {
         if (services.isEmpty()) {
             throw new IllegalStateException("No services found for service selection!"); // TODO exception
         }
         this.services = services;
+        this.showDescription = showDescription;
         this.objectMapper = objectMapper;
         this.jsonForm = makeForm();
     }
 
     @Override
-    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
-        return jsonForm.withFormData(previousFormData);
+    public @NonNull JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
+        return makeForm().withFormData(previousFormData);
     }
 
     @Override
@@ -48,25 +51,46 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
 
     protected JsonForm makeForm() {
         ObjectNode schema = objectMapper.createObjectNode();
+        ObjectNode uiSchema = objectMapper.createObjectNode();
+
         schema.put("type", "object");
         ObjectNode properties = schema.putObject("properties");
         ObjectNode service = properties
                 .putObject("service")
                 .put("type", "number")
                 .put("title", getServiceName())
+                .put("default", 0)
                 .put("description", getServiceDescription());
 
         schema.putArray("required").add("service");
         ArrayNode items = service.putArray("oneOf");
+        ArrayNode allOf = schema.putArray("allOf");
         for (int i = 0; i < services.size(); i++) {
             final ImportProcessingService<?> item = services.get(i);
             items.addObject()
                     .put("const", i)
                     .put("title", item.getServiceName())
                     .put("description", item.getServiceDescription());
+
+            if (!showDescription) {
+                continue;
+            }
+            // option description below
+            ObjectNode condition = allOf.addObject();
+            condition
+                    .putObject("if")
+                    .putObject("properties")
+                    .putObject("service")
+                    .put("const", i);
+            condition
+                    .putObject("then")
+                    .putObject("properties")
+                    .putObject(item.getServiceName())
+                    .put("type", "null")
+                    .put("description", item.getServiceDescription());
+            uiSchema.putObject(item.getServiceName()).put("ui:field", "typographyField");
         }
 
-        ObjectNode uiSchema = objectMapper.createObjectNode();
         return new JsonForm(schema, uiSchema, null);
     }
 }

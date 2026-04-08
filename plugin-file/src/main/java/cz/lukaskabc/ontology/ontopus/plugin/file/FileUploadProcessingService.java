@@ -43,7 +43,7 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
 
     @Override
     public String getServiceName() {
-        return "ontopus.plugin.file.serviceName";
+        return "";
     }
 
     @Override

@@ -1,8 +1,22 @@
 {
   "ontopus.core.service.OntologyVersioningService": {
-    "SemanticVersioningService": {
-      "name": "Semantic version",
-      "description": "Versions the ontology with semantic versioning scheme (e.g. 3.5.1)."
+    "OntologyVersionResolvingService": {
+      "name": "Ontology annotation based version",
+      "description": "Versions the ontology based on ontology annotations.",
+      "form": {
+        "title": "Resolve ontology version from annotations",
+        "description": "Select the annotation properties that should be used to determine the version and version IRI of the ontology. OntoPuS will resolve new values for specified properties on each ontology release, it is the responsibility of the ontology author to change the values before releasing a new version.",
+        "fields": {
+          "version": {
+            "title": "Version",
+            "description": "The version of the ontology e.g. 1.2.3 ([semantic versioning](https://semver.org/)), 2024-06-01 (date based versioning) or other preferred version scheme."
+          },
+          "versionIri": {
+            "title": "Version IRI",
+            "description": "The version IRI of the ontology. Unique IRI for this specific ontology version."
+          }
+        }
+      }
     },
     "GeneralVersioningService": {
       "name": "User defined version",

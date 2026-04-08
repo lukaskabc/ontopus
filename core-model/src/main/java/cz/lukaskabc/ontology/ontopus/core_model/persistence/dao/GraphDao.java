@@ -199,7 +199,7 @@ public class GraphDao {
     }
 
     public void persistModel(GraphURI context, Model rdfModel) {
-        final Repository repository = em.unwrap(org.eclipse.rdf4j.repository.Repository.class);
+        final Repository repository = em.unwrap(Repository.class);
         try (final RepositoryConnection conn = repository.getConnection()) {
             conn.begin();
             final IRI graphContext = repository.getValueFactory().createIRI(context.toString());

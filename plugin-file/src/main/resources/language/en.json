@@ -1,5 +1,8 @@
 {
   "ontopus.plugin.file": {
-    "serviceName": "Upload files"
+    "FileUploadProcessingService": {
+      "name": "File upload",
+      "description": "You will choose local files to upload and import into the database."
+    }
   }
 }

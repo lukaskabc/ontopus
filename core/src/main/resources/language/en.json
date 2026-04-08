@@ -21,10 +21,15 @@
       },
       "OrderedImportPipelineService": {
         "OntologyLoadingSelectionService": {
-          "name": "Ontology source selection"
+          "name": "Ontology source",
+          "description": "Select the source from which the ontology will be loaded."
         },
         "ArtifactBuildingSelectionService": {
           "name": "Ontology source selection"
+        },
+        "OntologyVersioningSelectionService": {
+          "name": "Ontology versioning strategy selection",
+          "description": "Select the strategy that will be used to determine the version of the ontology."
         },
         "GlobFileSelectionService": {
           "name": "File import selection",

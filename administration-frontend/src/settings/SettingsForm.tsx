@@ -1,12 +1,14 @@
 import { trackPromise, useLocation, useRoute } from '@/utils/hooks.ts'
-import JsonFormElement from '@/components/JsonFormElement.tsx'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { useCallback, useEffect, useState } from 'preact/hooks'
+import lazy from 'preact-iso/lazy'
 import type { JsonForm } from '@/model/JsonForm.ts'
 import type { FileWithFieldName } from '@/publish/actions.ts'
 import { loadSettingsForm, submitSettingsForm } from '@/settings/actions.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 import Constants from '@/Constants.ts'
+
+const JsonFormElement = lazy(() => import('@/components/JsonFormElement.tsx'))
 
 const SETTINGS_FORM_PROMISE_AREA = 'SETTINGS_FORM_PROMISE_AREA'
 

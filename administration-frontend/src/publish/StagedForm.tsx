@@ -2,6 +2,7 @@ import { PromiseArea } from '@/components/PromiseArea.tsx'
 import { type FunctionComponent } from 'preact'
 
 import { useCallback, useEffect, useState } from 'preact/hooks'
+import lazy from 'preact-iso/lazy'
 import { type FileWithFieldName, loadJsonForm, STAGED_FORM_PROMISE_AREA, submitForm } from '@/publish/actions.ts'
 import { trackPromise, useLocation } from '@/utils/hooks.ts'
 import {
@@ -10,9 +11,10 @@ import {
   UnexpectedResponseStatusError,
 } from '@/utils/errors.ts'
 import type { JsonForm } from '@/model/JsonForm.ts'
-import JsonFormElement from '@/components/JsonFormElement.tsx'
 import type { GenericObjectType } from '@rjsf/utils'
 import Constants from '@/Constants.ts'
+
+const JsonFormElement = lazy(() => import('@/components/JsonFormElement.tsx'))
 
 export interface StagedFormProps {
   resetForm: () => void

@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "ci": "npm ci --ignore-scripts",
+    "update": "npx npm-check-updates -u -c 7d",
     "dev": "vite",
     "build": "npm run lint && tsc -b && vite build",
     "preview": "vite preview",

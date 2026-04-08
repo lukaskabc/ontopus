@@ -11,16 +11,16 @@ import type {
   StrictRJSFSchema,
   UiSchema,
 } from '@rjsf/utils'
-import RjsfForm, { type IChangeEvent } from '@rjsf/core'
+import type { default as RjsfForm, IChangeEvent } from '@rjsf/core'
 import { type FileWithFieldName } from '@/publish/actions.ts'
 import { createRef, type RefObject, type TargetedEvent } from 'preact'
-import lazy from 'preact-iso/lazy'
 import TypographyField from '@/publish/fields/TypographyField.tsx'
+import './JsonFormElement.scss'
+import FileField from '@/publish/fields/FileField.tsx'
 
-const FileField = lazy(() => import('@/publish/fields/FileField.tsx'))
-const VersionUriField = lazy(() => import('@/publish/fields/VersionUriField.tsx'))
-const MultilingualStringField = lazy(() => import('@/publish/fields/MultilingualStringField.tsx'))
-const AutocompleteWidget = lazy(() => import('@/publish/widgets/AutocompleteWidget.tsx'))
+import VersionUriField from '@/publish/fields/VersionUriField.tsx'
+import MultilingualStringField from '@/publish/fields/MultilingualStringField.tsx'
+import AutocompleteWidget from '@/publish/widgets/AutocompleteWidget.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   autocompleteWidget: AutocompleteWidget,
@@ -103,6 +103,16 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
     },
     [formRef, onSubmit]
   )
+
+  useEffect(() => {
+    const newUiSchema = Object.assign({}, uiSchema)
+    newUiSchema['ui:submitButtonOptions'] = {
+      props: {
+        className: 'JsonFormElement-Form-Submit',
+      },
+    }
+    setUiSchema(newUiSchema)
+  }, [uiSchema])
 
   return (
     <>

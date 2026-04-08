@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -50,19 +51,31 @@ public class ResourceController {
     }
 
     public ResponseEntity<StreamingResponseBodyAdapter> getResource(
-            @RequestHeader("Accept") MediaType[] requestedTypes, HttpServletRequest request) {
+            @RequestHeader(name = "Accept", required = false) MediaType @Nullable [] requestedTypes,
+            HttpServletRequest request) {
         final String decodedUrl = decodeUrl(request);
         final ResourceURI requestedURI = new ResourceURI(decodedUrl);
         // TODO does not account for leading slash
         // e.g. http://purl.org/dc/terms/.ttl works
         // http://purl.org/dc/terms.ttl does not
+        if (requestedTypes == null || requestedTypes.length == 0) {
+            requestedTypes = new MediaType[] {MediaType.TEXT_PLAIN};
+        }
 
         final ResponseEntity<StreamingResponseBody> response =
                 resourceService.findResource(requestedURI, requestedTypes);
         final StreamingResponseBodyAdapter adaptedBody = adaptBody(response.getBody());
 
-        return ResponseEntity.status(response.getStatusCode())
-                .headers(response.getHeaders())
-                .body(adaptedBody);
+        HttpHeaders headers = response.getHeaders();
+        MediaType responseType = headers.getContentType();
+        if (responseType == null) {
+            responseType = MediaType.TEXT_PLAIN;
+        }
+        if (responseType.getCharset() == null) {
+            responseType = new MediaType(responseType, StandardCharsets.UTF_8);
+        }
+        headers.setContentType(responseType);
+
+        return ResponseEntity.status(response.getStatusCode()).headers(headers).body(adaptedBody);
     }
 }

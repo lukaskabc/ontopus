@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -26,5 +27,5 @@ public interface OntologyVersioningService extends ImportProcessingService<Void>
      * @param context The context of importing process
      */
     @Override
-    Void handleSubmit(FormResult formResult, ImportProcessContext context);
+    Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException;
 }

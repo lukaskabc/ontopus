@@ -1,13 +1,18 @@
 package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.versioning.service.PredicateService;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
@@ -18,6 +23,7 @@ import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -90,8 +96,36 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         return TRANSLATION_ROOT + ".name";
     }
 
+    private String getTripleValue(URI predicate, ImportProcessContext context) {
+        return predicateService
+                .findStatement(
+                        context.getVersionSeries().getOntologyURI(),
+                        List.of(predicate),
+                        context.getTemporaryDatabaseContext())
+                .map(Statement::getObject)
+                .map(Value::stringValue)
+                .orElseThrow(() -> new JsonFormSubmitException("Predicate does not exist on the ontology: " + predicate)
+                        .asRuntimeException());
+    }
+
     @Override
-    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
+        final String version = formResult.getStringValue("version");
+        final String versionIri = formResult.getStringValue("versionIri");
+        if (!StringUtils.hasText(version)) {
+            throw new JsonFormSubmitException("Missing predicate for ontology version");
+        }
+        if (!StringUtils.hasText(versionIri)) {
+            throw new JsonFormSubmitException("Missing predicate for ontology version IRI");
+        }
+
+        final String versionValue = getTripleValue(URI.create(version), context);
+        final OntologyVersionURI versionIriValue =
+                new OntologyVersionURI(getTripleValue(URI.create(versionIri), context));
+
+        context.getVersionArtifact().setVersion(versionValue);
+        context.getVersionArtifact().setVersionUri(versionIriValue);
+
         return null;
     }
 

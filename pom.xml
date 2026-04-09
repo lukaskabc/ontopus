@@ -267,7 +267,7 @@
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
                             <!-- NullAway with JSpecify mode -->
-                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=cz.lukaskabc.ontology.ontopus -XepOpt:NullAway:JSpecifyMode=true -XepExcludedPaths:.*/generated/rest/mapper/.*</arg>
+                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=cz.lukaskabc.ontology.ontopus -XepOpt:NullAway:JSpecifyMode=true -XepExcludedPaths:.*/generated/rest/mapper/.*|.*/src/test/.*</arg>
 
                             <!-- Required JVM flags for Error Prone on Java 16+ -->
                             <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>

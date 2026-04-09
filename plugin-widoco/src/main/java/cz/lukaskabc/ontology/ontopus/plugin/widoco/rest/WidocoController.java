@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.widoco.rest;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.commons.lang3.stream.Streams;
 import org.springframework.core.io.FileSystemResource;
@@ -36,7 +37,9 @@ public class WidocoController {
     private static String resolveRequestedPath(HttpServletRequest request) {
         final String path = UriUtils.decode(request.getRequestURI(), "UTF-8");
         if (path.startsWith(PATH)) {
-            return path.substring(PATH.length());
+            final String base64EncodedUrl = path.substring(PATH.length());
+            final String decodedUrl = StringUtils.base64DecodeUri(base64EncodedUrl);
+            return StringUtils.sanitizeUriAsComponent(decodedUrl);
         }
         throw new NotFoundException("Invalid path requested");
     }

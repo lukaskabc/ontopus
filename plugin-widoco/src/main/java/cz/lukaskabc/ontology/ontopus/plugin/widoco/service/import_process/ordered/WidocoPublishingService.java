@@ -269,13 +269,11 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     }
 
     private void persistOutput(Path widocoOutput, ImportProcessContext context) {
-        // TODO: persist output to persistent context
         final String persistentContext = StringUtils.sanitizeUriAsComponent(
                 context.getFinalDatabaseContext().toString());
         final Path filesDestination = FileUtils.resolvePath(config.getFilesDirectory(), Path.of(persistentContext));
         try {
             FileSystemUtils.deleteRecursively(filesDestination);
-            // TODO move?
             FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
         } catch (IOException e) {
             throw new OntopusException("Failed to persist widoco output", e);

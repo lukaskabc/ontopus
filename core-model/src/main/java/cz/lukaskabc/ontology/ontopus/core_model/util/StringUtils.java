@@ -2,9 +2,12 @@ package cz.lukaskabc.ontology.ontopus.core_model.util;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jspecify.annotations.Nullable;
 import org.springframework.lang.Contract;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -16,6 +19,28 @@ public class StringUtils extends org.springframework.util.StringUtils {
     private static final Pattern SLASH_PLUS = Pattern.compile("/+");
 
     private static final Pattern MINUS_PLUS = Pattern.compile("-+");
+
+    /**
+     * Decodes the string using {@link Base64#getUrlDecoder()} and {@link StandardCharsets#UTF_8}, which expects a
+     * URL-safe Base64 encoded string.
+     *
+     * @param base64EncodedUri the encoded uri to decode
+     * @return the decoded uri
+     */
+    public static String base64DecodeUri(String base64EncodedUri) {
+        return new String(Base64.getUrlDecoder().decode(base64EncodedUri), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Encodes the string using {@link StandardCharsets#UTF_8} and {@link Base64#getUrlEncoder()}, which produces a
+     * URL-safe Base64 encoded string.
+     *
+     * @param uri the uri to encode
+     * @return encoded uri
+     */
+    public static String base64EncodeUri(String uri) {
+        return Base64.getUrlEncoder().encodeToString(uri.getBytes(StandardCharsets.UTF_8));
+    }
 
     public static String escapeMarkdown(String input) {
         final StringBuilder escaped = new StringBuilder(input.length());
@@ -46,6 +71,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
     public static String sanitize(String input) {
         return sanitize(input, SANITIZATION_ALLOWED_CHARACTERS);
     }
+
     /**
      * Filters out all characters from the input string that are not letters, digits, or one of the allowed special
      * characters.
@@ -96,8 +122,9 @@ public class StringUtils extends org.springframework.util.StringUtils {
      * @return The {@code value} if its null, empty or does not contain a trailing slash, or a new string without
      *     trailing slashes otherwise.
      */
+    @SuppressWarnings("unchecked")
     @Contract("null -> null; !null -> !null")
-    public static String withoutTrailingSlash(String value) {
+    public static <S extends @Nullable String> S withoutTrailingSlash(S value) {
         if (value == null || value.isEmpty()) {
             return value;
         }
@@ -108,7 +135,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
         if (i == value.length() - 1) {
             return value;
         }
-        return i < 0 ? "" : value.substring(0, i + 1);
+        return (S) (i < 0 ? "" : value.substring(0, i + 1));
     }
 
     /**

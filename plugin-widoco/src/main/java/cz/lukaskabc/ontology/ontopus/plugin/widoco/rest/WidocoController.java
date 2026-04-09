@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -34,14 +35,19 @@ public class WidocoController {
     static final String PATH = "/public/widoco";
     static final PathMatcher DEFAULT_FILE_MATCHER = FileSystems.getDefault().getPathMatcher("glob:**index*.html");
 
-    private static String resolveRequestedPath(HttpServletRequest request) {
+    /**
+     * Resolves the requested path inside the version artifact directory
+     *
+     * @param base64EncodedUri the base64 encoded IRI
+     * @param request the HTTP request
+     * @return the requested decoded path
+     */
+    private static String resolveRequestedPath(String base64EncodedUri, HttpServletRequest request) {
         final String path = UriUtils.decode(request.getRequestURI(), "UTF-8");
-        if (path.startsWith(PATH)) {
-            final String base64EncodedUrl = path.substring(PATH.length());
-            final String decodedUrl = StringUtils.base64DecodeUri(base64EncodedUrl);
-            return StringUtils.sanitizeUriAsComponent(decodedUrl);
+        if (path.contains(base64EncodedUri)) {
+            return path.substring(path.indexOf(base64EncodedUri) + base64EncodedUri.length());
         }
-        throw new NotFoundException("Invalid path requested");
+        throw new NotFoundException("Requested resource not found");
     }
 
     private final Path filesDirectory;
@@ -52,25 +58,33 @@ public class WidocoController {
         this.systemURI = ontopusConfig.getSystemUri();
     }
 
-    @GetMapping("/**")
-    public ResponseEntity<FileSystemResource> getOntologyFile(HttpServletRequest request) throws IOException {
-        final String requestedPath = resolveRequestedPath(request);
-        final Path relativeRequestedPath = ROOT_PATH.relativize(Path.of(requestedPath));
+    @GetMapping("/{base64EncodedUri}/**")
+    public ResponseEntity<FileSystemResource> getOntologyFile(
+            @PathVariable("base64EncodedUri") String base64EncodedUri, HttpServletRequest request) throws IOException {
+        // sanitized version IRI of the artifact
+        final String decodedSanitizedUri =
+                StringUtils.sanitizeUriAsComponent(StringUtils.base64DecodeUri(base64EncodedUri));
+        // the requested path inside the version artifact directory
+        final String requestedPath = resolveRequestedPath(base64EncodedUri, request);
+        // relative requested path inside the widoco directory
+        final Path relativeRequestedPath = ROOT_PATH.relativize(Path.of("/" + decodedSanitizedUri, requestedPath));
         final Path absolutePath = FileUtils.resolvePath(filesDirectory, relativeRequestedPath);
 
         if (Files.isRegularFile(absolutePath)) {
             return serveFile(absolutePath);
         } else if (Files.isDirectory(absolutePath)) {
             final Path index = resolveDefaultFileName(absolutePath, request);
-            return redirectTo(requestedPath, index.toString());
+            return redirectTo(base64EncodedUri, requestedPath, index.toString());
         } else {
             throw new NotFoundException("Requested resource not found");
         }
     }
 
-    ResponseEntity<FileSystemResource> redirectTo(String requestedPath, String indexFile) {
+    ResponseEntity<FileSystemResource> redirectTo(String base64EncodedUri, String requestedPath, String indexFile) {
         final String destination = UriComponentsBuilder.fromUri(systemURI)
                 .path(PATH)
+                .path("/")
+                .path(base64EncodedUri)
                 .path("/")
                 .path(requestedPath)
                 .path("/")

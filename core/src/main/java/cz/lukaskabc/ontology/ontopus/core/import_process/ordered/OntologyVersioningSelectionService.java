@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
@@ -32,7 +33,8 @@ public class OntologyVersioningSelectionService extends ImportProcessNextService
     }
 
     @Override
-    public OntologyVersioningService handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public OntologyVersioningService handleSubmit(FormResult formResult, ImportProcessContext context)
+            throws JsonFormSubmitException {
         OntologyVersioningService service = super.handleSubmit(formResult, context);
         assert context.peekService() == this;
         context.popService(); // pop self

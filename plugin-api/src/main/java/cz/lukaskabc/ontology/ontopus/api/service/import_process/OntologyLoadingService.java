@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.service.import_process;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 
@@ -30,5 +31,5 @@ public interface OntologyLoadingService extends ImportProcessingService<Void> {
      * @implSpec The caller is responsible for invoking this method asynchronously if blocking operation is not desired.
      */
     @Override
-    Void handleSubmit(FormResult formResult, ImportProcessContext context);
+    Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException;
 }

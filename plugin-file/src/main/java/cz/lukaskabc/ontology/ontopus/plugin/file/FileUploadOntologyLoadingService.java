@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.file;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
@@ -31,7 +32,7 @@ public class FileUploadOntologyLoadingService implements OntologyLoadingService 
     }
 
     @Override
-    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         this.fileUploadService.handleSubmit(formResult, context);
         return null;
     }

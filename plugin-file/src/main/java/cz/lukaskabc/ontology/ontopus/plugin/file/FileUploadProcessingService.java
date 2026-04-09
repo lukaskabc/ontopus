@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.file;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
@@ -47,10 +48,14 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
     }
 
     @Override
-    public Map<String, UploadedFile> handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public Map<String, UploadedFile> handleSubmit(FormResult formResult, ImportProcessContext context)
+            throws JsonFormSubmitException {
         // there is not much to do, the files were uploaded and placed in to the context
         // temp directory
         // we can just validate that they exist
+        if (formResult.uploadedFiles().isEmpty()) {
+            throw new JsonFormSubmitException("No file uploaded");
+        }
 
         for (UploadedFile file : formResult.uploadedFiles().values()) {
             File ioFile = file.fsPath().toFile();

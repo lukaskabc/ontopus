@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
@@ -38,7 +39,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
     }
 
     @Override
-    public S handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public S handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         JsonNode serviceIndex = formResult.formData().getOrDefault("service", objectMapper.nullNode());
         if (serviceIndex.isNumber()) {
             int index = serviceIndex.asInt();
@@ -46,7 +47,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                 return services.get(index);
             }
         }
-        throw new IllegalArgumentException("Invalid service index!"); // TODO exception and passing it to the FE
+        throw new JsonFormSubmitException("Invalid service index!"); // TODO exception and passing it to the FE
     }
 
     protected JsonForm makeForm() {

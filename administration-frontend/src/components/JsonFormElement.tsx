@@ -54,6 +54,7 @@ function resolveFiles(form: RjsfForm | null): FileWithFieldName[] {
 export interface JsonFormElementProps {
   jsonForm: JsonForm | null
   onSubmit: (formData: GenericObjectType, files: FileWithFieldName[]) => Promise<unknown>
+  disabled?: boolean
 }
 
 /**
@@ -61,7 +62,7 @@ export interface JsonFormElementProps {
  * https://json-schema.org/draft-07/json-schema-release-notes
  * https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema
  */
-export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementProps) {
+export default function JsonFormElement({ jsonForm, onSubmit, disabled = false }: JsonFormElementProps) {
   const { i18n } = useTranslation()
   const [jsonSchema, setJsonSchema] = useState<StrictRJSFSchema>()
   const [uiSchema, setUiSchema] = useState<UiSchema>()
@@ -129,7 +130,7 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
           onSubmit={onFormSubmit}
           widgets={WIDGETS}
           fields={FIELDS}
-          disabled={isDisabled}
+          disabled={isDisabled || disabled}
         />
       )}
     </>

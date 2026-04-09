@@ -13,6 +13,7 @@ import {
 import type { JsonForm } from '@/model/JsonForm.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 import Constants from '@/Constants.ts'
+import { usePromiseTracker } from 'react-promise-tracker'
 
 const JsonFormElement = lazy(() => import('@/components/JsonFormElement.tsx'))
 
@@ -20,57 +21,47 @@ export interface StagedFormProps {
   resetForm: () => void
 }
 
-export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) => {
+export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm, children }) => {
   const [jsonForm, setJsonForm] = useState<JsonForm | null>(null)
-  const [loadScheme, setLoadScheme] = useState<boolean>(true)
   const { navigate } = useLocation()
-  const [triggerLoadScheme, setTriggerLoadScheme] = useState(false)
+  const [triggerLoadScheme, setTriggerLoadScheme] = useState(true)
+  const { promiseInProgress } = usePromiseTracker({ area: STAGED_FORM_PROMISE_AREA })
 
-  // load JSON form when loadScheme is true
-  useEffect(() => {
-    if (!loadScheme) {
-      return
-    }
-
-    const finishLoading = () => setLoadScheme(false)
-
-    return trackPromise(loadJsonForm(), STAGED_FORM_PROMISE_AREA)
-      .then(setJsonForm)
-      .then(finishLoading)
-      .catch((e) => {
-        if (e instanceof ImportProcessNotInitializedError) {
-          resetForm()
-        } else if (e instanceof PromiseCanceledError) {
-          // promise was cleaned up
-        } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 201) {
-          // import process finished
-          const location = e.payload.headers.get('Location') ?? ''
-          navigate('~' + Constants.BASE_URL + '/ontologies/' + encodeURIComponent(decodeURI(location)))
-        } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
-          finishLoading()
-          setTriggerLoadScheme(true)
-        } else {
-          // TODO handle error, propagate to user
-          console.error(e)
-          finishLoading()
-        }
-      }).abort
-  }, [loadScheme, resetForm, navigate])
+  const loadScheme = useCallback(
+    () =>
+      trackPromise(loadJsonForm(), STAGED_FORM_PROMISE_AREA)
+        .then(setJsonForm)
+        .catch((e) => {
+          if (e instanceof ImportProcessNotInitializedError) {
+            resetForm()
+          } else if (e instanceof PromiseCanceledError) {
+            // promise was cleaned up
+          } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 201) {
+            // import process finished
+            const location = e.payload.headers.get('Location') ?? ''
+            navigate('~' + Constants.BASE_URL + '/ontologies/' + encodeURIComponent(decodeURI(location)))
+          } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
+            setTriggerLoadScheme(true)
+          } else {
+            // TODO handle error, propagate to user
+            console.error(e)
+          }
+        }),
+    [navigate, resetForm]
+  )
 
   useEffect(() => {
     if (triggerLoadScheme) {
-      setLoadScheme(true)
-      setTriggerLoadScheme(false)
+      return trackPromise(loadScheme(), STAGED_FORM_PROMISE_AREA).then(() => setTriggerLoadScheme(false)).abort
     }
-  }, [triggerLoadScheme])
+  }, [triggerLoadScheme, loadScheme])
 
   const onSubmit = useCallback((formData: GenericObjectType, files: FileWithFieldName[]) => {
     return trackPromise(submitForm(formData, files), STAGED_FORM_PROMISE_AREA)
-      .then(() => setLoadScheme(true))
+      .then(() => setTriggerLoadScheme(true))
       .catch((e) => {
         if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
-          // TODO show error
-          setLoadScheme(true)
+          setTriggerLoadScheme(true)
         } else {
           console.error(e)
         }
@@ -79,7 +70,8 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm }) =>
 
   return (
     <>
-      <JsonFormElement jsonForm={jsonForm} onSubmit={onSubmit} />
+      <JsonFormElement jsonForm={jsonForm} onSubmit={onSubmit} disabled={promiseInProgress} />
+      {children}
       <PromiseArea area={STAGED_FORM_PROMISE_AREA} boxProps={{ sx: { width: '100%', marginY: '1em' } }} />
     </>
   )

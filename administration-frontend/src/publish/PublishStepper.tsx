@@ -68,15 +68,16 @@ export default function PublishStepper({ params }: PublishStepperProps) {
 
       <Paper sx={{ p: 2 }}>
         <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>
-          <StagedForm key={'PublishStepper-StagedForm' + stagedFormElementKey} resetForm={onImportProcessReset} />
-          <Button
-            variant={'outlined'}
-            color={'error'}
-            style={{ display: 'block', marginLeft: 'auto' }}
-            onClick={onAbort}
-          >
-            {t('publish.button.abort')}
-          </Button>
+          <StagedForm key={'PublishStepper-StagedForm' + stagedFormElementKey} resetForm={onImportProcessReset}>
+            <Button
+              variant={'outlined'}
+              color={'error'}
+              style={{ display: 'block', marginLeft: 'auto' }}
+              onClick={onAbort}
+            >
+              {t('publish.button.abort')}
+            </Button>
+          </StagedForm>
         </PromiseArea>
       </Paper>
 

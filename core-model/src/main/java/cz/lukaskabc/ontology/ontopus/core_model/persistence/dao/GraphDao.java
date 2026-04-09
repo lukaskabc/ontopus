@@ -7,17 +7,18 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.rdf4j.common.iteration.Iterations;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -134,7 +135,7 @@ public class GraphDao {
             return em.createNativeQuery("""
 					SELECT DISTINCT ?subject FROM ?context WHERE {
 					    ?subject a ?type .
-					}
+					} ORDER BY ?subject
 					""", URI.class)
                     .setParameter("context", contextUri.toURI())
                     .setParameter("type", type)
@@ -145,6 +146,12 @@ public class GraphDao {
         }
     }
 
+    /**
+     * Finds all triples in a context
+     *
+     * @param contextUri the graph context
+     * @return sorted list of triples
+     */
     public List<Statement> findAllTriples(GraphURI contextUri) {
         Objects.requireNonNull(contextUri);
         final Repository repository = em.unwrap(Repository.class);
@@ -153,12 +160,43 @@ public class GraphDao {
         final IRI contextIri = vf.createIRI(contextUri.toString());
 
         try (RepositoryConnection conn = repository.getConnection()) {
-            return Iterations.asList(conn.getStatements(null, null, null, contextIri));
+            TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, """
+					SELECT ?s ?p ?o
+					WHERE {
+					    GRAPH ?ctx {
+					        ?s ?p ?o .
+					    }
+					}
+					ORDER BY ?s ?p ?o
+					""");
+
+            query.setBinding("ctx", contextIri);
+            List<Statement> sortedStatements = new ArrayList<>();
+
+            try (TupleQueryResult result = query.evaluate()) {
+                while (result.hasNext()) {
+                    BindingSet bs = result.next();
+                    Resource subject = (Resource) bs.getValue("s");
+                    IRI predicate = (IRI) bs.getValue("p");
+                    Value object = bs.getValue("o");
+                    Statement stmt = vf.createStatement(subject, predicate, object, contextIri);
+                    sortedStatements.add(stmt);
+                }
+            }
+
+            return sortedStatements;
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find all triples of graph " + contextUri, e);
+            throw new PersistenceException("Failed to find and sort triples of graph " + contextUri, e);
         }
     }
 
+    /**
+     * Finds all triples in a context with a specific subject
+     *
+     * @param contextUri the graph context
+     * @param subject the subject resource
+     * @return sorted list of triples
+     */
     public List<Statement> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
         Objects.requireNonNull(contextUri);
         Objects.requireNonNull(subject);
@@ -169,7 +207,32 @@ public class GraphDao {
         final IRI contextIri = vf.createIRI(contextUri.toString());
 
         try (RepositoryConnection conn = repository.getConnection()) {
-            return Iterations.asList(conn.getStatements(subjectIri, null, null, contextIri));
+            TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, """
+					SELECT ?p ?o
+					WHERE {
+					    GRAPH ?ctx {
+					        ?s ?p ?o .
+					    }
+					}
+					ORDER BY ?p ?o
+					""");
+
+            query.setBinding("ctx", contextIri);
+            query.setBinding("s", subjectIri);
+
+            List<Statement> sortedStatements = new ArrayList<>();
+
+            try (TupleQueryResult result = query.evaluate()) {
+                while (result.hasNext()) {
+                    BindingSet bs = result.next();
+                    IRI predicate = (IRI) bs.getValue("p");
+                    Value object = bs.getValue("o");
+                    Statement stmt = vf.createStatement(subjectIri, predicate, object, contextIri);
+                    sortedStatements.add(stmt);
+                }
+            }
+
+            return sortedStatements;
         } catch (Exception e) {
             throw new PersistenceException(
                     "Failed to find all subject of graph " + contextUri + " with subject " + subject, e);

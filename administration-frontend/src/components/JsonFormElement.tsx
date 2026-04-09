@@ -104,14 +104,14 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
     [formRef, onSubmit]
   )
 
-  useEffect(() => {
+  const uiSchemaWithOptionsOverrides = useMemo(() => {
     const newUiSchema = Object.assign({}, uiSchema)
     newUiSchema['ui:submitButtonOptions'] = {
       props: {
         className: 'JsonFormElement-Form-Submit',
       },
     }
-    setUiSchema(newUiSchema)
+    return newUiSchema
   }, [uiSchema])
 
   return (
@@ -121,7 +121,7 @@ export default function JsonFormElement({ jsonForm, onSubmit }: JsonFormElementP
           key={formElementKey}
           ref={formRef}
           schema={localizedSchema}
-          uiSchema={uiSchema}
+          uiSchema={uiSchemaWithOptionsOverrides}
           formData={formData}
           onChange={onChange}
           validator={validator}

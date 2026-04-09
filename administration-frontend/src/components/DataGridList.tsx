@@ -158,15 +158,15 @@ export default function DataGridList<D extends DataModel>(props: ListProps<D>) {
         // Needed because searchParams from Next.js are read-only
         const writeableSearchParams = new URLSearchParams(searchParams)
 
-        writeableSearchParams.set('page', String(paginationModel.page))
-        writeableSearchParams.set('pageSize', String(paginationModel.pageSize))
+        writeableSearchParams.set('page', String(model.page))
+        writeableSearchParams.set('pageSize', String(model.pageSize))
 
         const newSearchParamsString = writeableSearchParams.toString()
 
         navigate(`${pathname}${newSearchParamsString ? '?' : ''}${newSearchParamsString}`)
       }
     },
-    [paginationModel.page, paginationModel.pageSize, routerContext]
+    [routerContext]
   )
 
   const handleFilterModelChange = useCallback(
@@ -179,11 +179,8 @@ export default function DataGridList<D extends DataModel>(props: ListProps<D>) {
         // Needed because searchParams from Next.js are read-only
         const writeableSearchParams = new URLSearchParams(searchParams)
 
-        if (
-          filterModel.items.length > 0 ||
-          (filterModel.quickFilterValues && filterModel.quickFilterValues.length > 0)
-        ) {
-          writeableSearchParams.set('filter', JSON.stringify(filterModel))
+        if (model.items.length > 0 || (model.quickFilterValues && model.quickFilterValues.length > 0)) {
+          writeableSearchParams.set('filter', JSON.stringify(model))
         } else {
           writeableSearchParams.delete('filter')
         }
@@ -193,7 +190,7 @@ export default function DataGridList<D extends DataModel>(props: ListProps<D>) {
         navigate(`${pathname}${newSearchParamsString ? '?' : ''}${newSearchParamsString}`)
       }
     },
-    [filterModel, routerContext]
+    [routerContext]
   )
 
   const handleSortModelChange = useCallback(

@@ -36,7 +36,7 @@ function OntologiesRoute() {
           </Switch>
         )}
       </Route>
-      <Route path={'/'} component={VersionSeriesList}></Route>
+      <Route path={'/'} component={VersionSeriesList} nest></Route>
     </Switch>
   )
 }

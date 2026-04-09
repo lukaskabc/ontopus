@@ -1,7 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.VersionArtifactDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionArtifactUriGenerator;
@@ -35,5 +37,10 @@ public class VersionArtifactRepository
         List<VersionArtifact> content = dao.find(seriesURI, pageable, filter);
         long totalCount = dao.count(seriesURI, filter);
         return new PageImpl<>(content, pageable, totalCount);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PrefixDeclaration> findPrefixDeclarations(OntologyVersionURI ontologyVersionURI) {
+        return dao.findPrefixDeclarations(ontologyVersionURI);
     }
 }

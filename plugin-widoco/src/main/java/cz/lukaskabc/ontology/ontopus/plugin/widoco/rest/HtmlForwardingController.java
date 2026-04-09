@@ -31,7 +31,8 @@ public class HtmlForwardingController
         return UriComponentsBuilder.fromUri(ontopusConfig.getSystemUri())
                 .path(WidocoController.PATH)
                 .path("/")
-                .path(StringUtils.base64EncodeUri(requestContext.graphURI().toString()));
+                .path(StringUtils.base64EncodeUri(
+                        requestContext.ontologyVersionUri().toString()));
     }
 
     private <T> ResponseEntity<T> found(String destination) {

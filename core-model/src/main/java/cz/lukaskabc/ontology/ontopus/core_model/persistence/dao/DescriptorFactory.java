@@ -3,16 +3,14 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntologyDistribution_;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.*;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription_;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DescriptorFactory {
+    private final EntityDescriptor prefixDeclarationDescriptor;
     private final EntityDescriptor ontologyArtifact;
     private final EntityDescriptor ontologyArtifactCatalog;
     private final EntityDescriptor ontologyVersionSeries;
@@ -23,7 +21,9 @@ public class DescriptorFactory {
     private final EntityDescriptor controllerDescription;
 
     public DescriptorFactory() {
+        prefixDeclarationDescriptor = new EntityDescriptor(PrefixDeclaration_.entityClassIRI.toURI());
         ontologyArtifact = new EntityDescriptor(VersionArtifact_.entityClassIRI.toURI());
+        ontologyArtifact.addAttributeDescriptor(VersionArtifact_.prefixDeclarations, prefixDeclarationDescriptor);
         ontologyArtifactCatalog = new EntityDescriptor(OntopusCatalog_.entityClassIRI.toURI());
         ontologyVersionSeries = new EntityDescriptor(VersionSeries_.entityClassIRI.toURI());
         ontologyDistribution = new EntityDescriptor(OntologyDistribution_.entityClassIRI.toURI());

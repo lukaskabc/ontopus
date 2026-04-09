@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
+import cz.cvut.kbss.jopa.model.annotations.CascadeType;
 import cz.cvut.kbss.jopa.model.annotations.FetchType;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
@@ -24,9 +25,16 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
 
+    @OWLObjectProperty(iri = Vocabulary.s_p_hasPrefixDeclaration, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<PrefixDeclaration> prefixDeclarations = new HashSet<>();
+
     @Override
     public void addDistribution(DistributionURI distributionURI) {
         this.distributions.add(distributionURI.toURI());
+    }
+
+    public void addPrefixDeclaration(PrefixDeclaration prefixDeclaration) {
+        prefixDeclarations.add(prefixDeclaration);
     }
 
     @Override

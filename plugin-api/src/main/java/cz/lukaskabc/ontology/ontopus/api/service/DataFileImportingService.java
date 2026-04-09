@@ -15,7 +15,9 @@ import java.util.List;
 public interface DataFileImportingService {
 
     /**
-     * Imports the provided files into the database.
+     * Imports the provided files into the database. If the file contains prefix declarations, it adds them to the
+     * prefix declarations of the {@link cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact
+     * VersionArtifact}.
      *
      * @param files The files to import for which {@link #supports(File)} returned true
      * @param context The context of importing process

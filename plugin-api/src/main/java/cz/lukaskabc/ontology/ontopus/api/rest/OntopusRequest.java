@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.rest;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.springframework.http.MediaType;
 
@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
  *
  * @param mediaType the media type supported by the controller
  * @param requestedURI the URI of the requested resource
- * @param graphURI the URI of the graph in which the requested resource is located
+ * @param ontologyVersionUri the URI of the graph in which the requested resource is located and the version IRI of the
+ *     ontology
  */
-public record OntopusRequest(MediaType mediaType, ResourceURI requestedURI, GraphURI graphURI) {}
+public record OntopusRequest(MediaType mediaType, ResourceURI requestedURI, OntologyVersionURI ontologyVersionUri) {}

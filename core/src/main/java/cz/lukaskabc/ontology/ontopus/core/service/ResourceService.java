@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.TrailingSlas
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ControllerDescription;
@@ -32,11 +33,18 @@ import java.util.Optional;
 @Service
 public class ResourceService extends ResourceRequestFallbackService {
 
+    @SuppressWarnings("unchecked")
+    private static ResponseEntity<StreamingResponseBody> cast(
+            ResponseEntity<? extends StreamingResponseBody> response) {
+        return (ResponseEntity<StreamingResponseBody>) response;
+    }
+
     private final ApplicationContext applicationContext;
     private final ContentNegotiationResolver contentNegotiationResolver;
     private final ResourceInContextMappingService resourceInContextMappingService;
     private final ContextToControllerMappingService contextToControllerMappingService;
     private final VersionSeriesService versionSeriesService;
+
     private final MediaTypeResolver mediaTypeResolver;
 
     private final ResourceRequestFallbackService resourceRequestFallbackService;
@@ -93,23 +101,25 @@ public class ResourceService extends ResourceRequestFallbackService {
         Optional<ResponseEntity<StreamingResponseBody>> result = contentNegotiationResolver
                 .resolveController(mediaTypes, mapping.getControllers())
                 .map(candidate -> {
-                    final OntopusRequest request = new OntopusRequest(candidate.mediaType(), resourceURI, graphURI);
+                    final OntopusRequest request = new OntopusRequest(
+                            candidate.mediaType(), resourceURI, new OntologyVersionURI(graphURI.toURI()));
                     return this.handleRequest(candidate, mapping.getMappingType(), request);
-                });
+                })
+                .map(ResourceService::cast);
 
         return result.orElseGet(this::multipleChoice);
     }
 
-    private ResponseEntity<StreamingResponseBody> handleRequest(
+    private ResponseEntity<? extends StreamingResponseBody> handleRequest(
             ControllerCandidate candidate, MappingType mappingType, OntopusRequest ontopusRequest) {
         NegotiableController controller = applicationContext.getBean(getControllerClass(candidate.controller()));
         if (mappingType == MappingType.RESOURCE
                 && controller instanceof ResourceController<? extends StreamingResponseBody> resourceController) {
-            return (ResponseEntity<StreamingResponseBody>) resourceController.handleResourceRequest(ontopusRequest);
+            return resourceController.handleResourceRequest(ontopusRequest);
         }
         if (mappingType == MappingType.ONTOLOGY_DOCUMENT
                 && controller instanceof OntologyController<? extends StreamingResponseBody> ontologyController) {
-            return (ResponseEntity<StreamingResponseBody>) ontologyController.handleOntologyRequest(ontopusRequest);
+            return ontologyController.handleOntologyRequest(ontopusRequest);
         }
         throw new OntopusException(
                 "Controller " + controller.getClass().getName() + " does not support mapping type " + mappingType);

@@ -62,7 +62,7 @@ public class ResourceController {
             requestedTypes = new MediaType[] {MediaType.TEXT_PLAIN};
         }
 
-        final ResponseEntity<StreamingResponseBody> response =
+        final ResponseEntity<? extends StreamingResponseBody> response =
                 resourceService.findResource(requestedURI, requestedTypes);
         final StreamingResponseBodyAdapter adaptedBody = adaptBody(response.getBody());
 

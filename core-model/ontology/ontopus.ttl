@@ -5,6 +5,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus#> .
 @base <http://ontology.lukaskabc.cz/application/ontopus#> .
 
@@ -72,6 +73,18 @@ ontopus:hasMapping rdf:type owl:ObjectProperty ;
                    rdfs:comment "A mapping of a webhook entry."@en ;
                    rdfs:label "Has mapping"@en .
 
+###  http://ontology.lukaskabc.cz/application/ontopus#hasPrefixDeclaration
+ontopus:hasPrefixDeclaration rdf:type owl:ObjectProperty ;
+                   rdfs:domain ontopus:VersionArtifact ;
+                   rdfs:range sh:PrefixDeclaration ;
+                   rdfs:comment "A prefix declaration used by the ontology"@en ;
+                   rdfs:label "Has prefix declaration"@en .
+
+sh:namespace
+    a rdf:Property, owl:ObjectProperty ;
+    rdfs:domain sh:PrefixDeclaration ;
+    rdfs:range xsd:anyURI ;
+    rdfs:isDefinedBy sh: .
 
 #################################################################
 #    Data properties
@@ -111,6 +124,12 @@ ontopus:secret rdf:type owl:DatatypeProperty ;
                      rdfs:range xsd:string ;
                      rdfs:comment "A secret text used for authentication of an application call."@en ;
                      rdfs:label "Secret"@en .
+
+sh:prefix
+	a rdf:Property, owl:DatatypeProperty ;
+	rdfs:domain sh:PrefixDeclaration ;
+	rdfs:range xsd:string ;
+	rdfs:isDefinedBy sh: .
 
 #################################################################
 #    Classes

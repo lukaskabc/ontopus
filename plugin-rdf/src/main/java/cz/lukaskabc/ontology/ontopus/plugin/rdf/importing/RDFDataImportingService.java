@@ -3,6 +3,8 @@ package cz.lukaskabc.ontology.ontopus.plugin.rdf.importing;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,6 +58,10 @@ public class RDFDataImportingService implements DataFileImportingService {
         return format;
     }
 
+    private static void saveNamespaces(VersionArtifact versionArtifact, Model model) {
+        model.getNamespaces().stream().map(PrefixDeclaration::new).forEach(versionArtifact::addPrefixDeclaration);
+    }
+
     private final GraphDao graphDao;
 
     public RDFDataImportingService(GraphDao graphDao) {
@@ -69,6 +75,7 @@ public class RDFDataImportingService implements DataFileImportingService {
             return;
         }
         final Model model = loadModel(files);
+        saveNamespaces(importContext.getVersionArtifact(), model);
         final TemporaryContextURI context = importContext.getTemporaryDatabaseContext();
         graphDao.persistModel(context, model);
     }

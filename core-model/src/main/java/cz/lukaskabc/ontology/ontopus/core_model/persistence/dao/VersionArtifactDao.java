@@ -1,8 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.cvut.kbss.jopa.model.query.Parameter;
-import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.cvut.kbss.jopa.model.query.criteria.CriteriaBuilder;
 import cz.cvut.kbss.jopa.model.query.criteria.CriteriaQuery;
 import cz.cvut.kbss.jopa.model.query.criteria.Root;
@@ -11,8 +9,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -21,19 +17,10 @@ import java.util.List;
 
 @Component
 public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionArtifact> {
-    private static final Logger LOG = LogManager.getLogger(VersionArtifactDao.class);
 
     @Autowired
     public VersionArtifactDao(EntityManager em, DescriptorFactory descriptorFactory) {
         super(VersionArtifact.class, VersionArtifact_.entityClassIRI, em, descriptorFactory.ontologyArtifact());
-    }
-
-    private void bindInSeriesParam(TypedQuery<?> query, VersionSeriesURI seriesURI) {
-        Parameter<?> seriesParam = query.getParameter("inSeries");
-        if (!query.isBound(seriesParam)) {
-            query.setParameter("inSeries", VersionArtifact_.seriesPropertyIRI);
-        }
-        query.setParameter("series", seriesURI.toURI());
     }
 
     public long count(VersionSeriesURI seriesURI, List<String> filter) {

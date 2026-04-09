@@ -64,6 +64,7 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
         return StringUtils.sanitize(extractMultilingualString(multilingualString));
     }
 
+    @Override
     public void setIdentifierIfMissing(E entity) {
         if (entity.getIdentifier() == null) {
             final I identifier = generate(entity);

@@ -8,7 +8,6 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.FileImportingService;
 import cz.lukaskabc.ontology.ontopus.core.service.process.SingleFileSelectionService;
-import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
@@ -25,13 +24,10 @@ import java.util.List;
 @Order(ImportProcessServiceOrder.DATA_LOADING_SELECTION_SERVICE + 1)
 public class FileImportSelectionService implements OrderedImportPipelineService<Void> {
     private final ObjectMapper objectMapper;
-    private final OntopusConfig config;
     private final FileImportingService fileImportingService;
 
-    public FileImportSelectionService(
-            ObjectMapper objectMapper, OntopusConfig config, FileImportingService fileImportingService) {
+    public FileImportSelectionService(ObjectMapper objectMapper, FileImportingService fileImportingService) {
         this.objectMapper = objectMapper;
-        this.config = config;
         this.fileImportingService = fileImportingService;
     }
 

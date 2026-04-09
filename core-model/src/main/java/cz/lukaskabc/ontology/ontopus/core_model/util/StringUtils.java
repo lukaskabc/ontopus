@@ -44,7 +44,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
 
     public static String escapeMarkdown(String input) {
         final StringBuilder escaped = new StringBuilder(input.length());
-        for (char c : input.toCharArray()) {
+        for (int i = 0; i < input.length(); i++) {
+            final char c = input.charAt(i);
             if (MARKDOWN_SPECIAL_CHARACTERS.indexOf(c) > -1) {
                 escaped.append('\\');
             }
@@ -86,7 +87,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
     public static String sanitize(String input, char[] allowedCharacters) {
         Objects.requireNonNull(input, "Cannot sanitize null string");
         StringBuilder sanitized = new StringBuilder(input.length());
-        for (char c : input.toCharArray()) {
+        for (int i = 0; i < input.length(); i++) {
+            final char c = input.charAt(i);
             if (Character.isLetterOrDigit(c) || ArrayUtils.contains(allowedCharacters, c)) {
                 sanitized.append(c);
             } else if (Character.isWhitespace(c)) {
@@ -144,7 +146,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
      * @param uri the uri to trim
      * @return a new uri without trailing slashes or the {@code uri} object if there is no trailing slash
      */
-    @SuppressWarnings("StringEquality")
+    @SuppressWarnings({"StringEquality", "ReferenceEquality"})
     public static URI withoutTrailingSlash(URI uri) {
         final String str = uri.toString();
         final String withoutTrailingSlash = withoutTrailingSlash(str);

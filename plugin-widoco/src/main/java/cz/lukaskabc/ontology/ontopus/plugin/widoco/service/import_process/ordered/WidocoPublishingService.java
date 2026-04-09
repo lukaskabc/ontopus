@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Service
@@ -163,10 +164,12 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
 
         ArrayNode examples = mapper.createArrayNode();
 
-        FileUtils.listRecursively(context.getTempFolder())
-                .map(context.getTempFolder()::relativize)
-                .map(Path::toString)
-                .forEach(examples::add);
+        try (Stream<Path> filePaths = FileUtils.listRecursively(context.getTempFolder())) {
+            filePaths
+                    .map(context.getTempFolder()::relativize)
+                    .map(Path::toString)
+                    .forEach(examples::add);
+        }
 
         final JsonNode properties = schema.get("properties");
         properties.get(Argument.CONF_FILE.name()).asObject().set("examples", examples);
@@ -281,11 +284,13 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     }
 
     private Path resolveWidocoOutputRoot(Path output) {
-        return FileUtils.listRecursively(output)
-                .filter(path ->
-                        WIDOCO_OUTPUT_DIRECTORIES.contains(path.getFileName().toString()))
-                .findAny()
-                .map(Path::getParent)
-                .orElseThrow(() -> new OntopusException("Failed to find widoco output root folder"));
+        try (Stream<Path> filePaths = FileUtils.listRecursively(output)) {
+            return filePaths
+                    .filter(path -> WIDOCO_OUTPUT_DIRECTORIES.contains(
+                            path.getFileName().toString()))
+                    .findAny()
+                    .map(Path::getParent)
+                    .orElseThrow(() -> new OntopusException("Failed to find widoco output root folder"));
+        }
     }
 }

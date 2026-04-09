@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class SingleFileSelectionService implements ImportProcessingService<Path> {
     private final JsonForm jsonForm;
@@ -43,11 +44,13 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
         final ArrayNode examples =
                 schema.get("properties").get("file").get("examples").asArray();
 
-        FileUtils.listRecursively(context.getTempFolder())
-                .filter(this.fileFilter)
-                .map(context.getTempFolder()::relativize)
-                .map(Path::toString)
-                .forEach(examples::add);
+        try (Stream<Path> filePaths = FileUtils.listRecursively(context.getTempFolder())) {
+            filePaths
+                    .filter(this.fileFilter)
+                    .map(context.getTempFolder()::relativize)
+                    .map(Path::toString)
+                    .forEach(examples::add);
+        }
 
         if (!formData.hasNonNull("file") && !examples.isEmpty()) {
             formData.set("file", examples.get(0));

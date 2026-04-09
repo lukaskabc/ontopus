@@ -8,8 +8,11 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = {IdentifierMapper.class})
+@Mapper(
+        uses = {IdentifierMapper.class},
+        implementationPackage = DtoMapper.IMPLEMENTATION_PACKAGE)
 public interface DtoMapper {
+    String IMPLEMENTATION_PACKAGE = "cz.lukaskabc.ontology.ontopus.core.generated.rest.mapper";
 
     @Mapping(target = "optionIdentifier", source = "identifier")
     @Mapping(target = "label", source = "label")
@@ -27,5 +30,6 @@ public interface DtoMapper {
     VersionSeriesListEntry versionSeriesToListEntry(VersionSeries versionSeries);
 
     @Mapping(target = "uri", source = "identifier")
+    @Mapping(target = "series", expression = "java(null)")
     VersionSeriesResponse versionSeriesToResponse(VersionSeries versionSeries);
 }

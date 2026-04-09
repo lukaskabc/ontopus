@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.net.URI;
 
-@Mapper
+@Mapper(implementationPackage = DtoMapper.IMPLEMENTATION_PACKAGE)
 public abstract class IdentifierMapper {
     public @Nullable URI mapTypedIdentifier(TypedIdentifier identifier) {
         if (identifier == null) {

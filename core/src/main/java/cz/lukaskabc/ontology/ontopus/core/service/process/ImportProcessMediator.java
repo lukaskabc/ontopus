@@ -32,7 +32,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Future;
 
 @Service
@@ -97,21 +96,6 @@ public class ImportProcessMediator {
             files.put(file.path(), file);
         }
         return files;
-    }
-
-    private static Map<String, Map<String, JsonNode>> extractCombinedParams(Map<String, JsonNode> combinedFormData) {
-        Map<String, Map<String, JsonNode>> params = new HashMap<>();
-        for (Map.Entry<String, JsonNode> entry : combinedFormData.entrySet()) {
-            if (entry.getValue().isObject()) {
-                Set<Map.Entry<String, JsonNode>> props = entry.getValue().properties();
-                params.putIfAbsent(entry.getKey(), new HashMap<>(props.size()));
-                Map<String, JsonNode> map = params.get(entry.getKey());
-                props.forEach(propEntry -> map.put(propEntry.getKey(), entry.getValue()));
-            } else {
-                throw new IllegalStateException(); // TODO exception
-            }
-        }
-        return params;
     }
 
     private final ObjectMapper objectMapper;
@@ -246,7 +230,7 @@ public class ImportProcessMediator {
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
     public Future<@Nullable Void> submitCombinedFormResult(SerializableImportProcessContext serializableContext) {
-        return holder.scheduleWithContext((context -> processAllResults(context, serializableContext)));
+        return holder.scheduleWithContext(context -> processAllResults(context, serializableContext));
     }
 
     /**
@@ -257,7 +241,7 @@ public class ImportProcessMediator {
      */
     public Future<@Nullable Void> submitFormResult(
             FormJsonDataDto jsonData, Map<FormFileRequest, InputStreamSource> FormFileRequests) {
-        return holder.scheduleWithContext((context) -> {
+        return holder.scheduleWithContext(context -> {
             if (context.hasUnprocessedService()) {
                 Map<String, UploadedFile> filesMap = copyFiles(FormFileRequests, context);
                 context.handleResult(new FormResult(jsonData, filesMap));

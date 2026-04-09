@@ -3,7 +3,6 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.import_process;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
@@ -12,8 +11,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitRepositoryUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.util.FileUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -35,21 +32,15 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
             GitPlugin.FORM_RESOURCE_PATH, GitRepositoryClonningRequest.class.getSimpleName());
     private static final JsonNode UI_SCHEMA = JsonResourceLoader.loadUiSchema(
             GitPlugin.FORM_RESOURCE_PATH, GitRepositoryClonningRequest.class.getSimpleName());
-    private static final Logger log = LogManager.getLogger(GitOntologyLoadingService.class);
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
-    private final FileToDatabaseImportingService fileImportingService;
     private final GitRepositoryUtils gitRepositoryUtils;
 
     public GitOntologyLoadingService(
-            ObjectMapper objectMapper,
-            Validator validator,
-            FileToDatabaseImportingService fileImportingService,
-            GitRepositoryUtils gitRepositoryUtils) {
+            ObjectMapper objectMapper, Validator validator, GitRepositoryUtils gitRepositoryUtils) {
         this.objectMapper = objectMapper;
         this.validator = validator;
-        this.fileImportingService = fileImportingService;
         this.gitRepositoryUtils = gitRepositoryUtils;
     }
 

@@ -186,6 +186,12 @@
             <scope>${ontopus.inherited.dependency.scope}</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+            <version>${error-prone.version}</version>
+            <scope>${ontopus.inherited.dependency.scope}</scope>
+        </dependency>
+        <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
             <version>3.1.1</version>
@@ -261,7 +267,7 @@
                             <arg>-XDcompilePolicy=simple</arg>
                             <arg>--should-stop=ifError=FLOW</arg>
                             <!-- NullAway with JSpecify mode -->
-                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=cz.lukaskabc.ontology.ontopus -XepOpt:NullAway:JSpecifyMode=true -XepExcludedPaths:.*/src/test/java/.*</arg>
+                            <arg>-Xplugin:ErrorProne -Xep:NullAway:ERROR -XepOpt:NullAway:AnnotatedPackages=cz.lukaskabc.ontology.ontopus -XepOpt:NullAway:JSpecifyMode=true -XepExcludedPaths:.*/generated/rest/mapper/.*</arg>
 
                             <!-- Required JVM flags for Error Prone on Java 16+ -->
                             <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>

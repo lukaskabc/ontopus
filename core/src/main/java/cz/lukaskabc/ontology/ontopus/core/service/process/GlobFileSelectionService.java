@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core.service.process;
 
+import com.google.errorprone.annotations.MustBeClosed;
 import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
@@ -14,7 +16,6 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -131,38 +132,31 @@ public class GlobFileSelectionService implements ImportProcessingService<List<Pa
             pattern = objectMapper.stringNode(defaultGlobPattern);
         }
 
-        return listFiles(pattern.asString());
-    }
-
-    private boolean isPreviewEnabled(@Nullable JsonNode previousFormData) {
-        if (previousFormData == null) {
-            return false;
+        try (Stream<Path> filePaths = listFiles(pattern.asString())) {
+            return filePaths.toList();
         }
-        final JsonNode preview = previousFormData.get("preview");
-        return preview != null && preview.isBoolean() && preview.asBoolean();
     }
 
-    private List<Path> listFiles(String glob) {
+    @MustBeClosed
+    private Stream<Path> listFiles(String glob) {
         final PathMatcher globMatcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
-        try (Stream<Path> stream = Files.walk(rootDirectory)) {
-            return stream.filter(Files::isRegularFile)
-                    .filter(path -> {
-                        final Path subpath = rootDirectory.relativize(path);
-                        return globMatcher.matches(subpath);
-                    })
-                    .toList();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        try (Stream<Path> filePaths = FileUtils.listRecursively(rootDirectory)) {
+            return filePaths.filter(Files::isRegularFile).filter(path -> {
+                final Path subpath = rootDirectory.relativize(path);
+                return globMatcher.matches(subpath);
+            });
         }
     }
 
     private String listFilesAsString(String glob) {
-        final List<String> files = listFiles(glob).stream()
-                .map(rootDirectory::relativize)
-                .map(Path::toString)
-                .map(StringUtils::escapeMarkdown)
-                .map("`%s`"::formatted)
-                .toList();
-        return files.isEmpty() ? "No files found" : " \\- " + String.join("\n \\- ", files);
+        try (Stream<Path> filePaths = listFiles(glob)) {
+            final List<String> files = filePaths
+                    .map(rootDirectory::relativize)
+                    .map(Path::toString)
+                    .map(StringUtils::escapeMarkdown)
+                    .map("`%s`"::formatted)
+                    .toList();
+            return files.isEmpty() ? "No files found" : " \\- " + String.join("\n \\- ", files);
+        }
     }
 }

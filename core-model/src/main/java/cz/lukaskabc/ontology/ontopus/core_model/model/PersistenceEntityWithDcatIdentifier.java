@@ -11,7 +11,7 @@ import java.net.URI;
 @MappedSuperclass
 public abstract class PersistenceEntityWithDcatIdentifier<I extends TypedIdentifier>
         extends AbstractPersistenceEntity<I> {
-    @SuppressWarnings("unused,FieldCanBeLocal")
+    @SuppressWarnings({"unused", "FieldCanBeLocal"})
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_identifier, simpleLiteral = true)
     private URI identifier;
 

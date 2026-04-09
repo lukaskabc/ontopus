@@ -4,43 +4,20 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
 public class DateVersioningService implements OntologyVersioningService {
-    static final String SEPARATOR = "_";
-    private final VersionArtifactRepository artifactRepository;
+    private final TimeProvider timeProvider;
 
-    @Nullable private String versionValue = null;
-
-    public DateVersioningService(VersionArtifactRepository artifactRepository) {
-        this.artifactRepository = artifactRepository;
-    }
-
-    @Override
-    public void afterStackPush(ImportProcessContext context) {
-        String previousVersion = null;
-        VersionArtifactURI latestVersionUri = context.getVersionSeries().getLast();
-        if (latestVersionUri != null) {
-            previousVersion = artifactRepository.findRequired(latestVersionUri).getVersion();
-        }
-        versionValue = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        // if (previousVersion != null && previousVersion.startsWith(versionValue)) {
-        // String suffix = previousVersion.substring(versionValue.length() + 1);
-        // if (!StringUtils.hasText(suffix)) {
-        // suffix = "1";
-        // }
-        // int value = Integer.parseInt(suffix) + 1;
-        // versionValue += SEPARATOR + value;
-        // }
+    public DateVersioningService(TimeProvider timeProvider) {
+        this.timeProvider = timeProvider;
     }
 
     @Override
@@ -55,7 +32,8 @@ public class DateVersioningService implements OntologyVersioningService {
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
-        context.getVersionArtifact().setVersion(versionValue);
+        final String version = timeProvider.getCurrentDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        context.getVersionArtifact().setVersion(version);
         return null;
     }
 }

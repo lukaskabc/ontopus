@@ -61,7 +61,7 @@ public class WidocoExecutionService {
         log.debug("Running Widoco in {} with {}", workingDirectory, cmd.toString());
 
         try {
-            int exitCode = executor.execute(cmd);
+            executor.execute(cmd);
             return outputFolder;
         } catch (IOException e) {
             throw new OntopusException(e); // TODO exception

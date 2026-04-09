@@ -10,8 +10,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,6 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
     static final String VERSION_SEGMENT = "{version}";
     static final String URI_FIELD_NAME = "uri";
     static final String VERSION_FIELD_NAME = "version";
-    private static final Logger log = LogManager.getLogger(VersionURIConstructionService.class);
 
     private static JsonForm makeForm(ObjectMapper objectMapper) {
         ObjectNode scheme = objectMapper.createObjectNode();

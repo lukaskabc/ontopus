@@ -6,7 +6,6 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
@@ -22,11 +21,9 @@ public class GeneralVersioningService implements OntologyVersioningService {
     static final String VERSION_FIELD = "version";
 
     private final ObjectMapper objectMapper;
-    private final VersionArtifactRepository artifactRepository;
 
-    public GeneralVersioningService(ObjectMapper objectMapper, VersionArtifactRepository artifactRepository) {
+    public GeneralVersioningService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.artifactRepository = artifactRepository;
     }
 
     @Override

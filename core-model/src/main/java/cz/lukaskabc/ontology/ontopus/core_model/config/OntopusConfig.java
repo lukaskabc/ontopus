@@ -218,53 +218,53 @@ public class OntopusConfig {
          * Request to {@code https} prefixed resource that does not exist, will fall back to the same resource with
          * {@code http}.
          */
-        private boolean HttpsFallsBackToHttp = true;
+        private boolean httpsFallsBackToHttp = true;
         /**
          * Request to {@code http} prefixed resource that does not exist, will fall back to the same resource with
          * {@code https}.
          */
-        private boolean HttpFallsBackToHttps = false;
+        private boolean httpFallsBackToHttps = false;
         /**
          * Request to resource with trailing slash that does not exist, will fall back to the same resource without
          * trailing slash.
          */
-        private boolean TrailingSlashFallsBackToNoSlash = true;
+        private boolean trailingSlashFallsBackToNoSlash = true;
         /**
          * Request to resource without trailing slash that does not exist, will fall back to the same resource with
          * trailing slash.
          */
-        private boolean NoSlashFallsBackToTrailingSlash = true;
+        private boolean noSlashFallsBackToTrailingSlash = true;
 
         public boolean isHttpFallsBackToHttps() {
-            return HttpFallsBackToHttps;
+            return httpFallsBackToHttps;
         }
 
         public boolean isHttpsFallsBackToHttp() {
-            return HttpsFallsBackToHttp;
+            return httpsFallsBackToHttp;
         }
 
         public boolean isNoSlashFallsBackToTrailingSlash() {
-            return NoSlashFallsBackToTrailingSlash;
+            return noSlashFallsBackToTrailingSlash;
         }
 
         public boolean isTrailingSlashFallsBackToNoSlash() {
-            return TrailingSlashFallsBackToNoSlash;
+            return trailingSlashFallsBackToNoSlash;
         }
 
         public void setHttpFallsBackToHttps(boolean httpFallsBackToHttps) {
-            HttpFallsBackToHttps = httpFallsBackToHttps;
+            this.httpFallsBackToHttps = httpFallsBackToHttps;
         }
 
         public void setHttpsFallsBackToHttp(boolean httpsFallsBackToHttp) {
-            HttpsFallsBackToHttp = httpsFallsBackToHttp;
+            this.httpsFallsBackToHttp = httpsFallsBackToHttp;
         }
 
         public void setNoSlashFallsBackToTrailingSlash(boolean noSlashFallsBackToTrailingSlash) {
-            NoSlashFallsBackToTrailingSlash = noSlashFallsBackToTrailingSlash;
+            this.noSlashFallsBackToTrailingSlash = noSlashFallsBackToTrailingSlash;
         }
 
         public void setTrailingSlashFallsBackToNoSlash(boolean trailingSlashFallsBackToNoSlash) {
-            TrailingSlashFallsBackToNoSlash = trailingSlashFallsBackToNoSlash;
+            this.trailingSlashFallsBackToNoSlash = trailingSlashFallsBackToNoSlash;
         }
     }
 }

@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.SecurityException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusSecurityException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
@@ -26,6 +26,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import javax.crypto.Mac;
@@ -59,7 +60,7 @@ public class GithubWebhookController {
             return null;
         }
         try {
-            return GithubEvent.valueOf(header.toUpperCase());
+            return GithubEvent.valueOf(header.toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -73,10 +74,10 @@ public class GithubWebhookController {
             boolean isSignatureValid = MessageDigest.isEqual(expectedSignature, eventSignature);
 
             if (!isSignatureValid) {
-                throw new SecurityException("Missing or invalid X-Hub-Signature-256");
+                throw new OntopusSecurityException("Missing or invalid X-Hub-Signature-256");
             }
         } catch (InvalidKeyException e) {
-            throw new SecurityException("Failed to calculate webhook signature", e);
+            throw new OntopusSecurityException("Failed to calculate webhook signature", e);
         }
     }
 
@@ -85,7 +86,7 @@ public class GithubWebhookController {
                 || secret.isEmpty()
                 || eventSignature == null
                 || !eventSignature.startsWith(SIGNATURE_HEADER_PREFIX)) {
-            throw new SecurityException("Missing or invalid X-Hub-Signature-256");
+            throw new OntopusSecurityException("Missing or invalid X-Hub-Signature-256");
         }
         final byte[] signature = HexFormat.of().parseHex(eventSignature.substring(SIGNATURE_HEADER_PREFIX.length()));
         validate(signature, secret, bodyBuffer);

@@ -1,27 +1,15 @@
 package cz.lukaskabc.ontology.ontopus.api.util;
 
+import com.google.errorprone.annotations.MustBeClosed;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public class FileUtils {
-
-    public static File createTempDirectory(String prefix) {
-        try {
-            final File tempDir = Files.createTempDirectory(prefix).toFile();
-            tempDir.deleteOnExit();
-            return tempDir;
-        } catch (IOException e) {
-            throw new OntopusException(e);
-            // TODO exception
-        }
-    }
 
     public static Path forceRelativePath(String pathString) {
         Objects.requireNonNull(pathString);
@@ -32,12 +20,7 @@ public class FileUtils {
         return path;
     }
 
-    public static List<Path> listFilesRecursively(Path directory) throws IOException {
-        try (Stream<Path> stream = Files.walk(directory)) {
-            return stream.filter(Files::isRegularFile).toList();
-        }
-    }
-
+    @MustBeClosed
     public static Stream<Path> listRecursively(Path directory) {
         try {
             return Files.walk(directory);

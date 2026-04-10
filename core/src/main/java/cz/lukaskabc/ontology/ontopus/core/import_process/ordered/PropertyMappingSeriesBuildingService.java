@@ -25,7 +25,7 @@ public class PropertyMappingSeriesBuildingService implements OrderedImportPipeli
 
     @Override
     public String getServiceName() {
-        return "";
+        return this.getClass().getName();
     }
 
     @Override

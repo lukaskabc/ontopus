@@ -13,29 +13,27 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ImportProcessNextServiceSelector<S extends ImportProcessingService<?>>
         implements ImportProcessingService<S> {
 
     protected final List<S> services;
     protected final ObjectMapper objectMapper;
-    protected final JsonForm jsonForm;
-    protected final boolean showDescription;
 
-    public ImportProcessNextServiceSelector(List<S> services, boolean showDescription, ObjectMapper objectMapper) {
+    public ImportProcessNextServiceSelector(List<S> services, ObjectMapper objectMapper) {
         if (services.isEmpty()) {
             throw new IllegalStateException("No services found for service selection!"); // TODO exception
         }
         this.services = services;
-        this.showDescription = showDescription;
         this.objectMapper = objectMapper;
-        this.jsonForm = makeForm();
     }
 
     @Override
     public @NonNull JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
-        return makeForm().withFormData(previousFormData);
+        return makeForm(context).withFormData(previousFormData);
     }
 
     @Override
@@ -44,13 +42,17 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         if (serviceIndex.isNumber()) {
             int index = serviceIndex.asInt();
             if (index >= 0 && index < services.size()) {
-                return services.get(index);
+                final S service = services.get(index);
+                if (showsWrappedServiceForm() && service.getJsonForm(context, null) != null) {
+                    submitInnerForm(service, formResult, context);
+                }
+                return service;
             }
         }
         throw new JsonFormSubmitException("Invalid service index!"); // TODO exception and passing it to the FE
     }
 
-    protected JsonForm makeForm() {
+    protected JsonForm makeForm(ReadOnlyImportProcessContext context) {
         ObjectNode schema = objectMapper.createObjectNode();
         ObjectNode uiSchema = objectMapper.createObjectNode();
 
@@ -73,9 +75,6 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                     .put("title", item.getServiceName())
                     .put("description", item.getServiceDescription());
 
-            if (!showDescription) {
-                continue;
-            }
             // option description below
             ObjectNode condition = allOf.addObject();
             condition
@@ -83,15 +82,47 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                     .putObject("properties")
                     .putObject("service")
                     .put("const", i);
-            condition
-                    .putObject("then")
-                    .putObject("properties")
-                    .putObject(item.getServiceName())
-                    .put("type", "null")
-                    .put("description", item.getServiceDescription());
-            uiSchema.putObject(item.getServiceName()).put("ui:field", "typographyField");
+            final ObjectNode thenProperties = condition.putObject("then").putObject("properties");
+
+            final JsonForm innerForm = item.getJsonForm(context, null);
+            if (showsWrappedServiceForm() && innerForm != null) {
+                thenProperties.set(item.getServiceName(), innerForm.getJsonSchema());
+                if (innerForm.getUiSchema() != null) {
+                    uiSchema.set(item.getServiceName(), innerForm.getUiSchema());
+                }
+            } else {
+                thenProperties
+                        .putObject(item.getServiceName())
+                        .put("type", "null")
+                        .put("description", item.getServiceDescription());
+                uiSchema.putObject(item.getServiceName()).put("ui:field", "typographyField");
+            }
         }
 
         return new JsonForm(schema, uiSchema, null);
+    }
+
+    /**
+     * Whether the service renders nested form based on the selection
+     *
+     * @return true if the nested form is included and its result submitted to the wrapped service, false otherwise.
+     */
+    public boolean showsWrappedServiceForm() {
+        return true;
+    }
+
+    protected <T> T submitInnerForm(
+            ImportProcessingService<? extends T> service, FormResult formResult, ImportProcessContext context)
+            throws JsonFormSubmitException {
+        final JsonNode selectionResult = formResult.jsonFormData(objectMapper);
+        final String property = service.getServiceName();
+        if (!selectionResult.hasNonNull(property)) {
+            throw new JsonFormSubmitException("No inner form found!");
+        }
+
+        ObjectNode innerData = selectionResult.get(property).asObject();
+        Map<String, JsonNode> innerFormData = new HashMap<>(innerData.size());
+        innerData.forEachEntry(innerFormData::put);
+        return service.handleSubmit(new FormResult(innerFormData, formResult.uploadedFiles()), context);
     }
 }

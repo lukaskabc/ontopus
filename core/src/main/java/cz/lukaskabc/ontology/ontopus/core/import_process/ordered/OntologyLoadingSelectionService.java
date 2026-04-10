@@ -1,11 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
-import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
-import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessNextServiceSelector;
-import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
@@ -19,21 +16,11 @@ public class OntologyLoadingSelectionService extends ImportProcessNextServiceSel
 
     public OntologyLoadingSelectionService(
             List<OntologyLoadingService> fileLoadingServices, ObjectMapper objectMapper) {
-        super(fileLoadingServices, true, objectMapper);
+        super(fileLoadingServices, objectMapper);
     }
 
     @Override
     public String getServiceName() {
         return "ontopus.core.service.OrderedImportPipelineService.OntologyLoadingSelectionService.name";
-    }
-
-    @Override
-    public OntologyLoadingService handleSubmit(FormResult formResult, ImportProcessContext context)
-            throws JsonFormSubmitException {
-        OntologyLoadingService service = super.handleSubmit(formResult, context);
-        assert context.peekService() == this;
-        context.popService(); // pop self
-        context.pushService(service);
-        return service;
     }
 }

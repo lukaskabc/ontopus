@@ -49,7 +49,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
 
     @Override
     public String getServiceName() {
-        return "";
+        return this.getClass().getName();
     }
 
     @Override

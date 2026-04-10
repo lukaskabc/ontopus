@@ -44,7 +44,7 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
 
     @Override
     public String getServiceName() {
-        return "";
+        return this.getClass().getName();
     }
 
     @Override

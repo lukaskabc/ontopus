@@ -27,7 +27,7 @@ import java.net.URI;
  */
 @NullMarked
 @Service
-public class VersionURIConstructionService implements ImportProcessingService<Void> {
+public class VersionURIConstructionService implements ImportProcessingService<OntologyVersionURI> {
     static final String VERSION_SEGMENT = "{version}";
     static final String URI_FIELD_NAME = "uri";
     static final String VERSION_FIELD_NAME = "version";
@@ -81,12 +81,10 @@ public class VersionURIConstructionService implements ImportProcessingService<Vo
     }
 
     @Override
-    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public OntologyVersionURI handleSubmit(FormResult formResult, ImportProcessContext context) {
         final String version = version(formResult);
         final URI versionURI = versionURI(formResult).buildAndExpand(version).toUri();
-
-        context.getVersionArtifact().setVersionUri(new OntologyVersionURI(versionURI));
-        return null;
+        return new OntologyVersionURI(versionURI);
     }
 
     /**

@@ -16,6 +16,7 @@ import tools.jackson.databind.node.ObjectNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class ImportProcessNextServiceSelector<S extends ImportProcessingService<?>>
         implements ImportProcessingService<S> {
@@ -33,7 +34,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
 
     @Override
     public @NonNull JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
-        return makeForm(context).withFormData(previousFormData);
+        return makeForm(context, previousFormData);
     }
 
     @Override
@@ -45,6 +46,8 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                 final S service = services.get(index);
                 if (showsWrappedServiceForm() && service.getJsonForm(context, null) != null) {
                     submitInnerForm(service, formResult, context);
+                } else {
+                    service.handleSubmit(FormResult.EMPTY, context);
                 }
                 return service;
             }
@@ -52,9 +55,11 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         throw new JsonFormSubmitException("Invalid service index!"); // TODO exception and passing it to the FE
     }
 
-    protected JsonForm makeForm(ReadOnlyImportProcessContext context) {
+    protected JsonForm makeForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         ObjectNode schema = objectMapper.createObjectNode();
         ObjectNode uiSchema = objectMapper.createObjectNode();
+        ObjectNode formData = Objects.requireNonNullElseGet(previousFormData, objectMapper::createObjectNode)
+                .asObject();
 
         schema.put("type", "object");
         ObjectNode properties = schema.putObject("properties");
@@ -90,6 +95,9 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                 if (innerForm.getUiSchema() != null) {
                     uiSchema.set(item.getServiceName(), innerForm.getUiSchema());
                 }
+                if (previousFormData == null && innerForm.getFormData() != null) {
+                    formData.set(item.getServiceName(), innerForm.getFormData());
+                }
             } else {
                 thenProperties
                         .putObject(item.getServiceName())
@@ -99,7 +107,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
             }
         }
 
-        return new JsonForm(schema, uiSchema, null);
+        return new JsonForm(schema, uiSchema, formData);
     }
 
     /**

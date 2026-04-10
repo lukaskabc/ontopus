@@ -49,7 +49,9 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
     @Override
     public void afterStackPush(ImportProcessContext context) {
         if (context.getVersionSeries().getIdentifier() != null) {
-            assert context.peekService() == this;
+            if (context.peekService() != this) {
+                throw new IllegalStateException("Unexpected import process service stack state");
+            }
             context.popService();
         }
     }

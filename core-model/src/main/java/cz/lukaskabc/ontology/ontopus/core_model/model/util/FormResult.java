@@ -18,6 +18,8 @@ import java.util.Map;
  */
 public record FormResult(Map<String, JsonNode> formData, Map<String, UploadedFile> uploadedFiles)
         implements Serializable {
+    public static final FormResult EMPTY = new FormResult(Map.of(), Map.of());
+
     public FormResult(@Nullable Map<String, JsonNode> formData, @Nullable List<UploadedFile> uploadedFiles) {
         this(
                 formData == null ? Map.of() : formData,

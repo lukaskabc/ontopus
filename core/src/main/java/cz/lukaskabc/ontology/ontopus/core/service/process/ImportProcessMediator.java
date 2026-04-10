@@ -220,7 +220,7 @@ public class ImportProcessMediator {
 
     private void processAutoServices(ImportProcessContext context) {
         while (context.hasUnprocessedService() && context.peekService().getJsonForm(context, null) == null) {
-            context.handleResult(new FormResult(Map.of(), Map.of())); // submit empty form result
+            context.handleResult(FormResult.EMPTY);
         }
     }
 

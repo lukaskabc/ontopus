@@ -1,18 +1,24 @@
 @prefix : <http://ontology.lukaskabc.cz/application/ontopus#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcat: <http://www.w3.org/ns/dcat#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix widoco: <https://w3id.org/widoco/vocab#> .
 @prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus#> .
 @base <http://ontology.lukaskabc.cz/application/ontopus#> .
 
 <http://ontology.lukaskabc.cz/application/ontopus> rdf:type owl:Ontology ;
                                                     owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0-dev> ;
-                                                    owl:imports <http://rdfs.org/sioc/ns> ,
-                                                                <https://www.w3.org/ns/dcat3> ;
+                                                    owl:imports <http://www.w3.org/2002/07/owl> ,
+                                                                <http://www.w3.org/1999/02/22-rdf-syntax-ns> ,
+                                                                <http://www.w3.org/2000/01/rdf-schema> ,
+                                                                <http://www.w3.org/ns/shacl> ,
+                                                                <http://w3id.org/widoco/vocab> ,
+                                                                <http://rdfs.org/sioc/ns> ,
+                                                                <https://w3id.org/widoco/vocab/1.0.0> ,
+                                                                <http://www.w3.org/ns/dcat3> ;
                                                     <http://purl.org/dc/elements/1.1/creator> "Lukáš Kaňka" ;
                                                     <http://purl.org/vocab/vann/preferredNamespacePrefix> "ontopus" ;
                                                     <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus#" ;
@@ -80,23 +86,6 @@ ontopus:hasPrefixDeclaration rdf:type owl:ObjectProperty ;
                    rdfs:comment "A prefix declaration used by the ontology"@en ;
                    rdfs:label "Has prefix declaration"@en .
 
-sh:namespace
-    a rdf:Property, owl:ObjectProperty ;
-    rdfs:domain sh:PrefixDeclaration ;
-    rdfs:range xsd:anyURI ;
-    rdfs:isDefinedBy sh: .
-
-owl:versionIRI a owl:OntologyProperty ;
-     rdfs:domain owl:Ontology ;
-     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-     rdfs:range owl:Ontology .
-
-
-owl:versionInfo a owl:AnnotationProperty ;
-     rdfs:domain rdfs:Resource ;
-     rdfs:isDefinedBy <http://www.w3.org/2002/07/owl#> ;
-     rdfs:range rdfs:Resource .
-
 
 #################################################################
 #    Data properties
@@ -136,12 +125,6 @@ ontopus:secret rdf:type owl:DatatypeProperty ;
                      rdfs:range xsd:string ;
                      rdfs:comment "A secret text used for authentication of an application call."@en ;
                      rdfs:label "Secret"@en .
-
-sh:prefix
-	a rdf:Property, owl:DatatypeProperty ;
-	rdfs:domain sh:PrefixDeclaration ;
-	rdfs:range xsd:string ;
-	rdfs:isDefinedBy sh: .
 
 #################################################################
 #    Classes

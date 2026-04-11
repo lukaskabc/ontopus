@@ -22,10 +22,10 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
     /*
      * skipping access rights, conforms to, contact point, creator
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_description)
+    @OWLDataProperty(iri = Vocabulary.s_p_sioc_description)
     private MultilingualString description;
 
-    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_dcat_title)
+    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_sioc_title)
     private MultilingualString title;
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)

@@ -22,10 +22,10 @@ import java.time.Instant;
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Distribution)
 public abstract class Distribution<ID extends TypedIdentifier> extends PersistenceEntityWithDcatIdentifier<ID> {
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_title)
+    @OWLDataProperty(iri = Vocabulary.s_p_sioc_title)
     private MultilingualString title;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_description)
+    @OWLDataProperty(iri = Vocabulary.s_p_sioc_description)
     private MultilingualString description;
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)

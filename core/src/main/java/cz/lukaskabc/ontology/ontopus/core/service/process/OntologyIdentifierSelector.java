@@ -34,7 +34,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
     }
 
     private void ensureExists(ResourceURI resource, ImportProcessContext context) throws JsonFormSubmitException {
-        if (!graphService.exists(resource, context.getTemporaryDatabaseContext())) {
+        if (!graphService.subjectExists(resource, context.getTemporaryDatabaseContext())) {
             throw new JsonFormSubmitException("Resource does not exists in the ontology");
         }
     }

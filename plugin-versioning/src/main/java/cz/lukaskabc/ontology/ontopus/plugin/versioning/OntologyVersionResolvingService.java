@@ -25,7 +25,6 @@ import tools.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /** Resolves and uses version information and version IRI from the ontology */
 @NullMarked
@@ -34,13 +33,6 @@ import java.util.Set;
 public class OntologyVersionResolvingService implements OntologyVersioningService {
     private static final String TRANSLATION_ROOT =
             "ontopus.core.service.OntologyVersioningService.OntologyVersionResolvingService";
-    private static final Set<URI> VERSION_EXAMPLES = Set.of(
-            URI.create("http://purl.org/dc/terms/hasVersion"),
-            URI.create("http://purl.org/pav/version"),
-            URI.create("http://schema.org/schemaVersion"),
-            URI.create("http://www.w3.org/ns/dcat#version"),
-            URI.create("http://www.w3.org/2002/07/owl#versionInfo"));
-    private static final Set<URI> VERSION_IRI_EXAMPLES = Set.of(URI.create("http://www.w3.org/2002/07/owl#versionIRI"));
 
     private static JsonForm makeForm(ObjectMapper objectMapper) {
         ObjectNode scheme = objectMapper.createObjectNode();
@@ -52,11 +44,11 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         ObjectNode properties = scheme.putObject("properties");
 
         ArrayNode versionExamples = objectMapper.createArrayNode();
-        VERSION_EXAMPLES.stream().map(URI::toString).forEach(versionExamples::add);
+        VersioningPlugin.VERSION_EXAMPLES.stream().map(URI::toString).forEach(versionExamples::add);
         properties.putObject("version").put("type", "string").set("examples", versionExamples);
 
         ArrayNode versionIriExamples = objectMapper.createArrayNode();
-        VERSION_IRI_EXAMPLES.stream().map(URI::toString).forEach(versionIriExamples::add);
+        VersioningPlugin.VERSION_IRI_EXAMPLES.stream().map(URI::toString).forEach(versionIriExamples::add);
         properties.putObject("versionIri").put("type", "string").set("examples", versionIriExamples);
 
         ObjectNode autocompleteOptions = objectMapper.createObjectNode();
@@ -119,12 +111,18 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
             throw new JsonFormSubmitException("Missing predicate for ontology version IRI");
         }
 
-        final String versionValue = getTripleValue(URI.create(version), context);
-        final OntologyVersionURI versionIriValue =
-                new OntologyVersionURI(getTripleValue(URI.create(versionIri), context));
+        final URI versionPredicate = URI.create(version);
+        final URI versionIriPredicate = URI.create(versionIri);
+
+        final String versionValue = getTripleValue(versionPredicate, context);
+        final OntologyVersionURI versionIriValue = new OntologyVersionURI(getTripleValue(versionIriPredicate, context));
 
         context.getVersionArtifact().setVersion(versionValue);
         context.getVersionArtifact().setVersionUri(versionIriValue);
+
+        context.setAdditionalProperty(VersioningContextParameters.VERSION_PREDICATE, new ResourceURI(version));
+        context.setAdditionalProperty(
+                VersioningContextParameters.VERSION_IRI_PREDICATE, new ResourceURI(versionIriPredicate));
 
         return null;
     }
@@ -133,11 +131,11 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         final ResourceURI ontologyUri = context.getVersionSeries().getOntologyURI();
         final GraphURI contextUri = context.getTemporaryDatabaseContext();
         final String version = predicateService
-                .findStatement(ontologyUri, VERSION_EXAMPLES, contextUri)
+                .findStatement(ontologyUri, VersioningPlugin.VERSION_EXAMPLES, contextUri)
                 .map(statement -> statement.getPredicate().stringValue())
                 .orElse(null);
         final String versionIri = predicateService
-                .findStatement(ontologyUri, VERSION_IRI_EXAMPLES, contextUri)
+                .findStatement(ontologyUri, VersioningPlugin.VERSION_IRI_EXAMPLES, contextUri)
                 .map(statement -> statement.getPredicate().stringValue())
                 .orElse(null);
 

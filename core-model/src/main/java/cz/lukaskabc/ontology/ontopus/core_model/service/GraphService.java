@@ -2,9 +2,9 @@ package cz.lukaskabc.ontology.ontopus.core_model.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.GraphRepository;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,10 +31,6 @@ public class GraphService {
      */
     public void copy(GraphURI source, GraphURI target) {
         graphRepository.copy(source, target);
-    }
-
-    public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
-        return graphRepository.exists(resource, temporaryDatabaseContext);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */
@@ -71,5 +67,27 @@ public class GraphService {
      */
     public void move(GraphURI source, GraphURI target) {
         graphRepository.move(source, target);
+    }
+
+    public void persistModel(GraphURI context, Model rdfModel) {
+        graphRepository.persistModel(context, rdfModel);
+    }
+
+    /**
+     * Checks whether the given predicate exists on the given subject
+     *
+     * @return true when the predicate exists on the given subject
+     */
+    public boolean predicateExists(ResourceURI subject, ResourceURI predicate, GraphURI graphURI) {
+        return graphRepository.exists(subject, predicate, null, graphURI);
+    }
+
+    /**
+     * Checks whether the given subject exists in the graph
+     *
+     * @return true when the resource exists
+     */
+    public boolean subjectExists(ResourceURI resource, GraphURI graphURI) {
+        return graphRepository.exists(resource, null, null, graphURI);
     }
 }

@@ -1,10 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
+import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.*;
@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.Nullable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,19 +71,33 @@ public class GraphDao {
         }
     }
 
-    public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
+    public boolean exists(
+            @Nullable ResourceURI subject,
+            @Nullable ResourceURI predicate,
+            @Nullable ResourceURI object,
+            GraphURI context) {
         try {
-            return em.createNativeQuery("""
+            TypedQuery<Boolean> query =
+                    em.createNativeQuery("""
 					ASK FROM ?context WHERE {
-					    ?resource ?p ?o .
+					    ?subject ?predicate ?object .
 					}
-					""", Boolean.class)
-                    .setParameter("context", temporaryDatabaseContext.toURI())
-                    .setParameter("resource", resource.toURI())
-                    .getSingleResult();
+					""", Boolean.class).setParameter("context", context.toURI());
+            if (subject != null) {
+                query.setParameter("subject", subject.toURI());
+            }
+            if (predicate != null) {
+                query.setParameter("predicate", predicate.toURI());
+            }
+            if (object != null) {
+                query.setParameter("object", object.toURI());
+            }
+            return query.getSingleResult();
         } catch (Exception e) {
             throw new PersistenceException(
-                    "Failed to check existence of resource " + resource + " in context " + temporaryDatabaseContext, e);
+                    "Failed to check existence of statement: " + subject + " " + predicate + " " + object + " in graph "
+                            + context,
+                    e);
         }
     }
 

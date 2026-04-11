@@ -8,6 +8,11 @@
         },
         "OntologyIdentifierSelector": {
           "field.identifier.title": "Ontology identifier"
+        },
+        "OntologyAnnotationInjectionService": {
+          "VersionAnnotationInjectionService": {
+            "description": "Version IRI using [owl:versionIRI](https://www.w3.org/2002/07/owl#versionIRI)"
+          }
         }
       },
       "OntologyFileSelection": {

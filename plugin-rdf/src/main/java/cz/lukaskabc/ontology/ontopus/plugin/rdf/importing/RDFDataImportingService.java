@@ -5,7 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.Model;
@@ -62,10 +62,10 @@ public class RDFDataImportingService implements DataFileImportingService {
         model.getNamespaces().stream().map(PrefixDeclaration::new).forEach(versionArtifact::addPrefixDeclaration);
     }
 
-    private final GraphDao graphDao;
+    private final GraphService graphService;
 
-    public RDFDataImportingService(GraphDao graphDao) {
-        this.graphDao = graphDao;
+    public RDFDataImportingService(GraphService graphService) {
+        this.graphService = graphService;
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class RDFDataImportingService implements DataFileImportingService {
         final Model model = loadModel(files);
         saveNamespaces(importContext.getVersionArtifact(), model);
         final TemporaryContextURI context = importContext.getTemporaryDatabaseContext();
-        graphDao.persistModel(context, model);
+        graphService.persistModel(context, model);
     }
 
     @Override

@@ -2,13 +2,14 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,8 +29,12 @@ public class GraphRepository {
     }
 
     @Transactional(readOnly = true)
-    public boolean exists(ResourceURI resource, TemporaryContextURI temporaryDatabaseContext) {
-        return graphDao.exists(resource, temporaryDatabaseContext);
+    public boolean exists(
+            @Nullable ResourceURI subject,
+            @Nullable ResourceURI predicate,
+            @Nullable ResourceURI object,
+            GraphURI context) {
+        return graphDao.exists(subject, predicate, object, context);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */
@@ -66,5 +71,10 @@ public class GraphRepository {
     @Transactional
     public void move(GraphURI source, GraphURI target) {
         graphDao.move(source, target);
+    }
+
+    @Transactional
+    public void persistModel(GraphURI context, Model rdfModel) {
+        graphDao.persistModel(context, rdfModel);
     }
 }

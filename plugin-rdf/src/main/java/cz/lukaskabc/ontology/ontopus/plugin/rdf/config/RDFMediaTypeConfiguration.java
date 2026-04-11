@@ -10,10 +10,10 @@ import jakarta.annotation.PostConstruct;
 import java.util.Map;
 
 @Configuration
-public class MediaTypeConfiguration {
+public class RDFMediaTypeConfiguration {
     private final MediaTypeResolver mediaTypeResolver;
 
-    public MediaTypeConfiguration(MediaTypeResolver mediaTypeResolver) {
+    public RDFMediaTypeConfiguration(MediaTypeResolver mediaTypeResolver) {
         this.mediaTypeResolver = mediaTypeResolver;
     }
 

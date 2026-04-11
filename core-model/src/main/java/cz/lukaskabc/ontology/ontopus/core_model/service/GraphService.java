@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,6 +32,10 @@ public class GraphService {
      */
     public void copy(GraphURI source, GraphURI target) {
         graphRepository.copy(source, target);
+    }
+
+    public void delete(Collection<Statement> statements, GraphURI graphURI) {
+        graphRepository.delete(statements, graphURI);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */

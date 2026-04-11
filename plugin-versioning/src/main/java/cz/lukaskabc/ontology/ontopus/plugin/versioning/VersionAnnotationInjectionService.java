@@ -9,6 +9,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import cz.lukaskabc.ontology.ontopus.plugin.versioning.service.PredicateService;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -33,10 +34,13 @@ import java.util.Set;
 public class VersionAnnotationInjectionService implements OntologyAnnotationInjectionService {
     private final ObjectMapper objectMapper;
     private final PredicateService predicateService;
+    private final GraphService graphService;
 
-    public VersionAnnotationInjectionService(ObjectMapper objectMapper, PredicateService predicateService) {
+    public VersionAnnotationInjectionService(
+            ObjectMapper objectMapper, PredicateService predicateService, GraphService graphService) {
         this.objectMapper = objectMapper;
         this.predicateService = predicateService;
+        this.graphService = graphService;
     }
 
     @Nullable private Statement findStatement(ReadOnlyImportProcessContext context, @Nullable ResourceURI predicate) {
@@ -171,6 +175,7 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         final boolean versionIriValueMatches = versionIriValueMatches(context, versionIri);
 
         Set<Statement> statements = new HashSet<>(2);
+        Set<Statement> statementsToDelete = new HashSet<>(2);
         final SimpleValueFactory vf = SimpleValueFactory.getInstance();
         final IRI ontologyIRI =
                 vf.createIRI(context.getVersionSeries().getOntologyURI().toString());
@@ -178,6 +183,9 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                 vf.createIRI(context.getTemporaryDatabaseContext().toString());
 
         if (!versionValueMatches) {
+            if (version != null) {
+                statementsToDelete.add(version);
+            }
             final IRI versionPredicate = vf.createIRI(formResult.getStringValue("versionPredicate"));
             final Literal versionValue =
                     vf.createLiteral(context.getVersionArtifact().getVersion());
@@ -187,6 +195,9 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         }
 
         if (!versionIriValueMatches) {
+            if (versionIri != null) {
+                statementsToDelete.add(versionIri);
+            }
             final IRI iriPredicate = vf.createIRI(formResult.getStringValue("versionIriPredicate"));
             final IRI versionIRI =
                     vf.createIRI(context.getVersionArtifact().getVersionUri().toString());
@@ -195,6 +206,7 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
             statements.add(versionIriStatement);
         }
 
+        graphService.delete(statementsToDelete, context.getTemporaryDatabaseContext());
         return new LinkedHashModel(statements);
     }
 

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Nullable;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -26,6 +27,11 @@ public class GraphRepository {
     @Transactional
     public void copy(GraphURI source, GraphURI target) {
         graphDao.copy(source, target);
+    }
+
+    @Transactional
+    public void delete(Collection<Statement> statements, GraphURI context) {
+        graphDao.delete(statements, context);
     }
 
     @Transactional(readOnly = true)

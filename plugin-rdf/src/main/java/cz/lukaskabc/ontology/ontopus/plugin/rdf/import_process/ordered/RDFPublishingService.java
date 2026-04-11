@@ -45,6 +45,15 @@ public class RDFPublishingService implements OntologyPublishingService, OrderedI
 
         final ControllerDescription controller = controllerDescriptionService
                 .findById(identifier)
+                .map(existing -> {
+                    if (existing.getSupportedMediaTypes().size()
+                                    != rdfController.getSupportedMediaTypes().size()
+                            || !existing.getSupportedMediaTypes().containsAll(rdfController.getSupportedMediaTypes())) {
+                        existing.setSupportedMediaTypes(rdfController.getSupportedMediaTypes());
+                        controllerDescriptionService.update(existing);
+                    }
+                    return existing;
+                })
                 .orElseGet(() -> {
                     final ControllerDescription newController = new ControllerDescription();
                     newController.setIdentifier(identifier);
@@ -53,6 +62,7 @@ public class RDFPublishingService implements OntologyPublishingService, OrderedI
                     controllerDescriptionService.persist(newController);
                     return newController;
                 });
+
         return Set.of(controller);
     }
 

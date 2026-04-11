@@ -7,7 +7,6 @@ import java.util.Set;
 
 public enum Argument {
     ANALYTICS("analytics", "string"),
-    CONF_FILE("confFile", "string"),
     // not including Cross Ref, does not generate index file
     DISPLAY_DIRECT_IMPORTS_ONLY("displayDirectImportsOnly", "boolean"),
     DO_NOT_DISPLAY_SERIALIZATIONS("doNotDisplaySerializations", "boolean"),
@@ -36,7 +35,7 @@ public enum Argument {
     USE_CUSTOM_STYLE("useCustomStyle", "boolean"),
     WEB_VOWL("webVowl", "boolean");
 
-    public static final Set<Argument> FILES = Set.of(CONF_FILE, ONT_FILE, IMPORT);
+    public static final Set<Argument> FILES = Set.of(IMPORT);
 
     private final String argument;
     /** Type for JSON schema */

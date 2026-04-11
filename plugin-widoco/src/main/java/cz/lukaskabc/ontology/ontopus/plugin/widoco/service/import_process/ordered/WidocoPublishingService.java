@@ -17,6 +17,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.Argument;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.OntologyToFileSerializationService;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoControllerRegistrationService;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoExecutionService;
 import org.jspecify.annotations.Nullable;
@@ -46,14 +47,11 @@ import java.util.stream.Stream;
 public class WidocoPublishingService implements OntologyPublishingService, OrderedImportPipelineService<Void> {
     private static final String TRANSLATION_ROOT = "ontopus.plugin.widoco.service.WidocoPublishingService";
     private static final Set<String> WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE = Set.of("jsonld", "nt", "owl", "ttl");
-    private static final String REDIRECT_SERIALIZATION_FIELD = "RedirectSerializationToOntopus";
     private static final Set<String> WIDOCO_OUTPUT_DIRECTORIES = Set.of("provenance", "sections", "resources");
+    private static final Set<Argument> WIDOCO_DISALLOWED_ARGS = Set.of(Argument.ONT_FILE);
 
     private static void applyOrder(ObjectNode uiSchema, Collection<String> propertyNames) {
-        ArrayNode order = uiSchema.putArray("ui:order")
-                .add(Argument.ONT_FILE.name())
-                .add(Argument.CONF_FILE.name())
-                .add(Argument.LANG.name());
+        ArrayNode order = uiSchema.putArray("ui:order").add(Argument.LANG.name());
 
         propertyNames.forEach(propertyName -> {
             StringNode node = order.stringNode(propertyName);
@@ -72,6 +70,9 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         final ObjectNode properties = schema.putObject("properties");
 
         for (Argument arg : Argument.values()) {
+            if (WIDOCO_DISALLOWED_ARGS.contains(arg)) {
+                continue;
+            }
             final ObjectNode property = properties.putObject(arg.name()).put("type", arg.schemaType());
             if (arg.schemaType().startsWith("array")) {
                 property.put("type", "array");
@@ -84,8 +85,6 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                 .putObject("items")
                 .put("ui:label", false);
 
-        properties.putObject(REDIRECT_SERIALIZATION_FIELD).put("type", "boolean");
-
         ObjectNode autocompleteWidget = mapper.createObjectNode();
         autocompleteWidget
                 .put("ui:widget", "autocompleteWidget")
@@ -95,8 +94,6 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                 .put("disableClearable", true)
                 .put("autoHighlight", true);
 
-        uiSchema.set(Argument.CONF_FILE.name(), autocompleteWidget);
-        uiSchema.set(Argument.ONT_FILE.name(), autocompleteWidget);
         uiSchema.set(Argument.IMPORT.name(), autocompleteWidget);
 
         uiSchema.putObject("ui:globalOptions").put("enableMarkdownInDescription", true);
@@ -118,6 +115,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private final WidocoExecutionService widocoExecutionService;
     private final WidocoControllerRegistrationService widocoControllerRegistrationService;
     private final GraphService graphService;
+    private final OntologyToFileSerializationService ontologyToFileSerializationService;
 
     public WidocoPublishingService(
             ContextToControllerMappingService mappingService,
@@ -125,7 +123,8 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             WidocoExecutionService widocoExecutionService,
             WidocoPluginConfig config,
             WidocoControllerRegistrationService widocoControllerRegistrationService,
-            GraphService graphService) {
+            GraphService graphService,
+            OntologyToFileSerializationService ontologyToFileSerializationService) {
         this.mappingService = mappingService;
         this.mapper = mapper;
         this.widocoExecutionService = widocoExecutionService;
@@ -133,6 +132,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         this.jsonForm = makeForm(mapper);
         this.widocoControllerRegistrationService = widocoControllerRegistrationService;
         this.graphService = graphService;
+        this.ontologyToFileSerializationService = ontologyToFileSerializationService;
     }
 
     private void deleteUnusedWidocoFiles(Path widocoRoot, boolean deleteSerializations) throws IOException {
@@ -171,17 +171,6 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     .forEach(examples::add);
         }
 
-        final JsonNode properties = schema.get("properties");
-        properties.get(Argument.CONF_FILE.name()).asObject().set("examples", examples);
-        properties.get(Argument.ONT_FILE.name()).asObject().set("examples", examples);
-
-        if (context.getOntologyFilePath() != null) {
-            final String ontologyFile = context.getTempFolder()
-                    .relativize(context.getOntologyFilePath())
-                    .toString();
-            formData.put(Argument.ONT_FILE.name(), ontologyFile);
-        }
-
         if (previousFormData == null || previousFormData.get(Argument.LANG.name()) == null) {
             final List<String> languages = graphService.findAllLanguageTags(context.getTemporaryDatabaseContext());
             if (!languages.isEmpty()) {
@@ -215,10 +204,10 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         WidocoArguments arguments = new WidocoArguments();
         formResult.formData().forEach((keyName, value) -> {
-            if (keyName.equals(REDIRECT_SERIALIZATION_FIELD)) {
+            Argument arg = Argument.valueOf(keyName);
+            if (WIDOCO_DISALLOWED_ARGS.contains(arg)) {
                 return;
             }
-            Argument arg = Argument.valueOf(keyName);
 
             if (Argument.FILES.contains(arg) && value.isString()) {
                 final Path relative = Path.of(value.asString());
@@ -241,18 +230,21 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             }
         });
 
-        boolean redirectSerialization = formResult
-                .formData()
-                .getOrDefault(
-                        REDIRECT_SERIALIZATION_FIELD, mapper.getNodeFactory().booleanNode(false))
-                .asBoolean();
-
         try {
+            final Path workDir = context.createTempFolder(Path.of("widoco-work-dir-" + StringUtils.randomString(5)));
+            final Path ontologyFile = workDir.resolve("ontology.ttl");
+            ontologyToFileSerializationService.serializeOntologyToFile(
+                    context.getVersionArtifact().getPrefixDeclarations(),
+                    context.getTemporaryDatabaseContext(),
+                    ontologyFile);
+
+            arguments.put(Argument.ONT_FILE, ontologyFile.toString());
+
             final Path output = widocoExecutionService
-                    .execute(arguments)
+                    .execute(arguments, workDir)
                     .get(config.getExecutionTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
             final Path outputRoot = resolveWidocoOutputRoot(output);
-            deleteUnusedWidocoFiles(outputRoot, redirectSerialization);
+            // deleteUnusedWidocoFiles(outputRoot, redirectSerialization);
             persistOutput(outputRoot, context);
             // TODO: reduce size of this service
             final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(

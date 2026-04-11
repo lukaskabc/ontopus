@@ -42,6 +42,10 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
         return distributions.stream().map(DistributionURI::new).collect(Collectors.toUnmodifiableSet());
     }
 
+    public Set<PrefixDeclaration> getPrefixDeclarations() {
+        return prefixDeclarations;
+    }
+
     public VersionSeriesURI getSeries() {
         return new VersionSeriesURI(getSeriesURI());
     }

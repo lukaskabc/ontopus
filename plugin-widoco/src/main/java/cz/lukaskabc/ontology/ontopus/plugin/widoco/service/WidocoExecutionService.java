@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,7 +67,7 @@ public class WidocoExecutionService {
         }
     }
 
-    public Future<Path> execute(WidocoArguments arguments) {
+    public Future<Path> execute(WidocoArguments arguments, Path workDir) {
         CommandLine cmd = new CommandLine("java")
                 .addArgument("-jar")
                 .addArgument(config.getPath().toFile().getAbsolutePath());
@@ -82,11 +81,7 @@ public class WidocoExecutionService {
 
         // TODO resolve ontology main file
         cmd.setSubstitutionMap(arguments);
-        try {
-            final Path tmp = Files.createTempDirectory("widoco-working-dir");
-            return executor.submit(() -> execute(cmd, tmp));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        return executor.submit(() -> execute(cmd, workDir));
     }
 }

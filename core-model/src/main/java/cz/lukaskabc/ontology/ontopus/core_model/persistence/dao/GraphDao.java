@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.Nullable;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -52,6 +53,16 @@ public class GraphDao {
                     .executeUpdate();
         } catch (Exception e) {
             throw new PersistenceException("Failed to copy graph from " + source + " to " + target, e);
+        }
+    }
+
+    public void delete(Collection<Statement> statements, GraphURI context) {
+        final Repository repository = em.unwrap(Repository.class);
+        try (final RepositoryConnection conn = repository.getConnection()) {
+            conn.begin();
+            final IRI graphContext = repository.getValueFactory().createIRI(context.toString());
+            conn.remove(statements, graphContext);
+            conn.commit();
         }
     }
 

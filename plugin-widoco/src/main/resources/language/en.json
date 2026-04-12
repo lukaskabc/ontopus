@@ -10,10 +10,6 @@
             "title": "Google Analytics ID",
             "description": "Add a code snippet for Google analytics to track your HTML documentation. You need to add your CODE next to the flag. For example: UA-1234"
           },
-          "CONF_FILE": {
-            "title": "Configuration file",
-            "description": "Load your own configuration file for the ontology metadata. Use this option if you want to load your own HTML sections as well. Incompatible with `-getOntologyMetadata`. See the [configuration documentation](https://github.com/dgarijo/Widoco/blob/v1.4.25/doc/configuration/configuration_doc.md) for more information about the accepted fields."
-          },
           "DISPLAY_DIRECT_IMPORTS_ONLY": {
             "title": "Display direct imports only",
             "description": "Only those imported ontologies that are directly imported in the ontology being documented."
@@ -48,7 +44,7 @@
           },
           "LANG": {
             "title": "Languages",
-            "description": "Generate documentation in multiple languages. If the language is not supported, the system will load the labels in english. Note that only basic language tags not containing \"-\" are supported due to Widoco limitations (instead of en-US, only en must be used)."
+            "description": "Generate documentation in multiple languages. **Specifying no language will automatically document all languages used in the ontology.** If the language is not supported, the system will load the labels in english. Note that only basic language tags not containing \"-\" are supported due to Widoco limitations (instead of en-US, only en must be used)."
           },
           "LICENSIUS": {
             "title": "Licensius",

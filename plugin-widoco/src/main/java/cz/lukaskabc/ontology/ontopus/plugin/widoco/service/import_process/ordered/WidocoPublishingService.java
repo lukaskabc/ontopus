@@ -9,6 +9,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
@@ -172,11 +173,8 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         }
 
         if (previousFormData == null || previousFormData.get(Argument.LANG.name()) == null) {
-            final List<String> languages = graphService.findAllLanguageTags(context.getTemporaryDatabaseContext());
-            if (!languages.isEmpty()) {
-                ArrayNode langArray = formData.putArray(Argument.LANG.name());
-                languages.stream().filter(lang -> !lang.contains("-")).forEach(langArray::add);
-            }
+            ArrayNode langArray = formData.putArray(Argument.LANG.name());
+            resolveAlLanguages(context.getTemporaryDatabaseContext()).forEach(langArray::add);
         }
 
         return new JsonForm(schema, uiSchema, formData);
@@ -220,11 +218,19 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     arguments.put(arg, "");
                 }
             } else if (arg.equals(Argument.LANG) && value.isArray()) {
-                final String param = value.asArray().values().stream()
-                        .filter(JsonNode::isString)
-                        .map(JsonNode::asString)
-                        .collect(Collectors.joining("-"));
-                arguments.put(arg, StringUtils.sanitize(param));
+                Stream<String> languages;
+                if (!value.isEmpty() && value.isArray()) {
+                    languages = value.asArray().values().stream()
+                            .filter(JsonNode::isString)
+                            .map(JsonNode::asString);
+                } else {
+                    languages = resolveAlLanguages(context.getTemporaryDatabaseContext());
+                }
+
+                final String param = languages.collect(Collectors.joining("-"));
+                if (StringUtils.hasText(param)) {
+                    arguments.put(arg, StringUtils.sanitize(param));
+                }
             } else {
                 throw new IllegalArgumentException("Unknown argument: " + arg + " with value " + value.toString());
             }
@@ -273,6 +279,20 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         } catch (IOException e) {
             throw new OntopusException("Failed to persist widoco output", e);
         }
+    }
+
+    /**
+     * Resolves all languages used by literals in the given graph. Languages containing "-" are excluded.
+     *
+     * @param graphURI the database graph
+     * @return stream of language tags
+     */
+    private Stream<String> resolveAlLanguages(GraphURI graphURI) {
+        final List<String> languages = graphService.findAllLanguageTags(graphURI);
+        if (!languages.isEmpty()) {
+            return languages.stream().filter(lang -> !lang.contains("-"));
+        }
+        return Stream.empty();
     }
 
     private Path resolveWidocoOutputRoot(Path output) {

@@ -14,7 +14,7 @@ public class MultilingualStringSerializer extends ValueSerializer<MultilingualSt
         gen.writeStartObject();
         nullableKeyMap.forEach((key, value) -> {
             if (key == null) {
-                key = "null";
+                key = "none";
             }
             gen.writeName(key);
             gen.writeString(value);

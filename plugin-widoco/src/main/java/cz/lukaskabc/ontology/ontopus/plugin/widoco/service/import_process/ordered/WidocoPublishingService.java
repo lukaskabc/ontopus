@@ -52,7 +52,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private static final Set<Argument> WIDOCO_DISALLOWED_ARGS = Set.of(Argument.ONT_FILE);
 
     private static void applyOrder(ObjectNode uiSchema, Collection<String> propertyNames) {
-        ArrayNode order = uiSchema.putArray("ui:order").add(Argument.LANG.name());
+        ArrayNode order = uiSchema.putArray("ui:order").add("allLangs").add(Argument.LANG.name());
 
         propertyNames.forEach(propertyName -> {
             StringNode node = order.stringNode(propertyName);
@@ -66,6 +66,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private static JsonForm makeForm(ObjectMapper mapper) {
         final ObjectNode schema = mapper.createObjectNode();
         final ObjectNode uiSchema = mapper.createObjectNode();
+        final ObjectNode formData = mapper.createObjectNode();
         schema.put("type", "object");
         schema.put("$translationRoot", TRANSLATION_ROOT);
         final ObjectNode properties = schema.putObject("properties");
@@ -79,12 +80,22 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                 property.put("type", "array");
                 property.putObject("items").put("type", arg.schemaType().substring("array_".length()));
             }
+            if (arg.hasDefaultValue()) {
+                formData.set(arg.name(), mapper.valueToTree(arg.defaultValue()));
+            }
         }
 
         JsonUtils.getOrPutObject(properties, Argument.LANG.name()).put("uniqueItems", true);
         JsonUtils.getOrPutObject(uiSchema, Argument.LANG.name())
                 .putObject("items")
                 .put("ui:label", false);
+
+        properties.putObject("allLangs").put("type", "boolean").put("default", true);
+
+        ObjectNode ifWrapper = schema.putArray("allOf").addObject();
+        JsonNode langNode = properties.remove(Argument.LANG.name());
+        ifWrapper.putObject("if").putObject("properties").putObject("allLangs").put("const", false);
+        ifWrapper.putObject("then").putObject("properties").set(Argument.LANG.name(), langNode);
 
         ObjectNode autocompleteWidget = mapper.createObjectNode();
         autocompleteWidget
@@ -103,8 +114,10 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
 
         applyOrder(uiSchema, properties.propertyNames());
 
-        return new JsonForm(schema, uiSchema, null);
+        return new JsonForm(schema, uiSchema, formData);
     }
+
+    private final ObjectMapper objectMapper;
 
     private final ContextToControllerMappingService mappingService;
 
@@ -125,15 +138,17 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             WidocoPluginConfig config,
             WidocoControllerRegistrationService widocoControllerRegistrationService,
             GraphService graphService,
-            OntologyToFileSerializationService ontologyToFileSerializationService) {
+            OntologyToFileSerializationService ontologyToFileSerializationService,
+            ObjectMapper objectMapper) {
         this.mappingService = mappingService;
         this.mapper = mapper;
         this.widocoExecutionService = widocoExecutionService;
         this.config = config;
-        this.jsonForm = makeForm(mapper);
         this.widocoControllerRegistrationService = widocoControllerRegistrationService;
         this.graphService = graphService;
         this.ontologyToFileSerializationService = ontologyToFileSerializationService;
+        this.jsonForm = makeForm(mapper);
+        this.objectMapper = objectMapper;
     }
 
     private void deleteUnusedWidocoFiles(Path widocoRoot, boolean deleteSerializations) throws IOException {
@@ -160,7 +175,8 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         final JsonNode schema = jsonForm.getJsonSchema().asObject();
         final JsonNode uiSchema = jsonForm.getUiSchema();
         final ObjectNode formData = Optional.ofNullable(previousFormData)
-                .orElseGet(mapper::createObjectNode)
+                .or(() -> Optional.ofNullable(jsonForm.getFormData()))
+                .orElseGet(objectMapper::createObjectNode)
                 .asObject();
 
         ArrayNode examples = mapper.createArrayNode();
@@ -201,6 +217,10 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         WidocoArguments arguments = new WidocoArguments();
+        final boolean allLanguages = Optional.ofNullable(formResult.formData().remove("allLangs"))
+                .filter(JsonNode::isBoolean)
+                .map(JsonNode::asBoolean)
+                .orElse(false);
         formResult.formData().forEach((keyName, value) -> {
             Argument arg = Argument.valueOf(keyName);
             if (WIDOCO_DISALLOWED_ARGS.contains(arg)) {
@@ -219,7 +239,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                 }
             } else if (arg.equals(Argument.LANG) && value.isArray()) {
                 Stream<String> languages;
-                if (!value.isEmpty() && value.isArray()) {
+                if (!allLanguages && !value.isEmpty() && value.isArray()) {
                     languages = value.asArray().values().stream()
                             .filter(JsonNode::isString)
                             .map(JsonNode::asString);
@@ -250,7 +270,6 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     .execute(arguments, workDir)
                     .get(config.getExecutionTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
             final Path outputRoot = resolveWidocoOutputRoot(output);
-            // deleteUnusedWidocoFiles(outputRoot, redirectSerialization);
             persistOutput(outputRoot, context);
             // TODO: reduce size of this service
             final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(

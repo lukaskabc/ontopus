@@ -2,7 +2,6 @@ package cz.lukaskabc.ontology.ontopus.plugin.widoco.config;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Set;
 
 public enum Argument {
@@ -17,12 +16,12 @@ public enum Argument {
     // not including help
     // not including htaccess (unused in ontopus)
     IGNORE_INDIVIDUALS("ignoreIndividuals", "boolean"),
-    INCLUDE_ANNOTATION_PROPERTIES("includeAnnotationProperties", "boolean"),
+    INCLUDE_ANNOTATION_PROPERTIES("includeAnnotationProperties", "boolean", true),
     INCLUDE_IMPORTED_ONTOLOGIES("includeImportedOntologies", "boolean"),
     IMPORT("import", "string"),
     LANG("lang", "array_string"),
     LICENSIUS("licensius", "boolean"),
-    NO_PLACEHOLDER_TEXT("noPlaceHolderText", "boolean"),
+    NO_PLACEHOLDER_TEXT("noPlaceHolderText", "boolean", true),
     ONT_FILE("ontFile", "string"),
     // not including outFolder, overridden by ontopus
     // not including ontURI, ontopus generates docs for local files
@@ -33,7 +32,7 @@ public enum Argument {
     // expected to be provided by user
     UNITE_SECTIONS("uniteSections", "boolean"),
     USE_CUSTOM_STYLE("useCustomStyle", "boolean"),
-    WEB_VOWL("webVowl", "boolean");
+    WEB_VOWL("webVowl", "boolean", true);
 
     public static final Set<Argument> FILES = Set.of(IMPORT);
 
@@ -41,7 +40,7 @@ public enum Argument {
     /** Type for JSON schema */
     private final String schemaType;
 
-    @Nullable private final String defaultValue;
+    @Nullable private final Object defaultValue;
 
     Argument(String argument, String schemaType) {
         this(argument, schemaType, null);
@@ -50,14 +49,14 @@ public enum Argument {
     Argument(String argument, String schemaType, @Nullable Object defaultValue) {
         this.argument = argument;
         this.schemaType = schemaType;
-        this.defaultValue = defaultValue == null ? null : Objects.toString(defaultValue);
+        this.defaultValue = defaultValue;
     }
 
     public String argument() {
         return "-" + argument;
     }
 
-    @Nullable public String defaultValue() {
+    @Nullable public Object defaultValue() {
         return defaultValue;
     }
 

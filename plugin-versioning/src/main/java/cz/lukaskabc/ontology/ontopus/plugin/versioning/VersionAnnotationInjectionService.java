@@ -84,6 +84,10 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         ObjectNode schema = objectMapper.createObjectNode().put("type", "object");
         ObjectNode uiSchema = objectMapper.createObjectNode();
 
+        schema.put(
+                "$translationRoot",
+                "ontopus.core.service.ImportProcessingService.OntologyAnnotationInjectionService.VersionAnnotationInjectionService");
+
         ObjectNode properties = schema.putObject("properties");
 
         if (!versionValueMatches) {

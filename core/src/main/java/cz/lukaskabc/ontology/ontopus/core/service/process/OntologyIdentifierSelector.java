@@ -26,10 +26,13 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
     private final JsonForm jsonForm;
     private final ObjectMapper objectMapper;
     private final GraphService graphService;
+    private final String translationRoot;
 
-    public OntologyIdentifierSelector(ObjectMapper objectMapper, GraphService graphService, Set<URI> identifiers) {
+    public OntologyIdentifierSelector(
+            ObjectMapper objectMapper, GraphService graphService, Set<URI> identifiers, String translationRoot) {
         this.objectMapper = objectMapper;
         this.graphService = graphService;
+        this.translationRoot = translationRoot;
         this.jsonForm = makeJsonForm(identifiers);
     }
 
@@ -71,7 +74,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
         Set<StringNode> examples = stringIds.stream().map(StringNode::valueOf).collect(Collectors.toSet());
 
         ObjectNode scheme = objectMapper.createObjectNode();
-        scheme.put("type", "object");
+        scheme.put("type", "object").put("$translationRoot", translationRoot);
         ObjectNode properties = scheme.putObject("properties");
         properties
                 .putObject(ID_FIELD)

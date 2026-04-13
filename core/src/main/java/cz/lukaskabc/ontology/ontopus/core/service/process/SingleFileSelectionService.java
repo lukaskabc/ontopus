@@ -61,7 +61,7 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
 
     @Override
     public String getServiceName() {
-        return translationRoot + ".name";
+        return translationRoot + ".title";
     }
 
     @Override

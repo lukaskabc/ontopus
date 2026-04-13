@@ -1,11 +1,11 @@
 {
   "ontopus.core.service.OntologyVersioningService": {
     "OntologyVersionResolvingService": {
-      "name": "Ontology annotation based version",
+      "name": "Extract from ontology annotations",
       "description": "Versions the ontology based on ontology annotations.",
       "form": {
-        "title": "Resolve ontology version from annotations",
-        "description": "Select the annotation properties that should be used to determine the version and version IRI of the ontology. OntoPuS will resolve new values for specified properties on each ontology release, it is the responsibility of the ontology author to change the values before releasing a new version.",
+        "title": "Resolve ontology version and version IRI from ontology annotations",
+        "description": "OntoPuS will resolve the values for specified properties on each ontology release, it is the responsibility of the ontology author to change the values before releasing a new version. \nSelect the annotation properties that will be used to determine the version and version IRI of the ontology.",
         "fields": {
           "version": {
             "title": "Version",

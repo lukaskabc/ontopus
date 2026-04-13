@@ -63,7 +63,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
 
     @Override
     public String getServiceName() {
-        return "Ontology identifier processing service";
+        return this.getClass().getName();
     }
 
     @Override
@@ -83,16 +83,22 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
                 .map(Map.Entry::getKey)
                 .collect(LinkedHashSet::new, Set::add, Set::addAll);
 
+        String translationRoot =
+                "ontopus.core.service.OrderedImportPipelineService.OntologyIdentifierProcessingService.";
+
         if (identifiers.isEmpty()) {
             // list all identifiers if no identifier was returned from resolvers
             identifiers = graphService
                     .findAllSubjects(context.getTemporaryDatabaseContext(), Pageable.ofSize(100))
                     .sorted()
                     .collect(LinkedHashSet::new, Set::add, Set::addAll);
+            translationRoot += "ontologyNotFound";
+        } else {
+            translationRoot += "ontologyFound";
         }
 
         ImportProcessingService<URI> selector = new ResultHandlingServiceWrapper<>(
-                new OntologyIdentifierSelector(objectMapper, graphService, identifiers),
+                new OntologyIdentifierSelector(objectMapper, graphService, identifiers, translationRoot),
                 OntologyIdentifierProcessingService::setOntologyIdentifier);
 
         if (context.peekService() != this) {

@@ -20,6 +20,11 @@ public class OntologyVersioningSelectionService extends ImportProcessNextService
 
     @Override
     public String getServiceName() {
-        return "ontopus.core.service.OrderedImportPipelineService.OntologyVersioningSelectionService.name";
+        return getTranslationRoot() + ".title";
+    }
+
+    @Override
+    protected String getTranslationRoot() {
+        return "ontopus.core.service.OrderedImportPipelineService.OntologyVersioningSelectionService";
     }
 }

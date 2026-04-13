@@ -21,6 +21,11 @@ public class OntologyLoadingSelectionService extends ImportProcessNextServiceSel
 
     @Override
     public String getServiceName() {
-        return "ontopus.core.service.OrderedImportPipelineService.OntologyLoadingSelectionService.name";
+        return getTranslationRoot() + ".title";
+    }
+
+    @Override
+    protected String getTranslationRoot() {
+        return "ontopus.core.service.OrderedImportPipelineService.OntologyLoadingSelectionService";
     }
 }

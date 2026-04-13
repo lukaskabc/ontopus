@@ -7,34 +7,55 @@
           "name": "Options selector"
         },
         "OntologyIdentifierSelector": {
-          "field.identifier.title": "Ontology identifier"
+          "field.identifier": {
+            "title":"Ontology identifier",
+            "description": "Specify the exact identifier of the resource representing the ontology."
+          }
         },
         "OntologyAnnotationInjectionService": {
           "VersionAnnotationInjectionService": {
-            "description": "Version IRI using [owl:versionIRI](https://www.w3.org/2002/07/owl#versionIRI)"
-          }
-        }
-      },
-      "OntologyFileSelection": {
-        "name": "Ontology file selection",
-        "fields": {
-          "file": {
-            "title": "Ontology File",
-            "description": "Select the ontology file to be imported (only supported files are listed)."
+            "title": "Ontology version annotations",
+            "description": "The ontology version and version IRI annotations will be added to the ontology. Select predicates that should be used. If an object for the selected predicate already exists in the ontology, it will be replaced.",
+            "fields": {
+              "versionPredicate.title": "Version predicate",
+              "versionIriPredicate.title": "Version IRI predicate"
+            }
           }
         }
       },
       "OrderedImportPipelineService": {
-        "OntologyLoadingSelectionService": {
-          "name": "Ontology source",
-          "description": "Select the source from which the ontology will be loaded."
+        "OntologyIdentifierProcessingService": {
+          "ontologyFound": {
+            "title": "Ontology identifier",
+            "description": "Resources with an ontology type were found in the imported data. Please select which resource represents the ontology."
+          },
+          "ontologyNotFound": {
+            "title": "Ontology identifier",
+            "description": "No resource with an ontology type was found in the imported data. Please specify the ontology identifier manually. Some identifiers from the ontology are available for autocompletion."
+          }
         },
-        "ArtifactBuildingSelectionService": {
-          "name": "Ontology source selection"
+        "OntologyLoadingSelectionService": {
+          "title": "Source of the ontology",
+          "description": "The data and files used for publishing the ontology can be loaded from following sources:",
+          "fields": {
+            "service": {
+              "title": "Ontology source"
+            }
+          }
         },
         "OntologyVersioningSelectionService": {
-          "name": "Ontology versioning strategy selection",
-          "description": "Select the strategy that will be used to determine the version of the ontology."
+          "title": "Ontology versioning strategy",
+          "description": "Select the strategy that will be used to determine the version and version IRI of the ontology.",
+          "fields.service.title": "Versioning strategy"
+        },
+        "FileImportSelectionService": {
+          "title": "Ontology file",
+          "description": "Select the file from which the ontology will be published. Only supported files are listed.",
+          "fields": {
+            "file": {
+              "title": "Ontology File"
+            }
+          }
         },
         "GlobFileSelectionService": {
           "name": "File import selection",

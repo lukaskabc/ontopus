@@ -37,6 +37,8 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         return makeForm(context, previousFormData);
     }
 
+    protected abstract String getTranslationRoot();
+
     @Override
     public S handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         JsonNode serviceIndex = formResult.formData().getOrDefault("service", objectMapper.nullNode());
@@ -61,14 +63,12 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         ObjectNode formData = Objects.requireNonNullElseGet(previousFormData, objectMapper::createObjectNode)
                 .asObject();
 
-        schema.put("type", "object");
+        uiSchema.putObject("ui:globalOptions").put("enableMarkdownInDescription", true);
+
+        schema.put("type", "object").put("$translationRoot", getTranslationRoot());
         ObjectNode properties = schema.putObject("properties");
-        ObjectNode service = properties
-                .putObject("service")
-                .put("type", "number")
-                .put("title", getServiceName())
-                .put("default", 0)
-                .put("description", getServiceDescription());
+        ObjectNode service =
+                properties.putObject("service").put("type", "number").put("default", 0);
 
         schema.putArray("required").add("service");
         ArrayNode items = service.putArray("oneOf");

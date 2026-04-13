@@ -55,6 +55,7 @@ public class RDFDataImportingService implements DataFileImportingService {
         if (format == null) {
             format = Rio.getParserFormatForFileName(file.getName()).orElse(null);
         }
+        // consider using apache tika
         return format;
     }
 

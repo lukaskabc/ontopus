@@ -1,8 +1,9 @@
 {
   "ontopus.plugin.file": {
     "FileUploadProcessingService": {
-      "name": "File upload",
-      "description": "You will choose local files to upload and import into the database."
+      "title": "File upload",
+      "description": "Choose one or more files that will be used during the publishing process. Or drag 'n' drop the whole directory.",
+      "fields.files.title": "Uploaded files"
     }
   }
 }

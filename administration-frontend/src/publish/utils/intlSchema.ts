@@ -7,7 +7,7 @@ import type { i18n } from 'i18next'
 
 const getTypeScope = (typeName: string) => `types.${typeName}`
 const getPropScope = (scope: string, propName: string) => `${scope}.fields.${propName}`
-const tOrNull = (i18n: i18n, key?: string) => (key && i18n.exists(key) ? i18n.t(key) : null)
+const tOrNull = (i18n: i18n, key?: string) => (key && i18n.exists(key) ? i18n.t(key) : key)
 
 // Author https://github.com/rjsf-team/react-jsonschema-form/issues/739#issuecomment-443921904
 // Recursively localises given json schema object. Original schema is not modified.

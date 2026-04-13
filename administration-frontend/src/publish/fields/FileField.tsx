@@ -1,5 +1,5 @@
 import { type FieldProps } from '@rjsf/utils'
-import { useCallback, useState } from 'preact/hooks'
+import { useCallback, useEffect, useState } from 'preact/hooks'
 import { StyledFileDropzone } from '@/publish/components/StyledFileDropzone.tsx'
 import { useTranslation } from 'react-i18next'
 import FormFileList from '@/publish/components/file_list/FormFileList.tsx'
@@ -48,7 +48,7 @@ function FileField(props: FieldProps) {
     console.error('No field name specified for file field', props)
   }
 
-  const [value, setValue] = useState<FormFile[]>([]) // () => parseFormData(name, props.formData)
+  const [value, setValue] = useState<FormFile[]>([])
   const [fileMap, setFileMap] = useState<Map<string, File>>(() => new Map())
 
   // set the state and propagate the value change to the form data
@@ -59,6 +59,10 @@ function FileField(props: FieldProps) {
     },
     [setValue, onChange, fieldPathId]
   )
+
+  useEffect(() => {
+    updateValue(value)
+  })
 
   const onDropAccepted = useCallback(
     (acceptedFiles: File[]) => {

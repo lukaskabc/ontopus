@@ -39,7 +39,7 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
 
     @Override
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
-        return jsonForm; // not using previous data
+        return jsonForm; // not using previous data, files cannot be reused
     }
 
     @Override
@@ -71,9 +71,9 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
     protected JsonForm makeForm() {
         ObjectNode schema = objectMapper.createObjectNode();
         schema.put("type", "object");
-        schema.put("title", getServiceName());
+        schema.put("$translationRoot", "ontopus.plugin.file.FileUploadProcessingService");
         schema.putArray("required").add("files");
-        schema.putObject("properties").putObject("files").put("type", "array");
+        schema.putObject("properties").putObject("files").put("type", "array").put("minItems", 1);
 
         ObjectNode uiSchema = objectMapper.createObjectNode();
         uiSchema.putObject("files").put("ui:field", "fileField").put("multiple", true);

@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponents;
@@ -19,7 +20,7 @@ public class TrailingSlashFallbackService extends ResourceRequestFallbackService
 
     @Override
     public ResponseEntity<StreamingResponseBody> getResourceWithFallback(
-            ResourceURI resourceURI, MediaType[] mediaTypes) {
+            ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(resourceURI.toURI());
         UriComponents components = builder.build();
         final String path = components.getPath();

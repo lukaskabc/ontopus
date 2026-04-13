@@ -19,6 +19,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingTyp
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -83,7 +84,7 @@ public class ResourceService extends ResourceRequestFallbackService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<StreamingResponseBody> findResource(
-            ResourceURI requestedResource, MediaType[] requestedTypes) {
+            ResourceURI requestedResource, MediaType @Nullable [] requestedTypes) {
         final Optional<MediaType> suffixType = resolveSuffixType(requestedResource);
         final MediaType[] mediaTypes =
                 suffixType.map(type -> new MediaType[] {type}).orElse(requestedTypes);
@@ -101,12 +102,13 @@ public class ResourceService extends ResourceRequestFallbackService {
     }
 
     @Override
-    public ResponseEntity<StreamingResponseBody> getResource(ResourceURI resourceURI, MediaType[] mediaTypes) {
+    public ResponseEntity<StreamingResponseBody> getResource(
+            ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);
         ContextToControllerMapping mapping = findControllerMapping(resourceURI, graphURI);
 
-        Optional<ResponseEntity<StreamingResponseBody>> result = contentNegotiationResolver
-                .resolveController(mediaTypes, mapping.getControllers())
+        Optional<ResponseEntity<StreamingResponseBody>> result = Optional.ofNullable(mediaTypes)
+                .flatMap(types -> contentNegotiationResolver.resolveController(types, mapping.getControllers()))
                 .map(candidate -> {
                     final OntopusRequest request = new OntopusRequest(
                             candidate.mediaType(), resourceURI, new OntologyVersionURI(graphURI.toURI()));
@@ -142,13 +144,6 @@ public class ResourceService extends ResourceRequestFallbackService {
         return ResponseEntity.status(HttpStatus.MULTIPLE_CHOICES)
                 .contentType(MediaType.TEXT_HTML)
                 .body(new MultipleChoiceResponseWriter(supportedExtensions, resourceURI, ontopusConfig));
-    }
-
-    private MediaType[] prepend(MediaType[] mediaTypes, MediaType mediaType) {
-        final MediaType[] newMediaTypes = new MediaType[mediaTypes.length + 1];
-        System.arraycopy(mediaTypes, 0, newMediaTypes, 1, mediaTypes.length);
-        newMediaTypes[0] = mediaType;
-        return newMediaTypes;
     }
 
     private MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {

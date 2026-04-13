@@ -22,7 +22,7 @@ public class HttpsSchemaFallbackService extends ResourceRequestFallbackService {
 
     @Override
     public ResponseEntity<StreamingResponseBody> getResourceWithFallback(
-            ResourceURI resourceURI, MediaType[] mediaTypes) {
+            ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUri(resourceURI.toURI());
         UriComponents components = builder.build();
         if (resourceConfig.isHttpFallsBackToHttps() && "http".equals(components.getScheme())) {

@@ -55,12 +55,6 @@ public class ResourceController {
             HttpServletRequest request) {
         final String decodedUrl = decodeUrl(request);
         final ResourceURI requestedURI = new ResourceURI(decodedUrl);
-        // TODO does not account for leading slash
-        // e.g. http://purl.org/dc/terms/.ttl works
-        // http://purl.org/dc/terms.ttl does not
-        if (requestedTypes == null || requestedTypes.length == 0) {
-            requestedTypes = new MediaType[] {MediaType.TEXT_PLAIN};
-        }
 
         final ResponseEntity<? extends StreamingResponseBody> response =
                 resourceService.findResource(requestedURI, requestedTypes);

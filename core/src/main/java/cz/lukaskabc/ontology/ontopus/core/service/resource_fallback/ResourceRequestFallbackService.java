@@ -15,7 +15,8 @@ public abstract class ResourceRequestFallbackService {
         this.fallbackService = fallbackService;
     }
 
-    public ResponseEntity<StreamingResponseBody> getResource(ResourceURI resourceURI, MediaType[] mediaTypes) {
+    public ResponseEntity<StreamingResponseBody> getResource(
+            ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         if (fallbackService == null) {
             return getResourceWithFallback(resourceURI, mediaTypes);
         }
@@ -32,7 +33,7 @@ public abstract class ResourceRequestFallbackService {
     }
 
     protected ResponseEntity<StreamingResponseBody> getResourceWithFallback(
-            ResourceURI resourceURI, MediaType[] mediaTypes) {
+            ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         if (fallbackService != null) {
             return fallbackService.getResource(resourceURI, mediaTypes);
         }

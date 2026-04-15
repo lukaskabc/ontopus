@@ -21,7 +21,7 @@ public class ImportProcessMediatorFutureHandler {
      * @return Response entity based on the future status, the value is never null.
      * @param <T> The type of the result value
      */
-    public static <T> ResponseEntity<T> handleFuture(Future<@Nullable T> future) throws Throwable {
+    public static ResponseEntity<?> handleFuture(Future<? extends @Nullable Object> future) throws Throwable {
         try {
             return resolveFuture(future);
         } catch (ImportProcessFinalizedException e) {
@@ -29,7 +29,7 @@ public class ImportProcessMediatorFutureHandler {
         }
     }
 
-    private static <T> ResponseEntity<T> resolveFuture(Future<@Nullable T> future) throws Throwable {
+    private static <T> ResponseEntity<?> resolveFuture(Future<@Nullable T> future) throws Throwable {
         return switch (future.state()) {
             case SUCCESS -> {
                 T value = future.resultNow();

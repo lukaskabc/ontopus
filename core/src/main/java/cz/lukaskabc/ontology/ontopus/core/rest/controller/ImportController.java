@@ -39,7 +39,7 @@ public class ImportController extends AbstractJsonController {
     }
 
     @GetMapping
-    public ResponseEntity<JsonForm> getJsonForm() throws Throwable {
+    public ResponseEntity<?> getJsonForm() throws Throwable {
         Future<@Nullable JsonForm> futureForm = importService.getCurrentJsonForm();
         return ImportProcessMediatorFutureHandler.handleFuture(futureForm);
     }

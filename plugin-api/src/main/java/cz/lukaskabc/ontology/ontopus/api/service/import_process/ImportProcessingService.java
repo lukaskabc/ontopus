@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressConsumer;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
@@ -82,5 +83,6 @@ public interface ImportProcessingService<R> {
      *     result won't be saved in the context and the service will remain on the stack.
      * @implSpec The caller is responsible for invoking this method asynchronously if blocking operation is not desired.
      */
-    R handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException;
+    R handleSubmit(FormResult formResult, ImportProcessContext context, ProgressConsumer progressConsumer)
+            throws JsonFormSubmitException;
 }

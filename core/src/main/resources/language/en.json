@@ -1,6 +1,9 @@
 {
   "ontopus.core": {
     "title": "OntoPuS",
+    "progress": {
+      "processing": "Processing..."
+    },
     "service": {
       "ImportProcessingService": {
         "ImportProcessNextServiceSelector": {

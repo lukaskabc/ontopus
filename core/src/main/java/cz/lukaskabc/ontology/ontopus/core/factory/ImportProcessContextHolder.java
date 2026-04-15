@@ -4,11 +4,15 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
+import cz.lukaskabc.ontology.ontopus.core.import_process.ContextConsumer;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressConsumer;
+import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressDetail;
+import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressableFuture;
 import cz.lukaskabc.ontology.ontopus.core_model.service.TemporaryContextService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.apache.commons.io.FileUtils;
@@ -33,9 +37,11 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SessionScope
@@ -51,13 +57,19 @@ public class ImportProcessContextHolder implements AutoCloseable {
                 && future.exceptionNow() instanceof ImportProcessFinalizedException;
     }
 
-    private Future<?> future;
+    @SuppressWarnings("unchecked")
+    private static <R> ProgressableFuture<R> unsafeCastFuture(ProgressableFuture<?> future) {
+        return (ProgressableFuture<R>) future;
+    }
+
+    private ProgressableFuture<?> future;
 
     @Nullable private ImportProcessContext instance = null;
 
     private final TemporaryContextService temporaryContextService;
     private final ListableBeanFactory beanFactory;
     private final ExecutorService executor;
+
     private final VersionSeriesService versionSeriesService;
 
     /** Files and directories that will be deleted when the context is closed */
@@ -74,7 +86,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
         this.beanFactory = beanFactory;
         this.executor = executor;
         this.versionSeriesService = versionSeriesService;
-        this.future = CancelledFuture.getInstance();
+        this.future = ProgressableFuture.cancelled();
     }
 
     @Override
@@ -134,15 +146,18 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
     }
 
-    private Runnable decorateAsyncTask(Consumer<ImportProcessContext> consumer) {
+    private Runnable decorateAsyncTask(
+            ContextConsumer consumer, AtomicReference<@Nullable ProgressDetail> progressDetailReference) {
         final RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         final SecurityContext securityContext = SecurityContextHolder.getContext();
+        final ProgressConsumer progressConsumer = progressDetailReference::set;
+
         return () -> {
             try {
                 Objects.requireNonNull(instance, "Import process context not initialized, instance is null");
                 RequestContextHolder.setRequestAttributes(requestAttributes);
                 SecurityContextHolder.setContext(securityContext);
-                consumer.accept(instance);
+                consumer.accept(instance, progressConsumer);
             } catch (ImportProcessFinalizedException e) {
                 throw e; // expected exception
             } catch (RuntimeException e) { // TODO perhaps only for debug?
@@ -188,34 +203,33 @@ public class ImportProcessContextHolder implements AutoCloseable {
             log.trace("Resetting Session Import Process with version series URI {}", uri);
             this.close();
             this.instance = makeImportContext(uri);
-            this.future = CancelledFuture.getInstance();
+            this.future = ProgressableFuture.cancelled();
         } finally {
             lock.unlock();
         }
     }
 
-    /**
-     * Synchronously executes the function blocking all other operations on the holder.
-     *
-     * @param function accepting the context and producing {@code <R>}
-     * @return canceled future when there is already another task running or scheduled, completed future with the result
-     *     otherwise, failed future when the previous future failed.
-     * @param <R> the result type
-     */
-    public <R extends @Nullable Object> Future<R> runWithContextNow(Function<ImportProcessContext, R> function) {
+    private <R extends @Nullable Object> ProgressableFuture<R> runWithContext(
+            Function<ImportProcessContext, ProgressableFuture<R>> contextConsumer) {
         lock.lock();
         try {
             ensureInitializedOrFinalized();
             switch (future.state()) {
                 case FAILED:
-                    Future<R> result = CompletableFuture.failedFuture(future.exceptionNow());
-                    future = CancelledFuture.getInstance();
-                    return result;
+                    // previous future failed
+                    ProgressableFuture<?> previousFuture = future;
+                    // clear failed state
+                    future = ProgressableFuture.cancelled();
+                    // return failed future
+                    return unsafeCastFuture(previousFuture);
                 case CANCELLED, SUCCESS:
                     Objects.requireNonNull(instance);
-                    return CompletableFuture.completedFuture(function.apply(instance));
+                    future = contextConsumer.apply(instance);
+                    return unsafeCastFuture(future);
                 default:
-                    return CancelledFuture.getInstance();
+                    // the future is pending or running, return canceled future with progress of the
+                    // running future
+                    return ProgressableFuture.cancelled(future.getProgressDetail());
             }
         } finally {
             lock.unlock();
@@ -229,67 +243,30 @@ public class ImportProcessContextHolder implements AutoCloseable {
      * @return canceled future when there is already another task running or scheduled, future of the submitted task
      *     otherwise, failed future when the previous future failed.
      */
-    public Future<@Nullable Void> scheduleWithContext(Consumer<ImportProcessContext> consumer) {
-        lock.lock();
-        try {
-            ensureInitializedOrFinalized();
-            Future<Void> result;
-            switch (future.state()) {
-                case FAILED:
-                    result = CompletableFuture.failedFuture(future.exceptionNow());
-                    future = CancelledFuture.getInstance();
-                    return (Future<@Nullable Void>) result;
-                case CANCELLED, SUCCESS:
-                    result = submitVoidTask(consumer);
-                    future = result;
-                    return (Future<@Nullable Void>) result;
-                default:
-                    result = CancelledFuture.getInstance();
-            }
-            return (Future<@Nullable Void>) result;
-        } finally {
-            lock.unlock();
-        }
+    public Future<@Nullable Void> runWithContextAsnyc(ContextConsumer consumer) {
+        return runWithContext((context -> submitVoidTask(consumer)));
+    }
+
+    /**
+     * Synchronously executes the function blocking all other operations on the holder.
+     *
+     * @param function accepting the context and producing {@code <R>}
+     * @return canceled future when there is already another task running or scheduled, completed future with the result
+     *     otherwise, failed future when the previous future failed.
+     * @param <R> the result type
+     */
+    public <R extends @Nullable Object> ProgressableFuture<R> runWithContextSync(
+            Function<ImportProcessContext, R> function) {
+        return runWithContext((context) -> {
+            Future<R> completedFuture = CompletableFuture.completedFuture(function.apply(context));
+            return ProgressableFuture.wrap(completedFuture);
+        });
     }
 
     @SuppressWarnings("unchecked")
-    private Future<Void> submitVoidTask(Consumer<ImportProcessContext> consumer) {
-        return (Future<Void>) executor.submit(decorateAsyncTask(consumer));
-    }
-
-    private static final class CancelledFuture<T> implements Future<T> {
-        private static final CancelledFuture<?> instance = new CancelledFuture<Void>();
-
-        @SuppressWarnings("unchecked")
-        public static <T> CancelledFuture<T> getInstance() {
-            return (CancelledFuture<T>) instance;
-        }
-
-        private CancelledFuture() {}
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            return false;
-        }
-
-        @Override
-        public T get() {
-            throw new CancellationException();
-        }
-
-        @Override
-        public T get(long timeout, TimeUnit unit) {
-            throw new CancellationException();
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return true;
-        }
-
-        @Override
-        public boolean isDone() {
-            return true;
-        }
+    private ProgressableFuture<Void> submitVoidTask(ContextConsumer consumer) {
+        final AtomicReference<@Nullable ProgressDetail> progressDetailReference = new AtomicReference<>(null);
+        final Runnable decoratedTask = decorateAsyncTask(consumer, progressDetailReference);
+        return new ProgressableFuture<>((Future<Void>) executor.submit(decoratedTask), progressDetailReference);
     }
 }

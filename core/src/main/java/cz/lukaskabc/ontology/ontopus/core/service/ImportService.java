@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.util.RequestFileResolver;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
+import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressableFuture;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
@@ -33,7 +34,7 @@ public class ImportService implements ImportInitiationService {
         this.requestFileResolver = requestFileResolver;
     }
 
-    public Future<@Nullable JsonForm> getCurrentJsonForm() {
+    public ProgressableFuture<@Nullable JsonForm> getCurrentJsonForm() {
         return mediator.getCurrentForm(); // TODO include form data when publishing new version of
     }
 

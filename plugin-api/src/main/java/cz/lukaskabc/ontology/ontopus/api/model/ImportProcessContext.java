@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
@@ -185,10 +186,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
      * @param formResult the form result to handle
      * @throws IllegalStateException when there is no service on the stack
      */
-    public void handleResult(FormResult formResult) {
+    public void handleResult(FormResult formResult, ProgressConsumer progressConsumer) {
         if (hasUnprocessedService()) {
             ImportProcessingService<?> service = peekService();
-            service.handleSubmit(formResult, this);
+            service.handleSubmit(formResult, this, progressConsumer);
             processedResults.add(new ServiceAwareFormResult(service, formResult));
             if (service == peekService()) {
                 popService();

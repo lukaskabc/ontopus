@@ -115,8 +115,6 @@ export default function JsonFormElement({ jsonForm, onSubmit, disabled = false }
     return newUiSchema
   }, [uiSchema])
 
-  console.debug(formData)
-
   return (
     <>
       {jsonForm && localizedSchema && (

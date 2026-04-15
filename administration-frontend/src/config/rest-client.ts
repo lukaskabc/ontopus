@@ -1,8 +1,16 @@
 import Constants from '@/Constants.ts'
 import { navigate } from 'wouter-preact/use-browser-location'
 import { NotLoggedInError, PromiseCanceledError, UnexpectedResponseStatusError } from '@/utils/errors.ts'
+import i18n from '@/config/i18n.ts'
 
 export type RESTMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+
+function getLang() {
+  if (i18n.isInitialized && i18n.language) {
+    return i18n.language
+  }
+  return 'en'
+}
 
 export function jsonBody(body: unknown): RequestInit {
   const bodyValue = typeof body === 'string' ? body : JSON.stringify(body)
@@ -63,6 +71,12 @@ const request = (
   abortController: AbortController = new AbortController(),
   base = Constants.BACKEND_URL
 ): CancellablePromise<Response> => {
+  const headers: HeadersInit = Object.assign(
+    {
+      'Accept-Language': getLang() + ', *;q=0.6',
+    } as HeadersInit,
+    options.headers
+  )
   const promise = fetch(
     new URL(path, base),
     Object.assign(
@@ -70,6 +84,7 @@ const request = (
         credentials: 'include',
         method,
         signal: abortController.signal,
+        headers,
       },
       options
     )

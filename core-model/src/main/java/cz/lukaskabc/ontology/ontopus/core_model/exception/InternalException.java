@@ -5,10 +5,10 @@ import org.springframework.http.HttpStatus;
 
 import java.net.URI;
 
-public class PersistenceException extends OntopusException {
-    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "persistence");
+public class InternalException extends OntopusException {
+    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "internal");
 
-    public PersistenceException(String internalMessage, @Nullable Throwable cause) {
+    public InternalException(String internalMessage, @Nullable Throwable cause) {
         super(HttpStatus.INTERNAL_SERVER_ERROR, TYPE, internalMessage, cause);
     }
 }

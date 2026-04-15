@@ -8,7 +8,6 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.FileImportingService;
 import cz.lukaskabc.ontology.ontopus.core.service.process.SingleFileSelectionService;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
@@ -52,13 +51,13 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
         return null;
     }
 
-    private void importFile(Path pathToImport, ImportProcessContext context) {
+    private void importFile(Path pathToImport, ImportProcessContext context) throws JsonFormSubmitException {
         final File fileToImport = pathToImport.toFile();
         try {
             fileImportingService.importFiles(List.of(fileToImport), context);
             context.setOntologyFilePath(pathToImport);
         } catch (Exception e) {
-            throw new OntopusException("Failed to import files: " + e.getMessage(), e);
+            throw new JsonFormSubmitException("Failed to import files: " + e.getMessage(), e);
         }
     }
 }

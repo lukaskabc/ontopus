@@ -1,42 +1,20 @@
 package cz.lukaskabc.ontology.ontopus.api.exception;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.net.URI;
 
 /** Indicates a failure of JSON form submission */
-public class JsonFormSubmitException extends Exception {
-    @Nullable private final String translationKey;
+public class JsonFormSubmitException extends OntopusException {
+    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "form-submission");
 
-    public JsonFormSubmitException(String message) {
-        super(message);
-        this.translationKey = null;
+    public JsonFormSubmitException(String internalMessage) {
+        this(internalMessage, null);
     }
 
-    public JsonFormSubmitException(String message, @Nullable String translationKey, Throwable cause) {
-        super(message, cause);
-        this.translationKey = translationKey;
-    }
-
-    public JsonFormSubmitRuntimeException asRuntimeException() {
-        return new JsonFormSubmitRuntimeException(this);
-    }
-
-    @Nullable public String getTranslationKey() {
-        return translationKey;
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public static class JsonFormSubmitRuntimeException extends RuntimeException {
-        private final JsonFormSubmitException original;
-
-        private JsonFormSubmitRuntimeException(JsonFormSubmitException original) {
-            super(original.getMessage(), original);
-            this.original = original;
-        }
-
-        public @Nullable String getTranslationKey() {
-            return original.getTranslationKey();
-        }
+    public JsonFormSubmitException(String internalMessage, @Nullable Throwable cause) {
+        super(HttpStatus.BAD_REQUEST, TYPE, internalMessage, cause);
     }
 }

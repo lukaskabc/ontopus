@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.util;
 
 import com.google.errorprone.annotations.MustBeClosed;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +25,7 @@ public class FileUtils {
         try {
             return Files.walk(directory);
         } catch (IOException e) {
-            throw new OntopusException(e);
+            throw new InternalException("Failure during directory iteration", e);
         }
     }
 

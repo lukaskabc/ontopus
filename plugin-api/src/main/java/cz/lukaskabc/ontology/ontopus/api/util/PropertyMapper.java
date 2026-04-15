@@ -111,7 +111,7 @@ public class PropertyMapper {
         } catch (OWLPersistenceException e) {
             return List.of();
         } catch (Exception e) {
-            throw new PersistenceException(e);
+            throw new PersistenceException("Failed to find properties for property mapping", e);
         }
     }
 
@@ -132,7 +132,7 @@ public class PropertyMapper {
         } catch (OWLPersistenceException e) {
             return null;
         } catch (Exception e) {
-            throw new PersistenceException(e);
+            throw new PersistenceException("Failed to find a single property for property mapping", e);
         }
     }
 

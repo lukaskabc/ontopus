@@ -96,8 +96,8 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
                         context.getTemporaryDatabaseContext())
                 .map(Statement::getObject)
                 .map(Value::stringValue)
-                .orElseThrow(() -> new JsonFormSubmitException("Predicate does not exist on the ontology: " + predicate)
-                        .asRuntimeException());
+                .orElseThrow(
+                        () -> new JsonFormSubmitException("Predicate does not exist on the ontology: " + predicate));
     }
 
     @Override

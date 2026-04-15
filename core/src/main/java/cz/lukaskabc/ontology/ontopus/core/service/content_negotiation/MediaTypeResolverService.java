@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.service.content_negotiation;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -28,9 +28,8 @@ public class MediaTypeResolverService extends MappingMediaTypeFileExtensionResol
             Field field = MediaTypeFactory.class.getDeclaredField("fileExtensionToMediaTypes");
             field.setAccessible(true);
             return (MultiValueMap<String, MediaType>) field.get(null);
-
         } catch (Exception e) {
-            throw new OntopusException("Failed to extract media type map from Spring", e);
+            throw new InternalException("Failed to extract media type map from Spring", e);
         }
     }
 

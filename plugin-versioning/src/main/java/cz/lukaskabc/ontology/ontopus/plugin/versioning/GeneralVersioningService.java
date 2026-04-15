@@ -1,10 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
+import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -61,13 +61,13 @@ public class GeneralVersioningService implements OntologyVersioningService {
     }
 
     @Override
-    public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         try {
             String version = formResult.getStringValue(VERSION_FIELD);
             Objects.requireNonNull(version);
             context.getVersionArtifact().setVersion(version);
         } catch (Exception e) {
-            throw new OntopusException(e); // TODO exception
+            throw new JsonFormSubmitException("Failed to set version for version artifact", e);
         }
         return null;
     }

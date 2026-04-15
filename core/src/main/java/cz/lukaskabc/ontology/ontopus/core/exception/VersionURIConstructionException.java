@@ -2,15 +2,13 @@ package cz.lukaskabc.ontology.ontopus.core.exception;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
+import java.net.URI;
+
 public class VersionURIConstructionException extends OntopusException {
-    public VersionURIConstructionException(String message) {
-        super(message);
-    }
+    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "version-uri-construction");
 
-    public VersionURIConstructionException(String message, Throwable cause) {
-        super(message, cause);
+    public VersionURIConstructionException(String internalMessage) {
+        super(HttpStatus.BAD_REQUEST, TYPE, internalMessage, null);
     }
 }

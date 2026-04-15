@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service;
 
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.commons.exec.CommandLine;
@@ -63,7 +63,7 @@ public class WidocoExecutionService {
             executor.execute(cmd);
             return outputFolder;
         } catch (IOException e) {
-            throw new OntopusException(e); // TODO exception
+            throw new InternalException("Failure during WIDOCO execution", e);
         }
     }
 

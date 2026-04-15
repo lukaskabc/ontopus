@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
-import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
@@ -189,16 +188,10 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     public void handleResult(FormResult formResult) {
         if (hasUnprocessedService()) {
             ImportProcessingService<?> service = peekService();
-            try {
-                service.handleSubmit(formResult, this);
-                processedResults.add(new ServiceAwareFormResult(service, formResult));
-                if (service == peekService()) {
-                    popService();
-                }
-            } catch (JsonFormSubmitException e) {
-                log.error("Failed to process import form result: {}", e.getMessage());
-                // TODO: show error to the user
-                throw e.asRuntimeException();
+            service.handleSubmit(formResult, this);
+            processedResults.add(new ServiceAwareFormResult(service, formResult));
+            if (service == peekService()) {
+                popService();
             }
         } else {
             throw new IllegalStateException(); // TODO exception

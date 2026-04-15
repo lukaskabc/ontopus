@@ -8,7 +8,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyPublishi
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonUtils;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -283,7 +283,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             context.addControllerMapping(ontologyMapping);
             context.addControllerMapping(resourceMapping);
         } catch (Exception e) {
-            throw new OntopusException(e);
+            throw new IllegalStateException(e); // TODO: WIDOCO exception
         }
         return null;
     }
@@ -296,7 +296,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             FileSystemUtils.deleteRecursively(filesDestination);
             FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
         } catch (IOException e) {
-            throw new OntopusException("Failed to persist widoco output", e);
+            throw new InternalException("Failed to persist Widoco output", e); // TODO replace with widoco exception?
         }
     }
 
@@ -321,7 +321,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                             path.getFileName().toString()))
                     .findAny()
                     .map(Path::getParent)
-                    .orElseThrow(() -> new OntopusException("Failed to find widoco output root folder"));
+                    .orElseThrow(() -> new InternalException("Failed to find widoco output root folder", null));
         }
     }
 }

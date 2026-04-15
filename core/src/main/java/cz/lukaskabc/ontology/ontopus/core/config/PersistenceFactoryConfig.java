@@ -11,7 +11,7 @@ import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
 import cz.lukaskabc.ontology.ontopus.core.PluginRegistryApplicationInitializer;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,7 +76,7 @@ public class PersistenceFactoryConfig {
         try {
             initializeFactory();
         } catch (Exception e) {
-            throw log.throwing(new OntopusException("Failed to initialize JOPA persistence factory", e));
+            throw log.throwing(new InternalException("Failed to initialize JOPA persistence factory", e));
         }
     }
 

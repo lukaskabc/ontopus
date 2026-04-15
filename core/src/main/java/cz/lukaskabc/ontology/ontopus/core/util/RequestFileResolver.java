@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.util;
 
-import cz.lukaskabc.ontology.ontopus.core.exception.FileOperationException;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.core.io.InputStreamSource;
@@ -38,7 +38,7 @@ public class RequestFileResolver {
             uploadedFile.transferTo(tempFile);
             return new ConsumableInputStreamSource(tempFile);
         } catch (IOException e) {
-            throw new FileOperationException("Failed to transfer multipart file to a new temporary file", e);
+            throw new InternalException("Failed to transfer multipart file to a new temporary file", e);
         }
     }
 

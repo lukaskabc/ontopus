@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service;
 
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
@@ -37,7 +37,7 @@ public class OntologyToFileSerializationService {
             graphService.findAllTriples(graph).forEach(writer::handleStatement);
             writer.endRDF();
         } catch (Exception e) {
-            throw new OntopusException("Failed to serialize ontology to file", e);
+            throw new InternalException("Failed to serialize ontology to file", e);
         }
     }
 }

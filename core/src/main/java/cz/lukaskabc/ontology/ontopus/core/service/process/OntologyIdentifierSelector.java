@@ -63,8 +63,10 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
             final URI uri = URI.create(identifier);
             ensureExists(new ResourceURI(uri), context);
             return uri;
+        } catch (OntopusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new OntopusException(e); // TODO exception
+            throw new JsonFormSubmitException("Failed to construct ontology identifier", e);
         }
     }
 

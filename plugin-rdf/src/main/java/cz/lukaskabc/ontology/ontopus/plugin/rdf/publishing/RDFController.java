@@ -4,7 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
 import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.NotAcceptableException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,16 +64,12 @@ public class RDFController
         final List<PrefixDeclaration> namespaces =
                 versionArtifactService.findPrefixDeclarations(request.ontologyVersionUri());
 
-        try {
-            final RDFFormat rdfFormat = resolveRdfFormat(request.mediaType());
-            final RDFWriterFactory writerFactory =
-                    RDFWriterRegistry.getInstance().get(rdfFormat).orElseThrow();
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf(rdfFormat.getDefaultMIMEType()))
-                    .body(new RdfResponseWriter(writerFactory, dataSupplier, namespaces));
-        } catch (HttpMediaTypeNotAcceptableException e) {
-            throw new OntopusException(e); // TODO: exception
-        }
+        final RDFFormat rdfFormat = resolveRdfFormat(request.mediaType());
+        final RDFWriterFactory writerFactory =
+                RDFWriterRegistry.getInstance().get(rdfFormat).orElseThrow();
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf(rdfFormat.getDefaultMIMEType()))
+                .body(new RdfResponseWriter(writerFactory, dataSupplier, namespaces));
     }
 
     @Override
@@ -89,11 +84,13 @@ public class RDFController
      *
      * @param mediaType the media type to resolve
      * @return a compatible RDF format
-     * @throws HttpMediaTypeNotAcceptableException if no compatible RDF format is found
+     * @throws NotAcceptableException if no compatible RDF format is found
      */
-    private RDFFormat resolveRdfFormat(MediaType mediaType) throws HttpMediaTypeNotAcceptableException {
+    private RDFFormat resolveRdfFormat(MediaType mediaType) {
         return findCompatible(mediaType)
-                .orElseThrow(() -> new HttpMediaTypeNotAcceptableException(
-                        "No compatible RDF format found for media type: " + mediaType));
+                // throwing indicates that the configuration of OntoPuS changed and previously
+                // supported format is not supported anymore
+                .orElseThrow(() ->
+                        new NotAcceptableException("No compatible RDF format found for media type: " + mediaType));
     }
 }

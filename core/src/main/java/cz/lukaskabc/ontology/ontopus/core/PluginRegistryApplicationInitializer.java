@@ -42,6 +42,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
     private final Set<String> packagesForSpringScan = new HashSet<>();
     private final Set<String> packagesForJopaScan = new HashSet<>();
 
+    /** {@code Map<LanguageTag, Map<TranslationKey, Message>>} */
     private final Map<String, Map<String, String>> localization = new HashMap<>();
 
     private final Iterable<Plugin> plugins;

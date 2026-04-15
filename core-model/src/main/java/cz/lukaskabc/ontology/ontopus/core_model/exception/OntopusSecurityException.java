@@ -1,14 +1,18 @@
 package cz.lukaskabc.ontology.ontopus.core_model.exception;
 
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 
-@ResponseStatus(code = org.springframework.http.HttpStatus.FORBIDDEN, reason = "Forbidden")
+import java.net.URI;
+
 public class OntopusSecurityException extends OntopusException {
-    public OntopusSecurityException(String message) {
-        super(message);
+    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "access-denied");
+
+    public OntopusSecurityException(String detailMessageCode) {
+        this(detailMessageCode, null);
     }
 
-    public OntopusSecurityException(String message, Throwable cause) {
-        super(message, cause);
+    public OntopusSecurityException(String internalMessage, @Nullable Throwable cause) {
+        super(HttpStatus.FORBIDDEN, TYPE, internalMessage, cause);
     }
 }

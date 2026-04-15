@@ -9,7 +9,8 @@ import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.ResourceRequ
 import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.TrailingSlashFallbackService;
 import cz.lukaskabc.ontology.ontopus.core.util.MultipleChoiceResponseWriter;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.NotAcceptableException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
@@ -97,7 +98,7 @@ public class ResourceService extends ResourceRequestFallbackService {
         try {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
         } catch (ClassNotFoundException e) {
-            throw new OntopusException("Controller class not found: " + controller.getClassName(), e);
+            throw new InternalException("Controller class not found: " + controller.getClassName(), e);
         }
     }
 
@@ -130,7 +131,7 @@ public class ResourceService extends ResourceRequestFallbackService {
                 && controller instanceof OntologyController<? extends StreamingResponseBody> ontologyController) {
             return ontologyController.handleOntologyRequest(ontopusRequest);
         }
-        throw new OntopusException(
+        throw new NotAcceptableException(
                 "Controller " + controller.getClass().getName() + " does not support mapping type " + mappingType);
     }
 

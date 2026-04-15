@@ -12,13 +12,13 @@ import java.net.URI;
 
 /** Exception from the Ontology Publication Server */
 @NullMarked
-public abstract class OntopusException extends ErrorResponseException {
+public class OntopusCheckedException extends ErrorResponseException {
     public static final String TYPE_NAMESPACE = Vocabulary.ONTOLOGY_IRI_ONTOPUS + "/exception/";
 
     private final String titleMessageCode;
     private final String internalMessage;
 
-    public OntopusException(
+    public OntopusCheckedException(
             HttpStatusCode statusCode,
             URI errorType,
             String internalMessage,
@@ -33,7 +33,7 @@ public abstract class OntopusException extends ErrorResponseException {
                 titleMessageCode != null ? titleMessageCode : ErrorResponse.getDefaultTitleMessageCode(this.getClass());
     }
 
-    public OntopusException(
+    public OntopusCheckedException(
             HttpStatusCode statusCode,
             URI errorType,
             String internalMessage,
@@ -42,7 +42,7 @@ public abstract class OntopusException extends ErrorResponseException {
         this(statusCode, errorType, internalMessage, titleMessageCode, null, null, cause);
     }
 
-    public OntopusException(
+    public OntopusCheckedException(
             HttpStatusCode statusCode, URI errorType, String internalMessage, @Nullable Throwable cause) {
         this(statusCode, errorType, internalMessage, null, null, null, cause);
     }

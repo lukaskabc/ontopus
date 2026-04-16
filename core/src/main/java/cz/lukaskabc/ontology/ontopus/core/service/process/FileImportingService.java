@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.FileImportException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -54,8 +55,13 @@ public class FileImportingService implements FileToDatabaseImportingService {
                     .map(rootDir::relativize)
                     .map(Path::toString)
                     .collect(Collectors.joining(", "));
-            throw log.throwing(new FileImportException(
-                    "Filed to import files into the database (unsupported format): " + unimportedFiles));
+            throw FileImportException.builder()
+                    .errorType(Vocabulary.u_i_unsupported_format)
+                    .internalMessage("Failed to import files into the database: Unsupported format")
+                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
+                    .detailMessageCode("ontopus.core.error.fileProcessing.unsupportedFormat")
+                    .detailMessageArguments(unimportedFiles)
+                    .build();
         }
         return importedFiles;
     }

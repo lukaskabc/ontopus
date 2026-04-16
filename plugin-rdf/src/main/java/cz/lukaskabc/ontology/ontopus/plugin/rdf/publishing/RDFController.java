@@ -4,7 +4,6 @@ import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
 import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.NotAcceptableException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
@@ -84,13 +83,13 @@ public class RDFController
      *
      * @param mediaType the media type to resolve
      * @return a compatible RDF format
-     * @throws NotAcceptableException if no compatible RDF format is found
+     * @throws IllegalStateException if no compatible RDF format is found
      */
     private RDFFormat resolveRdfFormat(MediaType mediaType) {
         return findCompatible(mediaType)
                 // throwing indicates that the configuration of OntoPuS changed and previously
                 // supported format is not supported anymore
-                .orElseThrow(() ->
-                        new NotAcceptableException("No compatible RDF format found for media type: " + mediaType));
+                .orElseThrow(
+                        () -> new IllegalStateException("No compatible RDF format found for media type: " + mediaType));
     }
 }

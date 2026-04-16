@@ -30,8 +30,10 @@ public class ContextToControllerMappingRepository
     @Transactional(readOnly = true)
     public ContextToControllerMapping findByTypeAndContext(MappingType mappingType, GraphURI graphURI) {
         return Optional.ofNullable(dao.findByTypeAndContext(mappingType, graphURI))
-                .orElseThrow(() -> new NotFoundException(
-                        "ContextToControllerMapping not found for type " + mappingType + " and context " + graphURI));
+                .orElseThrow(() -> NotFoundException.builder()
+                        .internalMessage("ContextToControllerMapping not found for type " + mappingType
+                                + " and context " + graphURI)
+                        .build());
     }
 
     @Override

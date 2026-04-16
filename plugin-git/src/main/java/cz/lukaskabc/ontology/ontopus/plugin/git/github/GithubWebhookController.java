@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusSecurityException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
@@ -74,10 +75,19 @@ public class GithubWebhookController {
             boolean isSignatureValid = MessageDigest.isEqual(expectedSignature, eventSignature);
 
             if (!isSignatureValid) {
-                throw new OntopusSecurityException("Missing or invalid X-Hub-Signature-256");
+                throw OntopusSecurityException.builder()
+                        .errorType(Vocabulary.u_i_invalidSignature)
+                        .internalMessage("Invalid X-Hub-Signature-256")
+                        .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
+                        .build();
             }
         } catch (InvalidKeyException e) {
-            throw new OntopusSecurityException("Failed to calculate webhook signature", e);
+            throw OntopusSecurityException.builder()
+                    .errorType(Vocabulary.u_i_invalidSignature)
+                    .internalMessage("Failed to calculate webhook signature")
+                    .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
+                    .cause(e)
+                    .build();
         }
     }
 
@@ -86,7 +96,11 @@ public class GithubWebhookController {
                 || secret.isEmpty()
                 || eventSignature == null
                 || !eventSignature.startsWith(SIGNATURE_HEADER_PREFIX)) {
-            throw new OntopusSecurityException("Missing or invalid X-Hub-Signature-256");
+            throw OntopusSecurityException.builder()
+                    .errorType(Vocabulary.u_i_invalidSignature)
+                    .internalMessage("Missing X-Hub-Signature-256 or invalid signature header")
+                    .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
+                    .build();
         }
         final byte[] signature = HexFormat.of().parseHex(eventSignature.substring(SIGNATURE_HEADER_PREFIX.length()));
         validate(signature, secret, bodyBuffer);
@@ -119,7 +133,9 @@ public class GithubWebhookController {
         }
 
         final GithubWebhook webhook = service.findByVersionSeries(series)
-                .orElseThrow(() -> new NotFoundException("Webhook not found for version series"));
+                .orElseThrow(() -> log.throwing(NotFoundException.builder()
+                        .internalMessage("GithubWebhook is not configured for version series " + series)
+                        .build()));
         final ByteBuffer bodyBuffer =
                 ByteBuffer.allocate(Math.min(httpRequest.getContentLength(), REQUEST_BODY_CACHE_LIMIT));
 

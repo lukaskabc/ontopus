@@ -1,5 +1,8 @@
 {
   "ontopus.plugin.git": {
+    "error": {
+      "security.invalid-signature": "Invalid signature"
+    },
     "service": {
       "GitOntologyLoadingService": {
         "name": "Remote GIT Repository",

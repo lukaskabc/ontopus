@@ -1,6 +1,19 @@
 {
   "ontopus.core": {
     "title": "OntoPuS",
+    "error": {
+      "fileProcessing": {
+        "importFailed": "Failed to import a file",
+        "unsupportedFormat": "Unsupported format of files: {0}"
+      },
+      "mapping": {
+        "failed": "Failed to map the requested URI to a resource"
+      },
+      "notFound": {
+        "title": "Resource not found",
+        "detail": "Entity <{0}> with identifier <{1}> was not found."
+      }
+    },
     "service": {
       "ImportProcessingService": {
         "ImportProcessNextServiceSelector": {

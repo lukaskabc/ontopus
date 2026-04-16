@@ -23,9 +23,9 @@ public class ResourceInContextMappingService {
     }
 
     public GraphURI findRequired(ResourceURI resource) {
-        return find(resource)
-                .orElseThrow(
-                        () -> new NotFoundException("No resource in context mapping found for resource: " + resource));
+        return find(resource).orElseThrow(() -> NotFoundException.builder()
+                .internalMessage("No resource in context mapping found for resource: " + resource)
+                .build());
     }
 
     /**

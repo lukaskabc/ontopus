@@ -1,20 +1,39 @@
 package cz.lukaskabc.ontology.ontopus.core_model.exception;
 
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatusCode;
 
 import java.net.URI;
 
-@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Resource not found")
 public class NotFoundException extends OntopusException {
-    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "not-found");
 
-    public NotFoundException(String detailMessageCode) {
-        this(detailMessageCode, null);
+    /** @see NotFoundExceptionBuilder#NotFoundExceptionBuilder() */
+    public static NotFoundExceptionBuilder builder() {
+        return NotFoundExceptionBuilderStages.start()
+                .statusCode(HttpStatus.NOT_FOUND)
+                .errorType(Vocabulary.u_i_not_found)
+                .titleMessageCode("ontopus.core.error.notFound.title")
+                .detailMessageArguments(EMPTY_ARGUMENTS);
     }
 
-    public NotFoundException(String internalMessage, @Nullable Throwable cause) {
-        super(HttpStatus.FORBIDDEN, TYPE, internalMessage, cause);
+    @org.immutables.builder.Builder.Constructor
+    public NotFoundException(
+            HttpStatusCode statusCode,
+            URI errorType,
+            String internalMessage,
+            @Nullable String titleMessageCode,
+            @Nullable Throwable cause,
+            @Nullable String detailMessageCode,
+            Object @Nullable [] detailMessageArguments) {
+        super(
+                statusCode,
+                errorType,
+                internalMessage,
+                titleMessageCode,
+                cause,
+                detailMessageCode,
+                detailMessageArguments);
     }
 }

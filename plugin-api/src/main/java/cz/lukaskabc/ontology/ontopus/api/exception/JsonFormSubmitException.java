@@ -4,11 +4,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 
-import java.net.URI;
-
 /** Indicates a failure of JSON form submission */
 public class JsonFormSubmitException extends OntopusException {
-    public static final URI TYPE = URI.create(TYPE_NAMESPACE + "form-submission");
 
     public JsonFormSubmitException(String internalMessage) {
         this(internalMessage, null);

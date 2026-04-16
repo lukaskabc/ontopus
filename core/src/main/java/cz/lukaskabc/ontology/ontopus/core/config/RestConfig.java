@@ -59,7 +59,9 @@ public class RestConfig implements WebMvcConfigurer {
             }
 
             if (frontendIndexFile == null) {
-                throw new NotFoundException("No frontend index file configured");
+                throw NotFoundException.builder()
+                        .internalMessage("No frontend index file configured")
+                        .build();
             }
 
             // Fallback: If the file doesn't exist (it's a frontend route), return

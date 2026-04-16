@@ -10,7 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.TrailingSlas
 import cz.lukaskabc.ontology.ontopus.core.util.MultipleChoiceResponseWriter;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.NotAcceptableException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
@@ -20,6 +20,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingTyp
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,8 @@ import java.util.Optional;
 
 @Service
 public class ResourceService extends ResourceRequestFallbackService {
+
+    private static final Logger log = LogManager.getLogger(ResourceService.class);
 
     @SuppressWarnings("unchecked")
     private static ResponseEntity<StreamingResponseBody> cast(
@@ -98,7 +102,11 @@ public class ResourceService extends ResourceRequestFallbackService {
         try {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
         } catch (ClassNotFoundException e) {
-            throw new InternalException("Controller class not found: " + controller.getClassName(), e);
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_internal_error)
+                    .internalMessage("Controller class not found: " + controller.getClassName())
+                    .cause(e)
+                    .build());
         }
     }
 
@@ -113,7 +121,12 @@ public class ResourceService extends ResourceRequestFallbackService {
                 .map(candidate -> {
                     final OntopusRequest request = new OntopusRequest(
                             candidate.mediaType(), resourceURI, new OntologyVersionURI(graphURI.toURI()));
-                    return this.handleRequest(candidate, mapping.getMappingType(), request);
+                    try {
+                        return this.handleRequest(candidate, mapping.getMappingType(), request);
+                    } catch (IllegalStateException e) {
+                        log.error(e.getMessage());
+                        return null;
+                    }
                 })
                 .map(ResourceService::cast);
 
@@ -131,8 +144,13 @@ public class ResourceService extends ResourceRequestFallbackService {
                 && controller instanceof OntologyController<? extends StreamingResponseBody> ontologyController) {
             return ontologyController.handleOntologyRequest(ontopusRequest);
         }
-        throw new NotAcceptableException(
-                "Controller " + controller.getClass().getName() + " does not support mapping type " + mappingType);
+
+        throw log.throwing(InternalException.builder()
+                .errorType(Vocabulary.u_i_not_supported)
+                .internalMessage("Controller " + controller.getClass().getName()
+                        + " does not support the requested mapping type: " + mappingType.name())
+                .titleMessageCode("ontopus.core.error.mapping.failed")
+                .build());
     }
 
     private ResponseEntity<StreamingResponseBody> multipleChoice(

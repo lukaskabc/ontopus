@@ -47,7 +47,9 @@ public class WidocoController {
         if (path.contains(base64EncodedUri)) {
             return path.substring(path.indexOf(base64EncodedUri) + base64EncodedUri.length());
         }
-        throw new NotFoundException("Requested resource not found");
+        throw NotFoundException.builder()
+                .internalMessage("Requested path does not contain the original base64 encoded URI")
+                .build();
     }
 
     private final Path filesDirectory;
@@ -76,7 +78,9 @@ public class WidocoController {
             final Path index = resolveDefaultFileName(absolutePath, request);
             return redirectTo(base64EncodedUri, requestedPath, index.toString());
         } else {
-            throw new NotFoundException("Requested resource not found");
+            throw NotFoundException.builder()
+                    .internalMessage("Requested Widoco resource not found")
+                    .build();
         }
     }
 
@@ -104,7 +108,9 @@ public class WidocoController {
             final List<Path> indexFiles =
                     stream.filter(DEFAULT_FILE_MATCHER::matches).toList();
             if (indexFiles.isEmpty()) {
-                throw new NotFoundException("No default file found in the requested directory");
+                throw NotFoundException.builder()
+                        .internalMessage("No default file found in the requested directory")
+                        .build();
             }
             final Path index = languages
                     // map languages to index files (preserving order of languages)
@@ -117,7 +123,10 @@ public class WidocoController {
                     .orElseGet(indexFiles::getFirst);
             return index.getFileName();
         } catch (IOException e) {
-            throw new NotFoundException("Error while resolving default file in the requested directory", e);
+            throw NotFoundException.builder()
+                    .internalMessage("Error while resolving default file in the requested directory")
+                    .cause(e)
+                    .build();
         }
     }
 

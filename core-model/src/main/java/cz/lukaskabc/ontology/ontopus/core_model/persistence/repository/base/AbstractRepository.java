@@ -107,8 +107,12 @@ public abstract class AbstractRepository<
     }
 
     protected NotFoundException notFound(I identifier) {
-        return new NotFoundException(
-                "Entity of type <" + dao.getTypeUri() + "> with identifier <" + identifier + "> not found");
+        return NotFoundException.builder()
+                .internalMessage(
+                        "Entity of type <" + dao.getTypeUri() + "> with identifier <" + identifier + "> not found")
+                .detailMessageCode("ontopus.core.error.notFound.detail")
+                .detailMessageArguments(dao.getTypeUri(), identifier)
+                .build();
     }
 
     /**

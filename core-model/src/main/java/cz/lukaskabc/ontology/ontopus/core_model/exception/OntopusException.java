@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.exception;
 
-import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import org.immutables.value.Value;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatusCode;
@@ -13,7 +13,7 @@ import java.net.URI;
 /** Exception from the Ontology Publication Server */
 @NullMarked
 public abstract class OntopusException extends ErrorResponseException {
-    public static final String TYPE_NAMESPACE = Vocabulary.ONTOLOGY_IRI_ONTOPUS + "/exception/";
+    public static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
     private final String titleMessageCode;
     private final String internalMessage;
@@ -23,9 +23,9 @@ public abstract class OntopusException extends ErrorResponseException {
             URI errorType,
             String internalMessage,
             @Nullable String titleMessageCode,
+            @Nullable Throwable cause,
             @Nullable String detailMessageCode,
-            Object @Nullable [] detailMessageArguments,
-            @Nullable Throwable cause) {
+            @Value.Parameter(order = 0) Object @Nullable [] detailMessageArguments) {
         super(statusCode, ProblemDetail.forStatus(statusCode), cause, detailMessageCode, detailMessageArguments);
         setType(errorType);
         this.internalMessage = internalMessage;
@@ -33,19 +33,15 @@ public abstract class OntopusException extends ErrorResponseException {
                 titleMessageCode != null ? titleMessageCode : ErrorResponse.getDefaultTitleMessageCode(this.getClass());
     }
 
-    public OntopusException(
-            HttpStatusCode statusCode,
-            URI errorType,
-            String internalMessage,
-            @Nullable String titleMessageCode,
-            @Nullable Throwable cause) {
-        this(statusCode, errorType, internalMessage, titleMessageCode, null, null, cause);
-    }
-
-    public OntopusException(
-            HttpStatusCode statusCode, URI errorType, String internalMessage, @Nullable Throwable cause) {
-        this(statusCode, errorType, internalMessage, null, null, null, cause);
-    }
+    // public OntopusException(
+    // HttpStatusCode statusCode,
+    // URI errorType,
+    // String internalMessage,
+    // @Nullable String titleMessageCode,
+    // @Nullable Throwable cause) {
+    // this(statusCode, errorType, internalMessage, titleMessageCode, null, null,
+    // cause);
+    // }
 
     @Override
     public String getMessage() {

@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.finalization;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportFinalizingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,11 @@ public class ControllerMappingPersistFinalizationService implements ImportFinali
         try {
             context.getControllerMappings().forEach(contextToControllerMappingService::save);
         } catch (Exception e) {
-            throw log.throwing(new PersistenceException("Failed to persist controller mappings", e));
+            throw log.throwing(PersistenceException.builder()
+                    .internalMessage("Failed to persist controller mappings")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .cause(e)
+                    .build());
         }
     }
 }

@@ -36,6 +36,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <nullaway.version>0.12.3</nullaway.version>
         <ontopus.inherited.dependency.scope>provided</ontopus.inherited.dependency.scope>
+        <org.immutables.version>2.12.1</org.immutables.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rdf4j.version>5.2.2</rdf4j.version>
@@ -186,6 +187,18 @@
             <scope>${ontopus.inherited.dependency.scope}</scope>
         </dependency>
         <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>value-annotations</artifactId>
+            <version>${org.immutables.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>builder</artifactId>
+            <version>${org.immutables.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
             <version>${error-prone.version}</version>
@@ -282,6 +295,12 @@
                             <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.immutables</groupId>
+                                <artifactId>value</artifactId>
+                                <!-- contains the annotation processor -->
+                                <version>${org.immutables.version}</version>
+                            </path>
                             <path>
                                 <groupId>com.google.errorprone</groupId>
                                 <artifactId>error_prone_core</artifactId>

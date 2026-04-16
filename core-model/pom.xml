@@ -14,7 +14,7 @@
     <description>Data model for the OntoPuS server core</description>
 
     <properties>
-        <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
+        <project.build.generated-sources.jopa.directory>${project.build.directory}/generated-sources/jopa</project.build.generated-sources.jopa.directory>
     </properties>
 
     <dependencies>
@@ -64,7 +64,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <package>${project.groupId}.core_model.generated</package>
-                            <output-directory>${project.build.generated-source.directory}</output-directory>
+                            <output-directory>${project.build.generated-sources.jopa.directory}</output-directory>
                             <ontology-iri>http://ontology.lukaskabc.cz/application/ontopus</ontology-iri>
                             <mapping-file>${project.basedir}/ontology/mapping.jopa.txt</mapping-file>
                             <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
@@ -79,8 +79,8 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <output-directory>${project.build.generated-source.directory}</output-directory>
-                            <additional-sources>${project.build.generated-source.directory}</additional-sources>
+                            <output-directory>${project.build.generated-sources.jopa.directory}</output-directory>
+                            <additional-sources>${project.build.generated-sources.jopa.directory}</additional-sources>
                             <source-package>${project.groupId}.core_model.model</source-package>
                             <output-property-iris>true</output-property-iris>
                             <initialize-iris>true</initialize-iris>
@@ -102,7 +102,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <sources>
-                                <source>${project.build.generated-source.directory}</source>
+                                <source>${project.build.generated-sources.jopa.directory}</source>
                             </sources>
                         </configuration>
                     </execution>

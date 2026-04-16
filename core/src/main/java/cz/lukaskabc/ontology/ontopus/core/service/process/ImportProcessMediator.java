@@ -13,9 +13,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
-import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressConsumer;
-import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressDetail;
-import cz.lukaskabc.ontology.ontopus.core_model.progress.ProgressableFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -28,7 +25,6 @@ import tools.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,10 +38,6 @@ import java.util.concurrent.Future;
 public class ImportProcessMediator {
     static final CopyOption[] REPLACE_EXISTING_COPY_OPTIONS = new CopyOption[] {StandardCopyOption.REPLACE_EXISTING};
     private static final Logger log = LogManager.getLogger(ImportProcessMediator.class);
-
-    private static final ProgressDetail AUTO_SERVICE_PROCESSING = new ProgressDetail(
-                    URI.create(ProgressDetail.TYPE_NAMESPACE + "processing"), "Processing...")
-            .setTitleMessageCode("ontopus.core.progress.processing");
 
     private static UploadedFile copyFile(
             FormFileRequest dto, InputStreamSource streamSource, ImportProcessContext context) {
@@ -166,8 +158,8 @@ public class ImportProcessMediator {
      * @return resolved future with the JSON form or canceled future when there is already another task scheduled or
      *     running.
      */
-    public ProgressableFuture<@Nullable JsonForm> getCurrentForm() {
-        return holder.<@Nullable JsonForm>runWithContextSync(this::getCurrentFormUsingContext);
+    public Future<@Nullable JsonForm> getCurrentForm() {
+        return holder.<@Nullable JsonForm>runWithContextNow(this::getCurrentFormUsingContext);
     }
 
     private @Nullable JsonForm getCurrentFormUsingContext(ImportProcessContext context) {
@@ -201,7 +193,7 @@ public class ImportProcessMediator {
      */
     public void initialize(@Nullable VersionSeriesURI uri) {
         holder.resetSessionImportProcess(uri);
-        Future<@Nullable Void> scheduled = holder.runWithContextAsnyc(this::processAutoServices);
+        Future<@Nullable Void> scheduled = holder.scheduleWithContext(this::processAutoServices);
         if (scheduled.isCancelled()) {
             throw new IllegalStateException(
                     "Failed to schedule service processing during import context initialization");
@@ -209,9 +201,7 @@ public class ImportProcessMediator {
     }
 
     private void processAllResults(
-            ImportProcessContext context,
-            SerializableImportProcessContext serializableImportProcessContext,
-            ProgressConsumer progressConsumer) {
+            ImportProcessContext context, SerializableImportProcessContext serializableImportProcessContext) {
         final Map<String, FormDataDto> serviceToFormDataMap =
                 serializableImportProcessContext.getServiceToFormResultMap();
         while (context.hasUnprocessedService()) {
@@ -222,16 +212,15 @@ public class ImportProcessMediator {
                 throw log.throwing(new IllegalStateException("Missing form data for service with id: " + serviceId));
             }
             final FormResult formResult = formDataToFormResult(formDataDto);
-            context.handleResult(formResult, progressConsumer);
-            processAutoServices(context, progressConsumer);
+            context.handleResult(formResult);
+            processAutoServices(context);
         }
         finalizeImport(context);
     }
 
-    private void processAutoServices(ImportProcessContext context, ProgressConsumer progressConsumer) {
-        progressConsumer.accept(AUTO_SERVICE_PROCESSING);
+    private void processAutoServices(ImportProcessContext context) {
         while (context.hasUnprocessedService() && context.peekService().getJsonForm(context, null) == null) {
-            context.handleResult(FormResult.EMPTY, progressConsumer);
+            context.handleResult(FormResult.EMPTY);
         }
     }
 
@@ -241,8 +230,7 @@ public class ImportProcessMediator {
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
     public Future<@Nullable Void> submitCombinedFormResult(SerializableImportProcessContext serializableContext) {
-        return holder.runWithContextAsnyc(
-                (context, progressConsumer) -> processAllResults(context, serializableContext, progressConsumer));
+        return holder.scheduleWithContext(context -> processAllResults(context, serializableContext));
     }
 
     /**
@@ -253,11 +241,11 @@ public class ImportProcessMediator {
      */
     public Future<@Nullable Void> submitFormResult(
             FormJsonDataDto jsonData, Map<FormFileRequest, InputStreamSource> FormFileRequests) {
-        return holder.runWithContextAsnyc((context, progressConsumer) -> {
+        return holder.scheduleWithContext(context -> {
             if (context.hasUnprocessedService()) {
                 Map<String, UploadedFile> filesMap = copyFiles(FormFileRequests, context);
-                context.handleResult(new FormResult(jsonData, filesMap), progressConsumer);
-                processAutoServices(context, progressConsumer);
+                context.handleResult(new FormResult(jsonData, filesMap));
+                processAutoServices(context);
                 finalizeImport(context);
             }
         });

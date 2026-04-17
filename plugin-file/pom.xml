@@ -24,6 +24,11 @@
             <artifactId>plugin-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+            <artifactId>model</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

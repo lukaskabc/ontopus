@@ -232,6 +232,12 @@
             <scope>${ontopus.inherited.dependency.scope}</scope>
         </dependency>
         <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+            <scope>${ontopus.inherited.dependency.scope}</scope>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.annotations.version}</version>

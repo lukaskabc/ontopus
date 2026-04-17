@@ -8,9 +8,12 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.OntologyIdentifierSelector;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,9 @@ import java.util.*;
 @Service
 @Order(ImportProcessServiceOrder.ONTOLOGY_IDENTIFIER_RESOLVING_SERVICE)
 public class OntologyIdentifierProcessingService implements OrderedImportPipelineService<Void> {
+
+    private static final Logger log = LogManager.getLogger(OntologyIdentifierProcessingService.class);
+
     private static void setOntologyIdentifier(URI identifier, ImportProcessContext context) {
         context.getVersionSeries().setOntologyURI(new OntologyURI(identifier));
     }
@@ -50,7 +56,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
     public void afterStackPush(ImportProcessContext context) {
         if (context.getVersionSeries().getIdentifier() != null) {
             if (context.peekService() != this) {
-                throw new IllegalStateException("Unexpected import process service stack state");
+                throw log.throwing(InternalException.unexpectedServiceStackState());
             }
             context.popService();
         }
@@ -102,7 +108,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
                 OntologyIdentifierProcessingService::setOntologyIdentifier);
 
         if (context.peekService() != this) {
-            throw new IllegalStateException("The service stack is in an unexpected state.");
+            throw log.throwing(InternalException.unexpectedServiceStackState());
         }
         context.popService();
 

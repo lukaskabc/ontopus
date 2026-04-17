@@ -6,9 +6,12 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyAnnotationInjectionService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.Model;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
@@ -24,6 +27,7 @@ import java.util.List;
 @Order(ImportProcessServiceOrder.ANNOTATION_INJECTION_SERVICE)
 @Service
 public class AnnotationInjectionService implements OrderedImportPipelineService<Void> {
+    private static final Logger log = LogManager.getLogger(AnnotationInjectionService.class);
     private final List<OntologyAnnotationInjectionService> annotationInjectionServices;
     private final GraphService graphService;
 
@@ -46,7 +50,7 @@ public class AnnotationInjectionService implements OrderedImportPipelineService<
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         if (context.peekService() != this) {
-            throw new IllegalStateException("Unexpected import process service stack state");
+            throw log.throwing(InternalException.unexpectedServiceStackState());
         }
         context.popService(); // pop self
         // push all services to the stack

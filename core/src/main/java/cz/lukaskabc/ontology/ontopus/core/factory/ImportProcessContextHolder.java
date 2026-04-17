@@ -158,7 +158,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
 
     private void ensureInitializedOrFinalized() {
         if (instance == null && !isFinalizedFuture(future)) {
-            throw new ImportProcessNotInitializedException();
+            throw ImportProcessNotInitializedException.INSTANCE;
         }
     }
 

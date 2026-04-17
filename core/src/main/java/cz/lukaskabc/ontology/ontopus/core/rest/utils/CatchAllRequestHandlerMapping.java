@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.rest.utils;
 
 import cz.lukaskabc.ontology.ontopus.core.rest.controller.ResourceController;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ public class CatchAllRequestHandlerMapping extends RequestMappingHandlerMapping 
 
             registerHandlerMethod(resourceController, method, mappingInfo);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Could not find the fallback controller method", e);
+            throw new InitializationException("Could not find the fallback controller method", e);
         }
     }
 

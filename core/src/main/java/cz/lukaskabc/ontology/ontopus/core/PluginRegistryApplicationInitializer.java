@@ -110,7 +110,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
             // remove leading dot
             final String key = prefix.substring(0, prefix.length() - 1);
             if (map.containsKey(key)) {
-                throw new IllegalStateException("Duplicate translation key: " + key);
+                throw LOG.throwing(new InitializationException("Duplicate translation key: " + key, null));
             } else {
                 map.put(key, jsonNode.asString());
             }

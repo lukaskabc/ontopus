@@ -33,6 +33,14 @@ public class InternalException extends OntopusException {
                 .build();
     }
 
+    public static InternalException unexpectedServiceStackState() {
+        return InternalException.builder()
+                .errorType(Vocabulary.u_i_unknown)
+                .internalMessage("Unexpected import process service stack state")
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .build();
+    }
+
     @org.immutables.builder.Builder.Constructor
     public InternalException(
             HttpStatusCode statusCode,

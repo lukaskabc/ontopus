@@ -6,9 +6,12 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.VersionURIConstructionService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,8 @@ import tools.jackson.databind.JsonNode;
 @Service
 @Order(ImportProcessServiceOrder.VERSION_URI_STRATEGY_SELECTION_SERVICE)
 public class VersionUriStrategySelectionService implements OrderedImportPipelineService<Void> {
+
+    private static final Logger log = LogManager.getLogger(VersionUriStrategySelectionService.class);
 
     private static void setVersionUri(OntologyVersionURI versionUri, ImportProcessContext context) {
         context.getVersionArtifact().setVersionUri(versionUri);
@@ -64,7 +69,7 @@ public class VersionUriStrategySelectionService implements OrderedImportPipeline
         final ResultHandlingServiceWrapper<?> wrapper = new ResultHandlingServiceWrapper<>(
                 versionURIConstructionService, VersionUriStrategySelectionService::setVersionUri);
         if (context.peekService() != this) {
-            throw new IllegalStateException("Unexpected import process service stack state");
+            throw log.throwing(InternalException.unexpectedServiceStackState());
         }
         context.popService(); // pop self
         context.pushService(wrapper);

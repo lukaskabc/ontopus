@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core_model.exception;
 
-import org.immutables.value.Value;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatusCode;
@@ -10,7 +9,11 @@ import org.springframework.web.ErrorResponseException;
 
 import java.net.URI;
 
-/** Exception from the Ontology Publication Server */
+/**
+ * Exception from the Ontology Publication Server
+ *
+ * @see OntopusCheckedException
+ */
 @NullMarked
 public abstract class OntopusException extends ErrorResponseException {
     public static final Object[] EMPTY_ARGUMENTS = new Object[0];
@@ -25,23 +28,13 @@ public abstract class OntopusException extends ErrorResponseException {
             @Nullable String titleMessageCode,
             @Nullable Throwable cause,
             @Nullable String detailMessageCode,
-            @Value.Parameter(order = 0) Object @Nullable [] detailMessageArguments) {
+            Object[] detailMessageArguments) {
         super(statusCode, ProblemDetail.forStatus(statusCode), cause, detailMessageCode, detailMessageArguments);
         setType(errorType);
         this.internalMessage = internalMessage;
         this.titleMessageCode =
                 titleMessageCode != null ? titleMessageCode : ErrorResponse.getDefaultTitleMessageCode(this.getClass());
     }
-
-    // public OntopusException(
-    // HttpStatusCode statusCode,
-    // URI errorType,
-    // String internalMessage,
-    // @Nullable String titleMessageCode,
-    // @Nullable Throwable cause) {
-    // this(statusCode, errorType, internalMessage, titleMessageCode, null, null,
-    // cause);
-    // }
 
     @Override
     public String getMessage() {

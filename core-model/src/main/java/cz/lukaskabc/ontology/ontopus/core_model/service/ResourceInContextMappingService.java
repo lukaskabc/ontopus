@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ResourceInContextMapping;
@@ -25,6 +26,8 @@ public class ResourceInContextMappingService {
     public GraphURI findRequired(ResourceURI resource) {
         return find(resource).orElseThrow(() -> NotFoundException.builder()
                 .internalMessage("No resource in context mapping found for resource: " + resource)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .titleMessageCode("ontopus.core.error.notFound.title")
                 .build());
     }
 

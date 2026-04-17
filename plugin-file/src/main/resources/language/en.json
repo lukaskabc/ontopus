@@ -1,5 +1,9 @@
 {
   "ontopus.plugin.file": {
+    "error": {
+      "missingFile": "Missing file",
+      "noFileUploaded": "No file was uploaded"
+    },
     "FileUploadProcessingService": {
       "title": "File upload",
       "description": "Choose one or more files that will be used during the publishing process. Or drag 'n' drop the whole directory.",

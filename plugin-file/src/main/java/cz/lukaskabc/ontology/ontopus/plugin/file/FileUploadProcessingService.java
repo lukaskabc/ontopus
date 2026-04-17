@@ -1,11 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.plugin.file;
 
-import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.UploadedFile;
 import org.jspecify.annotations.Nullable;
@@ -24,7 +26,18 @@ import java.util.Map;
  */
 @Service
 public class FileUploadProcessingService implements ImportProcessingService<Map<String, UploadedFile>> {
+    private static JsonFormSubmitException noFileException(String internalMessage) {
+        return JsonFormSubmitException.builder()
+                .errorType(Vocabulary.u_i_no_file)
+                .internalMessage(internalMessage)
+                .titleMessageCode("ontopus.plugin.file.error.missingFile")
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .detailMessageCode("ontopus.plugin.file.error.noFileUploaded")
+                .build();
+    }
+
     private final JsonForm jsonForm;
+
     private final ObjectMapper objectMapper;
 
     public FileUploadProcessingService(ObjectMapper objectMapper) {
@@ -54,14 +67,13 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
         // temp directory
         // we can just validate that they exist
         if (formResult.uploadedFiles().isEmpty()) {
-            throw new JsonFormSubmitException("No file uploaded");
+            throw noFileException("No file uploaded");
         }
 
         for (UploadedFile file : formResult.uploadedFiles().values()) {
             File ioFile = file.fsPath().toFile();
             if (!ioFile.isFile()) {
-                throw new UploadedFileNotFoundException(
-                        "The uploaded file was not found in file system: " + ioFile.getAbsolutePath());
+                throw noFileException("The uploaded file was not found in file system: " + ioFile.getAbsolutePath());
             }
         }
 

@@ -6,19 +6,18 @@ import org.springframework.http.HttpStatusCode;
 
 import java.net.URI;
 
-public class InternalException extends OntopusException {
-
-    /** @see InternalExceptionBuilder#InternalExceptionBuilder() */
-    public static InternalExceptionBuilderStages.ErrorTypeBuildStage builder() {
-        return InternalExceptionBuilderStages.start().statusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+/** Indicates a failure of JSON form submission */
+public class JsonFormSubmitException extends OntopusCheckedException {
+    public static JsonFormSubmitExceptionBuilderStages.ErrorTypeBuildStage builder() {
+        return JsonFormSubmitExceptionBuilderStages.start().statusCode(HttpStatus.BAD_REQUEST);
     }
 
     @org.immutables.builder.Builder.Constructor
-    public InternalException(
+    public JsonFormSubmitException(
             HttpStatusCode statusCode,
             URI errorType,
             String internalMessage,
-            @Nullable String titleMessageCode,
+            String titleMessageCode,
             @Nullable Throwable cause,
             @Nullable String detailMessageCode,
             Object[] detailMessageArguments) {

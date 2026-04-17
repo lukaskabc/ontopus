@@ -1,6 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
-import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
@@ -8,6 +7,8 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.FileImportingService;
 import cz.lukaskabc.ontology.ontopus.core.service.process.SingleFileSelectionService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
@@ -57,7 +58,13 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
             fileImportingService.importFiles(List.of(fileToImport), context);
             context.setOntologyFilePath(pathToImport);
         } catch (Exception e) {
-            throw new JsonFormSubmitException("Failed to import files: " + e.getMessage(), e);
+            throw JsonFormSubmitException.builder()
+                    .errorType(Vocabulary.u_i_file_import)
+                    .internalMessage("Failed to import file: " + pathToImport)
+                    .detailMessageArguments(new Object[] {pathToImport.getFileName()})
+                    .detailMessageCode("ontopus.core.error.fileProcessing.importFailedForFile")
+                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
+                    .build();
         }
     }
 }

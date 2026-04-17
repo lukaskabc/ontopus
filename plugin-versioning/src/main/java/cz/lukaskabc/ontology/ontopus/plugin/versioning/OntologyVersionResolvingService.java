@@ -1,11 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
-import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -66,7 +68,18 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         return new JsonForm(scheme, uiScheme, null);
     }
 
+    private static JsonFormSubmitException missingValueException(String paramName) {
+        return JsonFormSubmitException.builder()
+                .errorType(Vocabulary.u_i_form_submit)
+                .internalMessage("Form data are missing value for " + paramName)
+                .titleMessageCode("ontopus.core.error.form.missingValue.title")
+                .detailMessageArguments(new Object[] {paramName})
+                .detailMessageCode("ontopus.core.error.form.missingValue.detail")
+                .build();
+    }
+
     private final ObjectMapper objectMapper;
+
     private final PredicateService predicateService;
 
     private final JsonForm jsonForm;
@@ -88,16 +101,20 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         return TRANSLATION_ROOT + ".name";
     }
 
-    private String getTripleValue(URI predicate, ImportProcessContext context) {
+    private String getTripleValue(URI predicate, ImportProcessContext context, String paramName) {
+        final OntologyURI ontologyURI = context.getVersionSeries().getOntologyURI();
         return predicateService
-                .findStatement(
-                        context.getVersionSeries().getOntologyURI(),
-                        List.of(predicate),
-                        context.getTemporaryDatabaseContext())
+                .findStatement(ontologyURI, List.of(predicate), context.getTemporaryDatabaseContext())
                 .map(Statement::getObject)
                 .map(Value::stringValue)
-                .orElseThrow(
-                        () -> new JsonFormSubmitException("Predicate does not exist on the ontology: " + predicate));
+                .orElseThrow(() -> JsonFormSubmitException.builder()
+                        .errorType(Vocabulary.u_i_no_predicate)
+                        .internalMessage(
+                                "Predicate <" + predicate + "> does not exist on the ontology <" + ontologyURI + ">")
+                        .titleMessageCode("ontopus.plugin.versioning.error.noPredicate.title")
+                        .detailMessageArguments(new Object[] {paramName, predicate})
+                        .detailMessageCode("ontopus.plugin.versioning.error.noPredicate.detail")
+                        .build());
     }
 
     @Override
@@ -105,17 +122,18 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         final String version = formResult.getStringValue("version");
         final String versionIri = formResult.getStringValue("versionIri");
         if (!StringUtils.hasText(version)) {
-            throw new JsonFormSubmitException("Missing predicate for ontology version");
+            throw missingValueException("version");
         }
         if (!StringUtils.hasText(versionIri)) {
-            throw new JsonFormSubmitException("Missing predicate for ontology version IRI");
+            throw missingValueException("version IRI");
         }
 
         final URI versionPredicate = URI.create(version);
         final URI versionIriPredicate = URI.create(versionIri);
 
-        final String versionValue = getTripleValue(versionPredicate, context);
-        final OntologyVersionURI versionIriValue = new OntologyVersionURI(getTripleValue(versionIriPredicate, context));
+        final String versionValue = getTripleValue(versionPredicate, context, "version");
+        final OntologyVersionURI versionIriValue =
+                new OntologyVersionURI(getTripleValue(versionIriPredicate, context, "version IRI"));
 
         context.getVersionArtifact().setVersion(versionValue);
         context.getVersionArtifact().setVersionUri(versionIriValue);

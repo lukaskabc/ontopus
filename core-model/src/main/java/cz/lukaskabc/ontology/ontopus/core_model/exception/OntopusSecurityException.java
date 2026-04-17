@@ -21,7 +21,7 @@ public class OntopusSecurityException extends OntopusException {
             @Nullable String titleMessageCode,
             @Nullable Throwable cause,
             @Nullable String detailMessageCode,
-            Object @Nullable ... detailMessageArguments) {
+            Object[] detailMessageArguments) {
         super(
                 statusCode,
                 errorType,

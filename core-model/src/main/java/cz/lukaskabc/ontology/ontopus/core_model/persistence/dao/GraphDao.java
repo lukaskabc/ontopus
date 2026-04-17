@@ -2,9 +2,9 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.*;
@@ -52,7 +52,7 @@ public class GraphDao {
                     .setParameter("target", target.toURI())
                     .executeUpdate();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to copy graph from " + source + " to " + target, e);
+            throw AbstractDao.persistenceException(log, "Failed to copy graph from " + source + " to " + target, e);
         }
     }
 
@@ -78,7 +78,7 @@ public class GraphDao {
 					DROP GRAPH ?graph
 					""").setParameter("graph", graphUri.toURI()).executeUpdate();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to delete graph " + graphUri, e);
+            throw AbstractDao.persistenceException(log, "Failed to delete graph " + graphUri, e);
         }
     }
 
@@ -105,7 +105,8 @@ public class GraphDao {
             }
             return query.getSingleResult();
         } catch (Exception e) {
-            throw new PersistenceException(
+            throw AbstractDao.persistenceException(
+                    log,
                     "Failed to check existence of statement: " + subject + " " + predicate + " " + object + " in graph "
                             + context,
                     e);
@@ -133,7 +134,7 @@ public class GraphDao {
                     .setParameter("context", contextUri.toURI())
                     .getResultList();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find language tags of graph " + contextUri, e);
+            throw AbstractDao.persistenceException(log, "Failed to find language tags of graph " + contextUri, e);
         }
     }
 
@@ -150,7 +151,7 @@ public class GraphDao {
                     .setFirstResult((int) pageable.getOffset())
                     .getResultStream();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find all subject of graph " + contextUri, e);
+            throw AbstractDao.persistenceException(log, "Failed to find all subject of graph " + contextUri, e);
         }
     }
 
@@ -167,8 +168,8 @@ public class GraphDao {
                     .setParameter("type", type)
                     .getResultStream();
         } catch (Exception e) {
-            throw new PersistenceException(
-                    "Failed to find all subject of graph " + contextUri + " with type " + type, e);
+            throw AbstractDao.persistenceException(
+                    log, "Failed to find all subject of graph " + contextUri + " with type " + type, e);
         }
     }
 
@@ -212,7 +213,7 @@ public class GraphDao {
 
             return sortedStatements;
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find and sort triples of graph " + contextUri, e);
+            throw AbstractDao.persistenceException(log, "Failed to find and sort triples of graph " + contextUri, e);
         }
     }
 
@@ -260,8 +261,8 @@ public class GraphDao {
 
             return sortedStatements;
         } catch (Exception e) {
-            throw new PersistenceException(
-                    "Failed to find all subject of graph " + contextUri + " with subject " + subject, e);
+            throw AbstractDao.persistenceException(
+                    log, "Failed to find all subject of graph " + contextUri + " with subject " + subject, e);
         }
     }
 
@@ -283,7 +284,7 @@ public class GraphDao {
                     .setParameter("target", target.toURI())
                     .executeUpdate();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to move graph from " + source + " to " + target, e);
+            throw AbstractDao.persistenceException(log, "Failed to move graph from " + source + " to " + target, e);
         }
     }
 

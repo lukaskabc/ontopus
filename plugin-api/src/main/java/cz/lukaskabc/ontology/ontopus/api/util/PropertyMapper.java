@@ -7,10 +7,12 @@ import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.cvut.kbss.ontodriver.model.LangString;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
@@ -22,6 +24,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class PropertyMapper {
+    private static final Logger log = LogManager.getLogger(PropertyMapper.class);
     /**
      * Supplies the value from {@code supplier} to {@code consumer} if the current value returned by
      * {@code currentValueSupplier} is null.
@@ -111,7 +114,7 @@ public class PropertyMapper {
         } catch (OWLPersistenceException e) {
             return List.of();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find properties for property mapping", e);
+            throw AbstractDao.persistenceException(log, "Failed to find properties for property mapping", e);
         }
     }
 
@@ -132,7 +135,7 @@ public class PropertyMapper {
         } catch (OWLPersistenceException e) {
             return null;
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find a single property for property mapping", e);
+            throw AbstractDao.persistenceException(log, "Failed to find a single property for property mapping", e);
         }
     }
 

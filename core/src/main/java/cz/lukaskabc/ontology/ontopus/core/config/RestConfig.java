@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.config;
 
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
@@ -61,6 +62,8 @@ public class RestConfig implements WebMvcConfigurer {
             if (frontendIndexFile == null) {
                 throw NotFoundException.builder()
                         .internalMessage("No frontend index file configured")
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                        .titleMessageCode("ontopus.core.error.notFound.title")
                         .build();
             }
 

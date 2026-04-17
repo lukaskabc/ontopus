@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.util;
 
-import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +32,7 @@ public class JsonResourceLoader {
         try (InputStream is = cl.getResourceAsStream(resource)) {
             return objectMapper.readTree(Objects.requireNonNull(is));
         } catch (Exception e) {
-            throw log.throwing(new InternalException("Failed to load resource " + resource, e));
+            throw log.throwing(new InitializationException("Failed to load resource " + resource, e));
         }
     }
 

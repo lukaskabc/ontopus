@@ -4,7 +4,6 @@ import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.query.criteria.CriteriaBuilder;
 import cz.cvut.kbss.jopa.model.query.criteria.CriteriaQuery;
 import cz.cvut.kbss.jopa.model.query.criteria.Root;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -12,6 +11,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Component
 public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionArtifact> {
+    private static final Logger log = LogManager.getLogger(VersionArtifactDao.class);
 
     @Autowired
     public VersionArtifactDao(EntityManager em, DescriptorFactory descriptorFactory) {
@@ -53,7 +55,8 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
                     .setParameter("iri", ontologyVersionURI.toURI())
                     .getResultList();
         } catch (Exception e) {
-            throw new PersistenceException("Failed to find prefix declarations for artifact " + ontologyVersionURI, e);
+            throw AbstractDao.persistenceException(
+                    log, "Failed to find prefix declarations for artifact " + ontologyVersionURI, e);
         }
     }
 }

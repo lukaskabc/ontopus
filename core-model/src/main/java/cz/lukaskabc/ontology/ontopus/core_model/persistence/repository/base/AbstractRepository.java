@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
@@ -110,8 +111,9 @@ public abstract class AbstractRepository<
         return NotFoundException.builder()
                 .internalMessage(
                         "Entity of type <" + dao.getTypeUri() + "> with identifier <" + identifier + "> not found")
+                .detailMessageArguments(new Object[] {identifier})
                 .detailMessageCode("ontopus.core.error.notFound.detail")
-                .detailMessageArguments(dao.getTypeUri(), identifier)
+                .titleMessageCode("ontopus.core.error.notFound.title")
                 .build();
     }
 
@@ -159,7 +161,10 @@ public abstract class AbstractRepository<
         BeanPropertyBindingResult errors =
                 new BeanPropertyBindingResult(entity, entity.getClass().getSimpleName());
         validator.validate(entity, errors);
-        errors.failOnError(ValidationException::new);
+        errors.failOnError((message) -> ValidationException.builder()
+                .internalMessage(message)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .build());
         return entity;
     }
 }

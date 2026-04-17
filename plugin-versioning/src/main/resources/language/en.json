@@ -26,5 +26,14 @@
       "name": "Date based version",
       "description": "Uses current date as the version (YYYY-MM-DD)."
     }
+  },
+  "ontopus.plugin.versioning": {
+    "error": {
+      "noVersion": "The version value is missing",
+      "noPredicate": {
+        "title": "Missing predicate",
+        "detail": "The predicate for {0} does not exist: <{1}>"
+      }
+    }
   }
 }

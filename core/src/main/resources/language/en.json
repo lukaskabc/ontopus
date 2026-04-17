@@ -2,16 +2,23 @@
   "ontopus.core": {
     "title": "OntoPuS",
     "error": {
+      "form": {
+        "missingValue": {
+          "title": "Missing value",
+          "detail": "Submitted data are missing value for {0}"
+        }
+      },
       "fileProcessing": {
         "importFailed": "Failed to import a file",
-        "unsupportedFormat": "Unsupported format of files: {0}"
+        "unsupportedFormat": "Unsupported format of files: {0}",
+        "importFailedForFile": "Unable to import file: {0}"
       },
       "mapping": {
         "failed": "Failed to map the requested URI to a resource"
       },
       "notFound": {
         "title": "Resource not found",
-        "detail": "Entity <{0}> with identifier <{1}> was not found."
+        "detail": "Entity <{1}> was not found."
       }
     },
     "service": {

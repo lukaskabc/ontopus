@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.plugin.versioning;
 
-import cz.lukaskabc.ontology.ontopus.api.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -67,7 +69,12 @@ public class GeneralVersioningService implements OntologyVersioningService {
             Objects.requireNonNull(version);
             context.getVersionArtifact().setVersion(version);
         } catch (Exception e) {
-            throw new JsonFormSubmitException("Failed to set version for version artifact", e);
+            throw JsonFormSubmitException.builder()
+                    .errorType(Vocabulary.u_i_form_submit)
+                    .internalMessage("Failed to set version for version artifact")
+                    .titleMessageCode("ontopus.plugin.versioning.error.noVersion")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
         }
         return null;
     }

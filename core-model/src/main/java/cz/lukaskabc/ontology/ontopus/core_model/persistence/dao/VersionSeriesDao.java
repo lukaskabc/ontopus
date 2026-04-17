@@ -1,13 +1,14 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +16,13 @@ import java.util.Objects;
 
 @Component
 public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSeries> {
+    private static final Logger log = LogManager.getLogger(VersionSeriesDao.class);
 
     public VersionSeriesDao(EntityManager em, DescriptorFactory factory) {
         super(VersionSeries.class, VersionSeries_.entityClassIRI, em, factory.ontologyVersionSeries());
     }
 
-    @Nullable public VersionSeries findForArtifact(VersionArtifactURI ontologyArtifact) {
+    @Nullable public VersionSeries findForArtifact(@Nullable VersionArtifactURI ontologyArtifact) {
         if (ontologyArtifact == null) {
             return null;
         }
@@ -44,7 +46,7 @@ public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSerie
                     .setParameter("ontologyIdentifier", VersionSeries_.ontologyURIPropertyIRI)
                     .setParameter("resourceUri", resourceURI.toURI())::getSingleResult));
         } catch (Exception e) {
-            throw new PersistenceException("Failed to resolve ontology URI", e);
+            throw AbstractDao.persistenceException(log, "Failed to resolve ontology URI", e);
         }
     }
 }

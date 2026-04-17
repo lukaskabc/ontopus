@@ -10,12 +10,10 @@ import java.net.URI;
 public class NotFoundException extends OntopusException {
 
     /** @see NotFoundExceptionBuilder#NotFoundExceptionBuilder() */
-    public static NotFoundExceptionBuilder builder() {
+    public static NotFoundExceptionBuilderStages.InternalMessageBuildStage builder() {
         return NotFoundExceptionBuilderStages.start()
                 .statusCode(HttpStatus.NOT_FOUND)
-                .errorType(Vocabulary.u_i_not_found)
-                .titleMessageCode("ontopus.core.error.notFound.title")
-                .detailMessageArguments(EMPTY_ARGUMENTS);
+                .errorType(Vocabulary.u_i_not_found);
     }
 
     @org.immutables.builder.Builder.Constructor
@@ -26,7 +24,7 @@ public class NotFoundException extends OntopusException {
             @Nullable String titleMessageCode,
             @Nullable Throwable cause,
             @Nullable String detailMessageCode,
-            Object @Nullable [] detailMessageArguments) {
+            Object[] detailMessageArguments) {
         super(
                 statusCode,
                 errorType,

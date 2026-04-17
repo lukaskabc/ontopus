@@ -1,18 +1,36 @@
 package cz.lukaskabc.ontology.ontopus.core_model.exception;
 
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+
+import java.net.URI;
 
 public class ValidationException extends OntopusException {
 
-    private static String orDefaultMessage(@Nullable String message) {
-        if (message == null) {
-            return "Object validation failed";
-        }
-        return message;
+    public static ValidationExceptionBuilderStages.InternalMessageBuildStage builder() {
+        return ValidationExceptionBuilderStages.start()
+                .statusCode(HttpStatus.BAD_REQUEST)
+                .errorType(Vocabulary.u_i_validation);
     }
 
-    public ValidationException(@Nullable String message) {
-        super(HttpStatus.BAD_REQUEST, TYPE, orDefaultMessage(message), null);
+    @org.immutables.builder.Builder.Constructor
+    public ValidationException(
+            HttpStatusCode statusCode,
+            URI errorType,
+            String internalMessage,
+            @Nullable String titleMessageCode,
+            @Nullable Throwable cause,
+            @Nullable String detailMessageCode,
+            Object[] detailMessageArguments) {
+        super(
+                statusCode,
+                errorType,
+                internalMessage,
+                titleMessageCode,
+                cause,
+                detailMessageCode,
+                detailMessageArguments);
     }
 }

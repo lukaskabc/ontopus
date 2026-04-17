@@ -7,6 +7,7 @@ import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
 import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.cvut.kbss.jopa.model.query.criteria.*;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.PersistenceException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractDao<I extends TypedIdentifier, E extends PersistenceEntity<I>> {
     private static final Logger LOG = LogManager.getLogger(AbstractDao.class);
 
-    private static String buildRegexFilter(List<String> filter) {
+    private static String buildRegexFilter(@Nullable List<String> filter) {
         if (filter == null || filter.isEmpty()) {
             return "";
         }
@@ -34,7 +35,15 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     }
 
     public static PersistenceException persistenceException(Logger log, String message, Throwable cause) {
-        return log.throwing(new PersistenceException(message, cause));
+        return log.throwing(PersistenceException.builder()
+                .internalMessage(message)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .cause(cause)
+                .build());
+    }
+
+    private static PersistenceException persistenceException(String message, Throwable cause) {
+        return persistenceException(LOG, message, cause);
     }
 
     /**
@@ -47,7 +56,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
      */
     @Nullable public static <T> T resultOrNull(ThrowingSupplier<T> supplier) {
         try {
-            return supplier.get(PersistenceException::new);
+            return supplier.get(AbstractDao::persistenceException);
         } catch (NoResultException e) {
             return null;
         }
@@ -150,7 +159,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 
             return typedQuery.getSingleResult();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Could not retrieve paginated and sorted entities", e);
+            throw persistenceException("Could not retrieve paginated and sorted entities", e);
         }
     }
 
@@ -174,7 +183,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
                     .setParameter("entity", identifier.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Could not delete entity: " + identifier, e);
+            throw persistenceException("Could not delete entity: " + identifier, e);
         }
     }
 
@@ -198,7 +207,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
                     .setDescriptor(descriptor)
                     .getSingleResult();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Could not check for existence of " + identifier, e);
+            throw persistenceException("Could not check for existence of " + identifier, e);
         }
     }
 
@@ -213,7 +222,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             Objects.requireNonNull(identifier);
             return em.find(entityClass, identifier.toURI(), descriptor);
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Could not find entity " + identifier, e);
+            throw persistenceException("Could not find entity " + identifier, e);
         }
     }
 
@@ -261,7 +270,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 
             return typedQuery.getResultList();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Could not retrieve paginated and sorted entities", e);
+            throw persistenceException("Could not retrieve paginated and sorted entities", e);
         }
     }
 
@@ -270,7 +279,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         try {
             return em.getReference(entityClass, identifier.toURI());
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to get reference for entity with identifier: " + identifier, e);
+            throw persistenceException("Failed to get reference for entity with identifier: " + identifier, e);
         }
     }
 
@@ -288,7 +297,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         try {
             em.merge(entity, descriptor);
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to merge an entity", e);
+            throw persistenceException("Failed to merge an entity", e);
         }
     }
 
@@ -302,7 +311,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         try {
             em.persist(entity, descriptor);
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to persist an entity", e);
+            throw persistenceException("Failed to persist an entity", e);
         }
     }
 }

@@ -2,6 +2,16 @@
   "ontopus.core": {
     "title": "OntoPuS",
     "error": {
+      "unknown": "Unknown error",
+      "invalidData": "Invalid data",
+      "invalidServiceIndex": "The submitted service index is invalid: {0}",
+      "missingFile": "Missing file",
+      "noFileUploaded": "No file was uploaded",
+      "versionURI": {
+        "failed": "Failed to construct version URI",
+        "missingOntologyURI": "Version series are missing ontology URI",
+        "missingVersion": "Version artifact is missing version value"
+      },
       "form": {
         "missingValue": {
           "title": "Missing value",
@@ -18,7 +28,8 @@
       },
       "notFound": {
         "title": "Resource not found",
-        "detail": "Entity <{1}> was not found."
+        "detail": "Entity <{0}> was not found.",
+        "resourceInOntology": "Resource <{0}> does not exists in the ontology"
       }
     },
     "service": {

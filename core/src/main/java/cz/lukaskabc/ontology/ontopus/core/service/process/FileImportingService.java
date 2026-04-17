@@ -58,9 +58,9 @@ public class FileImportingService implements FileToDatabaseImportingService {
             throw FileImportException.builder()
                     .errorType(Vocabulary.u_i_unsupported_format)
                     .internalMessage("Failed to import files into the database: Unsupported format")
-                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
+                    .detailMessageArguments(new Object[] {unimportedFiles})
                     .detailMessageCode("ontopus.core.error.fileProcessing.unsupportedFormat")
-                    .detailMessageArguments(unimportedFiles)
+                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
                     .build();
         }
         return importedFiles;

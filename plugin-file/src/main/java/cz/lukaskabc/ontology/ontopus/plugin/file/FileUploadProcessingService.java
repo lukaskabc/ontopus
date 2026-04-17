@@ -30,9 +30,9 @@ public class FileUploadProcessingService implements ImportProcessingService<Map<
         return JsonFormSubmitException.builder()
                 .errorType(Vocabulary.u_i_no_file)
                 .internalMessage(internalMessage)
-                .titleMessageCode("ontopus.plugin.file.error.missingFile")
+                .titleMessageCode("ontopus.core.error.missingFile")
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                .detailMessageCode("ontopus.plugin.file.error.noFileUploaded")
+                .detailMessageCode("ontopus.core.error.noFileUploaded")
                 .build();
     }
 

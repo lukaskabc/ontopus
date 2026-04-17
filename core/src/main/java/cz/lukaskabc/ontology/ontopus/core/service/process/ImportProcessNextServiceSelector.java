@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -54,7 +55,13 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
                 return service;
             }
         }
-        throw new JsonFormSubmitException("Invalid service index!"); // TODO exception and passing it to the FE
+        throw JsonFormSubmitException.builder()
+                .errorType(Vocabulary.u_i_form_submit)
+                .internalMessage("Invalid service index " + serviceIndex)
+                .titleMessageCode("ontopus.core.error.invalidData")
+                .detailMessageArguments(new Object[] {serviceIndex})
+                .detailMessageCode("ontopus.core.error.invalidServiceIndex")
+                .build();
     }
 
     protected JsonForm makeForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
@@ -125,7 +132,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
         final JsonNode selectionResult = formResult.jsonFormData(objectMapper);
         final String property = service.getServiceName();
         if (!selectionResult.hasNonNull(property)) {
-            throw new JsonFormSubmitException("No inner form found!");
+            throw JsonFormSubmitException.missingValue("service form");
         }
 
         ObjectNode innerData = selectionResult.get(property).asObject();

@@ -1,6 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -188,7 +191,19 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     public void handleResult(FormResult formResult) {
         if (hasUnprocessedService()) {
             ImportProcessingService<?> service = peekService();
-            service.handleSubmit(formResult, this);
+            try {
+                service.handleSubmit(formResult, this);
+            } catch (OntopusException e) {
+                throw e;
+            } catch (Exception e) {
+                throw log.throwing(JsonFormSubmitException.builder()
+                        .errorType(Vocabulary.u_i_unknown)
+                        .internalMessage("Unknown error during form result handling")
+                        .titleMessageCode("ontopus.core.error.unknown")
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                        .cause(e)
+                        .build());
+            }
             processedResults.add(new ServiceAwareFormResult(service, formResult));
             if (service == peekService()) {
                 popService();

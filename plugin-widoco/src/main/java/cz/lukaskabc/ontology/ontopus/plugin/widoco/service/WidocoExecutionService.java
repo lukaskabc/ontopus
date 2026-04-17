@@ -1,6 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.commons.exec.CommandLine;
@@ -63,7 +65,21 @@ public class WidocoExecutionService {
             executor.execute(cmd);
             return outputFolder;
         } catch (IOException e) {
-            throw new InternalException("Failure during WIDOCO execution", e);
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_file_processing)
+                    .internalMessage("IO failure during WIDOCO execution")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .cause(e)
+                    .build());
+        } catch (Exception e) {
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_widoco)
+                    .internalMessage("Failure during WIDOCO execution")
+                    .detailMessageArguments(new Object[] {e.getMessage()})
+                    .detailMessageCode("ontopus.plugin.widoco.error.widocoExecution.detail")
+                    .titleMessageCode("ontopus.plugin.widoco.error.widocoExecution.title")
+                    .cause(e)
+                    .build());
         }
     }
 

@@ -6,6 +6,8 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyVersioningService;
 import cz.lukaskabc.ontology.ontopus.core.exception.VersionURIConstructionException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -98,8 +100,14 @@ public class VersionURIConstructionService implements ImportProcessingService<On
     private OntologyURI ontologyURI(ReadOnlyImportProcessContext context) {
         OntologyURI ontologyIdentifier = context.getVersionSeries().getOntologyURI();
         if (ontologyIdentifier == null) {
-            throw new VersionURIConstructionException("Failed to construct version URI, "
-                    + "the ontology identifier is missing for the version series: " + context.getVersionSeries());
+            throw VersionURIConstructionException.builder()
+                    .internalMessage("Failed to construct version URI, "
+                            + "the ontology identifier is missing for the version series: "
+                            + context.getVersionSeries())
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .detailMessageCode("ontopus.core.error.versionURI.missingOntologyURI")
+                    .titleMessageCode("ontopus.core.error.versionURI.failed")
+                    .build();
         }
         return ontologyIdentifier;
     }
@@ -107,7 +115,7 @@ public class VersionURIConstructionService implements ImportProcessingService<On
     private String version(FormResult formResult) {
         final String version = formResult.getStringValue(VERSION_FIELD_NAME);
         if (!StringUtils.hasText(version)) {
-            throw new VersionURIConstructionException("Missing ontology version in the form result");
+            throw JsonFormSubmitException.missingValue("ontology version");
         }
         return version;
     }
@@ -122,8 +130,12 @@ public class VersionURIConstructionService implements ImportProcessingService<On
     private String version(ReadOnlyImportProcessContext context) {
         String version = context.getVersionArtifact().getVersion();
         if (!StringUtils.hasText(version)) {
-            throw new VersionURIConstructionException(
-                    "Missing ontology version for version artifact: " + context.getVersionArtifact());
+            throw VersionURIConstructionException.builder()
+                    .internalMessage("Missing ontology version for version artifact: " + context.getVersionArtifact())
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .detailMessageCode("ontopus.core.error.versionURI.missingVersion")
+                    .titleMessageCode("ontopus.core.error.versionURI.failed")
+                    .build();
         }
 
         return UriComponentsBuilder.fromPath(version).build().toUri().toString();
@@ -132,7 +144,7 @@ public class VersionURIConstructionService implements ImportProcessingService<On
     private UriComponentsBuilder versionURI(FormResult formResult) {
         final String uri = formResult.getStringValue(URI_FIELD_NAME);
         if (!StringUtils.hasText(uri)) {
-            throw new VersionURIConstructionException("Missing ontology URI in the form result");
+            throw JsonFormSubmitException.missingValue("ontology URI");
         }
         return UriComponentsBuilder.fromUriString(uri);
     }

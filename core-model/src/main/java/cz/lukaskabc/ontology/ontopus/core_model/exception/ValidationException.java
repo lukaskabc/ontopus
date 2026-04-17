@@ -15,6 +15,13 @@ public class ValidationException extends OntopusException {
                 .errorType(Vocabulary.u_i_validation);
     }
 
+    public static ValidationException fromValidationError(String message) {
+        return ValidationException.builder()
+                .internalMessage(message)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .build();
+    }
+
     @org.immutables.builder.Builder.Constructor
     public ValidationException(
             HttpStatusCode statusCode,

@@ -61,9 +61,9 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
             throw JsonFormSubmitException.builder()
                     .errorType(Vocabulary.u_i_file_import)
                     .internalMessage("Failed to import file: " + pathToImport)
+                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
                     .detailMessageArguments(new Object[] {pathToImport.getFileName()})
                     .detailMessageCode("ontopus.core.error.fileProcessing.importFailedForFile")
-                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
                     .build();
         }
     }

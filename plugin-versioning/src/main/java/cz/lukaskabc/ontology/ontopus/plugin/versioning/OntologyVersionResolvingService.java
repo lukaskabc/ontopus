@@ -68,16 +68,6 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         return new JsonForm(scheme, uiScheme, null);
     }
 
-    private static JsonFormSubmitException missingValueException(String paramName) {
-        return JsonFormSubmitException.builder()
-                .errorType(Vocabulary.u_i_form_submit)
-                .internalMessage("Form data are missing value for " + paramName)
-                .titleMessageCode("ontopus.core.error.form.missingValue.title")
-                .detailMessageArguments(new Object[] {paramName})
-                .detailMessageCode("ontopus.core.error.form.missingValue.detail")
-                .build();
-    }
-
     private final ObjectMapper objectMapper;
 
     private final PredicateService predicateService;
@@ -122,10 +112,10 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
         final String version = formResult.getStringValue("version");
         final String versionIri = formResult.getStringValue("versionIri");
         if (!StringUtils.hasText(version)) {
-            throw missingValueException("version");
+            throw JsonFormSubmitException.missingValue("version");
         }
         if (!StringUtils.hasText(versionIri)) {
-            throw missingValueException("version IRI");
+            throw JsonFormSubmitException.missingValue("version IRI");
         }
 
         final URI versionPredicate = URI.create(version);

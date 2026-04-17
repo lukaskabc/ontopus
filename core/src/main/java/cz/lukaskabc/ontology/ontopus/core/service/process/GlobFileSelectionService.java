@@ -8,9 +8,13 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitExceptionBuilderStages;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
@@ -124,7 +128,13 @@ public class GlobFileSelectionService implements ImportProcessingService<List<Pa
         context.setAdditionalProperty(CONTEXT_LAST_FORM_DATA_PROPERTY, formData);
         JsonNode doPreview = formData.get("preview");
         if (doPreview != null && doPreview.isBoolean() && doPreview.asBoolean()) {
-            throw new JsonFormSubmitException("Preview files");
+            throw JsonFormSubmitExceptionBuilderStages.start()
+                    .statusCode(HttpStatus.OK)
+                    .errorType(Vocabulary.u_i_preview)
+                    .internalMessage("Showing glob matched files preview")
+                    .titleMessageCode("")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
         }
 
         JsonNode pattern = formData.get("pattern");

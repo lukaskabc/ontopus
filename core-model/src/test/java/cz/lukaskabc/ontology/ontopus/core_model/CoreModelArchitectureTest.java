@@ -27,6 +27,8 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             // compiler-generated
             // classes
             .and()
+            .areNotAnnotatedWith("org.immutables.value.Generated")
+            .and()
             .resideInAPackage("..core_model..")
             .should()
             .bePublic();

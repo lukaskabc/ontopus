@@ -15,7 +15,6 @@
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -23,6 +22,11 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+            <artifactId>model</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -38,6 +42,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -6,11 +6,15 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitRepositoryUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.util.FileUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 @Service
 public class GitOntologyLoadingService implements OntologyLoadingService {
@@ -32,6 +37,8 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
             GitPlugin.FORM_RESOURCE_PATH, GitRepositoryClonningRequest.class.getSimpleName());
     private static final JsonNode UI_SCHEMA = JsonResourceLoader.loadUiSchema(
             GitPlugin.FORM_RESOURCE_PATH, GitRepositoryClonningRequest.class.getSimpleName());
+
+    private static final Logger log = LogManager.getLogger(GitOntologyLoadingService.class);
 
     private final ObjectMapper objectMapper;
     private final Validator validator;
@@ -66,14 +73,21 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
             if (gitDir.isDirectory()) {
                 FileUtils.delete(temp.resolve(".git").toFile(), FileUtils.RECURSIVE);
             }
-            for (File file : temp.toFile().listFiles()) {
+            for (File file :
+                    Objects.requireNonNull(temp.toFile().listFiles(), "Failed to list files in git directory")) {
                 Files.move(
                         file.toPath(),
                         context.getTempFolder().resolve(file.getName()),
                         StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            throw new InternalException("Failed to move cloned repository to import context temp folder", e);
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_file_processing)
+                    .internalMessage("Failed to move cloned repository to import context temp folder")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .titleMessageCode("ontopus.plugin.git.error.repositoryMoveFailed")
+                    .cause(e)
+                    .build());
         }
 
         return null;
@@ -86,7 +100,7 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
         BeanPropertyBindingResult errors =
                 new BeanPropertyBindingResult(result, GitRepositoryClonningRequest.class.getSimpleName());
         validator.validate(result, errors);
-        errors.failOnError(ValidationException::new);
+        errors.failOnError(ValidationException::fromValidationError);
         return result;
     }
 }

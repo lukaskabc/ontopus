@@ -1,7 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
-import cz.lukaskabc.ontology.ontopus.core.exception.RestInvalidDataException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -50,7 +51,11 @@ public class AbstractJsonController {
                 return treeOrValue(values[0]);
             }
         } catch (JacksonException e) {
-            throw new RestInvalidDataException("Failed to parse string value as JSON", e);
+            throw ValidationException.builder()
+                    .internalMessage("Failed to parse string value as JSON")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .cause(e)
+                    .build();
         }
     }
 

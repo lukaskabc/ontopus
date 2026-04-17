@@ -1,7 +1,12 @@
 {
   "ontopus.plugin.git": {
     "error": {
-      "security.invalid-signature": "Invalid signature"
+      "security.invalid-signature": "Invalid signature",
+      "cloneFailed": {
+        "title": "Cloning GIT repository failed",
+        "detail": "Cloning GIT repository from {0} failed: {1}"
+      },
+      "repositoryMoveFailed": "Failed to move cloned git repository."
     },
     "service": {
       "GitOntologyLoadingService": {

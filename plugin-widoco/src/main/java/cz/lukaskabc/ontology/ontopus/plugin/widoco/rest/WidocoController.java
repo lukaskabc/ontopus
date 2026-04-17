@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.widoco.rest;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.commons.lang3.stream.Streams;
@@ -49,6 +50,7 @@ public class WidocoController {
         }
         throw NotFoundException.builder()
                 .internalMessage("Requested path does not contain the original base64 encoded URI")
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                 .build();
     }
 
@@ -80,6 +82,7 @@ public class WidocoController {
         } else {
             throw NotFoundException.builder()
                     .internalMessage("Requested Widoco resource not found")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .build();
         }
     }
@@ -110,6 +113,7 @@ public class WidocoController {
             if (indexFiles.isEmpty()) {
                 throw NotFoundException.builder()
                         .internalMessage("No default file found in the requested directory")
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .build();
             }
             final Path index = languages
@@ -125,6 +129,7 @@ public class WidocoController {
         } catch (IOException e) {
             throw NotFoundException.builder()
                     .internalMessage("Error while resolving default file in the requested directory")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .cause(e)
                     .build();
         }

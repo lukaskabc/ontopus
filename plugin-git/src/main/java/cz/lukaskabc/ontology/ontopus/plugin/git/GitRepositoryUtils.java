@@ -55,7 +55,13 @@ public class GitRepositoryUtils {
                     targetDirectory.getAbsolutePath(),
                     e);
             FileSystemUtils.deleteRecursively(targetDirectory);
-            throw new GitException("Failed to clone repository from " + formData.repositoryUrl(), e);
+            throw log.throwing(GitException.builder()
+                    .internalMessage("Failed to clone repository from " + formData.repositoryUrl())
+                    .titleMessageCode("ontopus.plugin.git.error.cloneFailed.title")
+                    .detailMessageCode("ontopus.plugin.git.error.cloneFailed.detail")
+                    .detailMessageArguments(new Object[] {formData.repositoryUrl(), e.getMessage()})
+                    .cause(e)
+                    .build());
         }
     }
 }

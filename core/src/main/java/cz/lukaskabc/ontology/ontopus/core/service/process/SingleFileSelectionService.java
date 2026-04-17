@@ -6,6 +6,8 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.Nullable;
@@ -73,9 +75,15 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
             if (Files.exists(absolutePath)) {
                 return absolutePath;
             }
-            throw new JsonFormSubmitException("File does not exist: " + file);
+            throw JsonFormSubmitException.builder()
+                    .errorType(Vocabulary.u_i_no_file)
+                    .internalMessage("Selected file does not exists")
+                    .titleMessageCode("ontopus.core.error.missingFile")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .detailMessageCode("ontopus.core.error.noFileUploaded")
+                    .build();
         }
-        throw new JsonFormSubmitException("File path cannot be empty");
+        throw JsonFormSubmitException.missingValue("file");
     }
 
     private JsonForm makeJsonForm() {

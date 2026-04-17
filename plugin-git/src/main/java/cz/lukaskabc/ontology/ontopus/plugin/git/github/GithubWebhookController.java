@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusSecurityException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -76,15 +77,17 @@ public class GithubWebhookController {
 
             if (!isSignatureValid) {
                 throw OntopusSecurityException.builder()
-                        .errorType(Vocabulary.u_i_invalidSignature)
+                        .errorType(Vocabulary.u_i_invalid_signature)
                         .internalMessage("Invalid X-Hub-Signature-256")
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
                         .build();
             }
         } catch (InvalidKeyException e) {
             throw OntopusSecurityException.builder()
-                    .errorType(Vocabulary.u_i_invalidSignature)
+                    .errorType(Vocabulary.u_i_invalid_signature)
                     .internalMessage("Failed to calculate webhook signature")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
                     .cause(e)
                     .build();
@@ -97,8 +100,9 @@ public class GithubWebhookController {
                 || eventSignature == null
                 || !eventSignature.startsWith(SIGNATURE_HEADER_PREFIX)) {
             throw OntopusSecurityException.builder()
-                    .errorType(Vocabulary.u_i_invalidSignature)
+                    .errorType(Vocabulary.u_i_invalid_signature)
                     .internalMessage("Missing X-Hub-Signature-256 or invalid signature header")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
                     .build();
         }
@@ -135,6 +139,7 @@ public class GithubWebhookController {
         final GithubWebhook webhook = service.findByVersionSeries(series)
                 .orElseThrow(() -> log.throwing(NotFoundException.builder()
                         .internalMessage("GithubWebhook is not configured for version series " + series)
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .build()));
         final ByteBuffer bodyBuffer =
                 ByteBuffer.allocate(Math.min(httpRequest.getContentLength(), REQUEST_BODY_CACHE_LIMIT));

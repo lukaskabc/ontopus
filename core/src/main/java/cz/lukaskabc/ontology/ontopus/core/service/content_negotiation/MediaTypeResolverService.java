@@ -1,7 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core.service.content_negotiation;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
@@ -21,6 +23,7 @@ import java.util.function.BiConsumer;
 @NullMarked
 @Service
 public class MediaTypeResolverService extends MappingMediaTypeFileExtensionResolver implements MediaTypeResolver {
+    private static final Logger log = LogManager.getLogger(MediaTypeResolverService.class);
 
     @SuppressWarnings("unchecked")
     private static MultiValueMap<String, MediaType> extractMapFromFactory() {
@@ -29,7 +32,7 @@ public class MediaTypeResolverService extends MappingMediaTypeFileExtensionResol
             field.setAccessible(true);
             return (MultiValueMap<String, MediaType>) field.get(null);
         } catch (Exception e) {
-            throw new InternalException("Failed to extract media type map from Spring", e);
+            throw log.throwing(new InitializationException("Failed to extract media type map from Spring", e));
         }
     }
 

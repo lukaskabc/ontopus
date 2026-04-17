@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.TrailingSlas
 import cz.lukaskabc.ontology.ontopus.core.util.MultipleChoiceResponseWriter;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
@@ -105,6 +106,7 @@ public class ResourceService extends ResourceRequestFallbackService {
             throw log.throwing(InternalException.builder()
                     .errorType(Vocabulary.u_i_internal_error)
                     .internalMessage("Controller class not found: " + controller.getClassName())
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .cause(e)
                     .build());
         }
@@ -149,6 +151,7 @@ public class ResourceService extends ResourceRequestFallbackService {
                 .errorType(Vocabulary.u_i_not_supported)
                 .internalMessage("Controller " + controller.getClass().getName()
                         + " does not support the requested mapping type: " + mappingType.name())
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                 .titleMessageCode("ontopus.core.error.mapping.failed")
                 .build());
     }

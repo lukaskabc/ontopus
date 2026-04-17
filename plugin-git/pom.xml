@@ -15,7 +15,7 @@
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <project.build.generated-source.directory>${project.build.directory}/generated-sources</project.build.generated-source.directory>
+        <project.build.generated-sources.jopa.directory>${project.basedir}/target/generated-sources/jopa</project.build.generated-sources.jopa.directory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -23,6 +23,11 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>plugin-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+            <artifactId>model</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -35,6 +40,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -60,8 +70,8 @@
                         </goals>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <output-directory>${project.build.generated-source.directory}</output-directory>
-                            <additional-sources>${project.build.generated-source.directory}</additional-sources>
+                            <output-directory>${project.build.generated-sources.jopa.directory}</output-directory>
+                            <additional-sources>${project.build.generated-sources.jopa.directory}</additional-sources>
                             <source-package>${project.groupId}.git.model</source-package>
                             <output-property-iris>true</output-property-iris>
                             <initialize-iris>true</initialize-iris>
@@ -83,7 +93,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <sources>
-                                <source>${project.build.generated-source.directory}</source>
+                                <source>${project.build.generated-sources.jopa.directory}</source>
                             </sources>
                         </configuration>
                     </execution>

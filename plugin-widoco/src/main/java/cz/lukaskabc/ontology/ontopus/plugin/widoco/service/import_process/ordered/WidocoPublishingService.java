@@ -9,6 +9,8 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -21,6 +23,8 @@ import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.OntologyToFileSerializationService;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoControllerRegistrationService;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoExecutionService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -50,6 +54,8 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
     private static final Set<String> WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE = Set.of("jsonld", "nt", "owl", "ttl");
     private static final Set<String> WIDOCO_OUTPUT_DIRECTORIES = Set.of("provenance", "sections", "resources");
     private static final Set<Argument> WIDOCO_DISALLOWED_ARGS = Set.of(Argument.ONT_FILE);
+
+    private static final Logger log = LogManager.getLogger(WidocoPublishingService.class);
 
     private static void applyOrder(ObjectNode uiSchema, Collection<String> propertyNames) {
         ArrayNode order = uiSchema.putArray("ui:order").add("allLangs").add(Argument.LANG.name());
@@ -296,7 +302,13 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             FileSystemUtils.deleteRecursively(filesDestination);
             FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
         } catch (IOException e) {
-            throw new InternalException("Failed to persist Widoco output", e); // TODO replace with widoco exception?
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_file_processing)
+                    .internalMessage("Failed to persist Widoco output")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .titleMessageCode("ontopus.plugin.widoco.error.persistOutput")
+                    .cause(e)
+                    .build());
         }
     }
 
@@ -321,7 +333,12 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                             path.getFileName().toString()))
                     .findAny()
                     .map(Path::getParent)
-                    .orElseThrow(() -> new InternalException("Failed to find widoco output root folder", null));
+                    .orElseThrow(() -> log.throwing(InternalException.builder()
+                            .errorType(Vocabulary.u_i_file_processing)
+                            .internalMessage("Failed to resolve WIDOCO root output folder")
+                            .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                            .titleMessageCode("ontopus.plugin.widoco.error.noWidocoOutputFolder")
+                            .build()));
         }
     }
 }

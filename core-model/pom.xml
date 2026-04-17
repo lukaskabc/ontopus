@@ -14,7 +14,7 @@
     <description>Data model for the OntoPuS server core</description>
 
     <properties>
-        <project.build.generated-sources.jopa.directory>${project.build.directory}/generated-sources/jopa</project.build.generated-sources.jopa.directory>
+        <project.build.generated-sources.jopa.directory>${project.basedir}/target/generated-sources/jopa</project.build.generated-sources.jopa.directory>
     </properties>
 
     <dependencies>

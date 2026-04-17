@@ -2,7 +2,9 @@ package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
@@ -38,7 +40,12 @@ public class RequestFileResolver {
             uploadedFile.transferTo(tempFile);
             return new ConsumableInputStreamSource(tempFile);
         } catch (IOException e) {
-            throw new InternalException("Failed to transfer multipart file to a new temporary file", e);
+            throw InternalException.builder()
+                    .errorType(Vocabulary.u_i_file_processing)
+                    .internalMessage("Failed to transfer multipart file to a new temporary file")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .cause(e)
+                    .build();
         }
     }
 
@@ -117,7 +124,7 @@ public class RequestFileResolver {
     public Map<FormFileRequest, InputStreamSource> resolveAndCopyFiles(
             Iterator<JsonNode> jsonData, MultiValueMap<String, MultipartFile> files) {
         final List<FormFileRequest> reusableFiles = findFileRequests(jsonData);
-        validator.validateObject(reusableFiles).failOnError(ValidationException::new);
+        validator.validateObject(reusableFiles).failOnError(ValidationException::fromValidationError);
         final Map<FormFileRequest, InputStreamSource> result = new HashMap<>(reusableFiles.size());
 
         for (final FormFileRequest fileRequest : reusableFiles) {

@@ -5,7 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
@@ -17,7 +17,6 @@ import tools.jackson.databind.node.StringNode;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,13 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
 
     private void ensureExists(ResourceURI resource, ImportProcessContext context) throws JsonFormSubmitException {
         if (!graphService.subjectExists(resource, context.getTemporaryDatabaseContext())) {
-            throw new JsonFormSubmitException("Resource does not exists in the ontology");
+            throw JsonFormSubmitException.builder()
+                    .errorType(Vocabulary.u_i_form_submit)
+                    .internalMessage("Resource does not exists in the ontology")
+                    .titleMessageCode("ontopus.core.error.notFound.title")
+                    .detailMessageArguments(new Object[] {resource})
+                    .detailMessageCode("ontopus.core.error.notFound.resource")
+                    .build();
         }
     }
 
@@ -57,17 +62,13 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
 
     @Override
     public URI handleSubmit(FormResult formResult, ImportProcessContext context) {
-        try {
-            String identifier = formResult.getStringValue(ID_FIELD);
-            Objects.requireNonNull(identifier);
-            final URI uri = URI.create(identifier);
-            ensureExists(new ResourceURI(uri), context);
-            return uri;
-        } catch (OntopusException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new JsonFormSubmitException("Failed to construct ontology identifier", e);
+        String identifier = formResult.getStringValue(ID_FIELD);
+        if (identifier == null) {
+            throw JsonFormSubmitException.missingValue("ontology identifier");
         }
+        final URI uri = URI.create(identifier);
+        ensureExists(new ResourceURI(uri), context);
+        return uri;
     }
 
     protected JsonForm makeJsonForm(Set<URI> identifiers) {

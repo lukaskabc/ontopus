@@ -1,5 +1,14 @@
 {
   "ontopus.plugin.widoco": {
+    "error": {
+      "serializationFailure": "Failed to serialize the ontology to a text/turtle file",
+      "widocoExecution": {
+        "title": "Widoco error",
+        "detail":"An error occurred during WIDOCO execution: {0}"
+      },
+      "persistOutput": "Failed to persist WIDOCO output",
+      "noWidocoOutputFolder": "Failed to resolve WIDOCO root output folder"
+    },
     "service": {
       "WidocoPublishingService": {
         "name": "Generate documentation with Widoco",

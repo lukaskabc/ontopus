@@ -6,7 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProvider
 import cz.lukaskabc.ontology.ontopus.api.service.ArtifactPropertyMappingProviderFactory;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import org.springframework.stereotype.Service;
-// TODO move to a plugin?
+// TODO move all mapping to a mapping plugin
 
 @Service
 public class DcatMappingProviderFactory implements ArtifactPropertyMappingProviderFactory {

@@ -17,8 +17,7 @@ public class User extends AbstractPersistenceEntity<UserURI> {
     @OWLDataProperty(iri = Vocabulary.s_p_password, simpleLiteral = true)
     private String password;
 
-    @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_-]{3,}[a-zA-Z0-9]") // TODO move to constants
-    @NotEmpty @ParticipationConstraints(nonEmpty = true)
+    @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_-]{3,}[a-zA-Z0-9]") @NotEmpty @ParticipationConstraints(nonEmpty = true)
     @OWLDataProperty(iri = Vocabulary.s_p_sioc_name, simpleLiteral = true)
     private String username;
 

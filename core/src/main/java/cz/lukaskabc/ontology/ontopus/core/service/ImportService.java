@@ -34,7 +34,7 @@ public class ImportService implements ImportInitiationService {
     }
 
     public Future<@Nullable JsonForm> getCurrentJsonForm() {
-        return mediator.getCurrentForm(); // TODO include form data when publishing new version of
+        return mediator.getCurrentForm();
     }
 
     @Override

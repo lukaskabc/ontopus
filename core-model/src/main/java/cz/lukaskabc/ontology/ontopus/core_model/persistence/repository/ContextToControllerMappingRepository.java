@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
@@ -27,8 +28,9 @@ public class ContextToControllerMappingRepository
     public ContextToControllerMappingRepository(
             ContextToControllerMappingDao dao,
             Validator validator,
-            ContextToControllerMappingUriGenerator identifierGenerator) {
-        super(dao, validator, identifierGenerator);
+            ContextToControllerMappingUriGenerator identifierGenerator,
+            OntopusConfig config) {
+        super(dao, validator, identifierGenerator, config);
     }
 
     @Transactional(readOnly = true)

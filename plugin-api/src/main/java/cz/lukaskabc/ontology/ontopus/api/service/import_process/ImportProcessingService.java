@@ -47,7 +47,7 @@ public interface ImportProcessingService<R> {
      */
     default String getServiceDescription() {
         final int lastDot = getServiceName().lastIndexOf(".");
-        return getServiceName().substring(0, lastDot) + ".description"; // TODO implement import service description
+        return getServiceName().substring(0, lastDot) + ".description";
     }
 
     /**

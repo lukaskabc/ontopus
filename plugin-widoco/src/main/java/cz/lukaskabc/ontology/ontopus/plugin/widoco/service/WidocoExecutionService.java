@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
@@ -45,7 +44,8 @@ public class WidocoExecutionService {
     private Path execute(CommandLine cmd, Path workingDirectory) {
         ensureWidocoExists();
         // TODO: run widoco in some jail/chroot to prevent it from accessing file out of
-        // the working directory (firejail, bwrap) - but watch the licenses?
+        // the working directory (firejail, bwrap) - but watch the licenses? or docker
+        // container?
         final Path outputFolder = workingDirectory.resolve(WIDOCO_OUTPUT_DIR);
 
         cmd.addArgument("-outFolder").addArgument(outputFolder.toString());
@@ -65,12 +65,7 @@ public class WidocoExecutionService {
             executor.execute(cmd);
             return outputFolder;
         } catch (IOException e) {
-            throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_file_processing)
-                    .internalMessage("IO failure during WIDOCO execution")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .cause(e)
-                    .build());
+            throw log.throwing(InternalException.fileProcessingException("IO failure during WIDOCO execution", e));
         } catch (Exception e) {
             throw log.throwing(InternalException.builder()
                     .errorType(Vocabulary.u_i_widoco)
@@ -95,7 +90,6 @@ public class WidocoExecutionService {
             }
         });
 
-        // TODO resolve ontology main file
         cmd.setSubstitutionMap(arguments);
 
         return executor.submit(() -> execute(cmd, workDir));

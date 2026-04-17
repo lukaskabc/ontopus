@@ -4,9 +4,12 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
@@ -22,12 +25,16 @@ import java.util.Objects;
 public abstract class ImportProcessNextServiceSelector<S extends ImportProcessingService<?>>
         implements ImportProcessingService<S> {
 
+    private static final Logger log = LogManager.getLogger(ImportProcessNextServiceSelector.class);
     protected final List<S> services;
     protected final ObjectMapper objectMapper;
 
     public ImportProcessNextServiceSelector(List<S> services, ObjectMapper objectMapper) {
         if (services.isEmpty()) {
-            throw new IllegalStateException("No services found for service selection!"); // TODO exception
+            throw log.throwing(new InitializationException(
+                    "No services found for service selection: "
+                            + this.getClass().getName(),
+                    null));
         }
         this.services = services;
         this.objectMapper = objectMapper;

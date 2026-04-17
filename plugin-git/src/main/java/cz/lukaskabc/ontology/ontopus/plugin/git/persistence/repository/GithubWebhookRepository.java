@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
@@ -16,8 +17,8 @@ import java.util.Optional;
 @Repository
 public class GithubWebhookRepository extends AbstractRepository<GithubWebhookURI, GithubWebhook, GithubWebhookDao> {
 
-    public GithubWebhookRepository(GithubWebhookDao dao, Validator validator) {
-        super(dao, validator, null);
+    public GithubWebhookRepository(GithubWebhookDao dao, Validator validator, OntopusConfig config) {
+        super(dao, validator, null, config);
     }
 
     @Transactional

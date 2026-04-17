@@ -4,6 +4,8 @@ import cz.lukaskabc.ontology.ontopus.api.Plugin;
 import cz.lukaskabc.ontology.ontopus.core.service.LocalizationProvider;
 import cz.lukaskabc.ontology.ontopus.core.util.Constants;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
@@ -133,7 +135,8 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e); // TODO
+            throw LOG.throwing(
+                    InternalException.fileProcessingException("Failed to load global localization files!", e));
         }
     }
 
@@ -145,7 +148,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
                 final JsonNode jsonNode = objectMapper.readTree(inputStream);
                 flattenTranslations(jsonNode, "", language);
             } catch (JacksonException e) {
-                throw new RuntimeException("Exception while loading plugin localization:", e); // TODO
+                throw LOG.throwing(new InitializationException("Exception while loading plugin localization", e));
             }
         });
     }

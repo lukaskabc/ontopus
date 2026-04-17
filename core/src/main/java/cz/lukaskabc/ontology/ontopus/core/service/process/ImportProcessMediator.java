@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -22,7 +23,6 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.CopyOption;
@@ -41,10 +41,10 @@ public class ImportProcessMediator {
 
     private static UploadedFile copyFile(
             FormFileRequest dto, InputStreamSource streamSource, ImportProcessContext context) {
-        File file = copyFileToContext(streamSource, dto, context);
-        String relativePath = context.getTempFolder().relativize(file.toPath()).toString();
+        Path file = copyFileToContext(streamSource, dto, context);
+        String relativePath = context.getTempFolder().relativize(file).toString();
         dto.setFileName(relativePath);
-        return dto.toUploadedFile(file.toPath()); // TODO review File/Path usage
+        return dto.toUploadedFile(file);
     }
 
     /**
@@ -57,7 +57,7 @@ public class ImportProcessMediator {
      * @return File in the context temporary directory
      * @throws IllegalStateException if the supplied file name is not safe (escapes the context directory)
      */
-    private static File copyFileToContext(
+    private static Path copyFileToContext(
             InputStreamSource source, FormFileRequest fileDto, ImportProcessContext context) {
         Objects.requireNonNull(context.getTempFolder());
         final Path safeDestination =
@@ -68,14 +68,15 @@ public class ImportProcessMediator {
             try (InputStream is = source.getInputStream()) {
                 Files.copy(is, safeDestination, REPLACE_EXISTING_COPY_OPTIONS);
             }
-            final File safeTarget = safeDestination.toFile();
-            if (!safeTarget.isFile()) {
-                throw new IllegalStateException("Copied file does not exist: " + safeDestination);
+
+            if (!Files.isRegularFile(safeDestination)) {
+                throw log.throwing(InternalException.fileProcessingException(
+                        "Failed to copy a file to import context folder, the copied file does not exist!", null));
             }
-            return safeTarget;
+            return safeDestination;
         } catch (IOException e) {
-            throw new RuntimeException(e);
-            // TODO exception
+            throw log.throwing(
+                    InternalException.fileProcessingException("Failed to copy a file to import context folder", e));
         }
     }
 
@@ -166,7 +167,6 @@ public class ImportProcessMediator {
         if (context.hasUnprocessedService()) {
             final ImportProcessingService<?> service = context.peekService();
             final JsonNode defaultFormData = getDefaultFormData(context, service);
-            // TODO: create readonly json node
 
             return service.getJsonForm(context, defaultFormData);
         }

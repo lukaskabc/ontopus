@@ -4,7 +4,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.OntopusCatalogDao;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.CatalogUriUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +17,9 @@ public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, Ont
     public CatalogRepository(
             OntopusCatalogDao dao,
             Validator validator,
-            IdentifierGenerator<OntopusCatalogURI, OntopusCatalog> identifierGenerator,
+            CatalogUriUriGenerator catalogUriUriGenerator,
             OntopusConfig config) {
-        super(dao, validator, identifierGenerator);
+        super(dao, validator, catalogUriUriGenerator, config);
         this.catalogUri = config.getDcatCatalog().getUri();
     }
 

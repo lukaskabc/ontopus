@@ -2,6 +2,9 @@ package cz.lukaskabc.ontology.ontopus.plugin.rdf.importing;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.FileImportException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -34,7 +37,13 @@ public class RDFDataImportingService implements DataFileImportingService {
     public static Model loadModel(List<File> files) throws IOException {
         RDFFormat rdfFormat = resolveFormat(files.getFirst());
         if (rdfFormat == null) {
-            throw new IllegalStateException("Unable to resolve file type to supported RDF format"); // TODO exception
+            throw FileImportException.builder()
+                    .errorType(Vocabulary.u_i_unsupported_format)
+                    .internalMessage("Failed to find an RDF format for a file: " + files.getFirst())
+                    .detailMessageArguments(new Object[] {files.getFirst()})
+                    .detailMessageCode("ontopus.core.error.fileProcessing.unsupportedFormat")
+                    .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
+                    .build();
         }
         final Model model = new LinkedHashModel();
         final RDFParser parser = Rio.createParser(rdfFormat);
@@ -91,7 +100,8 @@ public class RDFDataImportingService implements DataFileImportingService {
             }
             return false;
         } catch (IOException e) {
-            return false;
+            throw LOG.throwing(
+                    InternalException.fileProcessingException("Failed to check format of a file: " + file, e));
         }
     }
 }

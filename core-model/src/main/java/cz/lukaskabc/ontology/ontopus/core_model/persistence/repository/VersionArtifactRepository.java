@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -24,15 +25,15 @@ public class VersionArtifactRepository
     public VersionArtifactRepository(
             VersionArtifactDao dao,
             Validator validator,
-            // TODO replace URI generator with specific type in all repositories
-            VersionArtifactUriGenerator identifierGenerator) {
-        super(dao, validator, identifierGenerator);
+            VersionArtifactUriGenerator identifierGenerator,
+            OntopusConfig config) {
+        super(dao, validator, identifierGenerator, config);
     }
 
     @Transactional(readOnly = true)
     public Page<VersionArtifact> find(VersionSeriesURI seriesURI, Pageable pageable, List<String> filter) {
         if (pageable.isUnpaged()) {
-            pageable = PageRequest.of(0, 100); // TODO config
+            pageable = PageRequest.of(0, defaultMaxPageSize);
         }
         List<VersionArtifact> content = dao.find(seriesURI, pageable, filter);
         long totalCount = dao.count(seriesURI, filter);

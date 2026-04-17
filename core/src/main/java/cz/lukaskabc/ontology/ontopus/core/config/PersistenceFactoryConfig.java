@@ -100,9 +100,7 @@ public class PersistenceFactoryConfig {
             properties.put(OntoDriverProperties.DATA_SOURCE_USERNAME, dbConfig.getUsername());
             properties.put(OntoDriverProperties.DATA_SOURCE_PASSWORD, dbConfig.getPassword());
         }
-        // TODO: what is this
-        // OPTIMIZATION: Always use statement retrieval with unbound property. Should
-        // spare repository queries
+
         properties.put(Rdf4jOntoDriverProperties.LOAD_ALL_THRESHOLD, "1");
         properties.put(JOPAPersistenceProperties.LRU_CACHE_CAPACITY, "32768");
         this.factory = Persistence.createEntityManagerFactory("ontopusPersistenceUnit", properties);

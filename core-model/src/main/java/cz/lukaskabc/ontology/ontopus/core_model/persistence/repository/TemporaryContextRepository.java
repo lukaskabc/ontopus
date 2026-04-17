@@ -1,10 +1,11 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.TemporaryContext;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.GraphDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.TemporaryContextDao;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.TemporaryContextUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +21,10 @@ public class TemporaryContextRepository
     public TemporaryContextRepository(
             TemporaryContextDao dao,
             Validator validator,
-            IdentifierGenerator<TemporaryContextURI, TemporaryContext> identifierGenerator,
-            GraphDao graphDao) {
-        super(dao, validator, identifierGenerator);
+            TemporaryContextUriGenerator identifierGenerator,
+            GraphDao graphDao,
+            OntopusConfig config) {
+        super(dao, validator, identifierGenerator, config);
         this.graphDao = graphDao;
     }
 

@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
@@ -96,11 +97,19 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         return Objects.requireNonNull(uri);
     }
 
+    /**
+     * Creates a new folder in the temporary import process context directory. The created directory is only valid
+     * during the import process.
+     *
+     * @param relativePath the relative path inside the main context directory
+     * @return path to the created temporary directory
+     * @throws InternalException when {@link IOException} occurs
+     */
     public Path createTempFolder(Path relativePath) {
         try {
             return Files.createDirectory(tempFolder.resolve(relativePath));
         } catch (IOException e) {
-            throw new RuntimeException(e); // TODO exception
+            throw log.throwing(InternalException.fileProcessingException("Failed to create a new temporary folder", e));
         }
     }
 
@@ -209,7 +218,12 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
                 popService();
             }
         } else {
-            throw new IllegalStateException(); // TODO exception
+            throw log.throwing(JsonFormSubmitException.builder()
+                    .errorType(Vocabulary.u_i_form_submit)
+                    .internalMessage("No unprocessed services available for the form data submission")
+                    .titleMessageCode("ontopus.core.error.noUnprocessedService")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build());
         }
     }
 

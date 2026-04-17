@@ -23,6 +23,8 @@ public class OntopusConfig {
 
     @Nullable private File frontendIndexFile;
 
+    private int defaultMaxPageSize = 100;
+
     @Valid private Database database = new Database();
 
     @Valid private DcatCatalog dcatCatalog = new DcatCatalog();
@@ -41,6 +43,10 @@ public class OntopusConfig {
 
     public DcatCatalog getDcatCatalog() {
         return dcatCatalog;
+    }
+
+    public int getDefaultMaxPageSize() {
+        return defaultMaxPageSize;
     }
 
     public Files getFiles() {
@@ -69,6 +75,11 @@ public class OntopusConfig {
 
     public void setDcatCatalog(DcatCatalog dcatCatalog) {
         this.dcatCatalog = dcatCatalog;
+    }
+
+    public OntopusConfig setDefaultMaxPageSize(int defaultMaxPageSize) {
+        this.defaultMaxPageSize = defaultMaxPageSize;
+        return this;
     }
 
     public void setFiles(Files files) {

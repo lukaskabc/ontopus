@@ -41,27 +41,19 @@ public class ImportFinalizationService {
     }
 
     /**
-     *
+     * Finalizes the import process.
      *
      * <ol>
-     *   <li>Persist files
-     *   <li>Persist database context
-     *   <li>Serialize import process to the version series
-     *   <li>Update version series with the new artifact
-     *   <li>Persist artifacts (which will also validate them), they will be persisted in respective internal contexts
-     *   <li>Delete files from previous import process
+     *   <li>Invokes all {@link ImportFinalizingService ImportFinalizingServices}
+     *   <li>Saves updated or new {@link VersionSeries}
+     *   <li>Saves new {@link VersionArtifact}
+     *   <li>Updates catalog
      * </ol>
      *
      * @param context the process context to finalize
      */
     @Transactional
     public void finalizeImport(ImportProcessContext context) {
-        // TODO: There should be some validation ensuring that the constructed artifacts
-        // are valid
-        // and possible errors should be propagated to the user
-        // This can be handled by another previous service and validation here should be
-        // only the last resort
-        // if it fails, the import failed
         log.info(
                 "Finalizing import process for version series: {}",
                 context.getVersionSeries().getOntologyURI());
@@ -77,8 +69,6 @@ public class ImportFinalizationService {
         versionArtifactService.persist(artifact);
 
         updateCatalog(series);
-
-        // TODO: publish event?
     }
 
     private void updateCatalog(VersionSeries series) {

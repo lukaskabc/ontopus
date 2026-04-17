@@ -9,16 +9,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 
 import java.util.Set;
 
+// TODO: introduce events for asynchronous processing without user input
+
 /**
  * Service capable of publishing an {@link VersionArtifact OntologyArtifact} via a public endpoint.
  *
  * <p>The service is triggered once {@link VersionArtifact OntologyArtifact} is fully constructed. The service can
  * request input from user and do any necessary pre-processing in order to publish the artifact (e.g. generating static
  * files).
- *
- * <p>If a service does not need an input from the user, handling
- * {@link cz.lukaskabc.ontology.ontopus.api.event.OntologyArtifactCreated OntologyArtifactCreated} event can be used
- * instead. TODO events?
  *
  * @implSpec The service should construct
  *     {@link cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping} and add it to

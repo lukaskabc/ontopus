@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base;
 
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
@@ -26,13 +27,19 @@ public abstract class AbstractRepository<
         I extends TypedIdentifier, E extends PersistenceEntity<I>, D extends AbstractDao<I, E>> {
     protected final D dao;
     protected final Validator validator;
+    protected final int defaultMaxPageSize;
 
     @Nullable protected final IdentifierGenerator<I, E> identifierGenerator;
 
-    public AbstractRepository(D dao, Validator validator, @Nullable IdentifierGenerator<I, E> identifierGenerator) {
+    public AbstractRepository(
+            D dao,
+            Validator validator,
+            @Nullable IdentifierGenerator<I, E> identifierGenerator,
+            OntopusConfig ontopusConfig) {
         this.dao = dao;
         this.validator = validator;
         this.identifierGenerator = identifierGenerator;
+        this.defaultMaxPageSize = ontopusConfig.getDefaultMaxPageSize();
     }
 
     /** @see #dao#delete(PersistenceEntity) */
@@ -87,7 +94,7 @@ public abstract class AbstractRepository<
     @Transactional(readOnly = true)
     public Page<E> find(Pageable pageable, List<String> filter) {
         if (pageable.isUnpaged()) {
-            pageable = PageRequest.of(0, 100); // TODO config
+            pageable = PageRequest.of(0, defaultMaxPageSize);
         }
         List<E> content = dao.find(pageable, filter);
         long totalCount = dao.count(filter);

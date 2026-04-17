@@ -258,7 +258,12 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     arguments.put(arg, StringUtils.sanitize(param));
                 }
             } else {
-                throw new IllegalArgumentException("Unknown argument: " + arg + " with value " + value.toString());
+                throw JsonFormSubmitException.builder()
+                        .errorType(Vocabulary.u_i_form_submit)
+                        .internalMessage("Unknown argument: " + arg + " with value " + value.toString())
+                        .titleMessageCode("ontopus.core.error.invalidData")
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                        .build();
             }
         });
 

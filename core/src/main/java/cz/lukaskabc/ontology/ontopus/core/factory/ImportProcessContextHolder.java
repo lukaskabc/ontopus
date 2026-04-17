@@ -4,6 +4,8 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -130,7 +132,8 @@ public class ImportProcessContextHolder implements AutoCloseable {
             toDelete.add(folder.toFile());
             return folder;
         } catch (IOException e) {
-            throw new RuntimeException(e); // TODO exception
+            throw log.throwing(InternalException.fileProcessingException(
+                    "Failed to create temporary folder for context " + uuid, e));
         }
     }
 
@@ -143,11 +146,12 @@ public class ImportProcessContextHolder implements AutoCloseable {
                 RequestContextHolder.setRequestAttributes(requestAttributes);
                 SecurityContextHolder.setContext(securityContext);
                 consumer.accept(instance);
-            } catch (ImportProcessFinalizedException e) {
-                throw e; // expected exception
-            } catch (RuntimeException e) { // TODO perhaps only for debug?
-                log.error("Asynchronous task execution failed with exception: {}", e.getMessage(), e);
-                throw log.throwing(e);
+            } catch (OntopusException e) {
+                throw e;
+            } catch (Exception e) {
+                log.error("Unexpected exception occurred during asynchronous task execution: {}", e.getMessage());
+                log.throwing(e);
+                throw e;
             }
         };
     }
@@ -178,7 +182,6 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
 
         log.debug("Created new import process context {} and folder {}", context, context.getTempFolder());
-        // TODO event
         return context;
     }
 

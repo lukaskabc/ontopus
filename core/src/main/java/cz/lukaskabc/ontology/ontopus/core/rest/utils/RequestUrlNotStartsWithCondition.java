@@ -39,12 +39,8 @@ public class RequestUrlNotStartsWithCondition implements RequestCondition<@NonNu
                 .encode();
 
         if (requestedURI.toUriString().startsWith(startWithURI)) {
-            log.trace("Requested URI {} DOES start with {}", requestedURI.toUriString(), startWithURI);
-            // TODO: remove trace logging?
             return null;
         }
-
-        log.trace("Requested URI {} does NOT start with {}", requestedURI.toUriString(), startWithURI);
 
         // Otherwise, return this condition to ACCEPT the mapping
         return this;

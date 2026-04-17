@@ -38,7 +38,7 @@ public abstract class Rdf4JAbstractNamespace extends AbstractGeneratedPersistenc
     }
 
     @Override
-    public int hashCode() { // TODO inline Objects.hash() to avoid array creation?
+    public int hashCode() {
         return Objects.hash(getPrefix(), getName());
     }
 

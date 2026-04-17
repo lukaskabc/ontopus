@@ -7,6 +7,7 @@
       "invalidServiceIndex": "The submitted service index is invalid: {0}",
       "missingFile": "Missing file",
       "noFileUploaded": "No file was uploaded",
+      "noUnprocessedService": "No service exists for processing form data",
       "versionURI": {
         "failed": "Failed to construct version URI",
         "missingOntologyURI": "Version series are missing ontology URI",

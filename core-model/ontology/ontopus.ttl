@@ -253,7 +253,12 @@ ontopus-problem:internal-error rdf:type ontopus:ProblemDetail ;
 <http://ontology.lukaskabc.cz/application/ontopus/problem/internal-error/initialization> rdf:type ontopus:ProblemDetail ;
                                               rdfs:subClassOf ontopus-problem:internal-error ;
                                               rdfs:label "Initialization error"@en ;
-                                              rdfs:comment "The controller does not support the requested mapping of the resource"@en .
+                                              rdfs:comment "The controller does not support the requested mapping of the resource."@en .
+
+<http://ontology.lukaskabc.cz/application/ontopus/problem/internal-error/serialization> rdf:type ontopus:ProblemDetail ;
+                                              rdfs:subClassOf ontopus-problem:internal-error ;
+                                              rdfs:label "Serialization error"@en ;
+                                              rdfs:comment "An error occurred during serialization or deserialization of an object."@en .
 
 ontopus-problem:not-found rdf:type ontopus:ProblemDetail ;
                              rdfs:label "Not found"@en ;

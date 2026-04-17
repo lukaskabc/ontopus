@@ -1,7 +1,5 @@
 package cz.lukaskabc.ontology.ontopus.api.service.core;
 
-// TODO: document and move to plugin api
-
 /**
  * Each {@link InitializationService} registered in the Spring context will be executed after singletons are initialized
  * at the startup of the application.

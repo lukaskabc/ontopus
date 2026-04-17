@@ -1,9 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.UserDao;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.IdentifierGenerator;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.UserUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Repository;
@@ -14,8 +15,9 @@ import org.springframework.validation.Validator;
 @Repository
 public class UserRepository extends AbstractRepository<UserURI, User, UserDao> {
 
-    public UserRepository(UserDao dao, Validator validator, IdentifierGenerator<UserURI, User> identifierGenerator) {
-        super(dao, validator, identifierGenerator);
+    public UserRepository(
+            UserDao dao, Validator validator, UserUriGenerator identifierGenerator, OntopusConfig config) {
+        super(dao, validator, identifierGenerator, config);
     }
 
     @Transactional(readOnly = true)

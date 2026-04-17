@@ -4,7 +4,6 @@ import com.google.errorprone.annotations.MustBeClosed;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
-import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,12 +30,7 @@ public class FileUtils {
         try {
             return Files.walk(directory);
         } catch (IOException e) {
-            throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_file_processing)
-                    .internalMessage("Failure during directory iteration")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .cause(e)
-                    .build());
+            throw log.throwing(InternalException.fileProcessingException("Failure during directory iteration", e));
         }
     }
 

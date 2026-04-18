@@ -9,6 +9,9 @@ import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedExcept
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
@@ -195,8 +198,11 @@ public class ImportProcessMediator {
         holder.resetSessionImportProcess(uri);
         Future<@Nullable Void> scheduled = holder.scheduleWithContext(this::processAutoServices);
         if (scheduled.isCancelled()) {
-            throw new IllegalStateException(
-                    "Failed to schedule service processing during import context initialization");
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_c_internal_error)
+                    .internalMessage("Failed to schedule service processing during import context initialization")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build());
         }
     }
 
@@ -209,7 +215,7 @@ public class ImportProcessMediator {
             final String serviceId = service.getUniqueContextIdentifier(context);
             final FormDataDto formDataDto = serviceToFormDataMap.get(serviceId);
             if (formDataDto == null) {
-                throw log.throwing(new IllegalStateException("Missing form data for service with id: " + serviceId));
+                throw JsonFormSubmitException.missingValue("form data for service: " + serviceId);
             }
             final FormResult formResult = formDataToFormResult(formDataDto);
             context.handleResult(formResult);

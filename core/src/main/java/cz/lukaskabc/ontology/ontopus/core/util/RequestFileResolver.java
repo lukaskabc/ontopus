@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.util;
 
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.core.io.InputStreamSource;
@@ -103,7 +104,7 @@ public class RequestFileResolver {
                 }
             }
         }
-        throw new IllegalStateException("Could not find uploaded file for " + fileName);
+        throw JsonFormSubmitException.missingValue("File " + fileName);
     }
 
     /**

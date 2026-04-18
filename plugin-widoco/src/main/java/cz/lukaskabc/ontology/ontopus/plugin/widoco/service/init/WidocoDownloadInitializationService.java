@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service.init;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +33,7 @@ public class WidocoDownloadInitializationService implements InitializationServic
                     .build(config.getDownloadUrlParameters())
                     .toURL();
         } catch (Exception e) {
-            throw new IllegalStateException(
+            throw new InitializationException(
                     "Failed to build Widoco download URL from template: " + config.getDownloadUrl(), e);
         }
     }
@@ -45,14 +46,14 @@ public class WidocoDownloadInitializationService implements InitializationServic
             FileChannel fileChannel = output.getChannel();
             fileChannel.transferFrom(input, 0, Long.MAX_VALUE);
         } catch (Exception e) {
-            throw new IllegalStateException("Failed to download Widoco from " + url, e);
+            throw new InitializationException("Failed to download Widoco from " + url, e);
         }
     }
 
     @Override
     public void initialize() {
         if (!StringUtils.hasText(config.getDownloadUrl())) {
-            throw new IllegalStateException(
+            throw new InitializationException(
                     "Widoco download URL is not specified in configuration, unable to download");
         }
 

@@ -34,6 +34,6 @@ public class DistributionUriGenerator extends AbstractIdentifierGenerator<Distri
 
             attempt++;
         }
-        throw new IllegalStateException("Unable to generate identifier for " + entity.toString());
+        throw failedToGenerate(entity);
     }
 }

@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.config;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -76,7 +77,7 @@ public class WidocoArguments implements Map<String, String> {
             return delegate.put(arg.argument(), value);
         }
 
-        throw new IllegalArgumentException("Key is not a valid Argument");
+        throw ValidationException.fromValidationError("Key is not a valid Widoco Argument: " + key);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class WidocoArguments implements Map<String, String> {
             return (Argument) key;
         }
         if (!(key instanceof String)) {
-            throw new IllegalArgumentException("Key must be a String representing an Argument enum name.");
+            throw ValidationException.fromValidationError("Key must be a String representing an Argument enum name.");
         }
         // Throws IllegalArgumentException if the String doesn't match an Enum value
         return Argument.valueOf((String) key);

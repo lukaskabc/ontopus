@@ -4,6 +4,9 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.ServiceAwareFormResult;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportFinalizingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormDataDto;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +40,11 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
         final int servicesCount = context.getProcessedServices().size();
         final int resultsCount = context.getProcessedResults().size();
         if (servicesCount < resultsCount) {
-            throw new IllegalStateException("There are more processed results than processed services");
+            throw InternalException.builder()
+                    .errorType(Vocabulary.u_c_internal_error)
+                    .internalMessage("There is more processed results than processed services")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
         }
 
         final Map<String, FormDataDto> serviceToFormResultMap = new HashMap<>(resultsCount);
@@ -54,7 +61,11 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
                 FormDataDto serializedFormData =
                         serializeFormData(result.formResult().formData());
                 if (serviceToFormResultMap.containsKey(serviceId)) {
-                    throw new IllegalStateException("Duplicate service identifier: " + serviceId);
+                    throw log.throwing(InternalException.builder()
+                            .errorType(Vocabulary.u_i_internal_error)
+                            .internalMessage("Duplicate service identifier: " + serviceId)
+                            .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                            .build());
                 }
 
                 serviceToFormResultMap.put(serviceId, serializedFormData);

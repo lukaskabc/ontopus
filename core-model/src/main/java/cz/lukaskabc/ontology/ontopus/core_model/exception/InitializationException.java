@@ -5,6 +5,10 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 
 public class InitializationException extends InternalException {
+    public InitializationException(String internalMessage) {
+        this(internalMessage, null);
+    }
+
     public InitializationException(String internalMessage, @Nullable Throwable cause) {
         super(
                 HttpStatus.INTERNAL_SERVER_ERROR,

@@ -110,7 +110,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
             // remove leading dot
             final String key = prefix.substring(0, prefix.length() - 1);
             if (map.containsKey(key)) {
-                throw log.throwing(new InitializationException("Duplicate translation key: " + key, null));
+                throw log.throwing(new InitializationException("Duplicate translation key: " + key));
             } else {
                 map.put(key, jsonNode.asString());
             }
@@ -164,7 +164,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
     public void postProcessBeanFactory(@NonNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
         BeanDefinitionRegistryPostProcessor.super.postProcessBeanFactory(beanFactory);
         if (packagesForJopaScan.isEmpty()) {
-            throw new IllegalStateException("No packages for JOPA entity scan found!");
+            throw new InitializationException("No packages for JOPA entity scan found!");
         }
         beanFactory.registerSingleton(
                 JopaEntityPackagesHolder.BEAN_NAME, new JopaEntityPackagesHolder(packagesForJopaScan));

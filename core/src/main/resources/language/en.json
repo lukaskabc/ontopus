@@ -9,6 +9,10 @@
       "noFileUploaded": "No file was uploaded",
       "noUnprocessedService": "No service exists for processing form data",
       "importProcessNotInitialized": "Import process is not initialized",
+      "failedToSubmitTask": "Failed to submit a new task",
+      "importProcessTaskConflict": "Another import task is already in progress, unable to submit a new task until the previous finishes.",
+      "unableToPersist": "Failed to persist a new entity",
+      "entityExists": "An entity with identifier {0} already exists.",
       "versionURI": {
         "failed": "Failed to construct version URI",
         "missingOntologyURI": "Version series are missing ontology URI",

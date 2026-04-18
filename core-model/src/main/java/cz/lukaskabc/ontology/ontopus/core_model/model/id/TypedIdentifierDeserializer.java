@@ -1,5 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
@@ -13,6 +18,8 @@ import java.util.Objects;
 
 @NullMarked
 public class TypedIdentifierDeserializer extends ValueDeserializer<AbstractTypedIdentifier> {
+    private static final Logger log = LogManager.getLogger(TypedIdentifierDeserializer.class);
+
     @Nullable private final Class<? extends AbstractTypedIdentifier> targetType;
 
     public TypedIdentifierDeserializer() {
@@ -28,7 +35,11 @@ public class TypedIdentifierDeserializer extends ValueDeserializer<AbstractTyped
     public ValueDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) {
         Class<?> rawClass = property.getType().getRawClass();
         if (!AbstractTypedIdentifier.class.isAssignableFrom(rawClass)) {
-            throw new IllegalArgumentException("Cannot use TypedIdentifierDeserializer for type " + rawClass.getName());
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_internal_error)
+                    .internalMessage("Cannot use TypedIdentifierDeserializer for type " + rawClass.getName())
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build());
         }
         if (Objects.equals(targetType, rawClass)) {
             return this;

@@ -4,7 +4,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 
 /** A persistence (JOPA) entity with an identifier */
 public interface PersistenceEntity<ID extends TypedIdentifier> {
-    public ID getIdentifier();
+    ID getIdentifier();
 
-    public void setIdentifier(ID identifier);
+    void setIdentifier(ID identifier);
 }

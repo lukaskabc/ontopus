@@ -1,8 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
-import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusSecurityException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
@@ -13,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubRefEventBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,7 +126,12 @@ public class GithubWebhookController {
     public void handleEvent(@RequestParam("series") VersionSeriesURI series, HttpServletRequest httpRequest)
             throws Exception {
         if (httpRequest.getContentLength() > REQUEST_BODY_CACHE_LIMIT || httpRequest.getContentLength() < 0) {
-            throw new IllegalStateException("Request body is too large");
+            throw ValidationExceptionBuilderStages.start()
+                    .statusCode(HttpStatus.BAD_REQUEST)
+                    .errorType(Vocabulary.u_i_too_large)
+                    .internalMessage("Request body is too large")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
         }
 
         final GithubEvent type = getEventType(httpRequest);
@@ -157,7 +161,7 @@ public class GithubWebhookController {
         switch (type) {
             case CREATE -> handleGHEvent(bodyBuffer, webhook, GithubCreateEvent.class, webhookHandler::handleGHEvent);
             case PUSH -> handleGHEvent(bodyBuffer, webhook, GithubPushEvent.class, webhookHandler::handleGHEvent);
-            default -> throw new IllegalStateException("Unsupported GitHub event type: " + type);
+            default -> throw ValidationException.fromValidationError("Unsupported GitHub event type: " + type);
         }
     }
 

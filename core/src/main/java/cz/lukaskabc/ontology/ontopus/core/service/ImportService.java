@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.core.ImportInitiationService;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.util.RequestFileResolver;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
 import org.jspecify.annotations.NullMarked;
@@ -45,7 +46,7 @@ public class ImportService implements ImportInitiationService {
     @Override
     public Future<@Nullable Void> submitCombinedData(@Valid ImportProcessContextRequest context) {
         if (context.getVersionSeriesURI() == null) {
-            throw new IllegalArgumentException("Version series URI must be provided in the context");
+            throw JsonFormSubmitException.missingValue("version series URI");
         }
         initializeImport(context.getVersionSeriesURI());
         return mediator.submitCombinedFormResult(context.getSerializableImportProcessContext());

@@ -3,9 +3,12 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.IdentifierGenerationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.util.Objects;
@@ -14,6 +17,7 @@ import java.util.Optional;
 public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E extends PersistenceEntity<I>>
         implements IdentifierGenerator<I, E> {
     protected static final int MAX_GENERATION_ATTEMPTS = 15;
+    private static final Logger log = LogManager.getLogger(AbstractIdentifierGenerator.class);
 
     private static IllegalArgumentException invalidMultilingualString() {
         return new IllegalArgumentException("Multilingual string cannot be blank");
@@ -44,6 +48,10 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
         return value;
     }
 
+    protected IdentifierGenerationException failedToGenerate(E entity) {
+        return log.throwing(new IdentifierGenerationException("Failed to generate an identifier for entity " + entity));
+    }
+
     protected boolean isUnique(URI identifier) {
         Objects.requireNonNull(identifier);
         return !entityManager
@@ -69,7 +77,7 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
         if (entity.getIdentifier() == null) {
             final I identifier = generate(entity);
             if (identifier == null) {
-                throw new IllegalStateException("Failed to generate an identifier for entity " + entity);
+                throw failedToGenerate(entity);
             }
             entity.setIdentifier(identifier);
         }

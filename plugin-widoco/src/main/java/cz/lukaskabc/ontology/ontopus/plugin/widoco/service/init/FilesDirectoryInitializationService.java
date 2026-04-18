@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service.init;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -24,19 +25,19 @@ public class FilesDirectoryInitializationService implements InitializationServic
         if (!filesDirectory.exists()) {
             final boolean success = filesDirectory.mkdirs();
             if (!success) {
-                throw new IllegalStateException(
+                throw new InitializationException(
                         "Failed to create files directory at " + filesDirectory.getAbsolutePath());
             }
         }
         if (!filesDirectory.isDirectory()) {
-            throw new IllegalStateException(
+            throw new InitializationException(
                     "Files directory is missing or not a directory: " + filesDirectory.getAbsolutePath());
         }
         if (!Files.isWritable(filesDirectory.toPath())) {
-            throw new IllegalStateException("Files directory is not writable: " + filesDirectory.getAbsolutePath());
+            throw new InitializationException("Files directory is not writable: " + filesDirectory.getAbsolutePath());
         }
         if (!Files.isReadable(filesDirectory.toPath())) {
-            throw new IllegalStateException("Files directory is not readable: " + filesDirectory.getAbsolutePath());
+            throw new InitializationException("Files directory is not readable: " + filesDirectory.getAbsolutePath());
         }
     }
 }

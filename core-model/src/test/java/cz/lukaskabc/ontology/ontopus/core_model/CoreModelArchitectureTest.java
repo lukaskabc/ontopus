@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideOutsideOfPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -13,6 +14,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
 import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,4 +115,33 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             .areNotAnonymousClasses()
             .should()
             .beMetaAnnotatedWith(Component.class);
+
+    /** The only allowed logging package is {@code org.apache.logging.log4j} */
+    @ArchTest
+    static final ArchRule log4j2ShouldBeTheOnlyUsedLoggingFramework = noClasses()
+            .that()
+            .resideInAnyPackage("..ontopus..")
+            .should()
+            .dependOnClassesThat(resideInAnyPackage("..log..", "..logging..", "..slf4j..", "..logback..")
+                    .and(resideOutsideOfPackage("org.apache.logging.log4j..")))
+            .because("The only allowed logging package is org.apache.logging.log4j (Log4J2)");
+
+    @ArchTest
+    static final ArchRule loggerShouldBeConsistentlyNamed = noFields()
+            .that()
+            .areDeclaredInClassesThat()
+            .resideInAnyPackage("..ontopus..")
+            .should()
+            .haveNameMatching("logger")
+            .orShould()
+            .haveName("LOG");
+
+    @ArchTest
+    static final ArchRule logFieldsShouldBeLog4j2Logger = fields().that()
+            .areDeclaredInClassesThat()
+            .resideInAnyPackage("..ontopus..")
+            .and()
+            .haveName("log")
+            .should()
+            .haveRawType(Logger.class);
 }

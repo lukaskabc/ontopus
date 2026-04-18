@@ -32,6 +32,6 @@ public class TemporaryContextUriGenerator extends AbstractIdentifierGenerator<Te
             attempt++;
         }
 
-        throw new IllegalStateException("Unable to generate identifier for " + entity);
+        throw failedToGenerate(entity);
     }
 }

@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportFinalizingService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
@@ -36,7 +37,7 @@ public class ImportFinalizationService {
         this.catalogRepository = catalogRepository;
 
         if (importFinalizingServices.isEmpty()) {
-            throw new IllegalStateException("No ImportFinalizingService implementations found.");
+            throw new InitializationException("No ImportFinalizingService implementations found.");
         }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.core.io.InputStreamSource;
 
 import java.io.*;
 import java.lang.ref.Cleaner;
+import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Source providing input stream to a file that will be automatically deleted when this object is garbage collected */
@@ -54,7 +55,7 @@ public class ConsumableInputStreamSource implements InputStreamSource {
         public void run() {
             if (cleaned.compareAndSet(false, true)) {
                 try {
-                    file.delete();
+                    Files.deleteIfExists(file.toPath());
                 } catch (Exception e) {
                     log.warn("Could not clean up file {}", file.getAbsolutePath(), e);
                 }

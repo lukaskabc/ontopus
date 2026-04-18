@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.FileImportException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,7 +26,7 @@ public class FileImportingService implements FileToDatabaseImportingService {
     public FileImportingService(List<DataFileImportingService> dataFileImportingServices) {
         this.dataFileImportingServices = dataFileImportingServices;
         if (dataFileImportingServices.isEmpty()) {
-            throw new IllegalStateException("No data file importing service found!");
+            throw new InitializationException("No data file importing service found!");
         }
     }
 

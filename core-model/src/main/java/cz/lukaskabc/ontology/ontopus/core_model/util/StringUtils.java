@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.util;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jspecify.annotations.Nullable;
@@ -79,9 +80,9 @@ public class StringUtils extends org.springframework.util.StringUtils {
      *
      * @param input the string to sanitize
      * @param allowedCharacters an array of additional characters to allow in the sanitized string
-     * @return a sanitized version of the input string
+     * @return a non-empty sanitized version of the input string
      * @throws NullPointerException if the input string is null
-     * @throws IllegalArgumentException if the sanitized string is empty
+     * @throws ValidationException if the sanitized string is empty
      * @see #sanitize(String, char[])
      */
     public static String sanitize(String input, char[] allowedCharacters) {
@@ -96,7 +97,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
             }
         }
         if (sanitized.isEmpty()) {
-            throw new IllegalArgumentException("Sanitized string cannot be empty");
+            throw ValidationException.fromValidationError("Sanitized string cannot be empty");
         }
         return sanitized.toString();
     }

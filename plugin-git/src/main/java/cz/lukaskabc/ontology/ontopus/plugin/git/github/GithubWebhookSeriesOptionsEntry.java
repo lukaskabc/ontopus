@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonResourceLoader;
 import cz.lukaskabc.ontology.ontopus.api.util.VersionSeriesOptionsEntry;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
@@ -55,9 +56,6 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
     public JsonForm getForm(VersionSeriesURI entityIdentifier) {
         final JsonNode jsonSchema = jsonForm.getJsonSchema();
         final JsonNode uiSchema = jsonForm.getUiSchema();
-        if (uiSchema == null) {
-            throw new IllegalStateException("UI schema is not loaded");
-        }
 
         final ObjectNode formData = objectMapper.createObjectNode();
         final ArrayNode arrayWrapper = formData.putArray("webhook");
@@ -111,7 +109,7 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
         if (webhookJson != null && webhookJson.isArray()) {
             return webhookJson.get(0);
         } else {
-            throw new IllegalArgumentException("Expected 'webhook' to be an array with a single object");
+            throw ValidationException.fromValidationError("Expected 'webhook' to be an array with a single object");
         }
     }
 

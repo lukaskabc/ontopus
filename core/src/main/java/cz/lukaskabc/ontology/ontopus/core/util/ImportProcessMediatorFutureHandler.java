@@ -40,7 +40,7 @@ public class ImportProcessMediatorFutureHandler {
             }
             case RUNNING -> ResponseEntity.accepted().build();
             case FAILED -> throw future.exceptionNow();
-            case CANCELLED -> throw new ImportProcessTaskConflictException();
+            case CANCELLED -> throw ImportProcessTaskConflictException.build();
         };
     }
 }

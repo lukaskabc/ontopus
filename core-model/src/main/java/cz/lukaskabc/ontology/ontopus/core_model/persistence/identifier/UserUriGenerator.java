@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User;
 import cz.lukaskabc.ontology.ontopus.core_model.model.User_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.UserURI;
@@ -22,7 +23,7 @@ public class UserUriGenerator extends AbstractIdentifierGenerator<UserURI, User>
         Objects.requireNonNull(user);
         Objects.requireNonNull(user.getUsername());
         if (user.getUsername().isBlank()) {
-            throw new IllegalArgumentException("Username cannot be blank");
+            throw ValidationException.fromValidationError("Username cannot be blank");
         }
     }
 
@@ -40,6 +41,6 @@ public class UserUriGenerator extends AbstractIdentifierGenerator<UserURI, User>
 
             attempt++;
         }
-        throw new IllegalStateException("Unable to generate identifier for " + entity);
+        throw failedToGenerate(entity);
     }
 }

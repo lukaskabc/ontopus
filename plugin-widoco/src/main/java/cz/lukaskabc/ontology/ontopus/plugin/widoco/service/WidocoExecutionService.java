@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.widoco.service;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
@@ -34,10 +35,10 @@ public class WidocoExecutionService {
     private void ensureWidocoExists() {
         final File executable = config.getPath().toFile();
         if (!executable.exists()) {
-            throw new IllegalStateException("Widoco executable not found at " + executable.getAbsolutePath());
+            throw new InitializationException("Widoco executable not found at " + executable.getAbsolutePath());
         }
         if (!executable.isFile()) {
-            throw new IllegalStateException("Widoco executable is not a file: " + executable.getAbsolutePath());
+            throw new InitializationException("Widoco executable is not a file: " + executable.getAbsolutePath());
         }
     }
 

@@ -293,8 +293,17 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     context.getControllerMappings());
             context.addControllerMapping(ontologyMapping);
             context.addControllerMapping(resourceMapping);
+        } catch (OntopusException e) {
+            throw e;
         } catch (Exception e) {
-            throw new IllegalStateException(e); // TODO: WIDOCO exception
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_widoco)
+                    .internalMessage("Failure during ontology publishing with WIDOCO")
+                    .detailMessageArguments(new Object[] {e.getMessage()})
+                    .detailMessageCode("ontopus.plugin.widoco.error.widocoExecution.detail")
+                    .titleMessageCode("ontopus.plugin.widoco.error.widocoExecution.title")
+                    .cause(e)
+                    .build());
         }
         return null;
     }

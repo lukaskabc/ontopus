@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
@@ -126,7 +127,8 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         if (type.isInstance(value)) {
             return Optional.of(type.cast(value));
         }
-        throw new IllegalStateException("Additional property %s is not of type %s".formatted(key, type.getName()));
+        throw ValidationException.fromValidationError(
+                "Additional property %s is not of type %s".formatted(key, type.getName()));
     }
 
     @Override
@@ -259,7 +261,12 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
             processedServices.addLast(last);
             return;
         }
-        throw new IllegalStateException("Duplicated service identifier %s in a import process".formatted(identifier));
+
+        throw log.throwing(InternalException.builder()
+                .errorType(Vocabulary.u_i_internal_error)
+                .internalMessage("Duplicate service identifier: " + identifier)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .build());
     }
 
     /**

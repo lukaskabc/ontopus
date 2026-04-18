@@ -10,8 +10,7 @@ import java.util.Map;
 @Component("messageSource")
 public class LocalizationMessageSource extends StaticMessageSource {
     public LocalizationMessageSource(LocalizationProvider localizationProvider) {
-        // Keep unknown keys readable instead of throwing from message resolution paths.
-        setUseCodeAsDefaultMessage(true);
+        setUseCodeAsDefaultMessage(false);
         localizationProvider.getLanguages().stream()
                 .map(langTag -> Map.entry(Locale.forLanguageTag(langTag), localizationProvider.getLocale(langTag)))
                 .filter(entry -> entry.getValue().isPresent())

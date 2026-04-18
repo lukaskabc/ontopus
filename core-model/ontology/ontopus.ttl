@@ -304,8 +304,8 @@ ontopus-problem:git rdf:type ontopus:ProblemDetail ;
                              rdfs:comment "An error occurred during a GIT operation."@en .
 
 ontopus-problem:widoco rdf:type ontopus:ProblemDetail ;
-                             rdfs:label "WIDOCO Error"@en ;
-                             rdfs:comment "An error occurred during WIDOCO execution"@en .
+                             rdfs:label "Widoco Error"@en ;
+                             rdfs:comment "An error occurred during Widoco execution"@en .
 
 ontopus-problem:preview rdf:type ontopus:ProblemDetail ;
                              rdfs:label "Data preview"@en ;

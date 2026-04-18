@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Read-only view of the {@link ImportProcessContext}. The retrieved object should not be modified, but they are not
@@ -32,6 +33,8 @@ public interface ReadOnlyImportProcessContext {
     Path getTempFolder();
 
     TemporaryContextURI getTemporaryDatabaseContext();
+
+    UUID getUUID();
 
     VersionArtifact getVersionArtifact();
 

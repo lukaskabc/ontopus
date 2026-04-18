@@ -4,16 +4,17 @@
       "serializationFailure": "Failed to serialize the ontology to a text/turtle file",
       "widocoExecution": {
         "title": "Widoco error",
-        "detail":"An error occurred during WIDOCO execution: {0}"
+        "detail": "An error occurred during Widoco execution: {0}",
+        "detailLog": "An error occurred during Widoco execution: {0}, the full log is accessible at {1}"
       },
-      "persistOutput": "Failed to persist WIDOCO output",
-      "noWidocoOutputFolder": "Failed to resolve WIDOCO root output folder"
+      "persistOutput": "Failed to persist Widoco output",
+      "noWidocoOutputFolder": "Failed to resolve Widoco root output folder"
     },
     "service": {
       "WidocoPublishingService": {
         "name": "Generate documentation with Widoco",
         "title": "Generate documentation with Widoco",
-        "description": "[Wizard for documenting ontologies](https://github.com/dgarijo/Widoco). WIDOCO is a step by step generator of HTML templates with the documentation of your ontology. It uses the [LODE](https://github.com/essepuntato/LODE) environment to create part of the template.\n\nThe options below allows to customize the supported options.",
+        "description": "[Wizard for documenting ontologies](https://github.com/dgarijo/Widoco). Widoco is a step by step generator of HTML templates with the documentation of your ontology. It uses the [LODE](https://github.com/essepuntato/LODE) environment to create part of the template.\n\nThe options below allows to customize the supported options.",
         "fields": {
           "ANALYTICS": {
             "title": "Google Analytics ID",

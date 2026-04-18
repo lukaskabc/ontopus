@@ -9,52 +9,38 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusCheckedException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
-import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
-import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.WidocoConstants;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.Argument;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoArguments;
-import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
-import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.OntologyToFileSerializationService;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoArgumentsFactory;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoControllerRegistrationService;
-import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoExecutionService;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.service.WidocoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 import tools.jackson.databind.node.StringNode;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Service
 public class WidocoPublishingService implements OntologyPublishingService, OrderedImportPipelineService<Void> {
     private static final String TRANSLATION_ROOT = "ontopus.plugin.widoco.service.WidocoPublishingService";
-    private static final Set<String> WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE = Set.of("jsonld", "nt", "owl", "ttl");
-    private static final Set<String> WIDOCO_OUTPUT_DIRECTORIES = Set.of("provenance", "sections", "resources");
-    private static final Set<Argument> WIDOCO_DISALLOWED_ARGS = Set.of(Argument.ONT_FILE);
 
     private static final Logger log = LogManager.getLogger(WidocoPublishingService.class);
 
@@ -79,7 +65,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
         final ObjectNode properties = schema.putObject("properties");
 
         for (Argument arg : Argument.values()) {
-            if (WIDOCO_DISALLOWED_ARGS.contains(arg)) {
+            if (WidocoConstants.WIDOCO_DISALLOWED_ARGS.contains(arg)) {
                 continue;
             }
             final ObjectNode property = properties.putObject(arg.name()).put("type", arg.schemaType());
@@ -128,44 +114,40 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
 
     private final ContextToControllerMappingService mappingService;
 
-    private final WidocoPluginConfig config;
-
     private final ObjectMapper mapper;
 
     private final JsonForm jsonForm;
-    private final WidocoExecutionService widocoExecutionService;
     private final WidocoControllerRegistrationService widocoControllerRegistrationService;
-    private final GraphService graphService;
-    private final OntologyToFileSerializationService ontologyToFileSerializationService;
+    private final WidocoArgumentsFactory argumentsFactory;
+    private final WidocoService widocoService;
 
     public WidocoPublishingService(
             ContextToControllerMappingService mappingService,
             ObjectMapper mapper,
-            WidocoExecutionService widocoExecutionService,
-            WidocoPluginConfig config,
             WidocoControllerRegistrationService widocoControllerRegistrationService,
-            GraphService graphService,
-            OntologyToFileSerializationService ontologyToFileSerializationService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            WidocoArgumentsFactory argumentsFactory,
+            WidocoService widocoService) {
         this.mappingService = mappingService;
         this.mapper = mapper;
-        this.widocoExecutionService = widocoExecutionService;
-        this.config = config;
         this.widocoControllerRegistrationService = widocoControllerRegistrationService;
-        this.graphService = graphService;
-        this.ontologyToFileSerializationService = ontologyToFileSerializationService;
         this.jsonForm = makeForm(mapper);
         this.objectMapper = objectMapper;
+        this.argumentsFactory = argumentsFactory;
+        this.widocoService = widocoService;
     }
 
-    private void deleteUnusedWidocoFiles(Path widocoRoot, boolean deleteSerializations) throws IOException {
-        Files.deleteIfExists(widocoRoot.resolve("readme.md"));
-        if (deleteSerializations) {
-            for (String ext : WIDOCO_ONTOLOGY_EXTENSIONS_TO_REMOVE) {
-                Path path = widocoRoot.resolve("ontology." + ext);
-                Files.deleteIfExists(path);
-            }
-        }
+    private void createControllerMappings(ImportProcessContext context) {
+        final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(
+                context.getFinalDatabaseContext(),
+                widocoControllerRegistrationService.getControllerDescriptions(),
+                context.getControllerMappings());
+        final ContextToControllerMapping resourceMapping = mappingService.createResourceMapping(
+                context.getFinalDatabaseContext(),
+                widocoControllerRegistrationService.getControllerDescriptions(),
+                context.getControllerMappings());
+        context.addControllerMapping(ontologyMapping);
+        context.addControllerMapping(resourceMapping);
     }
 
     /**
@@ -197,7 +179,9 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
 
         if (previousFormData == null || previousFormData.get(Argument.LANG.name()) == null) {
             ArrayNode langArray = formData.putArray(Argument.LANG.name());
-            resolveAlLanguages(context.getTemporaryDatabaseContext()).forEach(langArray::add);
+            argumentsFactory
+                    .resolveAlLanguages(context.getTemporaryDatabaseContext())
+                    .forEach(langArray::add);
         }
 
         return new JsonForm(schema, uiSchema, formData);
@@ -223,83 +207,17 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
      */
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
-        WidocoArguments arguments = new WidocoArguments();
-        final boolean allLanguages = Optional.ofNullable(formResult.formData().remove("allLangs"))
-                .filter(JsonNode::isBoolean)
-                .map(JsonNode::asBoolean)
-                .orElse(false);
-        formResult.formData().forEach((keyName, value) -> {
-            Argument arg = Argument.valueOf(keyName);
-            if (WIDOCO_DISALLOWED_ARGS.contains(arg)) {
-                return;
-            }
-
-            if (Argument.FILES.contains(arg) && value.isString()) {
-                final Path relative = Path.of(value.asString());
-                final Path inContext = FileUtils.resolvePath(context.getTempFolder(), relative);
-                arguments.put(arg, inContext.toString());
-            } else if (value.isString() || value.isNumber()) {
-                arguments.put(arg, value.asString());
-            } else if (value.isBoolean()) {
-                if (value.asBoolean()) {
-                    arguments.put(arg, "");
-                }
-            } else if (arg.equals(Argument.LANG) && value.isArray()) {
-                Stream<String> languages;
-                if (!allLanguages && !value.isEmpty() && value.isArray()) {
-                    languages = value.asArray().values().stream()
-                            .filter(JsonNode::isString)
-                            .map(JsonNode::asString);
-                } else {
-                    languages = resolveAlLanguages(context.getTemporaryDatabaseContext());
-                }
-
-                final String param = languages.collect(Collectors.joining("-"));
-                if (StringUtils.hasText(param)) {
-                    arguments.put(arg, StringUtils.sanitize(param));
-                }
-            } else {
-                throw JsonFormSubmitException.builder()
-                        .errorType(Vocabulary.u_i_form_submit)
-                        .internalMessage("Unknown argument: " + arg + " with value " + value.toString())
-                        .titleMessageCode("ontopus.core.error.invalidData")
-                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                        .build();
-            }
-        });
+        WidocoArguments arguments = argumentsFactory.build(formResult, context);
 
         try {
-            final Path workDir = context.createTempFolder(Path.of("widoco-work-dir-" + StringUtils.randomString(5)));
-            final Path ontologyFile = workDir.resolve("ontology.ttl");
-            ontologyToFileSerializationService.serializeOntologyToFile(
-                    context.getVersionArtifact().getPrefixDeclarations(),
-                    context.getTemporaryDatabaseContext(),
-                    ontologyFile);
-
-            arguments.put(Argument.ONT_FILE, ontologyFile.toString());
-
-            final Path output = widocoExecutionService
-                    .execute(arguments, workDir)
-                    .get(config.getExecutionTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
-            final Path outputRoot = resolveWidocoOutputRoot(output);
-            persistOutput(outputRoot, context);
-            // TODO: reduce size of this service
-            final ContextToControllerMapping ontologyMapping = mappingService.createOntologyMapping(
-                    context.getFinalDatabaseContext(),
-                    widocoControllerRegistrationService.getControllerDescriptions(),
-                    context.getControllerMappings());
-            final ContextToControllerMapping resourceMapping = mappingService.createResourceMapping(
-                    context.getFinalDatabaseContext(),
-                    widocoControllerRegistrationService.getControllerDescriptions(),
-                    context.getControllerMappings());
-            context.addControllerMapping(ontologyMapping);
-            context.addControllerMapping(resourceMapping);
-        } catch (OntopusException | OntopusCheckedException e) {
+            widocoService.runWidoco(arguments, context);
+            createControllerMappings(context);
+        } catch (OntopusException e) {
             throw e;
         } catch (Exception e) {
             throw log.throwing(InternalException.builder()
                     .errorType(Vocabulary.u_i_widoco)
-                    .internalMessage("Failure during ontology publishing with WIDOCO")
+                    .internalMessage("Failure during ontology publishing with Widoco")
                     .detailMessageArguments(new Object[] {e.getMessage()})
                     .detailMessageCode("ontopus.plugin.widoco.error.widocoExecution.detail")
                     .titleMessageCode("ontopus.plugin.widoco.error.widocoExecution.title")
@@ -307,53 +225,5 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     .build());
         }
         return null;
-    }
-
-    private void persistOutput(Path widocoOutput, ImportProcessContext context) {
-        final String persistentContext = StringUtils.sanitizeUriAsComponent(
-                context.getFinalDatabaseContext().toString());
-        final Path filesDestination = FileUtils.resolvePath(config.getFilesDirectory(), Path.of(persistentContext));
-        try {
-            FileSystemUtils.deleteRecursively(filesDestination);
-            FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
-        } catch (IOException e) {
-            throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_file_processing)
-                    .internalMessage("Failed to persist Widoco output")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .titleMessageCode("ontopus.plugin.widoco.error.persistOutput")
-                    .cause(e)
-                    .build());
-        }
-    }
-
-    /**
-     * Resolves all languages used by literals in the given graph. Languages containing "-" are excluded.
-     *
-     * @param graphURI the database graph
-     * @return stream of language tags
-     */
-    private Stream<String> resolveAlLanguages(GraphURI graphURI) {
-        final List<String> languages = graphService.findAllLanguageTags(graphURI);
-        if (!languages.isEmpty()) {
-            return languages.stream().filter(lang -> !lang.contains("-"));
-        }
-        return Stream.empty();
-    }
-
-    private Path resolveWidocoOutputRoot(Path output) {
-        try (Stream<Path> filePaths = FileUtils.listRecursively(output)) {
-            return filePaths
-                    .filter(path -> WIDOCO_OUTPUT_DIRECTORIES.contains(
-                            path.getFileName().toString()))
-                    .findAny()
-                    .map(Path::getParent)
-                    .orElseThrow(() -> log.throwing(InternalException.builder()
-                            .errorType(Vocabulary.u_i_file_processing)
-                            .internalMessage("Failed to resolve WIDOCO root output folder")
-                            .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                            .titleMessageCode("ontopus.plugin.widoco.error.noWidocoOutputFolder")
-                            .build()));
-        }
     }
 }

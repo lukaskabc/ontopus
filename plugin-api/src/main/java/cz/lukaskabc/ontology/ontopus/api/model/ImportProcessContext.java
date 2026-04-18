@@ -1,7 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.*;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
@@ -29,6 +32,7 @@ import java.util.*;
 @NullMarked
 public class ImportProcessContext implements ReadOnlyImportProcessContext {
     private static final Logger log = LogManager.getLogger(ImportProcessContext.class);
+    private final UUID uuid;
     /** Series of ontology versions of a single ontology */
     private final VersionSeries versionSeries;
     /** Temporary database context */
@@ -55,6 +59,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     // the import process context
     // the hard part will be handling the serialization
     public <P extends ImportProcessContext> ImportProcessContext(P other) {
+        this.uuid = other.getUUID();
         this.versionSeries = other.getVersionSeries();
         this.temporaryDatabaseContext = other.getTemporaryDatabaseContext();
         this.tempFolder = other.getTempFolder();
@@ -69,10 +74,12 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     }
 
     public ImportProcessContext(
+            UUID uuid,
             VersionSeries versionSeries,
             TemporaryContextURI temporaryDatabaseContext,
             Path tempFolder,
             VersionArtifact versionArtifact) {
+        this.uuid = uuid;
         this.versionSeries = Objects.requireNonNull(versionSeries);
         this.temporaryDatabaseContext = Objects.requireNonNull(temporaryDatabaseContext);
         this.tempFolder = Objects.requireNonNull(tempFolder);
@@ -178,6 +185,11 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
     }
 
     @Override
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    @Override
     public VersionArtifact getVersionArtifact() {
         return versionArtifact;
     }
@@ -201,7 +213,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
             ImportProcessingService<?> service = peekService();
             try {
                 service.handleSubmit(formResult, this);
-            } catch (OntopusException | OntopusCheckedException e) {
+            } catch (OntopusException e) {
                 throw e;
             } catch (Exception e) {
                 throw log.throwing(JsonFormSubmitException.builder()

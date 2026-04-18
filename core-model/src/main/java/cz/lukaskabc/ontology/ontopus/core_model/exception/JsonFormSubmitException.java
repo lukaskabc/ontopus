@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import java.net.URI;
 
 /** Indicates a failure of JSON form submission */
-public class JsonFormSubmitException extends OntopusCheckedException {
+public class JsonFormSubmitException extends OntopusException {
     public static JsonFormSubmitExceptionBuilderStages.ErrorTypeBuildStage builder() {
         return JsonFormSubmitExceptionBuilderStages.start().statusCode(HttpStatus.BAD_REQUEST);
     }

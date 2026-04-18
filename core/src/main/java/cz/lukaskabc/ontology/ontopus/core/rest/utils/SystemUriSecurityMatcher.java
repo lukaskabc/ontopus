@@ -18,9 +18,6 @@ public class SystemUriSecurityMatcher implements RequestMatcher {
     @Override
     public boolean matches(HttpServletRequest request) {
         final boolean matches = requestUrlNotStartsWithCondition.getMatchingCondition(request) == null;
-
-        log.trace("Request to {} matches: {}", request.getServletPath(), matches);
-
         return matches;
     }
 }

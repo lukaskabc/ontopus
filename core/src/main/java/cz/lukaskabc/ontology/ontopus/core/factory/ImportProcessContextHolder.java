@@ -147,7 +147,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
                 RequestContextHolder.setRequestAttributes(requestAttributes);
                 SecurityContextHolder.setContext(securityContext);
                 consumer.accept(instance);
-            } catch (OntopusException | OntopusCheckedException e) {
+            } catch (OntopusException | OntopusCheckedException | ImportProcessFinalizedException e) {
                 throw e;
             } catch (Exception e) {
                 log.error("Unexpected exception occurred during asynchronous task execution: {}", e.getMessage());

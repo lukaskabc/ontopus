@@ -45,9 +45,11 @@ export default function SettingsMenuButton() {
   return (
     <>
       <Tooltip title="Settings">
-        <IconButton aria-label="settings" color="primary" loading={isLoading} onClick={onMenuOpen}>
-          <SettingsIcon />
-        </IconButton>
+        <span>
+          <IconButton aria-label="settings" color="primary" loading={isLoading} onClick={onMenuOpen}>
+            <SettingsIcon />
+          </IconButton>
+        </span>
       </Tooltip>
       <Menu
         anchorEl={menuAnchor}

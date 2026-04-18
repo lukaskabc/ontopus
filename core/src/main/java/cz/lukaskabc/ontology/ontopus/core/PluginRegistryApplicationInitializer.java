@@ -32,7 +32,7 @@ import java.util.*;
  */
 @Component
 public class PluginRegistryApplicationInitializer implements BeanDefinitionRegistryPostProcessor {
-    private static final Logger LOG = LogManager.getLogger(PluginRegistryApplicationInitializer.class);
+    private static final Logger log = LogManager.getLogger(PluginRegistryApplicationInitializer.class);
 
     private static void scanForSpringBeans(
             Collection<String> basePackages, BeanDefinitionRegistry beanDefinitionRegistry) {
@@ -55,19 +55,19 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
         this.plugins = ServiceLoader.load(Plugin.class);
         this.objectMapper = new ObjectMapper();
 
-        LOG.info("Discovering plugins");
+        log.info("Discovering plugins");
         loadGlobalLocalizations(localization);
 
         int pluginCount = 0;
         for (Plugin plugin : plugins) {
-            LOG.info("Loading plugin: {}", plugin.getClass().getName());
+            log.info("Loading plugin: {}", plugin.getClass().getName());
             packagesForJopaScan.addAll(plugin.getJopaScanPackages());
             loadPluginLocalization(localization, plugin.getTranslations());
             packagesForSpringScan.addAll(plugin.getSpringScanPackages());
             pluginCount++;
         }
 
-        LOG.info("Found {} plugins", pluginCount);
+        log.info("Found {} plugins", pluginCount);
     }
 
     /**
@@ -110,7 +110,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
             // remove leading dot
             final String key = prefix.substring(0, prefix.length() - 1);
             if (map.containsKey(key)) {
-                throw LOG.throwing(new InitializationException("Duplicate translation key: " + key, null));
+                throw log.throwing(new InitializationException("Duplicate translation key: " + key, null));
             } else {
                 map.put(key, jsonNode.asString());
             }
@@ -135,7 +135,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
                 }
             }
         } catch (IOException e) {
-            throw LOG.throwing(
+            throw log.throwing(
                     InternalException.fileProcessingException("Failed to load global localization files!", e));
         }
     }
@@ -148,7 +148,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
                 final JsonNode jsonNode = objectMapper.readTree(inputStream);
                 flattenTranslations(jsonNode, "", language);
             } catch (JacksonException e) {
-                throw LOG.throwing(new InitializationException("Exception while loading plugin localization", e));
+                throw log.throwing(new InitializationException("Exception while loading plugin localization", e));
             }
         });
     }

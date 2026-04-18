@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TemporaryContextRemovalService implements InitializationService {
-    private static final Logger LOG = LogManager.getLogger(TemporaryContextRemovalService.class);
+    private static final Logger log = LogManager.getLogger(TemporaryContextRemovalService.class);
 
     private final TemporaryContextService temporaryContextService;
 
@@ -18,7 +18,7 @@ public class TemporaryContextRemovalService implements InitializationService {
 
     @Override
     public void initialize() {
-        LOG.info("Removing all temporary contexts...");
+        log.info("Removing all temporary contexts...");
         temporaryContextService.deleteAll();
     }
 }

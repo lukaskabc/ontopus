@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public abstract class AbstractDao<I extends TypedIdentifier, E extends PersistenceEntity<I>> {
-    private static final Logger LOG = LogManager.getLogger(AbstractDao.class);
+    private static final Logger log = LogManager.getLogger(AbstractDao.class);
 
     private static String buildRegexFilter(@Nullable List<String> filter) {
         if (filter == null || filter.isEmpty()) {
@@ -43,7 +43,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     }
 
     private static PersistenceException persistenceException(String message, Throwable cause) {
-        return persistenceException(LOG, message, cause);
+        return persistenceException(log, message, cause);
     }
 
     /**

@@ -31,7 +31,7 @@ import java.util.stream.Stream;
         })
 @Component
 public class ResourceInContextMappingDao {
-    private static final Logger LOG = LogManager.getLogger(ResourceInContextMappingDao.class);
+    private static final Logger log = LogManager.getLogger(ResourceInContextMappingDao.class);
     static final URI CONTEXT =
             URI.create("http://ontology.lukaskabc.cz/application/ontopus#ResourceInContextMappingGraph");
     protected final EntityManager em;
@@ -69,7 +69,7 @@ public class ResourceInContextMappingDao {
                     .executeUpdate();
         } catch (RuntimeException e) {
             throw persistenceException(
-                    LOG, "Failed to delete existing mappings for resources from graph " + sourceGraph, e);
+                    log, "Failed to delete existing mappings for resources from graph " + sourceGraph, e);
         }
     }
 
@@ -92,7 +92,7 @@ public class ResourceInContextMappingDao {
                     .setParameter("graph", graph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to delete mapping for graph " + graph, e);
+            throw persistenceException(log, "Failed to delete mapping for graph " + graph, e);
         }
     }
 
@@ -108,7 +108,7 @@ public class ResourceInContextMappingDao {
                             .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
                             .setParameter("subject", resource.toURI())::getSingleResult);
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to find resource mapping for " + resource, e);
+            throw persistenceException(log, "Failed to find resource mapping for " + resource, e);
         }
     }
 
@@ -124,7 +124,7 @@ public class ResourceInContextMappingDao {
                     .setParameter("object", graph.toURI())
                     .getResultStream();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to find all resource to context mappings for graph " + graph, e);
+            throw persistenceException(log, "Failed to find all resource to context mappings for graph " + graph, e);
         }
     }
 
@@ -148,7 +148,7 @@ public class ResourceInContextMappingDao {
                     .setParameter("sourceGraph", sourceGraph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
-            throw persistenceException(LOG, "Failed to map resources from source graph " + sourceGraph, e);
+            throw persistenceException(log, "Failed to map resources from source graph " + sourceGraph, e);
         }
     }
 }

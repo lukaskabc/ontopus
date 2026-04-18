@@ -32,7 +32,7 @@ import java.util.List;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RDFDataImportingService implements DataFileImportingService {
-    private static final Logger LOG = LogManager.getLogger(RDFDataImportingService.class);
+    private static final Logger log = LogManager.getLogger(RDFDataImportingService.class);
 
     public static Model loadModel(List<File> files) throws IOException {
         RDFFormat rdfFormat = resolveFormat(files.getFirst());
@@ -95,12 +95,12 @@ public class RDFDataImportingService implements DataFileImportingService {
         try {
             final RDFFormat format = resolveFormat(file);
             if (format != null) {
-                LOG.debug("Resolved RDF format <{}> for file <{}>", format, file.getName());
+                log.debug("Resolved RDF format <{}> for file <{}>", format, file.getName());
                 return true;
             }
             return false;
         } catch (IOException e) {
-            throw LOG.throwing(
+            throw log.throwing(
                     InternalException.fileProcessingException("Failed to check format of a file: " + file, e));
         }
     }

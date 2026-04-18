@@ -14,6 +14,7 @@ import type { JsonForm } from '@/model/JsonForm.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 import Constants from '@/Constants.ts'
 import { usePromiseTracker } from 'react-promise-tracker'
+import { useThrowError } from '@/components/AlertErrorsStack.tsx'
 
 const JsonFormElement = lazy(() => import('@/components/JsonFormElement.tsx'))
 
@@ -26,6 +27,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm, chil
   const { navigate } = useLocation()
   const [triggerLoadScheme, setTriggerLoadScheme] = useState(true)
   const { promiseInProgress } = usePromiseTracker({ area: STAGED_FORM_PROMISE_AREA })
+  const throwError = useThrowError()
 
   const loadScheme = useCallback(
     () =>
@@ -43,30 +45,34 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm, chil
           } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
             setTriggerLoadScheme(true)
           } else {
-            // TODO handle error, propagate to user
-            console.error(e)
+            throwError(e)
           }
         }),
-    [navigate, resetForm]
+    [navigate, resetForm, throwError]
   )
 
   useEffect(() => {
     if (triggerLoadScheme) {
-      return trackPromise(loadScheme(), STAGED_FORM_PROMISE_AREA).then(() => setTriggerLoadScheme(false)).abort
+      return trackPromise(loadScheme(), STAGED_FORM_PROMISE_AREA)
+        .then(() => setTriggerLoadScheme(false))
+        .catch(throwError).abort
     }
-  }, [triggerLoadScheme, loadScheme])
+  }, [triggerLoadScheme, loadScheme, throwError])
 
-  const onSubmit = useCallback((formData: GenericObjectType, files: FileWithFieldName[]) => {
-    return trackPromise(submitForm(formData, files), STAGED_FORM_PROMISE_AREA)
-      .then(() => setTriggerLoadScheme(true))
-      .catch((e) => {
-        if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
-          setTriggerLoadScheme(true)
-        } else {
-          console.error(e)
-        }
-      }) // TODO handle and show errors
-  }, [])
+  const onSubmit = useCallback(
+    (formData: GenericObjectType, files: FileWithFieldName[]) => {
+      return trackPromise(submitForm(formData, files), STAGED_FORM_PROMISE_AREA)
+        .then(() => setTriggerLoadScheme(true))
+        .catch((e) => {
+          if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
+            setTriggerLoadScheme(true)
+          } else {
+            throwError(e)
+          }
+        })
+    },
+    [throwError]
+  )
 
   return (
     <>

@@ -10,6 +10,7 @@ import { trackPromise } from 'react-promise-tracker'
 import { useTranslation } from 'react-i18next'
 import type { AuthResponse } from '@toolpad/core'
 import { useLocation } from '@/utils/hooks.ts'
+import AlertErrorsStack from '@/components/AlertErrorsStack.tsx'
 
 const credentialsProvider = { id: 'credentials', name: 'Username and Password' }
 
@@ -46,21 +47,23 @@ export default function LoginForm() {
   )
 
   return (
-    <AppProvider theme={mdTheme} branding={Branding}>
-      <SignInPage
-        providers={[credentialsProvider]}
-        signIn={onSignIn}
-        localeText={locale}
-        slots={{
-          passwordField: PasswordField,
-          emailField: UsernameField,
-        }}
-        slotProps={{
-          submitButton: {
-            color: 'primary',
-          },
-        }}
-      />
-    </AppProvider>
+    <AlertErrorsStack>
+      <AppProvider theme={mdTheme} branding={Branding}>
+        <SignInPage
+          providers={[credentialsProvider]}
+          signIn={onSignIn}
+          localeText={locale}
+          slots={{
+            passwordField: PasswordField,
+            emailField: UsernameField,
+          }}
+          slotProps={{
+            submitButton: {
+              color: 'primary',
+            },
+          }}
+        />
+      </AppProvider>
+    </AlertErrorsStack>
   )
 }

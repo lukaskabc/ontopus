@@ -11,6 +11,7 @@ import type { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 import Button from '@mui/material/Button'
 import DialogContentText from '@mui/material/DialogContentText'
 import Paper from '@mui/material/Paper'
+import AlertErrorsStack, { useThrowError } from '@/components/AlertErrorsStack.tsx'
 
 const PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA = 'PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA'
 
@@ -24,6 +25,7 @@ export default function PublishStepper({ params }: PublishStepperProps) {
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)
   const [lastVersionSeriesIdentifier, setLastVersionSeriesIdentifier] = useState(versionSeriesIdentifier)
 
+  const throwError = useThrowError()
   // const steps = ['import', 'process', 'publish'].map((s) => t(`local:publish.step.${s}`))
   // TODO publish steps
 
@@ -37,8 +39,8 @@ export default function PublishStepper({ params }: PublishStepperProps) {
     trackPromise(
       resetImportProcess(versionSeriesIdentifier).then(resetJsonForm),
       PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA
-    ).then() // TODO error handle
-  }, [resetJsonForm, versionSeriesIdentifier])
+    ).catch(throwError)
+  }, [resetJsonForm, versionSeriesIdentifier, throwError])
 
   const onAbortConfirmed = useCallback(() => {
     closeAbortDialog()
@@ -67,18 +69,20 @@ export default function PublishStepper({ params }: PublishStepperProps) {
       {/*</Stepper>*/}
 
       <Paper sx={{ p: 2 }}>
-        <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>
-          <StagedForm key={'PublishStepper-StagedForm' + stagedFormElementKey} resetForm={onImportProcessReset}>
-            <Button
-              variant={'outlined'}
-              color={'error'}
-              style={{ display: 'block', marginLeft: 'auto' }}
-              onClick={onAbort}
-            >
-              {t('publish.button.abort')}
-            </Button>
-          </StagedForm>
-        </PromiseArea>
+        <AlertErrorsStack>
+          <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>
+            <StagedForm key={'PublishStepper-StagedForm' + stagedFormElementKey} resetForm={onImportProcessReset}>
+              <Button
+                variant={'outlined'}
+                color={'error'}
+                style={{ display: 'block', marginLeft: 'auto' }}
+                onClick={onAbort}
+              >
+                {t('publish.button.abort')}
+              </Button>
+            </StagedForm>
+          </PromiseArea>
+        </AlertErrorsStack>
       </Paper>
 
       <ActionConfirmDialog

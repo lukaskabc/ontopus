@@ -46,4 +46,13 @@ public abstract class OntopusException extends ErrorResponseException {
     public String getTitleMessageCode() {
         return titleMessageCode;
     }
+
+    @Override
+    public String getTypeMessageCode() {
+        final URI type = getBody().getType();
+        if (type == null) {
+            return super.getTypeMessageCode();
+        }
+        return type.toString();
+    }
 }

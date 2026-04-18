@@ -1,7 +1,14 @@
 import Constants from '@/Constants.ts'
 import { navigate } from 'wouter-preact/use-browser-location'
-import { NotLoggedInError, PromiseCanceledError, UnexpectedResponseStatusError } from '@/utils/errors.ts'
+import {
+  NotLoggedInError,
+  OntopusProblemDetail,
+  PromiseCanceledError,
+  UnexpectedResponseStatusError,
+} from '@/utils/errors.ts'
 import i18n from '@/config/i18n.ts'
+import { validateValue } from '@/model/ModelUtils.ts'
+import type { GenericObjectType } from '@rjsf/utils'
 
 export type RESTMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -63,6 +70,14 @@ export function makeCancellable<T>(
   return cancellable
 }
 
+export function problemDetail(response: Response): Promise<never> {
+  return response.json().then((json: GenericObjectType) => {
+    const title = validateValue(json.title, 'string', 'Error title')
+    const detail = validateValue(json.detail, 'string', 'Error detail')
+    throw new OntopusProblemDetail(title, detail, response)
+  })
+}
+
 const request = (
   method: RESTMethod,
   path: string,
@@ -97,6 +112,9 @@ const request = (
       return Promise.reject(new NotLoggedInError())
     }
     if (!expectedStatus.includes(response.status)) {
+      if (response.headers.get('Content-Type') === 'application/problem+json') {
+        return problemDetail(response)
+      }
       return Promise.reject(new UnexpectedResponseStatusError('Unexpected server response status', response))
     }
     return Promise.resolve(response)

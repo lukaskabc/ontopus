@@ -15,6 +15,14 @@ export abstract class ErrorWithPayload<P = unknown> extends OntopusError {
   }
 }
 
+export class OntopusProblemDetail extends ErrorWithPayload<Response> {
+  readonly name: string
+  public constructor(title: string, message: string, payload: Response) {
+    super(message, payload)
+    this.name = title
+  }
+}
+
 export class UnknownError extends ErrorWithPayload {
   constructor(message: string, payload: unknown) {
     super(`Unknown error: ${message}`, payload)

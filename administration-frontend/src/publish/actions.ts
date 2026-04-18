@@ -2,7 +2,7 @@ import request, { type CancellablePromise, makeCancellable } from '@/config/rest
 import { type JsonForm, makeJsonForm } from '@/model/JsonForm.ts'
 import {
   ImportProcessNotInitializedError,
-  OntopusError,
+  OntopusProblemDetail,
   PromiseCanceledError,
   UnexpectedResponseStatusError,
   UnknownError,
@@ -73,7 +73,7 @@ export function loadJsonForm(): CancellablePromise<JsonForm> {
           .then(makeJsonForm)
           .then(resolve)
           .catch((error) => {
-            if (error instanceof UnexpectedResponseStatusError) {
+            if (error instanceof UnexpectedResponseStatusError || error instanceof OntopusProblemDetail) {
               const res = error.payload
               switch (res.status) {
                 case 205:
@@ -87,8 +87,6 @@ export function loadJsonForm(): CancellablePromise<JsonForm> {
                   reject(error)
                   return
               }
-            } else if (error instanceof OntopusError) {
-              reject(error)
             } else {
               reject(new UnknownError('Unknown object returned', error))
             }

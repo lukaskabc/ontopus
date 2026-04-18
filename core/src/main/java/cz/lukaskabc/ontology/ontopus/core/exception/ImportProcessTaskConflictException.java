@@ -44,4 +44,9 @@ public class ImportProcessTaskConflictException extends OntopusException {
                 detailMessageCode,
                 detailMessageArguments);
     }
+
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

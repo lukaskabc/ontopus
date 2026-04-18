@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusCheckedException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
@@ -146,7 +147,7 @@ public class ImportProcessContextHolder implements AutoCloseable {
                 RequestContextHolder.setRequestAttributes(requestAttributes);
                 SecurityContextHolder.setContext(securityContext);
                 consumer.accept(instance);
-            } catch (OntopusException e) {
+            } catch (OntopusException | OntopusCheckedException e) {
                 throw e;
             } catch (Exception e) {
                 log.error("Unexpected exception occurred during asynchronous task execution: {}", e.getMessage());

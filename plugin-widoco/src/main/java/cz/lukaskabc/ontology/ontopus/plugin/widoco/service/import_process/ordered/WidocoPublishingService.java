@@ -9,6 +9,7 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.api.util.JsonUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusCheckedException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
@@ -293,7 +294,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     context.getControllerMappings());
             context.addControllerMapping(ontologyMapping);
             context.addControllerMapping(resourceMapping);
-        } catch (OntopusException e) {
+        } catch (OntopusException | OntopusCheckedException e) {
             throw e;
         } catch (Exception e) {
             throw log.throwing(InternalException.builder()

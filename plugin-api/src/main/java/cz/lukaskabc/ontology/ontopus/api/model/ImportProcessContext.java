@@ -1,10 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
@@ -204,7 +201,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
             ImportProcessingService<?> service = peekService();
             try {
                 service.handleSubmit(formResult, this);
-            } catch (OntopusException e) {
+            } catch (OntopusException | OntopusCheckedException e) {
                 throw e;
             } catch (Exception e) {
                 throw log.throwing(JsonFormSubmitException.builder()

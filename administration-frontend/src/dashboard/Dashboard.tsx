@@ -6,6 +6,7 @@ import { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 import ToolbarActions from '@/dashboard/ToolbarActions.tsx'
 import Header from '@/dashboard/Header.tsx'
 import Container from '@mui/material/Container'
+import AlertErrorsStack from '@/components/AlertErrorsStack.tsx'
 
 const PublishStepper = lazy(() => import('@/publish/PublishStepper.tsx'))
 const VersionSeriesList = lazy(() => import('@/ontologies/VersionSeriesList.tsx'))
@@ -61,16 +62,18 @@ export default function Dashboard() {
       <TransparentPaper>
         <DialogsProvider>
           <Container maxWidth="lg" sx={{ mt: 5 }}>
-            <Switch>
-              <Route path={'/ontologies'} nest>
-                <OntologiesRoute />
-              </Route>
-              <Route path={'/settings'} component={Settings} nest />
-              {/* Default route: redirect to dashboard, keep as last item*/}
-              <Route>
-                <Redirect to={'/ontologies'} />
-              </Route>
-            </Switch>
+            <AlertErrorsStack>
+              <Switch>
+                <Route path={'/ontologies'} nest>
+                  <OntologiesRoute />
+                </Route>
+                <Route path={'/settings'} component={Settings} nest />
+                {/* Default route: redirect to dashboard, keep as last item*/}
+                <Route>
+                  <Redirect to={'/ontologies'} />
+                </Route>
+              </Switch>
+            </AlertErrorsStack>
           </Container>
         </DialogsProvider>
       </TransparentPaper>

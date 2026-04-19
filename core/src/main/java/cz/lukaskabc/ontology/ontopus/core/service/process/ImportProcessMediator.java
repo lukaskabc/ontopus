@@ -226,7 +226,18 @@ public class ImportProcessMediator {
 
     private void processAutoServices(ImportProcessContext context) {
         while (context.hasUnprocessedService() && context.peekService().getJsonForm(context, null) == null) {
-            context.handleResult(FormResult.EMPTY);
+            try {
+                context.handleResult(FormResult.EMPTY);
+            } catch (OntopusException e) {
+                context.pushService(new ErrorThrowingService(e));
+            } catch (Exception e) {
+                throw log.throwing(InternalException.builder()
+                        .errorType(Vocabulary.u_i_auto_service_error)
+                        .internalMessage("A non-Ontopus exception thrown during auto service processing.")
+                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                        .cause(e)
+                        .build());
+            }
         }
     }
 

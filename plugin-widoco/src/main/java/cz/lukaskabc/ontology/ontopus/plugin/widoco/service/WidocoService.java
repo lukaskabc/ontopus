@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.UUID;
@@ -115,7 +116,11 @@ public class WidocoService {
     }
 
     @Nullable public Path getLogFile(UUID logUUID) {
-        return logFiles.get(logUUID);
+        final Path path = logFiles.get(logUUID);
+        if (path != null && Files.isRegularFile(path)) {
+            return path;
+        }
+        return null;
     }
 
     private void persistOutput(Path widocoOutput, ImportProcessContext context) {

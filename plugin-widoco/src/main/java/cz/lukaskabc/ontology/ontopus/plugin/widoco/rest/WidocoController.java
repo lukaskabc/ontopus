@@ -5,13 +5,11 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.core_model.util.VaryHeaderBuilder;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.apache.commons.lang3.stream.Streams;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.MediaTypeFactory;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +24,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -56,10 +55,12 @@ public class WidocoController {
 
     private final Path filesDirectory;
     private final URI systemURI;
+    private final Duration cacheControlMaxAge;
 
     public WidocoController(WidocoPluginConfig pluginConfig, OntopusConfig ontopusConfig) {
         this.filesDirectory = pluginConfig.getFilesDirectory();
         this.systemURI = ontopusConfig.getSystemUri();
+        this.cacheControlMaxAge = ontopusConfig.getResource().getCacheControlMaxAge();
     }
 
     @GetMapping("/{base64EncodedUri}/**")
@@ -139,9 +140,17 @@ public class WidocoController {
         final FileSystemResource fileResource = new FileSystemResource(file);
         final MediaType mediaType =
                 MediaTypeFactory.getMediaType(fileResource).orElse(MediaType.APPLICATION_OCTET_STREAM);
+
         return ResponseEntity.ok()
                 .contentType(mediaType)
                 .lastModified(fileResource.lastModified())
+                .varyBy(VaryHeaderBuilder.withOrigin()
+                        .addAccept()
+                        .addAcceptLanguage()
+                        .getHeaders()
+                        .toArray(String[]::new))
+                .cacheControl(
+                        CacheControl.maxAge(cacheControlMaxAge).cachePublic().mustRevalidate())
                 .body(fileResource);
     }
 }

@@ -3,9 +3,12 @@ package cz.lukaskabc.ontology.ontopus.core.rest.controller;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core.rest.utils.StreamingResponseBodyAdapter;
 import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
+import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.util.VaryHeaderBuilder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +19,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @NullMarked
 @Controller
 public class ResourceController {
     private final ResourceService resourceService;
+    private final Duration cacheControlMaxAge;
 
-    public ResourceController(ResourceService resourceService) {
+    public ResourceController(ResourceService resourceService, OntopusConfig config) {
         this.resourceService = resourceService;
+        this.cacheControlMaxAge = config.getResource().getCacheControlMaxAge();
     }
 
     @Nullable private StreamingResponseBodyAdapter adaptBody(@Nullable StreamingResponseBody body) {
@@ -69,6 +75,15 @@ public class ResourceController {
             responseType = new MediaType(responseType, StandardCharsets.UTF_8);
         }
         headers.setContentType(responseType);
+
+        if (!headers.containsHeader(HttpHeaders.VARY)) {
+            VaryHeaderBuilder.withOrigin().addAccept().setToHeaders(headers);
+        }
+
+        if (!headers.containsHeader(HttpHeaders.CACHE_CONTROL)) {
+            headers.setCacheControl(
+                    CacheControl.maxAge(cacheControlMaxAge).cachePublic().mustRevalidate());
+        }
 
         return ResponseEntity.status(response.getStatusCode()).headers(headers).body(adaptedBody);
     }

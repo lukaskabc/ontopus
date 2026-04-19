@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 @Validated
@@ -246,6 +247,13 @@ public class OntopusConfig {
          */
         private boolean noSlashFallsBackToTrailingSlash = true;
 
+        /** The value of {@code max-age} in cache control HTTP header */
+        private Duration cacheControlMaxAge = Duration.ofDays(1);
+
+        public Duration getCacheControlMaxAge() {
+            return cacheControlMaxAge;
+        }
+
         public boolean isHttpFallsBackToHttps() {
             return httpFallsBackToHttps;
         }
@@ -260,6 +268,11 @@ public class OntopusConfig {
 
         public boolean isTrailingSlashFallsBackToNoSlash() {
             return trailingSlashFallsBackToNoSlash;
+        }
+
+        public Resource setCacheControlMaxAge(Duration cacheControlMaxAge) {
+            this.cacheControlMaxAge = cacheControlMaxAge;
+            return this;
         }
 
         public void setHttpFallsBackToHttps(boolean httpFallsBackToHttps) {

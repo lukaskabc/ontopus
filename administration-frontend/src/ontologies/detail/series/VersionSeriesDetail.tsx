@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks'
 import { useLocation } from '@/utils/hooks.ts'
 import { VersionSeriesResponse } from '@/model/VersionSeriesResponse.ts'
 import { findVersionSeries } from '@/ontologies/detail/series/actions.ts'
-import { parseUri } from '@/ontologies/actions.ts'
+import { parseBase64Uri } from '@/ontologies/actions.ts'
 import VersionArtifactList from '@/ontologies/detail/series/VersionArtifactList.tsx'
 import VersionSeriesResponseDetail from '@/ontologies/detail/series/VersionSeriesResponseDetail.tsx'
 
@@ -15,7 +15,7 @@ export interface VersionSeriesDetailProps {
 
 export default function VersionSeriesDetail({ identifier }: VersionSeriesDetailProps) {
   const { navigate } = useLocation()
-  const versionSeriesUri = parseUri(identifier)
+  const versionSeriesUri = parseBase64Uri(identifier)
 
   const [versionSeries, setVersionSeries] = useState<VersionSeriesResponse | null>(null)
 

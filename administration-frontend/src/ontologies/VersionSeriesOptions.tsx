@@ -5,7 +5,7 @@ import type { GenericObjectType } from '@rjsf/utils'
 import type { FileWithFieldName } from '@/publish/actions.ts'
 import JsonFormElement from '@/components/JsonFormElement.tsx'
 import { PromiseArea } from '@/components/PromiseArea.tsx'
-import { loadSeriesOptionForm, parseUri, submitSeriesOptionForm } from '@/ontologies/actions.ts'
+import { loadSeriesOptionForm, parseBase64Uri, submitSeriesOptionForm } from '@/ontologies/actions.ts'
 import Paper from '@mui/material/Paper'
 import Constants from '@/Constants.ts'
 
@@ -15,7 +15,7 @@ export default function VersionSeriesOptions() {
   const { navigate } = useLocation()
   const { params } = useRoute('/:identifier/:series')
   const identifier = params?.identifier
-  const series = parseUri(params?.series)
+  const series = parseBase64Uri(params?.series)
   const [jsonForm, setJsonForm] = useState<JsonForm | null>(null)
   const [loadForm, setLoadForm] = useState(true)
 

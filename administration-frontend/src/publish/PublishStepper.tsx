@@ -5,7 +5,7 @@ import { trackPromise } from '@/utils/hooks.ts'
 import { ActionConfirmDialog } from '@/components/ActionConfirmDialog.tsx'
 import { StagedForm } from '@/publish/StagedForm.tsx'
 import { type RouteComponentProps, type StringRouteParams } from 'wouter-preact'
-import { parseUri } from '@/ontologies/actions.ts'
+import { parseBase64Uri } from '@/ontologies/actions.ts'
 import { resetImportProcess } from '@/publish/actions.ts'
 import type { PUBLISH_STEPPER_ROUTE } from '@/Constants.ts'
 import Button from '@mui/material/Button'
@@ -19,7 +19,7 @@ export type PublishStepperProps = RouteComponentProps<StringRouteParams<typeof P
 
 export default function PublishStepper({ params }: PublishStepperProps) {
   const { t } = useTranslation()
-  const versionSeriesIdentifier = parseUri(params?.versionSeriesIdentifier)
+  const versionSeriesIdentifier = parseBase64Uri(params?.versionSeriesIdentifier)
 
   const [stagedFormElementKey, setStagedFormElementKey] = useState(0)
   const [isAbortDialogOpen, setIsAbortDialogOpen] = useState(false)

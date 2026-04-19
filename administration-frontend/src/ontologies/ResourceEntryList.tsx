@@ -4,6 +4,7 @@ import type { ResourceListEntry } from '@/model/ResourceListEntry.ts'
 import type { GridFilterModel, GridSortModel } from '@mui/x-data-grid'
 import DataGridList from '@/components/DataGridList.tsx'
 import { useLocation } from '@/utils/hooks.ts'
+import { encodeBase64Uri } from '@/ontologies/actions.ts'
 
 const INITIAL_PAGE_SIZE = 10
 const PAGE_SIZE_OPTIONS = new Set([10, 25, 50, 100, INITIAL_PAGE_SIZE])
@@ -27,7 +28,7 @@ export default function ResourceEntryList<D extends ResourceListEntry & DataMode
   }
 
   const { navigate } = useLocation()
-  const onRowClick = useCallback((id: DataModelId) => navigate(`/${encodeURIComponent(id)}`), [navigate])
+  const onRowClick = useCallback((id: DataModelId) => navigate(`/${encodeBase64Uri(id.toString())}`), [navigate])
   return (
     <DataGridList<D>
       dataSource={dataSource}

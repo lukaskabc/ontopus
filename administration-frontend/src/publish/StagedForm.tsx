@@ -15,6 +15,7 @@ import type { GenericObjectType } from '@rjsf/utils'
 import Constants from '@/Constants.ts'
 import { usePromiseTracker } from 'react-promise-tracker'
 import { useThrowError } from '@/components/AlertErrorsStack.tsx'
+import { encodeBase64Uri } from '@/ontologies/actions.ts'
 
 const JsonFormElement = lazy(() => import('@/components/JsonFormElement.tsx'))
 
@@ -41,7 +42,7 @@ export const StagedForm: FunctionComponent<StagedFormProps> = ({ resetForm, chil
           } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 201) {
             // import process finished
             const location = e.payload.headers.get('Location') ?? ''
-            navigate('~' + Constants.BASE_URL + '/ontologies/' + encodeURIComponent(decodeURI(location)))
+            navigate('~' + Constants.BASE_URL + '/ontologies/' + encodeBase64Uri(decodeURI(location)))
           } else if (e instanceof UnexpectedResponseStatusError && e.payload.status === 400) {
             setTriggerLoadScheme(true)
           } else {

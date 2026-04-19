@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
-import { parseUri } from '@/ontologies/actions.ts'
+import { parseBase64Uri } from '@/ontologies/actions.ts'
 import { useLocation } from '@/utils/hooks.ts'
 import type { VersionArtifactResponse } from '@/model/VersionArtifactResponse.ts'
 import { findVersionArtifact } from '@/ontologies/detail/artifact/actions.ts'
@@ -14,8 +14,8 @@ export interface VersionArtifactDetailProps {
 
 export default function VersionArtifactDetail({ identifier, versionSeriesIdentifier }: VersionArtifactDetailProps) {
   const { navigate } = useLocation()
-  const versionSeriesUri = parseUri(versionSeriesIdentifier)
-  const versionArtifactUri = parseUri(identifier)
+  const versionSeriesUri = parseBase64Uri(versionSeriesIdentifier)
+  const versionArtifactUri = parseBase64Uri(identifier)
 
   const [versionArtifact, setVersionArtifact] = useState<VersionArtifactResponse | null>(null)
 

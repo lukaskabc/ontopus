@@ -7,10 +7,6 @@ import { UnknownError } from '@/utils/errors.ts'
 import { makeJsonForm } from '@/model/JsonForm.ts'
 import { compileDataForRequest, type FileWithFieldName } from '@/publish/actions.ts'
 
-export function fetchImportSources(): CancellablePromise<string[]> {
-  return request('GET', 'import/source').then((response) => response.json())
-}
-
 export function findAllVersionSeries(
   pageable: Pageable,
   filter?: string[]
@@ -27,11 +23,17 @@ export function findAllVersionSeries(
     .then((page) => page.map((data) => new MuiModelListEntry(data)))
 }
 
-export function parseUri(identifier?: string) {
-  if (identifier) {
-    return decodeURIComponent(identifier)
+export function parseBase64Uri(base64EncodedUri?: string) {
+  if (base64EncodedUri) {
+    const uriEncoded = atob(base64EncodedUri)
+    return decodeURIComponent(uriEncoded)
   }
   return null
+}
+
+export function encodeBase64Uri(plainUri: string) {
+  const uriEncoded = encodeURIComponent(plainUri)
+  return btoa(uriEncoded)
 }
 
 export function findSeriesOptions(identifiers: string[]): CancellablePromise<Map<string, OntopusOptionEntry[]>> {

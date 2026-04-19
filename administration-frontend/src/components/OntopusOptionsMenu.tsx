@@ -6,6 +6,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from '@/utils/hooks.ts'
 import IconButton from '@mui/material/IconButton'
+import { encodeBase64Uri } from '@/ontologies/actions.ts'
 
 interface OntopusOptionsMenuProps {
   pathPrefix: '' | '/artifact'
@@ -29,7 +30,7 @@ export default function OntopusOptionsMenu({ options, pathPrefix, series }: Onto
 
   const handleOptionClick = (option: OntopusOptionEntry) => {
     handleMenuClose()
-    navigate(`${pathPrefix}/options/${option.optionIdentifier}/${encodeURIComponent(series)}`)
+    navigate(`${pathPrefix}/options/${option.optionIdentifier}/${encodeBase64Uri(series)}`)
   }
 
   if (options.length < 1) {

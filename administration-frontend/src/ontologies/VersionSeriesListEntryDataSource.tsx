@@ -2,7 +2,7 @@ import type { DataField, DataSource } from '@toolpad/core'
 import { MuiModelListEntryWithOptions, OntopusOptionEntry } from '@/model/MuiModelListEntry.ts'
 import { type i18n } from 'i18next'
 import { Pageable, Sort } from '@hallysonh/pageable'
-import { findAllVersionSeries, findSeriesOptions } from '@/ontologies/actions.ts'
+import { encodeBase64Uri, findAllVersionSeries, findSeriesOptions } from '@/ontologies/actions.ts'
 import type { PagedResult } from '@/utils/RequestTypes.ts'
 
 import { defineResourceListEntryFields, type GetManyProps, mapSort } from '@/utils/DataSourceUtils.ts'
@@ -19,7 +19,7 @@ function ActionsCell(params: GridRenderCellParams<MuiModelListEntryWithOptions>)
   const { navigate } = useLocation()
   // a new cell is rendered for each row
   const onClick = () => {
-    navigate('/publish/' + encodeURIComponent(params.id))
+    navigate('/publish/' + encodeBase64Uri(params.id.toString()))
   }
 
   return (

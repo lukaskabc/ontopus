@@ -40,6 +40,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rdf4j.version>5.2.2</rdf4j.version>
+        <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
         <spring.boot.version>4.0.5</spring.boot.version>
     </properties>
 
@@ -368,7 +369,7 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <ratchetFrom>HEAD</ratchetFrom>
+                    <ratchetFrom>${spotless.ratchetFrom}</ratchetFrom>
                     <formats>
                         <format>
                             <includes>

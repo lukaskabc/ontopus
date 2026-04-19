@@ -4,9 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.rest.*;
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ControllerCandidate;
-import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.HttpsSchemaFallbackService;
 import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.ResourceRequestFallbackService;
-import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.TrailingSlashFallbackService;
 import cz.lukaskabc.ontology.ontopus.core.util.MultipleChoiceResponseWriter;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
@@ -40,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class ResourceService extends ResourceRequestFallbackService {
+public class ResourceService {
 
     private static final Logger log = LogManager.getLogger(ResourceService.class);
 
@@ -69,8 +67,8 @@ public class ResourceService extends ResourceRequestFallbackService {
             ContextToControllerMappingService contextToControllerMappingService,
             VersionSeriesService versionSeriesService,
             MediaTypeResolver mediaTypeResolver,
-            OntopusConfig ontopusConfig) {
-        super(null);
+            OntopusConfig ontopusConfig,
+            ResourceRequestFallbackService resourceRequestFallbackService) {
         this.applicationContext = applicationContext;
         this.contentNegotiationResolver = contentNegotiationResolver;
         this.resourceInContextMappingService = resourceInContextMappingService;
@@ -78,9 +76,7 @@ public class ResourceService extends ResourceRequestFallbackService {
         this.versionSeriesService = versionSeriesService;
         this.mediaTypeResolver = mediaTypeResolver;
         this.ontopusConfig = ontopusConfig;
-
-        resourceRequestFallbackService =
-                new HttpsSchemaFallbackService(new TrailingSlashFallbackService(this, ontopusConfig), ontopusConfig);
+        this.resourceRequestFallbackService = resourceRequestFallbackService;
     }
 
     private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {
@@ -96,7 +92,8 @@ public class ResourceService extends ResourceRequestFallbackService {
                 suffixType.map(type -> new MediaType[] {type}).orElse(requestedTypes);
         final ResourceURI resourceURI = suffixType.isPresent() ? withoutSuffix(requestedResource) : requestedResource;
 
-        return resourceRequestFallbackService.getResource(resourceURI, mediaTypes);
+        return resourceRequestFallbackService.withFallback(
+                resourceURI, (fallbackUri) -> getResource(fallbackUri, mediaTypes));
     }
 
     private Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
@@ -112,7 +109,6 @@ public class ResourceService extends ResourceRequestFallbackService {
         }
     }
 
-    @Override
     public ResponseEntity<StreamingResponseBody> getResource(
             ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);

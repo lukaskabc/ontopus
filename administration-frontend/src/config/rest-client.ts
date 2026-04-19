@@ -48,9 +48,7 @@ export function makeCancellable<T>(
   abortController: AbortController = new AbortController()
 ): CancellablePromise<T> {
   // Hard-bind the abort method so it doesn't lose context when detached
-  const boundAbort = () => {
-    abortController.abort.bind(abortController)
-  }
+  const boundAbort = abortController.abort.bind(abortController)
 
   const cancellable = Object.assign(promise, {
     abortController,
@@ -63,9 +61,22 @@ export function makeCancellable<T>(
   const originalFinally = cancellable.finally.bind(cancellable)
 
   // Override them to recursively apply the controller and bound abort
-  cancellable.then = (...args) => makeCancellable(originalThen(...args), abortController)
-  cancellable.catch = (...args) => makeCancellable(originalCatch(...args), abortController)
-  cancellable.finally = (...args) => makeCancellable(originalFinally(...args), abortController)
+  cancellable.then = function <TResult1 = T, TResult2 = never>(
+    onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | undefined | null
+  ) {
+    return makeCancellable(originalThen(onfulfilled, onrejected), abortController)
+  }
+
+  cancellable.catch = function <TResult = never>(
+    onrejected?: ((reason: unknown) => TResult | PromiseLike<TResult>) | undefined | null
+  ) {
+    return makeCancellable(originalCatch(onrejected), abortController)
+  }
+
+  cancellable.finally = function (onfinally?: (() => void) | undefined | null) {
+    return makeCancellable(originalFinally(onfinally), abortController)
+  }
 
   return cancellable
 }
@@ -86,39 +97,42 @@ const request = (
   abortController: AbortController = new AbortController(),
   base = Constants.BACKEND_URL
 ): CancellablePromise<Response> => {
-  const headers: HeadersInit = Object.assign(
-    {
-      'Accept-Language': getLang() + ', *;q=0.6',
-    } as HeadersInit,
-    options.headers
-  )
-  const promise = fetch(
-    new URL(path, base),
-    Object.assign(
-      {
-        credentials: 'include',
-        method,
-        signal: abortController.signal,
-        headers,
-      },
-      options
-    )
-  ).then((response): Promise<Response> => {
-    if (abortController.signal.aborted) {
-      return Promise.reject(new PromiseCanceledError())
-    }
-    if (response.status === 403) {
-      navigate(Constants.BASE_URL + '/login', { replace: true })
-      return Promise.reject(new NotLoggedInError())
-    }
-    if (!expectedStatus.includes(response.status)) {
-      if (response.headers.get('Content-Type') === 'application/problem+json') {
-        return problemDetail(response)
-      }
-      return Promise.reject(new UnexpectedResponseStatusError('Unexpected server response status', response))
-    }
-    return Promise.resolve(response)
+  const headers: HeadersInit = {
+    'Accept-Language': `${getLang()}, *;q=0.6`,
+    ...options.headers,
+  }
+
+  const promise = fetch(new URL(path, base), {
+    credentials: 'include',
+    ...options,
+    method,
+    signal: abortController.signal,
+    headers,
   })
+    .then((response): Promise<Response> => {
+      if (response.status === 403) {
+        navigate(`${Constants.BASE_URL}/login`, { replace: true })
+        return Promise.reject(new NotLoggedInError())
+      }
+
+      if (!expectedStatus.includes(response.status)) {
+        if (response.headers.get('Content-Type') === 'application/problem+json') {
+          return problemDetail(response)
+        }
+        return Promise.reject(new UnexpectedResponseStatusError('Unexpected server response status', response))
+      }
+
+      return Promise.resolve(response)
+    })
+    .catch((error) => {
+      // Catch DOMException 'AbortError' triggered by the AbortController
+      if (error.name === 'AbortError' || abortController.signal.aborted) {
+        throw new PromiseCanceledError()
+      }
+      // Re-throw any other errors
+      throw error
+    })
+
   return makeCancellable(promise, abortController)
 }
 

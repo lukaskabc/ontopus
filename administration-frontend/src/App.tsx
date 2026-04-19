@@ -34,8 +34,10 @@ export function App() {
 
   useEffect(() => {
     return trackPromise(
-      authPing().catch(() => {
-        navigate(Constants.BASE_URL + '/login')
+      authPing().then((authenticated) => {
+        if (!authenticated) {
+          navigate(Constants.BASE_URL + '/login')
+        }
       }),
       APP_AUTH_PING_PROMISE_AREA
     ).abort

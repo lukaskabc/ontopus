@@ -84,7 +84,7 @@ export function makeCancellable<T>(
 export function problemDetail(response: Response): Promise<never> {
   return response.json().then((json: GenericObjectType) => {
     const title = validateValue(json.title, 'string', 'Error title')
-    const detail = validateValue(json.detail, 'string', 'Error detail')
+    const detail = json.detail ? validateValue(json.detail, 'string', 'Error detail') : null
     throw new OntopusProblemDetail(title, detail, response)
   })
 }

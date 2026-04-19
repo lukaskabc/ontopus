@@ -19,7 +19,7 @@
                                                                 <http://www.w3.org/ns/shacl> ,
                                                                 <http://w3id.org/widoco/vocab> ,
                                                                 <http://rdfs.org/sioc/ns> ,
-                                                                <http://www.w3.org/ns/hydra/core.jsonld> ,
+                                                                <http://www.w3.org/ns/hydra/core> ,
                                                                 <https://w3id.org/widoco/vocab/1.0.0> ,
                                                                 <http://www.w3.org/ns/dcat3> ;
                                                     <http://purl.org/dc/elements/1.1/creator> "Lukáš Kaňka" ;

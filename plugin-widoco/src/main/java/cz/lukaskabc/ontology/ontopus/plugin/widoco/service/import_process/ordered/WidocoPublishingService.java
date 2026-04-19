@@ -177,6 +177,10 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
                     .forEach(examples::add);
         }
 
+        final JsonNode properties = schema.get("properties");
+        Argument.FILES.forEach(
+                fileArg -> properties.get(fileArg.name()).asObject().set("examples", examples));
+
         if (previousFormData == null || previousFormData.get(Argument.LANG.name()) == null) {
             ArrayNode langArray = formData.putArray(Argument.LANG.name());
             argumentsFactory

@@ -299,6 +299,12 @@ ontopus-problem:form-submit rdf:type ontopus:ProblemDetail ;
                                               rdfs:label "Version URI construction error"@en ;
                                               rdfs:comment "Failed to construct version URI."@en .
 
+<http://ontology.lukaskabc.cz/application/ontopus/problem/form-submit/already-exists> rdf:type ontopus:ProblemDetail ;
+                                              rdfs:subClassOf ontopus-problem:form-submit ;
+                                              rdfs:subClassOf ontopus-problem:validation ;
+                                              rdfs:label "Already exists"@en ;
+                                              rdfs:comment "The resource already exists."@en .
+
 ontopus-problem:git rdf:type ontopus:ProblemDetail ;
                              rdfs:label "GIT error"@en ;
                              rdfs:comment "An error occurred during a GIT operation."@en .

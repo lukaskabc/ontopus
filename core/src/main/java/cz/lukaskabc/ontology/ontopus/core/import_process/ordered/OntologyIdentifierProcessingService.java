@@ -9,9 +9,12 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPip
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
 import cz.lukaskabc.ontology.ontopus.core.service.process.OntologyIdentifierSelector;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -30,21 +33,22 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
 
     private static final Logger log = LogManager.getLogger(OntologyIdentifierProcessingService.class);
 
-    private static void setOntologyIdentifier(URI identifier, ImportProcessContext context) {
-        context.getVersionSeries().setOntologyURI(new OntologyURI(identifier));
-    }
-
     private final GraphService graphService;
 
+    private final VersionSeriesService seriesService;
     private final List<OntologyIdentifierResolvingService> resolvers;
 
     private final ObjectMapper objectMapper;
 
     public OntologyIdentifierProcessingService(
-            List<OntologyIdentifierResolvingService> resolvers, ObjectMapper objectMapper, GraphService graphService) {
+            List<OntologyIdentifierResolvingService> resolvers,
+            ObjectMapper objectMapper,
+            GraphService graphService,
+            VersionSeriesService seriesService) {
         this.resolvers = resolvers;
         this.objectMapper = objectMapper;
         this.graphService = graphService;
+        this.seriesService = seriesService;
     }
 
     /**
@@ -105,7 +109,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
 
         ImportProcessingService<URI> selector = new ResultHandlingServiceWrapper<>(
                 new OntologyIdentifierSelector(objectMapper, graphService, identifiers, translationRoot),
-                OntologyIdentifierProcessingService::setOntologyIdentifier);
+                this::setOntologyIdentifier);
 
         if (context.peekService() != this) {
             throw log.throwing(InternalException.unexpectedServiceStackState());
@@ -117,5 +121,19 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
         }
 
         return null;
+    }
+
+    private void setOntologyIdentifier(URI identifier, ImportProcessContext context) {
+        final OntologyURI ontologyURI = new OntologyURI(identifier);
+        if (seriesService.isOntologyURI(ontologyURI)) {
+            throw JsonFormSubmitException.builder()
+                    .errorType(Vocabulary.u_i_already_exists)
+                    .internalMessage("Ontology URI already exists")
+                    .titleMessageCode("ontopus.core.error.ontologyExists")
+                    .detailMessageArguments(new Object[] {identifier})
+                    .detailMessageCode("ontopus.core.error.entityExists")
+                    .build();
+        }
+        context.getVersionSeries().setOntologyURI(ontologyURI);
     }
 }

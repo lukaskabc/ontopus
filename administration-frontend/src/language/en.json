@@ -29,6 +29,8 @@
     }
   },
   "publish": {
+    "new-ontology": "Publishing new ontology",
+    "existing-ontology": "Publishing new ontology version",
     "abort-dialog": {
       "title": "Are you sure?",
       "text": "Are you sure you want to abort and reset the process? All entered data will be lost."
@@ -54,7 +56,7 @@
     },
     "dataset": {
       "detail": {
-        "dcat-identifier": "Internal identifier",
+        "dcat-identifier": "Internal DCAT identifier",
         "title": "Title",
         "description": "Description",
         "release-date": "Release date",

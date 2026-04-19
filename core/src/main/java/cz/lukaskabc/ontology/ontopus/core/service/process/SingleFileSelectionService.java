@@ -80,7 +80,7 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
                     .internalMessage("Selected file does not exists")
                     .titleMessageCode("ontopus.core.error.missingFile")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .detailMessageCode("ontopus.core.error.noFileUploaded")
+                    .detailMessageCode("ontopus.core.error.selectedFileNotExists")
                     .build();
         }
         throw JsonFormSubmitException.missingValue("file");

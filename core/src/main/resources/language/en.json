@@ -7,6 +7,7 @@
       "invalidServiceIndex": "The submitted service index is invalid: {0}",
       "missingFile": "Missing file",
       "noFileUploaded": "No file was uploaded",
+      "selectedFileNotExists": "Selected file does not exists",
       "noUnprocessedService": "No service exists for processing form data",
       "importProcessNotInitialized": "Import process is not initialized",
       "failedToSubmitTask": "Failed to submit a new task",

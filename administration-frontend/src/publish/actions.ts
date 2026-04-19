@@ -73,6 +73,10 @@ export function loadJsonForm(): CancellablePromise<JsonForm> {
           .then(makeJsonForm)
           .then(resolve)
           .catch((error) => {
+            if (error instanceof PromiseCanceledError) {
+              reject(error)
+              return
+            }
             if (error instanceof UnexpectedResponseStatusError || error instanceof OntopusProblemDetail) {
               const res = error.payload
               switch (res.status) {

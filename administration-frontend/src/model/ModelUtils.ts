@@ -11,7 +11,7 @@ export function validateNullableValue<T>(value: T, expectedType: string, fieldNa
   if (value != null && typeof value !== expectedType) {
     throw new Error(`Missing or invalid field: '${fieldName}'. Expected ${expectedType}, got ${typeof value}.`)
   }
-  return value
+  return value ?? null
 }
 
 /**

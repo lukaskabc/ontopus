@@ -7,7 +7,7 @@ import {
   UnexpectedResponseStatusError,
 } from '@/utils/errors.ts'
 import i18n from '@/config/i18n.ts'
-import { validateValue } from '@/model/ModelUtils.ts'
+import { validateNullableValue, validateValue } from '@/model/ModelUtils.ts'
 import type { GenericObjectType } from '@rjsf/utils'
 
 export type RESTMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
@@ -83,9 +83,10 @@ export function makeCancellable<T>(
 
 export function problemDetail(response: Response): Promise<never> {
   return response.json().then((json: GenericObjectType) => {
-    const title = validateValue(json.title, 'string', 'Error title')
-    const detail = json.detail ? validateValue(json.detail, 'string', 'Error detail') : null
-    throw new OntopusProblemDetail(title, detail, response)
+    const title: string = validateValue(json.title, 'string', 'Error title')
+    const detail: string | null = validateNullableValue(json.detail, 'string', 'Error detail')
+    const type: string | null = validateNullableValue(json.type, 'string', 'Error type')
+    throw new OntopusProblemDetail(title, response, detail, type)
   })
 }
 

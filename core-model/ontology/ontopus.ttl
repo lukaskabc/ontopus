@@ -1,4 +1,4 @@
-@prefix : <http://ontology.lukaskabc.cz/application/ontopus#> .
+@prefix : <http://ontology.lukaskabc.cz/application/ontopus/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -8,8 +8,8 @@
 @prefix widoco: <https://w3id.org/widoco/vocab#> .
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
 @prefix ontopus-problem: <http://ontology.lukaskabc.cz/application/ontopus/problem/> .
-@prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus#> .
-@base <http://ontology.lukaskabc.cz/application/ontopus#> .
+@prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus/> .
+@base <http://ontology.lukaskabc.cz/application/ontopus/> .
 
 <http://ontology.lukaskabc.cz/application/ontopus> rdf:type owl:Ontology ;
                                                     owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0-dev> ;
@@ -19,12 +19,12 @@
                                                                 <http://www.w3.org/ns/shacl> ,
                                                                 <http://w3id.org/widoco/vocab> ,
                                                                 <http://rdfs.org/sioc/ns> ,
-                                                                <http://www.w3.org/ns/hydra/core> ,
+                                                                <http://www.w3.org/ns/hydra/core.jsonld> ,
                                                                 <https://w3id.org/widoco/vocab/1.0.0> ,
                                                                 <http://www.w3.org/ns/dcat3> ;
                                                     <http://purl.org/dc/elements/1.1/creator> "Lukáš Kaňka" ;
                                                     <http://purl.org/vocab/vann/preferredNamespacePrefix> "ontopus" ;
-                                                    <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus#" ;
+                                                    <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus/" ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
                                                     rdfs:label "OntoPuS" ;
                                                     owl:versionInfo "Development version 0.0.1"@en .
@@ -33,21 +33,21 @@
 #    Object Properties
 #################################################################
 
-###  http://ontology.lukaskabc.cz/application/ontopus#mappedBy
+###  http://ontology.lukaskabc.cz/application/ontopus/mappedBy
 ontopus:mappedBy rdf:type owl:ObjectProperty ;
                  rdfs:range ontopus:Controller ;
                  rdfs:comment "describes that the resource is mapped by the controller"@en ;
                  rdfs:label "is mapped by"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
+###  http://ontology.lukaskabc.cz/application/ontopus/ontologyIdentifier
 ontopus:ontologyIdentifier rdf:type owl:ObjectProperty ;
                            rdfs:domain ontopus:VersionSeries ;
                            rdfs:range rdfs:Resource ;
                            rdfs:comment "Identifier of the ontology published in the series"@en ;
                            rdfs:label "Ontology identifier"@en .
 
-###  http://ontology.lukaskabc.cz/application/ontopus#ontologyIdentifier
+###  http://ontology.lukaskabc.cz/application/ontopus/ontologyIdentifier
 ontopus:ontologyVersionIdentifier rdf:type owl:ObjectProperty ;
                            rdfs:domain ontopus:VersionArtifact ;
                            rdfs:range rdfs:Resource ;
@@ -55,7 +55,7 @@ ontopus:ontologyVersionIdentifier rdf:type owl:ObjectProperty ;
                            rdfs:label "Ontology version identifier"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#uriMappingType
+###  http://ontology.lukaskabc.cz/application/ontopus/uriMappingType
 ontopus:uriMappingType rdf:type owl:ObjectProperty ;
                        rdfs:domain ontopus:UriMapping ;
                        rdfs:range [ rdf:type owl:Class ;
@@ -67,7 +67,7 @@ ontopus:uriMappingType rdf:type owl:ObjectProperty ;
                        rdfs:label "URI Mapping Type"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#hasCondition
+###  http://ontology.lukaskabc.cz/application/ontopus/hasCondition
 ontopus:hasCondition rdf:type owl:ObjectProperty ;
                      rdfs:domain ontopus:WebhookEntry ;
                      rdfs:range ontopus:JsonPointerCondition ;
@@ -75,14 +75,14 @@ ontopus:hasCondition rdf:type owl:ObjectProperty ;
                      rdfs:label "Has condition"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#hasMapping
+###  http://ontology.lukaskabc.cz/application/ontopus/hasMapping
 ontopus:hasMapping rdf:type owl:ObjectProperty ;
                    rdfs:domain ontopus:WebhookEntry ;
                    rdfs:range ontopus:JsonMappingEntry ;
                    rdfs:comment "A mapping of a webhook entry."@en ;
                    rdfs:label "Has mapping"@en .
 
-###  http://ontology.lukaskabc.cz/application/ontopus#hasPrefixDeclaration
+###  http://ontology.lukaskabc.cz/application/ontopus/hasPrefixDeclaration
 ontopus:hasPrefixDeclaration rdf:type owl:ObjectProperty ;
                    rdfs:domain ontopus:VersionArtifact ;
                    rdfs:range sh:PrefixDeclaration ;
@@ -94,14 +94,14 @@ ontopus:hasPrefixDeclaration rdf:type owl:ObjectProperty ;
 #    Data properties
 #################################################################
 
-###  http://ontology.lukaskabc.cz/application/ontopus#javaClassName
+###  http://ontology.lukaskabc.cz/application/ontopus/javaClassName
 ontopus:javaClassName rdf:type owl:DatatypeProperty ;
                       rdfs:range xsd:string ;
                       rdfs:comment "The fully qualified name of the Java class"@en ;
                       rdfs:label "Java Class Name"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#password
+###  http://ontology.lukaskabc.cz/application/ontopus/password
 ontopus:password rdf:type owl:DatatypeProperty ;
                  rdfs:domain ontopus:UserAccount ;
                  rdfs:range xsd:string ;
@@ -109,21 +109,21 @@ ontopus:password rdf:type owl:DatatypeProperty ;
                  rdfs:label "Password"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#serializedImportContext
+###  http://ontology.lukaskabc.cz/application/ontopus/serializedImportContext
 ontopus:serializedImportContext rdf:type owl:DatatypeProperty ;
                                 rdfs:domain ontopus:VersionSeries ;
                                 rdfs:range xsd:string ;
                                 rdfs:comment "Serialized import process context in JSON string encoded with Base64"@en ;
                                 rdfs:label "Serialized import context"@en .
 
-###  http://ontology.lukaskabc.cz/application/ontopus#regexPattern
+###  http://ontology.lukaskabc.cz/application/ontopus/regexPattern
 ontopus:regexPattern rdf:type owl:DatatypeProperty ;
                      rdfs:range xsd:string ;
                      rdfs:comment "A regular expression pattern of a webhook condition or mapping."@en ;
                      rdfs:label "Regular expression pattern"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#secret
+###  http://ontology.lukaskabc.cz/application/ontopus/secret
 ontopus:secret rdf:type owl:DatatypeProperty ;
                      rdfs:range xsd:string ;
                      rdfs:comment "A secret text used for authentication of an application call."@en ;
@@ -133,13 +133,13 @@ ontopus:secret rdf:type owl:DatatypeProperty ;
 #    Classes
 #################################################################
 
-###  http://ontology.lukaskabc.cz/application/ontopus#Controller
+###  http://ontology.lukaskabc.cz/application/ontopus/Controller
 ontopus:Controller rdf:type owl:Class ;
                    rdfs:comment "Ontopus Controller class capable of retrieving a resource in a supported media type"@en ;
                    rdfs:label "Ontopus Controller" .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#OntopusCatalog
+###  http://ontology.lukaskabc.cz/application/ontopus/OntopusCatalog
 ontopus:OntopusCatalog rdf:type owl:Class ;
                        rdfs:subClassOf dcat:Catalog ,
                                        [ rdf:type owl:Restriction ;
@@ -150,33 +150,33 @@ ontopus:OntopusCatalog rdf:type owl:Class ;
                        rdfs:label "Ontology artifact catalog"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#TemporaryContext
+###  http://ontology.lukaskabc.cz/application/ontopus/TemporaryContext
 ontopus:TemporaryContext rdf:type owl:Class ;
                          rdfs:comment "Temporary GRAPH in a database"@en ;
                          rdfs:label "TemporaryContext"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#ContextToControllerMapping
+###  http://ontology.lukaskabc.cz/application/ontopus/ContextToControllerMapping
 ontopus:ContextToControllerMapping rdf:type owl:Class ;
                    rdfs:comment "Mapping of a context URI, identifying an ontology, to an Ontopus Controller producing the entity/document in a supported media type."@en ;
                    rdfs:label "URI Mapping"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#UserAccount
+###  http://ontology.lukaskabc.cz/application/ontopus/UserAccount
 ontopus:UserAccount rdf:type owl:Class ;
                     rdfs:subClassOf <http://rdfs.org/sioc/ns#UserAccount> ;
                     rdfs:comment "A User Account in the OntoPuS application"@en ;
                     rdfs:label "User Account"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#VersionArtifact
+###  http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact
 ontopus:VersionArtifact rdf:type owl:Class ;
                         rdfs:subClassOf dcat:Dataset ;
                         rdfs:comment "An ontology artifact containing a single ontology release (version)"@en ;
                         rdfs:label "Ontology artifact"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#VersionSeries
+###  http://ontology.lukaskabc.cz/application/ontopus/VersionSeries
 ontopus:VersionSeries rdf:type owl:Class ;
                       rdfs:subClassOf dcat:DatasetSeries ,
                                       [ rdf:type owl:Restriction ;
@@ -186,12 +186,12 @@ ontopus:VersionSeries rdf:type owl:Class ;
                       rdfs:comment "Dataset series of ontology artifacts representing different versions of a single ontology"@en ;
                       rdfs:label "Ontology version series"@en .
 
-###  http://ontology.lukaskabc.cz/application/ontopus#Webhook
+###  http://ontology.lukaskabc.cz/application/ontopus/Webhook
 ontopus:Webhook rdf:type owl:Class ;
                      rdfs:comment "A webhook configuration for a version series."@en ;
                      rdfs:label "Webhook"@en .
 
-###  http://ontology.lukaskabc.cz/application/ontopus#ProblemDetail
+###  http://ontology.lukaskabc.cz/application/ontopus/ProblemDetail
 ontopus:ProblemDetail rdf:type owl:Class ;
                       rdfs:subClassOf hydra:Error ;
                       rdfs:comment "A runtime error from OntoPuS, used to report information beyond the returned status code."@en ;
@@ -201,14 +201,14 @@ ontopus:ProblemDetail rdf:type owl:Class ;
 #    Individuals
 #################################################################
 
-###  http://ontology.lukaskabc.cz/application/ontopus#OntologyDocument
+###  http://ontology.lukaskabc.cz/application/ontopus/OntologyDocument
 ontopus:OntologyDocument rdf:type owl:NamedIndividual ,
                                   <http://xmlns.com/foaf/0.1/Document> ;
                          rdfs:comment "A document describing an ontology"@en ;
                          rdfs:label "Ontology Document"@en .
 
 
-###  http://ontology.lukaskabc.cz/application/ontopus#OntologyResource
+###  http://ontology.lukaskabc.cz/application/ontopus/OntologyResource
 ontopus:OntologyResource rdf:type owl:NamedIndividual ,
                                 rdfs:Resource ;
                        rdfs:comment "A thing that participates in an ontology"@en ;

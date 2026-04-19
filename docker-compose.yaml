@@ -18,6 +18,7 @@ services:
       ONTOPUS_SYSTEM_URI: "${ONTOPUS_SYSTEM_URI}"
       # Enable processing of forwarded headers (e.g. X-Forwarded-For) by TomCat
       SERVER_FORWARD_HEADERS_STRATEGY: "NATIVE"
+      ONTOPUS_PLUGIN_WIDOCO_EXECUTION_TIMEOUT: "5m"
     ports:
       - "8080:8080"
     read_only: true
@@ -27,7 +28,7 @@ services:
       - "/tmp:size=1g,mode=1777,noexec,nosuid,nodev"
   graphdb:
     image: "ontotext/graphdb:10.8.9"
-    container_name: "graphdb"
+    container_name: "ontopus_graphdb"
     hostname: "graphdb"
     domainname: "graphdb"
     ports:
@@ -41,6 +42,22 @@ services:
       timeout: 5s
       retries: 6
       start_period: 5s
+  nginx:
+    image: nginx:stable-alpine-slim
+    container_name: "ontopus_nginx"
+    hostname: "nginx"
+    domainname: "nginx"
+    read_only: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # configuration
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/includes:/etc/nginx/includes
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
 
 volumes:
   graphdb-data: null

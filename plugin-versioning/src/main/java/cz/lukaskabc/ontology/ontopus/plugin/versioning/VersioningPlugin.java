@@ -14,6 +14,11 @@ public class VersioningPlugin implements Plugin {
             URI.create("http://www.w3.org/ns/dcat#version"),
             URI.create("http://www.w3.org/2002/07/owl#versionInfo"));
     static final Set<URI> VERSION_IRI_EXAMPLES = Set.of(URI.create("http://www.w3.org/2002/07/owl#versionIRI"));
+    static final Set<URI> PREVIOUS_VERSION_EXAMPLE = Set.of(
+        URI.create("https://www.w3.org/2002/07/owl#priorVersion"),
+      URI.create("http://purl.org/dc/terms/replaces"),
+        URI.create("http://purl.org/pav/previousVersion")
+    );
 }
 
 // TODO: merge versioning plugin into the core? or rename required plugins to

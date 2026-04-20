@@ -5,11 +5,11 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyAnnotationInjectionService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.*;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
 import cz.lukaskabc.ontology.ontopus.plugin.versioning.service.PredicateService;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -26,6 +26,7 @@ import tools.jackson.databind.node.ObjectNode;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,12 +36,14 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
     private final ObjectMapper objectMapper;
     private final PredicateService predicateService;
     private final GraphService graphService;
+    private final VersionArtifactService versionArtifactService;
 
     public VersionAnnotationInjectionService(
-            ObjectMapper objectMapper, PredicateService predicateService, GraphService graphService) {
+        ObjectMapper objectMapper, PredicateService predicateService, GraphService graphService, VersionArtifactService versionArtifactService) {
         this.objectMapper = objectMapper;
         this.predicateService = predicateService;
         this.graphService = graphService;
+        this.versionArtifactService = versionArtifactService;
     }
 
     @Nullable private Statement findStatement(ReadOnlyImportProcessContext context, @Nullable ResourceURI predicate) {
@@ -66,7 +69,13 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                 .orElse(null);
         final boolean versionIriValueMatches = versionIriValueMatches(context, versionIri);
 
-        if (versionValueMatches && versionIriValueMatches) {
+        final String previousVersionValue = findPreviousVersion(context);
+        final Statement previousVersion = getPreviousVersionPredicate(context, previousFormData)
+            .map(predicate -> findStatement(context, predicate))
+            .orElse(null);
+        final boolean previousVersionValueMatches = previousVersionValueMatches(previousVersionValue, previousVersion);
+
+        if (versionValueMatches && versionIriValueMatches && previousVersionValueMatches) {
             return null;
         }
 
@@ -79,6 +88,9 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         }
         if (versionIri != null && !formData.has("versionIriPredicate")) {
             formData.put("versionIriPredicate", versionIri.getObject().stringValue());
+        }
+        if (previousVersion != null && formData.has("previousVersionPredicate")) {
+            formData.put("previousVersionPredicate", previousVersion.getObject().stringValue());
         }
 
         ObjectNode schema = objectMapper.createObjectNode().put("type", "object");
@@ -103,6 +115,13 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
             properties.putObject("versionIriPredicate").put("type", "string").set("examples", versionIriExamples);
         }
 
+        if (!previousVersionValueMatches) {
+            ArrayNode previousVersionExamples = objectMapper.createArrayNode();
+            VersioningPlugin.PREVIOUS_VERSION_EXAMPLE.stream()
+                .map(URI::toString).forEach(previousVersionExamples::add);
+            properties.putObject("previousVersionPredicate").put("type", "string").set("examples", previousVersionExamples);
+        }
+
         ObjectNode autocompleteOptions = objectMapper.createObjectNode();
         autocompleteOptions
                 .put("ui:widget", "autocompleteWidget")
@@ -112,7 +131,7 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                 .put("disableClearable", true)
                 .put("autoHighlight", true);
 
-        uiSchema.set("versionPredicate", autocompleteOptions).set("versionIriPredicate", autocompleteOptions);
+        uiSchema.set("versionPredicate", autocompleteOptions).set("versionIriPredicate", autocompleteOptions).set("previousVersionPredicate", autocompleteOptions);
         uiSchema.putObject("ui:globalOptions").put("enableMarkdownInDescription", true);
 
         return new JsonForm(schema, uiSchema, formData);
@@ -141,6 +160,15 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                         .filter(JsonNode::isString)
                         .map(JsonNode::stringValue)
                         .map(ResourceURI::new));
+    }
+
+    private Optional<ResourceURI> getPreviousVersionPredicate(ReadOnlyImportProcessContext context, @Nullable JsonNode formdata) {
+        return context.getAdditionalProperty(VersioningContextParameters.PREVIOUS_VERSION_IRI_PREDICATE, ResourceURI.class)
+            .or(() -> Optional.ofNullable(formdata)
+                .map(data -> data.get("previousVersionPredicate"))
+                .filter(JsonNode::isString)
+                .map(JsonNode::stringValue)
+                .map(ResourceURI::new));
     }
 
     private Optional<ResourceURI> getVersionPredicate(
@@ -178,6 +206,12 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                 .orElse(null);
         final boolean versionIriValueMatches = versionIriValueMatches(context, versionIri);
 
+        final String previousVersionValue = findPreviousVersion(context);
+        final Statement previousVersion = getPreviousVersionPredicate(context, formData)
+            .map(predicate -> findStatement(context, predicate))
+            .orElse(null);
+        final boolean previousVersionValueMatches = previousVersionValueMatches(previousVersionValue, previousVersion);
+
         Set<Statement> statements = new HashSet<>(2);
         Set<Statement> statementsToDelete = new HashSet<>(2);
         final SimpleValueFactory vf = SimpleValueFactory.getInstance();
@@ -210,8 +244,33 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
             statements.add(versionIriStatement);
         }
 
+
+
+        if (!previousVersionValueMatches && previousVersionValue != null) {
+            if (previousVersion != null) {
+                statementsToDelete.add(previousVersion);
+            }
+
+            final IRI previousPredicate = vf.createIRI(formResult.getStringValue("previousVersionPredicate"));
+            final IRI previousVersionIRI =
+                vf.createIRI(previousVersionValue);
+            final Statement previousVersionStatement =
+                SimpleValueFactory.getInstance().createStatement(ontologyIRI, previousPredicate, previousVersionIRI, contextIRI);
+            statements.add(previousVersionStatement);
+
+        }
+
         graphService.delete(statementsToDelete, context.getTemporaryDatabaseContext());
         return new LinkedHashModel(statements);
+    }
+
+    @Nullable
+    private String findPreviousVersion(ReadOnlyImportProcessContext context) {
+        final VersionArtifactURI latest = context.getVersionSeries().getLast();
+        if (latest == null) {
+            return null;
+        }
+        return versionArtifactService.findById(latest).map(VersionArtifact::getVersionUri).map(OntologyVersionURI::toString).orElse(null);
     }
 
     private boolean versionIriValueMatches(ReadOnlyImportProcessContext context, @Nullable Statement statement) {
@@ -228,5 +287,13 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                         .getObject()
                         .stringValue()
                         .equals(context.getVersionArtifact().getVersion());
+    }
+
+    private boolean previousVersionValueMatches(@Nullable String previousVersion, @Nullable Statement statement) {
+        return statement != null &&
+            previousVersion != null
+            && statement.getObject()
+            .stringValue()
+            .equals(previousVersion);
     }
 }

@@ -29,7 +29,7 @@
     },
     "NonVersioningService": {
       "name": "No versioning",
-      "description": "The ontology will have a constant version `\"latest\"` that will not change. The version IRI will match the ontology IRI."
+      "description": "The ontology will have a constant version `\"latest\"` that will not change with new releases. The version IRI will match the ontology IRI."
     }
   },
   "ontopus.plugin.versioning": {

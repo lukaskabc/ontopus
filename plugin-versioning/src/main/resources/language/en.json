@@ -24,11 +24,11 @@
       "fields.version.title": "Version"
     },
     "DateVersioningService": {
-      "name": "Date based version",
+      "title": "Date based version",
       "description": "Uses current date as the version (YYYY-MM-DD)."
     },
     "NonVersioningService": {
-      "name": "No versioning",
+      "title": "No versioning",
       "description": "The ontology will have a constant version `\"latest\"` that will not change with new releases. The version IRI will match the ontology IRI."
     }
   },

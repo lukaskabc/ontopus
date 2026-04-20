@@ -27,7 +27,7 @@ public class DateVersioningService implements OntologyVersioningService {
 
     @Override
     public String getServiceName() {
-        return "ontopus.core.service.OntologyVersioningService.DateVersioningService.name";
+        return "ontopus.core.service.OntologyVersioningService.DateVersioningService.title";
     }
 
     @Override

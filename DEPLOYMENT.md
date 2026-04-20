@@ -65,24 +65,29 @@ docker compose down
 docker compose up -d
 ```
 8. Check ontopus logs, a new admin user should be created
+```
+No user account found. Generated new account: admin, password: <password>
+Make sure to change the password after the first login!
+```
 9. Access the administration interface at the system URI (e.g. http://ontopus.lukaskabc.cz/admin) and log in with the created user
 
 ## Changing the user account password
 The password value uses bcrypt hash.
 The hash can be generated for example with [CyberChef](https://cyberchef.org/#recipe=Bcrypt(10)&input=YWJlY2VkYQ).
 ```sparql
-PREFIX onto: <http://ontology.lukaskabc.cz/application/ontopus/>
+PREFIX ontopus: <http://ontology.lukaskabc.cz/application/ontopus/>
+PREFIX ontopus_user: <http://ontology.lukaskabc.cz/application/ontopus/UserAccount/>
 DELETE {
-    onto:UserAccount_admin onto:password ?oldValue .
+    ontopus_user:admin ontopus:password ?oldValue .
 }
 INSERT {
-    GRAPH <http://ontology.lukaskabc.cz/application/ontopus/UserAccount> {
-        onto:UserAccount_admin onto:password "$2a$10$IHT7VOVBS0w6vHuz5OB/e.iBAqRnvwT8jJuDHfRfrukadXEn8Djlq" .
+    GRAPH ontopus:UserAccount {
+        ontopus_user:admin ontopus:password "<bcrypt_hash>" .
     }
 }
 WHERE {
-    GRAPH <http://ontology.lukaskabc.cz/application/ontopus/UserAccount>{
-        onto:UserAccount_admin onto:password ?oldValue .
+    GRAPH ontopus:UserAccount {
+        ontopus_user:admin ontopus:password ?oldValue .
     }
 }
 ```

@@ -31,7 +31,7 @@ public class UserUriGenerator extends AbstractIdentifierGenerator<UserURI, User>
     public UserURI generate(User entity) {
         ensureHasUsername(entity);
         int attempt = 0;
-        final String base = User_.entityClassIRI + "_" + StringUtils.sanitize(entity.getUsername());
+        final String base = User_.entityClassIRI + "/" + StringUtils.sanitize(entity.getUsername());
         while (attempt < MAX_GENERATION_ATTEMPTS) {
             URI generated = URI.create(base + (attempt > 0 ? attempt : ""));
 

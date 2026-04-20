@@ -23,7 +23,7 @@ public class VersionSeriesUriGenerator extends AbstractIdentifierGenerator<Versi
         String title = sanitizeString(entity.getTitle());
 
         int attempt = 0;
-        final String base = VersionSeries_.entityClassIRI + "_" + title;
+        final String base = VersionSeries_.entityClassIRI + "/" + title;
         while (attempt < MAX_GENERATION_ATTEMPTS) {
             URI generated = URI.create(base + (attempt > 0 ? attempt : ""));
 

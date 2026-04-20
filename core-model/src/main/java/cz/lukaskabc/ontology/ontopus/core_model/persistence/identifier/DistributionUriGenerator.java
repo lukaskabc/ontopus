@@ -24,7 +24,7 @@ public class DistributionUriGenerator extends AbstractIdentifierGenerator<Distri
         String format = StringUtils.sanitize(entity.getFormat());
 
         int attempt = 0;
-        final String base = OntologyDistribution_.entityClassIRI + "_" + title + "_" + format;
+        final String base = OntologyDistribution_.entityClassIRI + "/" + title + "/" + format;
         while (attempt < MAX_GENERATION_ATTEMPTS) {
             URI generated = URI.create(base + (attempt > 0 ? attempt : ""));
 

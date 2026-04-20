@@ -26,6 +26,10 @@
     "DateVersioningService": {
       "name": "Date based version",
       "description": "Uses current date as the version (YYYY-MM-DD)."
+    },
+    "NonVersioningService": {
+      "name": "No versioning",
+      "description": "The ontology will have a constant version `\"latest\"` that will not change. The version IRI will match the ontology IRI."
     }
   },
   "ontopus.plugin.versioning": {

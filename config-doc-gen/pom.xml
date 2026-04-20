@@ -14,7 +14,7 @@
     <!--
     This module generates the documentation for the project
     Execute with:
-        compile -pl config-doc-gen -am
+        compile -Pconfiguration-doc -pl config-doc-gen -am
     Dont mind the compilation failure, check the generated CONFIGURATION.md file in the root of the project
     -->
 
@@ -78,13 +78,14 @@
                                 <path>
                                     <groupId>cz.lukaskabc.cvut.processor</groupId>
                                     <artifactId>spring-boot-configuration-docgen-processor</artifactId>
-                                    <version>1.1</version>
+                                    <version>1.2-SNAPSHOT</version>
                                 </path>
                             </annotationProcessorPaths>
                             <compilerArgs combine.children="append">
                                 <arg>-Aconfigurationdoc.format=MD</arg>
                                 <arg>-Aconfigurationdoc.output_file=${project.basedir}/../CONFIGURATION.md</arg>
                                 <arg>-Aconfigurationdoc.prepend_required</arg>
+                                <arg>-Aconfigurationdoc.split_options_on_capital</arg>
                             </compilerArgs>
                         </configuration>
                         <executions>

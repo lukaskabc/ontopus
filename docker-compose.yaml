@@ -58,6 +58,9 @@ services:
     tmpfs:
       - /var/cache/nginx
       - /var/run
+    depends_on:
+        ontopus:
+          condition: "service_started"
 
 volumes:
   graphdb-data: null

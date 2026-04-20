@@ -36,8 +36,8 @@ SERVER_PORT=8080
 ```
 
 3. Edit the docker compose file
-- If you have already a GraphDB server, add external docker network to the compose and connect the ontopus container to it. Then configure the database URL in .evn file.
-  - If you dont have an existing GraphDB server, uncomment the ports in the compose file for GraphDB to access the configuration interface.
+- If you have already a GraphDB server, add external docker network to the compose and connect the ontopus container to it. Then configure the database URL in .env file.
+  - If you dont have an existing GraphDB server, uncomment the ports in the compose file for GraphDB to access the configuration interface later.
 - If you already have a reverse proxy server, you can remove the nginx container, you can check example configuration for Nginx in [docker/nginx](./docker/nginx) directory.
   - Usually you will want to configure system URI for HTTPs only and then all the domains of your ontologies for HTTP and HTTPs
 
@@ -69,7 +69,7 @@ docker compose up -d
 
 ## Changing the user account password
 The password value uses bcrypt hash.
-The hash can be generated e.g. with [CyberChef](https://cyberchef.org/#recipe=Bcrypt(10)&input=YWJlY2VkYQ).
+The hash can be generated for example with [CyberChef](https://cyberchef.org/#recipe=Bcrypt(10)&input=YWJlY2VkYQ).
 ```sparql
 PREFIX onto: <http://ontology.lukaskabc.cz/application/ontopus/>
 DELETE {

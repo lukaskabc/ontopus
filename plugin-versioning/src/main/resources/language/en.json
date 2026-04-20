@@ -19,8 +19,9 @@
       }
     },
     "GeneralVersioningService": {
-      "name": "User defined version",
-      "description": "Accepts user defined text as version."
+      "title": "User defined version",
+      "description": "Manually enter the version of the ontology. Note that this will prevent auto-releasing new versions, since the user input will be required.",
+      "fields.version.title": "Version"
     },
     "DateVersioningService": {
       "name": "Date based version",

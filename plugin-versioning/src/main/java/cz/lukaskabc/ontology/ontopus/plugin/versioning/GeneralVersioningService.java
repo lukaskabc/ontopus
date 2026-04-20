@@ -21,6 +21,8 @@ import java.util.stream.Stream;
 @Service
 public class GeneralVersioningService implements OntologyVersioningService {
     static final String VERSION_FIELD = "version";
+    private static final String TRANSLATION_ROOT =
+            "ontopus.core.service.OntologyVersioningService.GeneralVersioningService";
 
     private final ObjectMapper objectMapper;
 
@@ -35,13 +37,9 @@ public class GeneralVersioningService implements OntologyVersioningService {
 
         ObjectNode scheme = objectMapper.createObjectNode();
         scheme.put("type", "object");
+        scheme.put("$translationRoot", TRANSLATION_ROOT);
         ObjectNode properties = scheme.putObject("properties");
-        ObjectNode versionField = properties
-                .putObject(VERSION_FIELD)
-                .put("type", "string")
-                .put(
-                        "title",
-                        "ontopus.core.service.OntologyVersioningService.GeneralVersioningService.field.version.title");
+        ObjectNode versionField = properties.putObject(VERSION_FIELD).put("type", "string");
         ArrayNode examples = versionField.putArray("examples");
 
         Stream.of(lastVersion, resolvedVersion).filter(Objects::nonNull).forEach(examples::add);
@@ -59,7 +57,7 @@ public class GeneralVersioningService implements OntologyVersioningService {
 
     @Override
     public String getServiceName() {
-        return "ontopus.core.service.OntologyVersioningService.GeneralVersioningService.name";
+        return TRANSLATION_ROOT + ".title";
     }
 
     @Override

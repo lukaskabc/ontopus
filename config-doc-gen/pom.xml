@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>config-doc-gen</artifactId>
+    <packaging>pom</packaging>
+
+    <!--
+    This module generates the documentation for the project
+    Execute with:
+        compile -pl config-doc-gen -am
+    Dont mind the compilation failure, check the generated CONFIGURATION.md file in the root of the project
+    -->
+
+    <profiles>
+        <profile>
+            <!--
+            Configuration documentation
+            Required module to be listed in dependencies
+            and in source plugin
+            -->
+            <id>configuration-doc</id>
+            <dependencies>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+                    <artifactId>core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+                    <artifactId>model</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>widoco-plugin</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>git-plugin</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <sources>
+                                        <source>../core/src/main/java</source>
+                                        <source>../core-model/src/main/java</source>
+                                        <source>../plugin-widoco/src/main/java</source>
+                                        <source>../plugin-git/src/main/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <proc>only</proc>
+                            <failOnError>false</failOnError>
+                            <annotationProcessorPaths combine.children="append">
+                                <path>
+                                    <groupId>cz.lukaskabc.cvut.processor</groupId>
+                                    <artifactId>spring-boot-configuration-docgen-processor</artifactId>
+                                    <version>1.1</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <compilerArgs combine.children="append">
+                                <arg>-Aconfigurationdoc.format=MD</arg>
+                                <arg>-Aconfigurationdoc.output_file=${project.basedir}/../CONFIGURATION.md</arg>
+                                <arg>-Aconfigurationdoc.prepend_required</arg>
+                            </compilerArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>compile-with-doc-gen</id>
+                                <goals>
+                                    <goal>compile</goal>
+                                </goals>
+                                <phase>compile</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

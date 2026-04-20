@@ -14,11 +14,9 @@ services:
       graphdb:
         condition: "service_healthy"
     environment:
-      ONTOPUS_DATABASE_URL: "http://graphdb:7200/repositories/ontopus"
+      # passthrough variables from .env file
+      ONTOPUS_DATABASE_URL: "${ONTOPUS_DATABASE_URL}"
       ONTOPUS_SYSTEM_URI: "${ONTOPUS_SYSTEM_URI}"
-      # Enable processing of forwarded headers (e.g. X-Forwarded-For) by TomCat
-      SERVER_FORWARD_HEADERS_STRATEGY: "NATIVE"
-      ONTOPUS_PLUGIN_WIDOCO_EXECUTION_TIMEOUT: "5m"
 #    ports:
 #      - "8080:8080"
     read_only: true

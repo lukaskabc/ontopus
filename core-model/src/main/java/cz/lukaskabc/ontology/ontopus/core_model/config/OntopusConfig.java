@@ -18,8 +18,17 @@ import java.util.List;
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
+    /**
+     * The URI dedicated for the OntoPuS. Base paths are not supported. Usually you want to keep HTTP protocol and
+     * replace the domain with dedicated subdomain for the server. Example: {@code http://example.com}
+     */
     @NotNull private URI systemUri = URI.create("http://localhost");
 
+    /**
+     * Allowed origins for administration endpoints
+     *
+     * @configurationdoc.default the SYSTEM_URI value is used
+     */
     @NotEmpty private List<URI> administrationAllowedOrigins = List.of(systemUri);
 
     @Nullable private File frontendIndexFile;

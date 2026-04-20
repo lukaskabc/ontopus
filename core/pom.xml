@@ -225,32 +225,6 @@
                 </dependency>
             </dependencies>
         </profile>
-        <profile>
-            <id>configuration-doc</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <proc>only</proc>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>cz.lukaskabc.cvut.processor</groupId>
-                                    <artifactId>spring-boot-configuration-docgen-processor</artifactId>
-                                    <version>1.1</version>
-                                </path>
-                            </annotationProcessorPaths>
-                            <compilerArgs>
-                                <arg>-Aconfigurationdoc.output_file=${project.basedir}/springboot-configuration.md</arg>
-                            </compilerArgs>
-                            <source>${java.version}</source>
-                            <target>${java.version}</target>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
 </project>

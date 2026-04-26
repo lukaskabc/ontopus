@@ -25,6 +25,7 @@
                                                     <http://purl.org/dc/elements/1.1/creator> "Lukáš Kaňka" ;
                                                     <http://purl.org/vocab/vann/preferredNamespacePrefix> "ontopus" ;
                                                     <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus/" ;
+                                                    sh:suggestedShapesGraph <http://ontology.lukaskabc.cz/application/ontopus/shacl> ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
                                                     rdfs:label "OntoPuS" ;
                                                     owl:versionInfo "Development version 0.0.1"@en .
@@ -43,7 +44,7 @@ ontopus:mappedBy rdf:type owl:ObjectProperty ;
 ###  http://ontology.lukaskabc.cz/application/ontopus/ontologyIdentifier
 ontopus:ontologyIdentifier rdf:type owl:ObjectProperty ;
                            rdfs:domain ontopus:VersionSeries ;
-                           rdfs:range rdfs:Resource ;
+                           rdfs:range ontopus:VersionArtifact ;
                            rdfs:comment "Identifier of the ontology published in the series"@en ;
                            rdfs:label "Ontology identifier"@en .
 

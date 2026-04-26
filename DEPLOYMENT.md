@@ -57,6 +57,10 @@ Ruleset: No inference
 Disable owl:sameAs: true
 Enable context index: true
 ```
+- Enable SHACL validation with following named graphs
+```
+http://ontology.lukaskabc.cz/application/ontopus/shacl, http://www.w3.org/ns/shacl-shacl#
+```
 
 6. Edit the docker compose file to remove the exposed ports for GraphDB
 7. Restart the stack

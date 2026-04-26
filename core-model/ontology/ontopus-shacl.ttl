@@ -1,0 +1,79 @@
+@prefix ontopus-shacl: <http://ontology.lukaskabc.cz/application/ontopus/shacl/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix widoco: <https://w3id.org/widoco/vocab#> .
+@prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus/> .
+@prefix dash: <http://datashapes.org/dash> .
+
+<http://ontology.lukaskabc.cz/application/ontopus/shacl> rdfs:label "SHACL for Ontopus"@en ;
+              rdfs:comment "Shapes graph for the Ontopus model validation"@en ;
+              owl:imports <http://datashapes.org/dash> .
+
+ontopus-shacl:VersionSeries a owl:Class, sh:NodeShape ;
+    sh:targetClass ontopus:VersionSeries ;
+	sh:property [
+      	# exactly one ontology identifier
+		sh:path ontopus:ontologyIdentifier ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+	], [
+        # exactly one serialized context
+		sh:path ontopus:serializedImportContext ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+	], [
+        # exactly one last artifact
+		sh:path dcat:last ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+        sh:class ontopus:VersionArtifact
+	], [
+        # exactly one first artifact
+		sh:path ontopus:first ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+        sh:class ontopus:VersionArtifact
+	], [
+        # exactly one first artifact
+		sh:path ontopus:seriesMember ;
+        sh:class ontopus:VersionArtifact
+	] .
+
+ontopus-shacl:VersionArtifact a owl:Class, sh:NodeShape ;
+    sh:targetClass ontopus:VersionArtifact ;
+	sh:property [
+      	# exactly one ontology version identifier
+		sh:path ontopus:ontologyVersionIdentifier ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+	], [
+        # exactly one series
+		sh:path dcat:inSeries ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+        sh:class ontopus:VersionSeries ;
+	] .
+
+# ontology identifier must be unique
+ontopus-shacl:ontologyIdentifier sh:NodeShape ;
+	sh:targetObjectsOf ontopus:ontologyIdentifier ;
+    sh:property [
+        sh:path [ sh:inversePath ontopus:ontologyIdentifier ] ;
+        sh:maxCount 1 ;
+    ] .
+
+# ontology version identifier must be unique
+ontopus-shacl:ontologyVersionIdentifier sh:NodeShape ;
+	sh:targetObjectsOf ontopus:ontologyVersionIdentifier ;
+    sh:property [
+        sh:path [ sh:inversePath ontopus:ontologyVersionIdentifier ] ;
+        sh:maxCount 1 ;
+    ] .

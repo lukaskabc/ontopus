@@ -49,6 +49,14 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/ontology</directory>
+                <includes>
+                    <include>ontopus-shacl.ttl</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <!-- Generate entity classes from OWL integrity constraints -->

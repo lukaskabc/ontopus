@@ -34,7 +34,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private URI last;
 
     /** The oldest version of the ontology */
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first_A)
     private URI first;
 
     /** Set of {@link VersionArtifactURI} of individual ontology versions */

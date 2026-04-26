@@ -85,6 +85,9 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
+        if (existingArtifact == null) {
+            return null;
+        }
         final VersionArtifact newArtifact = context.getVersionArtifact();
         Objects.requireNonNull(existingArtifact);
         newArtifact.setIdentifier(existingArtifact.getIdentifier());

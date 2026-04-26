@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class VersionArtifactRepository
@@ -38,6 +39,11 @@ public class VersionArtifactRepository
         List<VersionArtifact> content = dao.find(seriesURI, pageable, filter);
         long totalCount = dao.count(seriesURI, filter);
         return new PageImpl<>(content, pageable, totalCount);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<VersionArtifact> findByVersionUri(OntologyVersionURI versionURI) {
+        return Optional.ofNullable(dao.findByVersionUri(versionURI));
     }
 
     @Transactional(readOnly = true)

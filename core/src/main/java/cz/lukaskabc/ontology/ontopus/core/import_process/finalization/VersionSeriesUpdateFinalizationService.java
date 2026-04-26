@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Service
 @Order(FinalizationServiceOrder.VERSION_SERIES_UPDATE)
@@ -48,23 +50,27 @@ public class VersionSeriesUpdateFinalizationService implements ImportFinalizingS
 
         final Instant timestamp = timeProvider.getInstant();
         if (series.getLast() != null) {
-            artifact.setPreviousVersion(series.getLast());
+            setIfMissing(artifact::setPreviousVersion, artifact::getPreviousVersion, series.getLast());
         }
-        artifact.setReleaseDate(timestamp);
-        artifact.setModifiedDate(timestamp);
+        setIfMissing(artifact::setReleaseDate, artifact::getReleaseDate, timestamp);
+        setIfMissing(artifact::setModifiedDate, artifact::getModifiedDate, timestamp);
         Objects.requireNonNull(series.getIdentifier(), "Version series identifier must not be null");
         artifact.setSeries(series.getIdentifier());
+
         Objects.requireNonNull(artifact.getIdentifier(), "Version artifact identifier must not be null");
         series.addMember(artifact.getIdentifier());
         series.setLast(artifact.getIdentifier());
-        if (series.getFirst() == null) {
-            series.setFirst(artifact.getIdentifier());
-        }
+
+        setIfMissing(series::setFirst, series::getFirst, artifact.getIdentifier());
         series.setModifiedDate(timestamp);
-        if (series.getReleaseDate() == null) {
-            series.setReleaseDate(timestamp);
-        }
+        setIfMissing(series::setReleaseDate, series::getReleaseDate, timestamp);
 
         series.setVersion(timeProvider.getCurrentDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
+    }
+
+    private <T> void setIfMissing(Consumer<T> setter, Supplier<T> getter, T value) {
+        if (getter.get() == null) {
+            setter.accept(value);
+        }
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 import java.util.Objects;
 
+/** Creates an identifier for the {@link VersionArtifact} by sanitizing the title and the version. */
 @Component
 public class VersionArtifactUriGenerator extends AbstractIdentifierGenerator<VersionArtifactURI, VersionArtifact> {
 

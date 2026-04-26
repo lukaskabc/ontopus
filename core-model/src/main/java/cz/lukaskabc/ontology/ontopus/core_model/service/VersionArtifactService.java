@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VersionArtifactService
@@ -22,6 +23,10 @@ public class VersionArtifactService
 
     public Page<VersionArtifact> find(VersionSeriesURI seriesURI, Pageable pageable, List<String> filter) {
         return repository.find(seriesURI, pageable, filter);
+    }
+
+    public Optional<VersionArtifact> findByVersionUri(OntologyVersionURI versionURI) {
+        return repository.findByVersionUri(versionURI);
     }
 
     public List<PrefixDeclaration> findPrefixDeclarations(OntologyVersionURI ontologyVersionURI) {

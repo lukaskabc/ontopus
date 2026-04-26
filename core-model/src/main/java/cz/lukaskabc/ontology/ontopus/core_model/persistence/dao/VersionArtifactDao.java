@@ -13,6 +13,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -43,6 +44,19 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
         return find(pageable, filter, (query, cb, root) -> {
             filterBySeries(query, cb, root, seriesURI);
         });
+    }
+
+    @Nullable public VersionArtifact findByVersionUri(OntologyVersionURI versionURI) {
+        try {
+            return resultOrNull(em.createQuery(
+                            "SELECT artifact FROM VersionArtifact artifact "
+                                    + "WHERE artifact.versionUri = :versionUri",
+                            VersionArtifact.class)
+                    .setParameter("versionUri", versionURI.toURI())::getSingleResult);
+        } catch (Exception e) {
+            throw AbstractDao.persistenceException(
+                    log, "Failed to find version artifact with ontology version URI " + versionURI, e);
+        }
     }
 
     public List<PrefixDeclaration> findPrefixDeclarations(OntologyVersionURI ontologyVersionURI) {

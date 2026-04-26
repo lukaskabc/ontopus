@@ -6,7 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationExceptio
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.service.CatalogService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.apache.logging.log4j.LogManager;
@@ -24,17 +24,17 @@ public class ImportFinalizationService {
     private final List<ImportFinalizingService> importFinalizingServices;
     private final VersionSeriesService versionSeriesService;
     private final VersionArtifactService versionArtifactService;
-    private final CatalogRepository catalogRepository;
+    private final CatalogService catalogService;
 
     public ImportFinalizationService(
             List<ImportFinalizingService> importFinalizingServices,
             VersionSeriesService versionSeriesService,
             VersionArtifactService versionArtifactService,
-            CatalogRepository catalogRepository) {
+            CatalogService catalogService) {
         this.importFinalizingServices = importFinalizingServices;
         this.versionSeriesService = versionSeriesService;
         this.versionArtifactService = versionArtifactService;
-        this.catalogRepository = catalogRepository;
+        this.catalogService = catalogService;
 
         if (importFinalizingServices.isEmpty()) {
             throw new InitializationException("No ImportFinalizingService implementations found.");
@@ -73,9 +73,9 @@ public class ImportFinalizationService {
     }
 
     private void updateCatalog(VersionSeries series) {
-        final OntopusCatalog catalog = catalogRepository.findRequired();
+        final OntopusCatalog catalog = catalogService.findRequired();
         Objects.requireNonNull(series.getIdentifier(), "Version series identifier must not be null");
         catalog.addVersionSeries(series.getIdentifier());
-        catalogRepository.update(catalog);
+        catalogService.update(catalog);
     }
 }

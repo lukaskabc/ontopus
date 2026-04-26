@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.import_process;
+package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
@@ -7,6 +7,8 @@ import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessing
 import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedException;
 import cz.lukaskabc.ontology.ontopus.core.factory.ImportProcessContextHolder;
+import cz.lukaskabc.ontology.ontopus.core.import_process.ErrorThrowingService;
+import cz.lukaskabc.ontology.ontopus.core.import_process.ImportFinalizationService;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
@@ -194,8 +196,8 @@ public class ImportProcessMediator {
      *
      * @param uri The identifier of existing version series
      */
-    public void initialize(@Nullable VersionSeriesURI uri) {
-        holder.resetSessionImportProcess(uri);
+    public void initialize(@Nullable VersionSeriesURI uri, boolean isNonInteractive) {
+        holder.resetSessionImportProcess(uri, isNonInteractive);
         Future<@Nullable Void> scheduled = holder.scheduleWithContext(this::processAutoServices);
         if (scheduled.isCancelled()) {
             throw log.throwing(InternalException.builder()

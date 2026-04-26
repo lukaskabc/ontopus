@@ -44,4 +44,12 @@ public class CatalogService {
         repository.persist(catalog);
         return catalog;
     }
+
+    public OntopusCatalog findRequired() {
+        return repository.findRequired();
+    }
+
+    public void update(OntopusCatalog catalog) {
+        repository.update(catalog);
+    }
 }

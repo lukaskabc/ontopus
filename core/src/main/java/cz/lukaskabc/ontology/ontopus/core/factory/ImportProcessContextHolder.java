@@ -103,14 +103,14 @@ public class ImportProcessContextHolder implements AutoCloseable {
         }
     }
 
-    private ImportProcessContext createNewContext(VersionSeries series) {
+    private ImportProcessContext createNewContext(VersionSeries series, boolean isNonInteractive) {
         final UUID uuid = UUID.randomUUID();
         final Path tempFolder = createTempFolder(uuid);
         final TemporaryContextURI databaseContext =
                 this.temporaryContextService.generate().getIdentifier();
         Objects.requireNonNull(databaseContext, "Generated context must have an identifier");
         final VersionArtifact artifact = new VersionArtifact();
-        return new ImportProcessContext(uuid, series, databaseContext, tempFolder, artifact);
+        return new ImportProcessContext(uuid, series, databaseContext, tempFolder, artifact, isNonInteractive);
     }
 
     private void createServiceStack(ImportProcessContext context) {
@@ -170,9 +170,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
     }
 
     /** Creates a new import process with context. */
-    private ImportProcessContext makeImportContext(@Nullable VersionSeriesURI uri) {
+    private ImportProcessContext makeImportContext(@Nullable VersionSeriesURI uri, boolean isNonInteractive) {
         final VersionSeries series = findByIdOrNew(uri);
-        final ImportProcessContext context = createNewContext(series);
+        final ImportProcessContext context = createNewContext(series, isNonInteractive);
         final SerializableImportProcessContext serialized = series.getSerializableImportProcessContext();
 
         createServiceStack(context);
@@ -185,12 +185,12 @@ public class ImportProcessContextHolder implements AutoCloseable {
         return context;
     }
 
-    public void resetSessionImportProcess(@Nullable VersionSeriesURI uri) {
+    public void resetSessionImportProcess(@Nullable VersionSeriesURI uri, boolean isNonInteractive) {
         lock.lock();
         try {
             log.trace("Resetting Session Import Process with version series URI {}", uri);
             this.close();
-            this.instance = makeImportContext(uri);
+            this.instance = makeImportContext(uri, isNonInteractive);
             this.future = CancelledFuture.getInstance();
         } finally {
             lock.unlock();

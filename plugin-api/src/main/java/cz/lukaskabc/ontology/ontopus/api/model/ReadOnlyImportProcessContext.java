@@ -39,4 +39,12 @@ public interface ReadOnlyImportProcessContext {
     VersionArtifact getVersionArtifact();
 
     VersionSeries getVersionSeries();
+
+    /**
+     * Whether the import process is being automatically invoked
+     *
+     * @return true if the process is NOT being invoked by a user with frontend interaction, false if user CAN interact
+     *     with the frontend.
+     */
+    boolean isNonInteractive();
 }

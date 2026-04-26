@@ -57,7 +57,7 @@ public class ImportController extends AbstractJsonController {
     @PostMapping("initialize")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void initialize(@Nullable @RequestParam(required = false, name = "series") VersionSeriesURI versionSeries) {
-        importService.initializeImport(versionSeries);
+        importService.initializeImport(versionSeries, false);
     }
 
     /**

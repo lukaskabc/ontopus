@@ -56,6 +56,8 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         return versionArtifactService
                 .findById(latest)
                 .map(VersionArtifact::getVersionUri)
+                .filter(previousVersionURI ->
+                        !previousVersionURI.equals(context.getVersionArtifact().getVersionUri()))
                 .map(OntologyVersionURI::toString)
                 .orElse(null);
     }

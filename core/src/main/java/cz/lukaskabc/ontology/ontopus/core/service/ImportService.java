@@ -3,7 +3,6 @@ package cz.lukaskabc.ontology.ontopus.core.service;
 import cz.lukaskabc.ontology.ontopus.api.model.FormJsonDataDto;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.service.core.ImportInitiationService;
-import cz.lukaskabc.ontology.ontopus.core.import_process.ImportProcessMediator;
 import cz.lukaskabc.ontology.ontopus.core.rest.request.FormFileRequest;
 import cz.lukaskabc.ontology.ontopus.core.util.RequestFileResolver;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
@@ -39,8 +38,8 @@ public class ImportService implements ImportInitiationService {
     }
 
     @Override
-    public void initializeImport(@Nullable VersionSeriesURI uri) {
-        mediator.initialize(uri);
+    public void initializeImport(@Nullable VersionSeriesURI uri, boolean isNonInteractive) {
+        mediator.initialize(uri, isNonInteractive);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class ImportService implements ImportInitiationService {
         if (context.getVersionSeriesURI() == null) {
             throw JsonFormSubmitException.missingValue("version series URI");
         }
-        initializeImport(context.getVersionSeriesURI());
+        initializeImport(context.getVersionSeriesURI(), true);
         return mediator.submitCombinedFormResult(context.getSerializableImportProcessContext());
     }
 

@@ -55,6 +55,8 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     @Nullable private Path ontologyFilePath;
 
+    private final boolean isNonInteractive;
+
     // TODO add import process context bootstraper API that will allow to subclass
     // the import process context
     // the hard part will be handling the serialization
@@ -71,6 +73,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.controllerMappings = new HashSet<>(other.getControllerMappings());
         this.additionalProperties = new HashMap<>(other.getAdditionalProperties());
         this.ontologyFilePath = other.getOntologyFilePath();
+        this.isNonInteractive = other.isNonInteractive();
     }
 
     public ImportProcessContext(
@@ -78,7 +81,8 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
             VersionSeries versionSeries,
             TemporaryContextURI temporaryDatabaseContext,
             Path tempFolder,
-            VersionArtifact versionArtifact) {
+            VersionArtifact versionArtifact,
+            boolean isNonInteractive) {
         this.uuid = uuid;
         this.versionSeries = Objects.requireNonNull(versionSeries);
         this.temporaryDatabaseContext = Objects.requireNonNull(temporaryDatabaseContext);
@@ -90,6 +94,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         this.processedResults = new ArrayList<>();
         this.controllerMappings = new HashSet<>();
         this.additionalProperties = new HashMap<>();
+        this.isNonInteractive = isNonInteractive;
     }
 
     public void addControllerMapping(ContextToControllerMapping mapping) {
@@ -244,6 +249,11 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
 
     public boolean hasUnprocessedService() {
         return !pendingServicesStack.isEmpty();
+    }
+
+    @Override
+    public boolean isNonInteractive() {
+        return isNonInteractive;
     }
 
     /**

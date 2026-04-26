@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 
 @Validated
 public interface ImportInitiationService {
-    void initializeImport(@Nullable VersionSeriesURI uri);
+    void initializeImport(@Nullable VersionSeriesURI uri, boolean isNonInteractive);
 
     Future<@Nullable Void> submitCombinedData(@Valid ImportProcessContextRequest context);
 

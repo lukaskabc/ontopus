@@ -21,20 +21,19 @@ public class VersionArtifactUriGenerator extends AbstractIdentifierGenerator<Ver
 
     @NonNull @Override
     public VersionArtifactURI generate(VersionArtifact entity) {
+        return generate(entity, true);
+    }
+
+    public VersionArtifactURI generate(VersionArtifact entity, boolean checkUnique) {
         Objects.requireNonNull(entity);
         String title = sanitizeString(entity.getTitle());
         String version = StringUtils.sanitize(entity.getVersion());
         String baseId = VersionArtifact_.entityClassIRI + "/" + title + "/" + version;
 
-        int attempt = 0;
-        while (attempt < MAX_GENERATION_ATTEMPTS) {
-            URI generated = URI.create(baseId + (attempt > 0 ? attempt : ""));
-
-            if (isUnique(generated)) {
-                return new VersionArtifactURI(generated);
-            }
-
-            attempt++;
+        // Not trying more attempts, the ID should be unique for the given version
+        URI generated = URI.create(baseId);
+        if (!checkUnique || isUnique(generated)) {
+            return new VersionArtifactURI(generated);
         }
 
         throw failedToGenerate(entity);

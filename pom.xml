@@ -42,7 +42,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rdf4j.version>5.2.2</rdf4j.version>
         <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
-        <spring.boot.version>4.0.5</spring.boot.version>
+        <spring.boot.version>4.0.6</spring.boot.version>
     </properties>
 
     <dependencyManagement>
@@ -129,11 +129,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>11.0.21</version>
-            </dependency>
+
             <!-- Database dependencies -->
             <dependency>
                 <groupId>cz.cvut.kbss.jopa</groupId>
@@ -160,13 +156,7 @@
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>3.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
-                <!-- fixes CVE from springdoc-openapi-starter-webmvc-ui 2.8.9 -->
+                <version>3.0.3</version>
             </dependency>
 
             <!-- RDF/XML export -->

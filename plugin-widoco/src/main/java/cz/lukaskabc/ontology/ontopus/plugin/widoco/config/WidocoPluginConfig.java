@@ -62,10 +62,10 @@ public class WidocoPluginConfig {
     }
 
     public void setFilesDirectory(Path filesDirectory) {
-        this.filesDirectory = filesDirectory;
+        this.filesDirectory = filesDirectory.toAbsolutePath();
     }
 
     public void setPath(Path path) {
-        this.path = path;
+        this.path = path.toAbsolutePath();
     }
 }

@@ -32,7 +32,7 @@
         <jackson.annotations.version>2.21</jackson.annotations.version>
         <jackson.version>3.1.2</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.9.3</jopa.version>
+        <jopa.version>2.9.4</jopa.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <nullaway.version>0.12.3</nullaway.version>
@@ -40,7 +40,7 @@
         <org.immutables.version>2.12.1</org.immutables.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <rdf4j.version>5.2.2</rdf4j.version>
+        <rdf4j.version>5.3.1</rdf4j.version>
         <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
         <spring.boot.version>4.0.6</spring.boot.version>
     </properties>

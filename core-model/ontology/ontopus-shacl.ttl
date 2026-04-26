@@ -14,7 +14,7 @@
               rdfs:comment "Shapes graph for the Ontopus model validation"@en ;
               owl:imports <http://datashapes.org/dash> .
 
-ontopus-shacl:VersionSeries a owl:Class, sh:NodeShape ;
+ontopus-shacl:VersionSeries a sh:NodeShape ;
     sh:targetClass ontopus:VersionSeries ;
 	sh:property [
       	# exactly one ontology identifier
@@ -46,7 +46,7 @@ ontopus-shacl:VersionSeries a owl:Class, sh:NodeShape ;
         sh:class ontopus:VersionArtifact
 	] .
 
-ontopus-shacl:VersionArtifact a owl:Class, sh:NodeShape ;
+ontopus-shacl:VersionArtifact a sh:NodeShape ;
     sh:targetClass ontopus:VersionArtifact ;
 	sh:property [
       	# exactly one ontology version identifier
@@ -63,7 +63,7 @@ ontopus-shacl:VersionArtifact a owl:Class, sh:NodeShape ;
 	] .
 
 # ontology identifier must be unique
-ontopus-shacl:ontologyIdentifier sh:NodeShape ;
+ontopus-shacl:ontologyIdentifier a sh:NodeShape ;
 	sh:targetObjectsOf ontopus:ontologyIdentifier ;
     sh:property [
         sh:path [ sh:inversePath ontopus:ontologyIdentifier ] ;
@@ -71,7 +71,7 @@ ontopus-shacl:ontologyIdentifier sh:NodeShape ;
     ] .
 
 # ontology version identifier must be unique
-ontopus-shacl:ontologyVersionIdentifier sh:NodeShape ;
+ontopus-shacl:ontologyVersionIdentifier a sh:NodeShape ;
 	sh:targetObjectsOf ontopus:ontologyVersionIdentifier ;
     sh:property [
         sh:path [ sh:inversePath ontopus:ontologyVersionIdentifier ] ;

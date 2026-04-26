@@ -25,25 +25,29 @@
         <module>config-doc-gen</module>
     </modules>
 
+    <!-- spotless:off -->
     <properties>
-        <archunit.junit5.version>1.4.1</archunit.junit5.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!-- OntoPuS properties -->
+        <ontopus.inherited.dependency.scope>provided</ontopus.inherited.dependency.scope>
+        <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
+
+        <!-- Dependency versions -->
+        <archunit.junit5.version>1.4.1</archunit.junit5.version>
         <error-prone.version>2.36.0</error-prone.version>
         <jackson.annotations.version>2.21</jackson.annotations.version>
         <jackson.version>3.1.2</jackson.version>
         <java.version>25</java.version>
         <jopa.version>2.9.4</jopa.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
         <nullaway.version>0.12.3</nullaway.version>
-        <ontopus.inherited.dependency.scope>provided</ontopus.inherited.dependency.scope>
         <org.immutables.version>2.12.1</org.immutables.version>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rdf4j.version>5.3.1</rdf4j.version>
-        <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
         <spring.boot.version>4.0.6</spring.boot.version>
     </properties>
+    <!-- spotless:on -->
 
     <dependencyManagement>
         <dependencies>
@@ -405,6 +409,7 @@
                         </importOrder>
                     </java>
                     <pom>
+                        <toggleOffOn/>
                         <includes>
                             <include>*/pom.xml</include>
                             <include>pom.xml</include>

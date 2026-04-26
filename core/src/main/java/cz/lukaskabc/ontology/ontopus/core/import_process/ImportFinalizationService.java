@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service.process;
+package cz.lukaskabc.ontology.ontopus.core.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.ImportFinalizingService;

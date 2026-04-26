@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service.finalization;
+package cz.lukaskabc.ontology.ontopus.core.import_process.finalization;
 
 public class FinalizationServiceOrder {
     private static final int SINGLE_STAGE = 10000000;

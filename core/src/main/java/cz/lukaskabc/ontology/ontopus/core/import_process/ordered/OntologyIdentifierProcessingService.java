@@ -7,7 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.service.OntologyIdentifierResolvingServ
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
-import cz.lukaskabc.ontology.ontopus.core.service.process.OntologyIdentifierSelector;
+import cz.lukaskabc.ontology.ontopus.core.import_process.OntologyIdentifierSelector;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;

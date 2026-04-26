@@ -2,7 +2,7 @@ package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyLoadingService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
-import cz.lukaskabc.ontology.ontopus.core.service.process.ImportProcessNextServiceSelector;
+import cz.lukaskabc.ontology.ontopus.core.import_process.ImportProcessNextServiceSelector;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;

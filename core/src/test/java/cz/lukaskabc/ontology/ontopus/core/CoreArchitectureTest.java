@@ -51,14 +51,16 @@ public class CoreArchitectureTest extends BaseArchitectureTest {
             // layer definition
             .layer("Rest").definedBy("..core.rest.controller..")
             .layer("Import process service").definedBy("..core.import_process..")
-            .layer("Service").definedBy("..ontopus.core.service..", "..core_model.service..")
+            .layer("Service").definedBy("..ontopus.core.service..")
+            .layer("Model Service").definedBy("..core_model.service..")
             .layer("Repository").definedBy("..persistence.repository..")
             .layer("Dao").definedBy("..persistence.dao..")
             // rules
             .whereLayer("Rest").mayNotBeAccessedByAnyLayer()
-            .whereLayer("Import process service").mayOnlyBeAccessedByLayers("Rest")
-            .whereLayer("Service").mayOnlyBeAccessedByLayers("Import process service", "Rest")
-            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
+            .whereLayer("Service").mayOnlyBeAccessedByLayers("Rest")
+            .whereLayer("Import process service").mayOnlyBeAccessedByLayers("Service")
+            .whereLayer("Model Service").mayOnlyBeAccessedByLayers("Service", "Import process service", "Rest")
+            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Model Service")
             .whereLayer("Dao").mayOnlyBeAccessedByLayers("Repository");
             // spotless:on
 

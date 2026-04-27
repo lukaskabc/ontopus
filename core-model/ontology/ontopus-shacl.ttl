@@ -7,58 +7,102 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix widoco: <https://w3id.org/widoco/vocab#> .
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus/> .
 
 <http://ontology.lukaskabc.cz/application/ontopus/shacl> rdfs:label "SHACL for Ontopus"@en ;
               rdfs:comment "Shapes graph for the Ontopus model validation"@en .
 
+[] a rsx:DataAndShapesGraphLink ;
+    rsx:shapesGraph rdf4j:SHACLShapeGraph;
+    # Graphs to union for validation
+    rsx:dataGraph ontopus:VersionSeries, ontopus:VersionArtifact .
+
+ontopus-shacl:OntopusCatalog
+    a sh:NodeShape ;
+    sh:targetNode ontopus:OntopusCatalog ;
+    sh:property [
+        sh:path [ sh:inversePath rdf:type ] ;
+        sh:maxCount 1 ;
+        sh:message "Only a single resource of type ontopus:OntopusCatalog can exist."@en ;
+    ] .
+
 ontopus-shacl:VersionSeries a sh:NodeShape ;
     sh:targetClass ontopus:VersionSeries ;
 	sh:property [
-      	# exactly one ontology identifier
 		sh:path ontopus:ontologyIdentifier ;
 		sh:minCount 1 ;
 		sh:maxCount 1 ;
         sh:nodeKind sh:IRI ;
+        sh:message "Version series must have exactly one ontology identifier."@en ;
 	], [
-        # exactly one serialized context
 		sh:path ontopus:serializedImportContext ;
 		sh:minCount 1 ;
 		sh:maxCount 1 ;
         sh:datatype xsd:string ;
+        sh:message "Version series must have exactly one serialized import context."@en ;
 	], [
-        # exactly one last artifact
 		sh:path dcat:last ;
 		sh:minCount 1 ;
 		sh:maxCount 1 ;
-        sh:class ontopus:VersionArtifact
+        sh:class ontopus:VersionArtifact ;
+        sh:message "Version series must have exactly one last version artifact."@en ;
 	], [
-        # exactly one first artifact
-		sh:path ontopus:first ;
+		sh:path dcat:first ;
 		sh:minCount 1 ;
 		sh:maxCount 1 ;
-        sh:class ontopus:VersionArtifact
+        sh:class ontopus:VersionArtifact ;
+        sh:message "Version series must have exactly one first version artifact."@en ;
 	], [
-        # exactly one first artifact
-		sh:path ontopus:seriesMember ;
-        sh:class ontopus:VersionArtifact
-	] .
+		sh:path dcat:seriesMember ;
+        sh:class ontopus:VersionArtifact ;
+        sh:message "Version series members must be VersionArtifacts"@en ;
+    ] .
 
 ontopus-shacl:VersionArtifact a sh:NodeShape ;
     sh:targetClass ontopus:VersionArtifact ;
 	sh:property [
-      	# exactly one ontology version identifier
 		sh:path ontopus:ontologyVersionIdentifier ;
 		sh:minCount 1 ;
 		sh:maxCount 1 ;
         sh:nodeKind sh:IRI ;
+        sh:message "Version artifacts must have exactly one ontology version identifier."@en ;
 	], [
-        # exactly one series
 		sh:path dcat:inSeries ;
 		sh:minCount 1 ;
 		sh:maxCount 1 ;
         sh:class ontopus:VersionSeries ;
-	] .
+        sh:message "Version artifacts must be in exactly one version series."@en ;
+	], [
+		sh:path dcat:previousVersion ;
+        sh:class ontopus:VersionArtifact ;
+        sh:message "Previous version of a version artifact must be another version artifact."@en ;
+    ] .
+
+
+ontopus-shacl:DcatResource a sh:NodeShape ;
+    sh:targetClass dcat:Resource ;
+	sh:property [
+        sh:path dcterms:title ;
+        sh:minCount 1 ;
+        sh:or (
+            [ sh:datatype xsd:string ]
+            [ sh:datatype rdf:langString ]
+        ) ;
+        sh:message "Must have a title."@en ;
+    ], [
+        sh:path dcterms:issued ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "Must have exactly one issued date."@en ;
+    ], [
+        sh:path dcterms:modified ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "Must have exactly one issued date."@en ;
+    ] .
 
 # ontology identifier must be unique
 ontopus-shacl:ontologyIdentifier a sh:NodeShape ;

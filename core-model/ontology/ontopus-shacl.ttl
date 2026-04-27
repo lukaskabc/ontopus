@@ -8,11 +8,9 @@
 @prefix widoco: <https://w3id.org/widoco/vocab#> .
 @prefix hydra: <http://www.w3.org/ns/hydra/core#> .
 @prefix ontopus: <http://ontology.lukaskabc.cz/application/ontopus/> .
-@prefix dash: <http://datashapes.org/dash> .
 
 <http://ontology.lukaskabc.cz/application/ontopus/shacl> rdfs:label "SHACL for Ontopus"@en ;
-              rdfs:comment "Shapes graph for the Ontopus model validation"@en ;
-              owl:imports <http://datashapes.org/dash> .
+              rdfs:comment "Shapes graph for the Ontopus model validation"@en .
 
 ontopus-shacl:VersionSeries a sh:NodeShape ;
     sh:targetClass ontopus:VersionSeries ;

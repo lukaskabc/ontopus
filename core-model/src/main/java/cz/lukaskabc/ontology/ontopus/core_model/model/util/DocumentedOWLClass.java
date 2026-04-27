@@ -5,12 +5,10 @@ import java.lang.annotation.*;
 /**
  * Specifies that the class is an entity class and maps to an ontological class (RDFS or OWL).
  *
- * <p>The annotation has no effect and serves only documentation purpose.
- *
  * @see cz.cvut.kbss.jopa.model.annotations.OWLClass
  */
 @Documented
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DocumentedOWLClass {
     /**

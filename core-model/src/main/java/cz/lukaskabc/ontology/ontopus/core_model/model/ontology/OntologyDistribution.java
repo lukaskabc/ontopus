@@ -2,14 +2,17 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
+import cz.cvut.kbss.jopa.model.annotations.Types;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Distribution;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.MappedClassTypesResolver;
 import org.springframework.util.MimeType;
 
 import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Set;
 
 /**
  * A specific representation of an {@link VersionArtifact}. An artifact might be available in multiple serializations
@@ -18,6 +21,10 @@ import java.time.Instant;
  */
 @OWLClass(iri = Vocabulary.s_c_dcat_Distribution)
 public class OntologyDistribution extends Distribution<DistributionURI> {
+    public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(OntologyDistribution.class);
+
+    @Types
+    private Set<URI> types = TYPES;
 
     public OntologyDistribution() {
         super();
@@ -47,6 +54,10 @@ public class OntologyDistribution extends Distribution<DistributionURI> {
                 format,
                 compressFormat,
                 packageFormat);
+    }
+
+    public Set<URI> getTypes() {
+        return types;
     }
 
     @Override

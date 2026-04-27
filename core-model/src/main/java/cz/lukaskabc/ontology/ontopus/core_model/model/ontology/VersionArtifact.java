@@ -1,15 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
-import cz.cvut.kbss.jopa.model.annotations.CascadeType;
-import cz.cvut.kbss.jopa.model.annotations.FetchType;
-import cz.cvut.kbss.jopa.model.annotations.OWLClass;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
+import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Dataset;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.MappedClassTypesResolver;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -19,6 +17,11 @@ import java.util.stream.Collectors;
 /** An ontology artifact containing a single ontology version release */
 @OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
+    public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionArtifact.class);
+
+    @Types
+    private Set<URI> types = TYPES;
+
     @OWLObjectProperty(iri = Vocabulary.s_p_ontologyVersionIdentifier)
     private URI versionUri;
 
@@ -48,6 +51,10 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
 
     public VersionSeriesURI getSeries() {
         return new VersionSeriesURI(getSeriesURI());
+    }
+
+    public Set<URI> getTypes() {
+        return types;
     }
 
     public OntologyVersionURI getVersionUri() {

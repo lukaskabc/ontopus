@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class ResourceInContextMappingDao {
     private static final Logger log = LogManager.getLogger(ResourceInContextMappingDao.class);
     static final URI CONTEXT =
-            URI.create("http://ontology.lukaskabc.cz/application/ontopus#ResourceInContextMappingGraph");
+            URI.create("http://ontology.lukaskabc.cz/application/ontopus/ResourceInContextMappingGraph");
     protected final EntityManager em;
 
     public ResourceInContextMappingDao(EntityManager em) {

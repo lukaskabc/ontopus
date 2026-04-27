@@ -1,15 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
-import cz.cvut.kbss.jopa.model.annotations.FetchType;
-import cz.cvut.kbss.jopa.model.annotations.OWLClass;
-import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
+import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.DatasetSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.MappedClassTypesResolver;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 
 import jakarta.validation.Valid;
@@ -21,10 +19,14 @@ import java.util.stream.Collectors;
 
 @OWLClass(iri = Vocabulary.s_c_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
+    public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionSeries.class);
+
+    @Types
+    private Set<URI> types = TYPES;
+
     /** Serialized import context of the last successful publishing process */
     @Valid @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
-
     /** The ontology version independent identifier */
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
     private URI ontologyURI;
@@ -89,6 +91,10 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     public SerializableImportProcessContext getSerializableImportProcessContext() {
         return serializableImportProcessContext;
+    }
+
+    public Set<URI> getTypes() {
+        return types;
     }
 
     @Override

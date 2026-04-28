@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1.20
 
-ARG ONTOPUS_SYSTEM_URI_DEFAULT=http://localhost:8080/
 ARG ONTOPUS_PERSISTENT_DATA_DIR=/data
 ARG ONTOPUS_VERSION=1.0.0-dev
 
@@ -12,9 +11,6 @@ RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
 COPY administration-frontend .
-
-ARG ONTOPUS_SYSTEM_URI_DEFAULT
-ENV VITE_ONTOPUS_URL=${ONTOPUS_SYSTEM_URI_DEFAULT}
 
 RUN --mount=type=cache,target=/root/.npm \
     npm run build -- --base=/admin/
@@ -51,8 +47,7 @@ WORKDIR /data
 WORKDIR /ontopus
 RUN mkdir plugins
 
-ARG ONTOPUS_SYSTEM_URI_DEFAULT
-ENV ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI_DEFAULT}
+ENV ONTOPUS_SYSTEM_URI=http://localhost
 ENV ONTOPUS_DATABASE_URL=http://graphdb:7200/repositories/ontopus
 ENV SERVER_FORWARD_HEADERS_STRATEGY=NATIVE
 ENV SERVER_PORT=8080

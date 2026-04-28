@@ -14,7 +14,7 @@ export function withoutTrailingSlash(url: string) {
 
 const Constants = {
   BASE_URL: withoutTrailingSlash(import.meta.env.BASE_URL),
-  BACKEND_URL: withTrailingSlash(import.meta.env.VITE_ONTOPUS_URL),
+  BACKEND_URL: withTrailingSlash(import.meta.env.VITE_ONTOPUS_URL || window.location.origin),
 }
 
 export const PUBLISH_STEPPER_ROUTE = '/publish/:versionSeriesIdentifier?'

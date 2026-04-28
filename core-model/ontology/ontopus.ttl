@@ -30,6 +30,14 @@
                                                     rdfs:label "OntoPuS" ;
                                                     owl:versionInfo "Development version 0.0.1"@en .
 
+hydra:Error a hydra:Class ;
+    rdfs:label "Error" ;
+    rdfs:comment "A runtime error, used to report information beyond the returned status code." ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/hydra/core> .
+
+hydra:Class a rdfs:Class ;
+    rdfs:isDefinedBy <http://www.w3.org/ns/hydra/core> .
+
 #################################################################
 #    Object Properties
 #################################################################

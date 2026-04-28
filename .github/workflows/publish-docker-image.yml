@@ -56,7 +56,8 @@ jobs:
           push: ${{ github.ref_type == 'tag' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
+          build-args: |
+            ONTOPUS_VERSION=${{ steps.meta.outputs.version }}
       # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built.
       - name: Generate artifact attestation
         uses: actions/attest@v4

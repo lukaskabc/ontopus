@@ -57,9 +57,14 @@ RUN mkdir plugins
 
 ARG ONTOPUS_SYSTEM_URI_DEFAULT
 ENV ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI_DEFAULT}
+ENV ONTOPUS_DATABASE_URL=http://graphdb:7200/repositories/ontopus
+ENV SERVER_FORWARD_HEADERS_STRATEGY=NATIVE
+ENV SERVER_PORT=8080
 
 # Change ~/.config to /tmp/xdg_config
 ENV XDG_CONFIG_HOME=/tmp/xdg_config
+
+EXPOSE ${SERVER_PORT}/tcp
 
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/

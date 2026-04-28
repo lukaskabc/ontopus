@@ -36,7 +36,7 @@ import javax.crypto.spec.SecretKeySpec;
 @RestController
 @RequestMapping(GithubWebhookController.PATH)
 public class GithubWebhookController {
-    public static final String PATH = "/plugin/git/webhook/github";
+    public static final String PATH = "/public/plugin/git/webhook/github";
     private static final int MAX_GH_PAYLOAD = 1; // payloads are capped at 25 MB, allowing 1 MB at most, only small
     // events should be sent
     private static final int REQUEST_BODY_CACHE_LIMIT = MAX_GH_PAYLOAD * 1024 * 1024; // bytes
@@ -137,7 +137,10 @@ public class GithubWebhookController {
         final GithubEvent type = getEventType(httpRequest);
         if (type == null) {
             log.debug("Received GitHub webhook request with missing or invalid X-GitHub-Event header, ignoring");
-            return;
+            throw ValidationException.builder()
+                    .internalMessage("No github event type specified")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
         }
 
         final GithubWebhook webhook = service.findByVersionSeries(series)

@@ -75,4 +75,17 @@ WHERE {
 }
 ```
 
+To add a new user:
+(update the identifier, username and password hash)
+`<http://ontology.lukaskabc.cz/application/ontopus/UserAccount/USERNAME>`
+```sparql
+INSERT DATA {
+  GRAPH <http://ontology.lukaskabc.cz/application/ontopus/UserAccount> {
+    <http://ontology.lukaskabc.cz/application/ontopus/UserAccount/USERNAME> a <http://ontology.lukaskabc.cz/application/ontopus/UserAccount> ;
+      <http://ontology.lukaskabc.cz/application/ontopus/password> "<brypt_hash>" ;
+      <http://rdfs.org/sioc/ns#name> "<USERNAME>" .
+  }
+}
+```
+
 This is a temporary solution until user management is properly implemented.

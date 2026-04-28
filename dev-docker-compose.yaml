@@ -1,0 +1,65 @@
+name: "OntoPuS"
+services:
+  ontopus:
+    build:
+      context: "."
+      dockerfile: "./Dockerfile"
+      target: "ontopus"
+      args:
+        - "ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI}"
+    container_name: "ontopus"
+    hostname: "ontopus"
+    domainname: "ontopus"
+    depends_on:
+      graphdb:
+        condition: "service_healthy"
+    environment:
+      # passthrough variables from .env file
+      ONTOPUS_DATABASE_URL: "${ONTOPUS_DATABASE_URL}"
+      ONTOPUS_SYSTEM_URI: "${ONTOPUS_SYSTEM_URI}"
+    #    ports:
+    #      - "8080:8080"
+    read_only: true
+    volumes:
+      - "ontopus-data:/data:rw"
+    tmpfs:
+      - "/tmp:size=1g,mode=1777,noexec,nosuid,nodev"
+  graphdb:
+    image: "ontotext/graphdb:10.8.9"
+    container_name: "ontopus_graphdb"
+    hostname: "graphdb"
+    domainname: "graphdb"
+    #    ports:
+    #      - "7200:7200"
+    volumes:
+      - "graphdb-data:/opt/graphdb/home"
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:7200/rest/monitor/structures"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+  nginx:
+    image: nginx:stable-alpine-slim
+    container_name: "ontopus_nginx"
+    hostname: "nginx"
+    domainname: "nginx"
+    read_only: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # configuration
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/includes:/etc/nginx/includes
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    depends_on:
+      ontopus:
+        condition: "service_started"
+
+volumes:
+  graphdb-data: null
+  ontopus-data: null

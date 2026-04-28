@@ -45,6 +45,10 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+          labels: |
+            org.opencontainers.image.source="https://github.com/lukaskabc/ontopus"
+            org.opencontainers.image.description="OntoPuS: Ontology Publication Server"
+            org.opencontainers.image.licenses="Apache-2.0"
 
       - name: Build and push Docker image
         id: push

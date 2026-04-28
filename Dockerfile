@@ -4,10 +4,6 @@ ARG ONTOPUS_SYSTEM_URI_DEFAULT=http://localhost:8080/
 ARG ONTOPUS_PERSISTENT_DATA_DIR=/data
 ARG ONTOPUS_VERSION=1.0.0-dev
 
-LABEL org.opencontainers.image.source="https://github.com/lukaskabc/ontopus"
-LABEL org.opencontainers.image.description="OntoPuS: Ontology Publication Server"
-LABEL org.opencontainers.image.licenses="Apache-2.0"
-
 FROM node:25-alpine AS frontend
 
 WORKDIR /administration-frontend

@@ -19,6 +19,11 @@ jobs:
       attestations: write
       id-token: write
 
+    strategy:
+      # will run the job 3 times, once for each target image.
+      matrix:
+        target: [ontopus-base, ontopus-base-fe, ontopus]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -36,10 +41,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf
         with:
-          images: |
-            ${{ env.REGISTRY }}/${{ IMAGE_NAME }}/ontopus-base
-            ${{ env.REGISTRY }}/${{ IMAGE_NAME }}/ontopus-base-fe
-            ${{ env.REGISTRY }}/${{ IMAGE_NAME }}/ontopus
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.target }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -49,6 +51,8 @@ jobs:
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f
         with:
           context: .
+          # Instructs Docker to stop building at this specific stage
+          target: ${{ matrix.target }}
           push: ${{ github.ref_type == 'tag' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -57,7 +61,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest@v4
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.target }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: ${{ github.ref_type == 'tag' }}
 

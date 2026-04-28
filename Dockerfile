@@ -1,8 +1,12 @@
 # syntax=docker/dockerfile:1.20
 
-ARG ONTOPUS_SYSTEM_URI=http://localhost:8080/
+ARG ONTOPUS_SYSTEM_URI_DEFAULT=http://localhost:8080/
 ARG ONTOPUS_PERSISTENT_DATA_DIR=/data
 ARG ONTOPUS_VERSION=1.0.0-dev
+
+LABEL org.opencontainers.image.source="https://github.com/lukaskabc/ontopus"
+LABEL org.opencontainers.image.description="OntoPuS: Ontology Publication Server"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 FROM node:25-alpine AS frontend
 
@@ -13,8 +17,8 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY administration-frontend .
 
-ARG ONTOPUS_SYSTEM_URI
-ENV VITE_ONTOPUS_URL=${ONTOPUS_SYSTEM_URI}
+ARG ONTOPUS_SYSTEM_URI_DEFAULT
+ENV VITE_ONTOPUS_URL=${ONTOPUS_SYSTEM_URI_DEFAULT}
 
 RUN --mount=type=cache,target=/root/.npm \
     npm run build -- --base=/admin/
@@ -51,8 +55,8 @@ WORKDIR /data
 WORKDIR /ontopus
 RUN mkdir plugins
 
-ARG ONTOPUS_SYSTEM_URI
-ENV ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI}
+ARG ONTOPUS_SYSTEM_URI_DEFAULT
+ENV ONTOPUS_SYSTEM_URI=${ONTOPUS_SYSTEM_URI_DEFAULT}
 
 # Change ~/.config to /tmp/xdg_config
 ENV XDG_CONFIG_HOME=/tmp/xdg_config
@@ -63,7 +67,7 @@ COPY --from=backend /build/plugin-api/target/*.jar /ontopus/plugins/
 
 ENTRYPOINT ["java", "-jar", "./core.jar"]
 
-FROM ontopus-base as ontopus-fe-base
+FROM ontopus-base as ontopus-base-fe
 # OntoPuS Core, Core model, plugin API and frontend, with no additional plugins
 USER ontopus:ontopus
 WORKDIR /ontopus
@@ -71,7 +75,7 @@ WORKDIR /ontopus
 ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
 COPY --from=frontend /administration-frontend/dist /ontopus/admin
 
-FROM ontopus-fe-base as ontopus-full
+FROM ontopus-base-fe as ontopus
 # OntoPuS Core, Core model, plugin API, frontend and all plugins
 USER ontopus:ontopus
 WORKDIR /ontopus

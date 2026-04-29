@@ -81,10 +81,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain ontopusDefaultSecurityFilterChain(HttpSecurity http) {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(List.of("*")); // Allow all origins
+        corsConfig.setAllowedMethods(List.of("GET", "HEAD", "OPTIONS"));
+        corsConfig.setAllowedHeaders(List.of("*"));
+
         http.csrf(AbstractHttpConfigurer::disable) // disable csrf
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> corsConfig))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());

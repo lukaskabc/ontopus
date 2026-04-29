@@ -8,11 +8,14 @@ import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubRefEventBase;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +33,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -124,9 +127,21 @@ public class GithubWebhookController {
         this.service = service;
     }
 
+    @Operation(
+            summary = "Handles webhook payloads from GitHub",
+            responses = {
+                @ApiResponse(
+                        responseCode = "202",
+                        description = "The payload was accepted and a new import process was scheduled."),
+                @ApiResponse(
+                        responseCode = "204",
+                        description =
+                                "The payload was successfully validated, but it did not match the required criteria."),
+                @ApiResponse(responseCode = "403", description = "The validation of payload signature failed.")
+            })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public void handleEvent(@RequestParam("series") VersionSeriesURI series, HttpServletRequest httpRequest)
-            throws Exception {
+    public ResponseEntity<Void> handleEvent(
+            @RequestParam("series") VersionSeriesURI series, HttpServletRequest httpRequest) throws Exception {
         if (httpRequest.getContentLength() > REQUEST_BODY_CACHE_LIMIT || httpRequest.getContentLength() < 0) {
             throw ValidationExceptionBuilderStages.start()
                     .statusCode(HttpStatus.BAD_REQUEST)
@@ -163,15 +178,18 @@ public class GithubWebhookController {
 
         validateRequest(httpRequest, webhook, bodyBuffer);
 
-        switch (type) {
+        return switch (type) {
             case CREATE -> handleGHEvent(bodyBuffer, webhook, GithubCreateEvent.class, webhookHandler::handleGHEvent);
             case PUSH -> handleGHEvent(bodyBuffer, webhook, GithubPushEvent.class, webhookHandler::handleGHEvent);
             default -> throw ValidationException.fromValidationError("Unsupported GitHub event type: " + type);
-        }
+        };
     }
 
-    private <T extends GithubRefEventBase> void handleGHEvent(
-            ByteBuffer bodyBuffer, GithubWebhook webhook, Class<T> payloadClass, BiConsumer<GithubWebhook, T> handler) {
+    private <T extends GithubRefEventBase> ResponseEntity<Void> handleGHEvent(
+            ByteBuffer bodyBuffer,
+            GithubWebhook webhook,
+            Class<T> payloadClass,
+            BiFunction<GithubWebhook, T, ResponseEntity<Void>> handler) {
         log.debug(
                 "Received GitHub webhook event {} for version series {}",
                 webhook.getEvent().name(),
@@ -182,7 +200,7 @@ public class GithubWebhookController {
                 bodyBuffer.arrayOffset() + bodyBuffer.position(),
                 bodyBuffer.remaining(),
                 payloadClass);
-        handler.accept(webhook, payload);
+        return handler.apply(webhook, payload);
     }
 
     private void validateRequest(HttpServletRequest request, GithubWebhook webhook, ByteBuffer bodyBuffer)

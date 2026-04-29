@@ -53,7 +53,7 @@
           },
           "ref": {
             "title": "Reference pattern",
-            "description": "Regex pattern to match the git reference (e.g. '`refs\\\\/heads\\\\/main`')."
+            "description": "Regex pattern to match the git reference (for branch regex: '`refs\\\\/heads\\\\/main`', for tag regex: '`\\\\/refs\\\\/tags\\\\/.*`')."
           },
           "refType": {
             "title": "Ref type",

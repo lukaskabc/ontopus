@@ -54,6 +54,13 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>7.5.0.202512021534-r</version>
         </dependency>
+
+        <!-- Endpoint docs -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

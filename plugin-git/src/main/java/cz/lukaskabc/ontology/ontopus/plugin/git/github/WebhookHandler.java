@@ -11,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -34,37 +35,39 @@ public class WebhookHandler {
         this.versionSeriesService = versionSeriesService;
     }
 
-    public void handleGHEvent(GithubWebhook webhook, GithubCreateEvent createEvent) {
+    public ResponseEntity<Void> handleGHEvent(GithubWebhook webhook, GithubCreateEvent createEvent) {
         if (refTypeDoesNotMatch(webhook, createEvent.getRefType())) {
             log.debug(
                     "Received create event with ref type '{}' does not match required ref type '{}', ignoring",
                     createEvent.getRefType(),
                     webhook.getRefType());
-            return;
+            return ResponseEntity.noContent().build();
         }
         if (refDoesNotMatch(webhook, createEvent.getRef())) {
             log.debug(
                     "Received create event with ref '{}' that does not match required pattern, ignoring",
                     createEvent.getRef());
-            return;
+            return ResponseEntity.noContent().build();
         }
         log.info("Received create event with ref '{}'", createEvent.getRef());
         initiateImport(webhook.getVersionSeries());
+        return ResponseEntity.accepted().build();
     }
 
-    public void handleGHEvent(GithubWebhook webhook, GithubPushEvent pushEvent) {
+    public ResponseEntity<Void> handleGHEvent(GithubWebhook webhook, GithubPushEvent pushEvent) {
         if (pushEvent.getRef() == null) {
             log.warn("Received push event with null ref, ignoring");
-            return;
+            return ResponseEntity.noContent().build();
         }
         if (refDoesNotMatch(webhook, pushEvent.getRef())) {
             log.debug(
                     "Received push event with ref '{}' that does not match required pattern, ignoring",
                     pushEvent.getRef());
-            return;
+            return ResponseEntity.noContent().build();
         }
         log.info("Received push event with ref '{}'", pushEvent.getRef());
         initiateImport(webhook.getVersionSeries());
+        return ResponseEntity.accepted().build();
     }
 
     private void initiateImport(VersionSeriesURI seriesURI) {

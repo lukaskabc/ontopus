@@ -19,6 +19,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,6 +31,13 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+    private static void publicHeaderCustomizer(HeadersConfigurer<HttpSecurity> configurer) {
+        // allow X-Frame-Options for public URIs
+        configurer.addHeaderWriter(new DelegatingRequestMatcherHeaderWriter(
+                PathPatternRequestMatcher.pathPattern("/public/**"),
+                new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)));
+    }
+
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain administrationSecurityFilter(
@@ -39,6 +49,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authenticationManager(authenticationManager)
                 .logout(LogoutConfigurer::permitAll)
+                .headers(SecurityConfig::publicHeaderCustomizer)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .with(new UsernamePasswordAuthenticationConfigurer<>())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/login")

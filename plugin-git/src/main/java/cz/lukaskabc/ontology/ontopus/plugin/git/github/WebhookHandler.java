@@ -1,6 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.ImportInitiationService;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.concurrent.Future;
 
 @Component
 public class WebhookHandler {
@@ -76,7 +80,15 @@ public class WebhookHandler {
         final ImportProcessContextRequest contextRequest = new ImportProcessContextRequest();
         contextRequest.setVersionSeriesURI(seriesURI);
         contextRequest.setSerializableImportProcessContext(series.getSerializableImportProcessContext());
-        importService.submitCombinedData(contextRequest);
+        Future<@Nullable Void> scheduleFuture = importService.submitCombinedData(contextRequest);
+        if (scheduleFuture.isCancelled() || scheduleFuture.state().equals(Future.State.FAILED)) {
+            throw log.throwing(InternalException.builder()
+                    .errorType(Vocabulary.u_i_internal_error)
+                    .internalMessage("Failed to submit combined data, future state: "
+                            + scheduleFuture.state().name())
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build());
+        }
     }
 
     private boolean refTypeDoesNotMatch(GithubWebhook webhook, @Nullable String refType) {

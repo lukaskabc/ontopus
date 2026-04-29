@@ -27,6 +27,6 @@ logging:
 server:
   servlet:
     session:
-      timeout: 5m
+      timeout: 30m
   tomcat:
     max-part-count: 30

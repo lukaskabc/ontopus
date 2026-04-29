@@ -6,7 +6,6 @@ import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessFinalizedExcept
 import cz.lukaskabc.ontology.ontopus.core.exception.ImportProcessNotInitializedException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
@@ -17,7 +16,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.collections.ManagedConcurrentWeakHashMap;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -49,9 +47,6 @@ public class ImportProcessContextHolder implements AutoCloseable {
     private static final String TEMPORARY_FOLDER_PREFIX = "OntoPuS-import-process-";
     private static final Logger log = LogManager.getLogger(ImportProcessContextHolder.class);
 
-    private static final ManagedConcurrentWeakHashMap<VersionSeriesURI, Long> VERSION_SERIES_THREAD_MAP =
-            new ManagedConcurrentWeakHashMap<>();
-
     private static boolean isFinalizedFuture(@Nullable Future<?> future) {
         return future != null
                 && future.state() == Future.State.FAILED
@@ -59,9 +54,6 @@ public class ImportProcessContextHolder implements AutoCloseable {
     }
 
     private Future<?> future;
-    // TODO review concurrency implementation
-
-    @Nullable private VersionSeriesURI versionSeriesURI = null;
 
     @Nullable private ImportProcessContext instance = null;
 
@@ -87,31 +79,9 @@ public class ImportProcessContextHolder implements AutoCloseable {
         this.future = CancelledFuture.getInstance();
     }
 
-    private void claimVersionSeries(@Nullable VersionSeriesURI uri) {
-        if (uri == null) {
-            return;
-        }
-        final Long threadId = Long.valueOf(Thread.currentThread().threadId());
-        VERSION_SERIES_THREAD_MAP.maintain();
-        final Long owningThread = VERSION_SERIES_THREAD_MAP.putIfAbsent(uri, threadId);
-        if (owningThread != null && !owningThread.equals(threadId)) {
-            throw ValidationException.builder()
-                    .internalMessage("Concurrent version series import process!")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .titleMessageCode("ontopus.core.error.failedToSubmitTask")
-                    .detailMessageCode("ontopus.core.error.concurrentImportProcess")
-                    .build();
-        }
-        this.versionSeriesURI = uri;
-    }
-
     @Override
     public synchronized void close() {
         log.debug("Closing import process context {}", instance);
-        if (versionSeriesURI != null) {
-            VERSION_SERIES_THREAD_MAP.remove(this.versionSeriesURI);
-            VERSION_SERIES_THREAD_MAP.maintain();
-        }
         for (File file : toDelete) {
             try {
                 log.debug("Removing import process context file {}", file::getPath);
@@ -220,7 +190,6 @@ public class ImportProcessContextHolder implements AutoCloseable {
         try {
             log.trace("Resetting Session Import Process with version series URI {}", uri);
             this.close();
-            claimVersionSeries(uri);
             this.instance = makeImportContext(uri, isNonInteractive);
             this.future = CancelledFuture.getInstance();
         } finally {
@@ -289,20 +258,6 @@ public class ImportProcessContextHolder implements AutoCloseable {
     @SuppressWarnings("unchecked")
     private Future<Void> submitVoidTask(Consumer<ImportProcessContext> consumer) {
         return (Future<Void>) executor.submit(decorateAsyncTask(consumer));
-    }
-
-    public void waitForCompletion() {
-        try {
-            while (!future.isDone()) {
-                try {
-                    future.get(1, TimeUnit.SECONDS);
-                } catch (TimeoutException | ExecutionException e) {
-                    // timed out or completed exceptionally
-                }
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static final class CancelledFuture<T> implements Future<T> {

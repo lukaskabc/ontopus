@@ -35,21 +35,29 @@
         "items.title": "Configuration",
         "description": "Configure a GitHub webhook trigger for repeating the last ontology publishing process.",
         "items.fields": {
+          "endpoint": {
+            "title": "Endpoint",
+            "description": "The payload URL to set in GitHub webhook settings."
+          },
+          "content-type": {
+            "title": "Content type",
+            "description": "The expected content type of the payload."
+          },
           "secret": {
             "title": "Secret",
-            "description": "The secret configured in the GitHub webhook must match this value for the request to be accepted"
+            "description": "The secret configured in the GitHub webhook must match this value for the request to be accepted."
           },
           "event": {
             "title": "Event type",
-            "description": "The type of the event to match"
+            "description": "The type of the event to match."
           },
           "ref": {
             "title": "Reference pattern",
-            "description": "Regex pattern to match the git reference (e.g. `refs\\\\/heads\\\\/main)`"
+            "description": "Regex pattern to match the git reference (e.g. '`refs\\\\/heads\\\\/main`')."
           },
           "refType": {
             "title": "Ref type",
-            "description": "The type of the git ref to match"
+            "description": "The type of the git ref to match."
           }
         }
       }

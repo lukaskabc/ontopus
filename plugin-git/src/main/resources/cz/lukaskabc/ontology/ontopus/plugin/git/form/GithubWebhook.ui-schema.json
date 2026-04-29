@@ -1,17 +1,23 @@
 {
+  "ui:globalOptions": {
+    "enableMarkdownInDescription": true
+  },
   "webhook": {
     "items": {
       "uri": {
         "ui:widget": "hidden"
+      },
+      "endpoint": {
+        "ui:disabled": true
+      },
+      "content-type": {
+        "ui:disabled": true
       },
       "event": {
         "ui:enumNames": {
           "PUSH": "Push",
           "CREATE": "Create"
         }
-      },
-      "ref": {
-        "ui:enableMarkdownInDescription": true
       },
       "refType": {
         "ui:enumNames": {

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,13 +43,14 @@ public class GithubWebhookController {
     private static final int REQUEST_BODY_CACHE_LIMIT = MAX_GH_PAYLOAD * 1024 * 1024; // bytes
     private static final String SIGNATURE_HEADER_PREFIX = "sha256=";
     private static final Logger log = LogManager.getLogger(GithubWebhookController.class);
+    private static final String ALGORITHM = "HmacSHA256";
 
     static byte[] computeSignatureBytes(String secret, ByteBuffer body)
             throws NoSuchAlgorithmException, InvalidKeyException {
         Objects.requireNonNull(secret, "Expected secret cannot be null");
 
-        Mac hmac = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        Mac hmac = Mac.getInstance(ALGORITHM);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), ALGORITHM);
         hmac.init(secretKeySpec);
         hmac.update(body);
         body.rewind();
@@ -122,7 +124,7 @@ public class GithubWebhookController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
     public void handleEvent(@RequestParam("series") VersionSeriesURI series, HttpServletRequest httpRequest)
             throws Exception {
         if (httpRequest.getContentLength() > REQUEST_BODY_CACHE_LIMIT || httpRequest.getContentLength() < 0) {

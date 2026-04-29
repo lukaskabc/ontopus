@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.api.util.VersionSeriesOptionsEntry;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.GitPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
@@ -27,8 +28,8 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
     private static final String SCHEMA_BASE_NAME = GithubWebhook.class.getSimpleName();
     private static final JsonPointer JSON_SCHEMA_WEBHOOK_SECRET_POINTER =
             JsonPointer.compile("/properties/webhook/items/properties/secret");
-    private static final JsonPointer JSON_SCHEMA_DESCRIPTION_POINTER =
-            JsonPointer.compile("/properties/webhook/items/properties/description");
+    private static final JsonPointer JSON_SCHEMA_ENDPOINT_POINTER =
+            JsonPointer.compile("/properties/webhook/items/properties/endpoint");
 
     private static JsonForm makeJsonForm() {
         final JsonNode schema = JsonResourceLoader.loadJsonSchema(GitPlugin.FORM_RESOURCE_PATH, SCHEMA_BASE_NAME);
@@ -40,11 +41,16 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
     private final JsonForm jsonForm;
     private final GithubWebhookService webhookService;
     private final UriComponents webhookUrl;
+    private final VersionSeriesService versionSeriesService;
 
     public GithubWebhookSeriesOptionsEntry(
-            ObjectMapper objectMapper, GithubWebhookService webhookService, OntopusConfig config) {
+            ObjectMapper objectMapper,
+            GithubWebhookService webhookService,
+            OntopusConfig config,
+            VersionSeriesService versionSeriesService) {
         this.objectMapper = objectMapper;
         this.webhookService = webhookService;
+        this.versionSeriesService = versionSeriesService;
         this.jsonForm = makeJsonForm();
         this.webhookUrl = UriComponentsBuilder.fromUri(config.getSystemUri())
                 .path(GithubWebhookController.PATH)
@@ -60,22 +66,23 @@ public class GithubWebhookSeriesOptionsEntry implements VersionSeriesOptionsEntr
         final ObjectNode formData = objectMapper.createObjectNode();
         final ArrayNode arrayWrapper = formData.putArray("webhook");
 
+        // ensure version series exists
+        versionSeriesService.findRequiredById(entityIdentifier);
+
+        String url = webhookUrl.expand(entityIdentifier).encode().toUriString();
+
         webhookService
                 .findByVersionSeries(entityIdentifier)
                 .ifPresentOrElse(
                         webhook -> {
                             arrayWrapper.add(objectMapper.valueToTree(webhook));
-                            ObjectNode description = (ObjectNode) jsonSchema.at(JSON_SCHEMA_DESCRIPTION_POINTER);
-                            String url = webhookUrl
-                                    .expand(webhook.getVersionSeries())
-                                    .encode()
-                                    .toUriString();
-                            description.put("description", "Webhook URL: " + url);
                         },
                         () -> {
                             ObjectNode secret = (ObjectNode) jsonSchema.at(JSON_SCHEMA_WEBHOOK_SECRET_POINTER);
                             secret.put("default", StringUtils.randomString(32));
                         });
+
+        jsonSchema.at(JSON_SCHEMA_ENDPOINT_POINTER).asObject().put("const", url);
 
         return new JsonForm(jsonSchema, uiSchema, formData);
     }

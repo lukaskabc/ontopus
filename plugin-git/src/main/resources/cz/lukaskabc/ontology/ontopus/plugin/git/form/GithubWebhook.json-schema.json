@@ -18,6 +18,13 @@
               "string"
             ]
           },
+          "endpoint": {
+            "type": "string"
+          },
+          "content-type": {
+            "type": "string",
+            "const": "application/json"
+          },
           "secret": {
             "type": "string"
           },

@@ -8,6 +8,8 @@ import cz.lukaskabc.ontology.ontopus.core.util.RequestFileResolver;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamSource;
@@ -25,6 +27,7 @@ import java.util.concurrent.Future;
 @NullMarked
 public class ImportService implements ImportInitiationService {
 
+    private static final Logger log = LogManager.getLogger(ImportService.class);
     private final ImportProcessMediator mediator;
     private final RequestFileResolver requestFileResolver;
 
@@ -47,6 +50,7 @@ public class ImportService implements ImportInitiationService {
         if (context.getVersionSeriesURI() == null) {
             throw JsonFormSubmitException.missingValue("version series URI");
         }
+        log.debug("Initializing import context for combined data in non interactive mode");
         initializeImport(context.getVersionSeriesURI(), true);
         return mediator.submitCombinedFormResult(context.getSerializableImportProcessContext());
     }

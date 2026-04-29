@@ -212,22 +212,37 @@ public class ImportProcessMediator {
             ImportProcessContext context, SerializableImportProcessContext serializableImportProcessContext) {
         final Map<String, FormDataDto> serviceToFormDataMap =
                 serializableImportProcessContext.getServiceToFormResultMap();
-        while (context.hasUnprocessedService()) {
-            final ImportProcessingService<?> service = context.peekService();
-            final String serviceId = service.getUniqueContextIdentifier(context);
-            final FormDataDto formDataDto = serviceToFormDataMap.get(serviceId);
-            if (formDataDto == null) {
-                throw JsonFormSubmitException.missingValue("form data for service: " + serviceId);
+        log.info("Processing non interactive import context {}", context.getUUID());
+        try {
+            while (context.hasUnprocessedService()) {
+                final ImportProcessingService<?> service = context.peekService();
+                final String serviceId = service.getUniqueContextIdentifier(context);
+                log.trace("Processing service in non interactive import context {}: {}", context.getUUID(), serviceId);
+                final FormDataDto formDataDto = serviceToFormDataMap.get(serviceId);
+                if (formDataDto == null) {
+                    throw JsonFormSubmitException.missingValue("form data for service: " + serviceId);
+                }
+                final FormResult formResult = formDataToFormResult(formDataDto);
+                context.handleResult(formResult);
+                processAutoServices(context);
             }
-            final FormResult formResult = formDataToFormResult(formDataDto);
-            context.handleResult(formResult);
-            processAutoServices(context);
+            finalizeImport(context); // should throw finalized exception
+            throw InternalException.unexpectedServiceStackState();
+        } catch (ImportProcessFinalizedException e) {
+            log.info(
+                    "Non interactive import process finished {}, version series updated <{}>",
+                    context.getUUID(),
+                    e.getVersionSeriesURI());
+        } catch (OntopusException e) {
+            log.error("Exception during non interactive import process {}: {}", context.getUUID(), e.getMessage());
+            throw log.throwing(e);
         }
-        finalizeImport(context);
     }
 
     private void processAutoServices(ImportProcessContext context) {
         while (context.hasUnprocessedService() && context.peekService().getJsonForm(context, null) == null) {
+            final String serviceId = context.peekService().getUniqueContextIdentifier(context);
+            log.trace("Processing automatic service for import context {}: {}", context.getUUID(), serviceId);
             try {
                 context.handleResult(FormResult.EMPTY);
             } catch (OntopusException e) {
@@ -249,6 +264,7 @@ public class ImportProcessMediator {
      * @return canceled future when there is already a different task scheduled or running, pending future otherwise
      */
     public Future<@Nullable Void> submitCombinedFormResult(SerializableImportProcessContext serializableContext) {
+        log.trace("Scheduling combined data for execution");
         return holder.scheduleWithContext(context -> processAllResults(context, serializableContext));
     }
 

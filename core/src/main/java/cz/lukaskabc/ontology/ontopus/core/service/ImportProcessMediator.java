@@ -43,6 +43,7 @@ import java.util.concurrent.Future;
 public class ImportProcessMediator {
     static final CopyOption[] REPLACE_EXISTING_COPY_OPTIONS = new CopyOption[] {StandardCopyOption.REPLACE_EXISTING};
     private static final Logger log = LogManager.getLogger(ImportProcessMediator.class);
+    private static final int MAX_SCHEDULE_COMBINED_ATTEMPTS = 10;
 
     private static UploadedFile copyFile(
             FormFileRequest dto, InputStreamSource streamSource, ImportProcessContext context) {
@@ -265,7 +266,14 @@ public class ImportProcessMediator {
      */
     public Future<@Nullable Void> submitCombinedFormResult(SerializableImportProcessContext serializableContext) {
         log.trace("Scheduling combined data for execution");
-        return holder.scheduleWithContext(context -> processAllResults(context, serializableContext));
+        Future<@Nullable Void> scheduledFuture;
+        int attempt = 0;
+        do {
+            holder.waitForCompletion();
+            scheduledFuture = holder.scheduleWithContext(context -> processAllResults(context, serializableContext));
+            attempt++;
+        } while (scheduledFuture.isCancelled() && attempt < MAX_SCHEDULE_COMBINED_ATTEMPTS);
+        return scheduledFuture;
     }
 
     /**

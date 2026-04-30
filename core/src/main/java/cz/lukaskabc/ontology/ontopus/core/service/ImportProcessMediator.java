@@ -198,7 +198,7 @@ public class ImportProcessMediator {
      */
     public void initialize(@Nullable VersionSeriesURI uri, boolean isNonInteractive) {
         holder.resetSessionImportProcess(uri, isNonInteractive);
-        Future<@Nullable Void> scheduled = holder.scheduleWithContext(this::processAutoServices);
+        Future<Void> scheduled = holder.runWithContextNow(this::processAutoServices);
         if (scheduled.isCancelled()) {
             throw log.throwing(InternalException.builder()
                     .errorType(Vocabulary.u_c_internal_error)
@@ -239,7 +239,7 @@ public class ImportProcessMediator {
         }
     }
 
-    private void processAutoServices(ImportProcessContext context) {
+    private Void processAutoServices(ImportProcessContext context) {
         while (context.hasUnprocessedService() && context.peekService().getJsonForm(context, null) == null) {
             final String serviceId = context.peekService().getUniqueContextIdentifier(context);
             log.trace("Processing automatic service for import context {}: {}", context.getUUID(), serviceId);
@@ -256,6 +256,7 @@ public class ImportProcessMediator {
                         .build());
             }
         }
+        return null;
     }
 
     /**

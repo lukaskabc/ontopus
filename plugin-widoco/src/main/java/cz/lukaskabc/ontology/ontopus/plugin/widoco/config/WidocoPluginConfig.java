@@ -29,6 +29,12 @@ public class WidocoPluginConfig {
     private String downloadUrl =
             "https://github.com/dgarijo/Widoco/releases/download/v{version}/widoco-{version}-jar-with-dependencies_JDK-17.jar";
 
+    /**
+     * Whether the links to ontology serializations should use the ontology IRI schema or forced to use HTTPS schema.
+     * When {@code true}, the links to ontology serialization will always be generated with HTTPS.
+     */
+    private boolean forceHttpsForSerializationLinks = false;
+
     public String getDownloadUrl() {
         return downloadUrl;
     }
@@ -49,6 +55,10 @@ public class WidocoPluginConfig {
         return path;
     }
 
+    public boolean isForceHttpsForSerializationLinks() {
+        return forceHttpsForSerializationLinks;
+    }
+
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
     }
@@ -63,6 +73,11 @@ public class WidocoPluginConfig {
 
     public void setFilesDirectory(Path filesDirectory) {
         this.filesDirectory = filesDirectory.toAbsolutePath();
+    }
+
+    public WidocoPluginConfig setForceHttpsForSerializationLinks(boolean forceHttpsForSerializationLinks) {
+        this.forceHttpsForSerializationLinks = forceHttpsForSerializationLinks;
+        return this;
     }
 
     public void setPath(Path path) {

@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
@@ -39,9 +40,11 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
                     RDFFormat.TURTLE.getDefaultFileExtension());
 
     private final OntopusConfig ontopusConfig;
+    private final WidocoPluginConfig widocoPluginConfig;
 
-    public WidocoAnnotationsInjectionService(OntopusConfig ontopusConfig) {
+    public WidocoAnnotationsInjectionService(OntopusConfig ontopusConfig, WidocoPluginConfig widocoPluginConfig) {
         this.ontopusConfig = ontopusConfig;
+        this.widocoPluginConfig = widocoPluginConfig;
     }
 
     @Override
@@ -50,10 +53,17 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
     }
 
     private String getOntologyURIString(OntologyURI ontologyURI) {
-        if (ontopusConfig.getResource().isNoSlashFallsBackToTrailingSlash()) {
-            return StringUtils.withoutTrailingSlash(ontologyURI.toString());
+        String uri = ontologyURI.toString();
+
+        if (widocoPluginConfig.isForceHttpsForSerializationLinks() && uri.startsWith("http://")) {
+            uri = "https://" + uri.substring("http://".length());
         }
-        return ontologyURI.toString();
+
+        if (ontopusConfig.getResource().isNoSlashFallsBackToTrailingSlash()) {
+            uri = StringUtils.withoutTrailingSlash(ontologyURI.toString());
+        }
+
+        return uri;
     }
 
     @Override

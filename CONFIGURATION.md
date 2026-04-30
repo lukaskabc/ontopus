@@ -21,6 +21,7 @@
 | ```ONTOPUS_PLUGIN_GIT_TIMEOUT``` | Default value: ```15``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL``` | Default value: ```https://github.com/dgarijo/Widoco/releases/download/v{version}/widoco-{version}-jar-with-dependencies_JDK-17.jar``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL_PARAMETERS``` | Widoco version to automatically download<br>Default value: ```Map.of("version", "1.4.25")``` |
+| ```ONTOPUS_PLUGIN_WIDOCO_FORCE_HTTPS_FOR_SERIALIZATION_LINKS``` | Whether the links to ontology serializations should use the ontology IRI schema or forced to use HTTPS schema.<br>When ```true```, the links to ontology serialization will always be generated with HTTPS.<br>Default value: ```false``` |
 | ```ONTOPUS_RESOURCE_CACHE_CONTROL_MAX_AGE``` | The value of ```max-age``` in cache control HTTP header<br>Default value: ```Duration.ofDays(1)``` |
 | ```ONTOPUS_RESOURCE_HTTPS_FALLS_BACK_TO_HTTP``` | Request to ```https``` prefixed resource that does not exist, will fall back to the same resource with ```http```.<br>Default value: ```true``` |
 | ```ONTOPUS_RESOURCE_HTTP_FALLS_BACK_TO_HTTPS``` | Request to ```http``` prefixed resource that does not exist, will fall back to the same resource with ```https```.<br>Default value: ```false``` |

@@ -60,7 +60,7 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
         }
 
         if (ontopusConfig.getResource().isNoSlashFallsBackToTrailingSlash()) {
-            uri = StringUtils.withoutTrailingSlash(ontologyURI.toString());
+            uri = StringUtils.withoutTrailingSlash(uri);
         }
 
         return uri;

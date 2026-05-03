@@ -172,7 +172,7 @@ public class OntopusConfig {
 
     @NullUnmarked
     public static class DcatCatalog {
-        @NotNull private URI uri = URI.create("http://localhost/ontopus/catalog");
+        @NotNull private URI uri;
         /** Description of the catalog */
         @NotEmpty private String description = "Catalog of published ontologies on this OntoPuS instance";
         /** Title of the catalog */

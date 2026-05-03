@@ -11,8 +11,7 @@ import java.net.URI;
 
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Catalog)
-public abstract class Catalog<CatalogDistributionIdentifier extends TypedIdentifier, ID extends TypedIdentifier>
-        extends Dataset<CatalogDistributionIdentifier, ID> {
+public abstract class Catalog<ID extends TypedIdentifier> extends Resource<ID> {
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_homepage)
     private URI homepage;
 

@@ -32,11 +32,6 @@ public class CatalogService {
         catalog.setTitle(MultilingualString.create(config.getTitle(), config.getLanguage()));
         catalog.setReleaseDate(timeProvider.getInstant());
         catalog.setModifiedDate(catalog.getReleaseDate());
-        catalog.setVersion("latest");
-
-        // dataset
-        // TODO catalog distributions
-        // some distribution generator? must be connected to plugins somehow
 
         // catalog
         catalog.setHomepage(config.getUri().toURI());

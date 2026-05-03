@@ -1,11 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.dcat;
 
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
+import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
 
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.Set;
 
@@ -20,6 +22,14 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_inSeries)
     private URI series;
 
+    @OWLDataProperty(iri = Vocabulary.s_p_dcat_language, simpleLiteral = true)
+    private Set<String> languages;
+
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version, simpleLiteral = true)
+    private String version;
+
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_previousVersion)
+    private URI previousVersion;
     /*
      * Skipping distributions (left for impl class) Skipping frequency,
      * spatial/geographical coverage, spatial resolution, temporal coverage,
@@ -27,19 +37,45 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
      */
 
     public abstract void addDistribution(DistributionIdentifier distributionURI);
-
     /** @return unmodifiable set of distribution identifiers */
     public abstract Set<DistributionIdentifier> getDistributions();
 
+    public Set<String> getLanguages() {
+        return languages;
+    }
+
+    public ID getPreviousVersion() {
+        if (previousVersion == null) {
+            return null;
+        }
+        return wrapUri(previousVersion);
+    }
+
     protected URI getSeriesURI() {
         return series;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public abstract boolean hasDistribution(DistributionIdentifier distributionURI);
 
     public abstract void removeDistribution(DistributionIdentifier distributionURI);
 
+    public void setLanguages(Set<String> languages) {
+        this.languages = languages;
+    }
+
+    public void setPreviousVersion(ID previousVersion) {
+        this.previousVersion = previousVersion.toURI();
+    }
+
     public void setSeriesURI(URI series) {
         this.series = series;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

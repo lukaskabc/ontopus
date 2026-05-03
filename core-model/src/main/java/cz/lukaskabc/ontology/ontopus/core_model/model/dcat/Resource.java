@@ -3,7 +3,6 @@ package cz.lukaskabc.ontology.ontopus.core_model.model.dcat;
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.PersistenceEntityWithDcatIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
@@ -11,9 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.net.URI;
 import java.time.Instant;
-import java.util.Set;
 
 /** Resource published or curated by a single agent. */
 @MappedSuperclass
@@ -34,8 +31,6 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
     private Instant modifiedDate;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_language, simpleLiteral = true)
-    private Set<String> languages;
     /*
      * Skipping publisher
      *
@@ -43,22 +38,16 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
      */
     /*
      * Skipping theme/category, type/genre, relation, qualified attribution,
-     * license, rights
+     * license, rights, hasParts
      */
-    @OWLObjectProperty(iri = Vocabulary.s_i_dcat_hasPart)
-    private Set<URI> hasParts;
     /*
      * Skipping has policy, is referenced by
      */
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_previousVersion)
-    private URI previousVersion;
     /*
      * Skipping has version, current version and replaces
      */
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version, simpleLiteral = true)
-    private String version;
     /*
      * Skipping status, first, last, previous
      */
@@ -67,23 +56,8 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
         return description;
     }
 
-    public Set<URI> getHasParts() {
-        return hasParts;
-    }
-
-    public Set<String> getLanguages() {
-        return languages;
-    }
-
     public Instant getModifiedDate() {
         return modifiedDate;
-    }
-
-    public ID getPreviousVersion() {
-        if (previousVersion == null) {
-            return null;
-        }
-        return wrapUri(previousVersion);
     }
 
     public Instant getReleaseDate() {
@@ -94,28 +68,12 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
         return title;
     }
 
-    public String getVersion() {
-        return version;
-    }
-
     public void setDescription(MultilingualString description) {
         this.description = description;
     }
 
-    public void setHasParts(Set<URI> hasParts) {
-        this.hasParts = hasParts;
-    }
-
-    public void setLanguages(Set<String> languages) {
-        this.languages = languages;
-    }
-
     public void setModifiedDate(Instant modifiedDate) {
         this.modifiedDate = modifiedDate;
-    }
-
-    public void setPreviousVersion(ID previousVersion) {
-        this.previousVersion = previousVersion.toURI();
     }
 
     public void setReleaseDate(Instant releaseDate) {
@@ -124,9 +82,5 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
 
     public void setTitle(MultilingualString title) {
         this.title = title;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
     }
 }

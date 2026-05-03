@@ -61,7 +61,7 @@ COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
 COPY --from=backend /build/plugin-api/target/*.jar /ontopus/plugins/
 
-ENTRYPOINT ["java", "-jar", "./core.jar"]
+ENTRYPOINT ["java", "-XX:+UseCompactObjectHeaders", "-XX:+UseStringDeduplication", "-jar", "./core.jar"]
 
 FROM ontopus-base as ontopus-base-fe
 # OntoPuS Core, Core model, plugin API and frontend, with no additional plugins

@@ -55,6 +55,9 @@ jobs:
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f
         with:
           context: .
+          # Configure cache
+          cache-from: type=gha,scope=${{ github.workflow }}-${{ matrix.target }}
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ matrix.target }}
           # Instructs Docker to stop building at this specific stage
           target: ${{ matrix.target }}
           push: ${{ github.ref_type == 'tag' }}

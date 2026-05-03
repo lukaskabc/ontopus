@@ -20,10 +20,10 @@ public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEn
      * skipping access rights, conforms to, contact point, creator
      */
     @OWLDataProperty(iri = Vocabulary.s_p_sioc_description)
-    private MultilingualString description;
+    private MultilingualString description = new MultilingualString();
 
     @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_sioc_title)
-    private MultilingualString title;
+    private MultilingualString title = new MultilingualString();
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
     private Instant releaseDate;

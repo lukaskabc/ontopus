@@ -20,11 +20,14 @@ public class CatalogInitializationService implements InitializationService {
     @Override
     @Transactional
     public void initialize() {
+        OntopusCatalog catalog;
         if (service.catalogExists()) {
+            catalog = service.update();
+            log.debug("Updated details of existing ontology catalog {}", catalog.getIdentifier());
             return;
         }
 
-        OntopusCatalog catalog = service.create();
-        log.atInfo().log("Initialized ontology catalog {}", catalog.getIdentifier());
+        catalog = service.create();
+        log.info("Initialized ontology catalog {}", catalog.getIdentifier());
     }
 }

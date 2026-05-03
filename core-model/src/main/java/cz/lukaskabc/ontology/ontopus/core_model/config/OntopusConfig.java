@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
@@ -169,14 +170,28 @@ public class OntopusConfig {
         }
     }
 
+    @NullUnmarked
     public static class DcatCatalog {
-        private URI uri = URI.create("http://localhost/ontopus/catalog");
+        @NotNull private URI uri = URI.create("http://localhost/ontopus/catalog");
         /** Description of the catalog */
-        private String description = "Catalog of published ontologies on this OntoPuS instance";
+        @NotEmpty private String description = "Catalog of published ontologies on this OntoPuS instance";
         /** Title of the catalog */
-        private String title = "OntoPuS Ontology Catalog";
+        @NotEmpty private String title = "OntoPuS Ontology Catalog";
         /** Language of the catalog metadata (title, description). */
         @Nullable private String language = null;
+
+        /**
+         * The type of catalog publisher. The publisher is an <a
+         * href="http://xmlns.com/foaf/0.1/Agent">{@code foaf:Agent}</a>.
+         *
+         * <p>Example values:<br>
+         * {@code http://xmlns.com/foaf/0.1/Person}<br>
+         * {@code http://xmlns.com/foaf/0.1/Organization}
+         */
+        @NotNull private URI publisherType;
+
+        /** The name of the catalog publisher */
+        @NotEmpty private String publisherName;
 
         public String getDescription() {
             return description;
@@ -184,6 +199,14 @@ public class OntopusConfig {
 
         public @Nullable String getLanguage() {
             return language;
+        }
+
+        public String getPublisherName() {
+            return publisherName;
+        }
+
+        public URI getPublisherType() {
+            return publisherType;
         }
 
         public String getTitle() {
@@ -200,6 +223,16 @@ public class OntopusConfig {
 
         public void setLanguage(@Nullable String language) {
             this.language = language;
+        }
+
+        public DcatCatalog setPublisherName(String publisherName) {
+            this.publisherName = publisherName;
+            return this;
+        }
+
+        public DcatCatalog setPublisherType(URI publisherType) {
+            this.publisherType = publisherType;
+            return this;
         }
 
         public void setTitle(String title) {

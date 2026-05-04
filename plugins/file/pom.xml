@@ -5,12 +5,12 @@
         <groupId>cz.lukaskabc.ontology.ontopus</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-    <artifactId>skos-plugin</artifactId>
-    <description>OntoPuS plugin providing explicit support for SKOS ontologies</description>
+    <artifactId>file-upload-plugin</artifactId>
+    <description>OntoPuS plugin allowing user to upload local files.</description>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>

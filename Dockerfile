@@ -24,6 +24,7 @@ COPY mvnw .
 COPY "mvnw.cmd" .
 COPY pom.xml .
 COPY --parents ./*/pom.xml .
+COPY --parents ./plugins/*/pom.xml .
 
 ARG ONTOPUS_VERSION
 
@@ -35,7 +36,8 @@ COPY --exclude=administration-frontend . .
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw clean package -Drevision=${ONTOPUS_VERSION} -Dspotless.skip -DskipTests
 
-RUN rm ./*/target/original-*.jar
+RUN rm ./*/target/original-*.jar || true
+RUN rm ./plugins/*/target/original-*.jar
 
 FROM eclipse-temurin:25-jre-alpine as ontopus-base
 # OntoPuS Core, Core model and plugin api, with no additional plugins and without frontend
@@ -89,5 +91,5 @@ ENV ONTOPUS_PLUGIN_WIDOCO_FILES_DIRECTORY=${ONTOPUS_PERSISTENT_DATA_DIR}/widoco
 
 COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
-COPY --from=backend /build/plugin-*/target/*.jar /ontopus/plugins/
+COPY --from=backend /build/plugins/*/target/*.jar /ontopus/plugins/
 

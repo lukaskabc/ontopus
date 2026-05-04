@@ -5,7 +5,7 @@
         <groupId>cz.lukaskabc.ontology.ontopus</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>

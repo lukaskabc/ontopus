@@ -19,6 +19,3 @@ public class VersioningPlugin implements Plugin {
             URI.create("http://purl.org/dc/terms/replaces"),
             URI.create("http://purl.org/pav/previousVersion"));
 }
-
-// TODO: merge versioning plugin into the core? or rename required plugins to
-// modules? that would be more confusing

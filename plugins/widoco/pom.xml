@@ -5,13 +5,12 @@
         <groupId>cz.lukaskabc.ontology.ontopus</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-    <artifactId>rdf-plugin</artifactId>
-    <description>OntoPuS plugin allowing to import RDF files into the database.
-        Realized using RDF4J Rio library supporting formats like RDF/XML, Turtle, N-Triples, N-Quads, TriG, and TriX</description>
+    <artifactId>widoco-plugin</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -30,23 +29,25 @@
             <artifactId>model</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- RDF/XML export -->
         <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-rdfxml</artifactId>
+            <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+            <artifactId>rdf-plugin</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- RDF4J repository -->
         <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-repository-api</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- JSON-LD Support -->
         <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-rio-jsonld</artifactId>
-            <version>${rdf4j.version}</version>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

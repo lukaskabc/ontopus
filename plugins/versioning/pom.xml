@@ -5,12 +5,12 @@
         <groupId>cz.lukaskabc.ontology.ontopus</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-    <artifactId>file-upload-plugin</artifactId>
-    <description>OntoPuS plugin allowing user to upload local files.</description>
+    <artifactId>versioning-plugin</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -27,6 +27,17 @@
         <dependency>
             <groupId>cz.lukaskabc.ontology.ontopus</groupId>
             <artifactId>model</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Spring dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -5,12 +5,12 @@
         <groupId>cz.lukaskabc.ontology.ontopus</groupId>
         <artifactId>parent</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-    <artifactId>widoco-plugin</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>skos-plugin</artifactId>
+    <description>OntoPuS plugin providing explicit support for SKOS ontologies</description>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -29,33 +29,6 @@
             <artifactId>model</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-            <artifactId>rdf-plugin</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-exec</artifactId>
-            <version>1.6.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+
 </project>

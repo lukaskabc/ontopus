@@ -1,13 +1,16 @@
 package cz.lukaskabc.ontology.ontopus.api.service.core;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.service.FileFormatImportingService;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-// TODO this vs dat afile importing servcice???
 
-/** Service capable of importing provided files into the databse context */
+/**
+ * Service capable of importing provided files into the databse context. Employs {@link FileFormatImportingService
+ * FileFormatImportingServices} and attempts to import the given files into the database.
+ */
 public interface FileToDatabaseImportingService {
     /**
      * Attempts to import provided files.

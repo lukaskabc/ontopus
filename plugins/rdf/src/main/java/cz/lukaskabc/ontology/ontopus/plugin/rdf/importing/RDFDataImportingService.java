@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.rdf.importing;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
+import cz.lukaskabc.ontology.ontopus.api.service.FileFormatImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.FileImportException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
@@ -31,7 +31,7 @@ import java.util.List;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class RDFDataImportingService implements DataFileImportingService {
+public class RDFDataImportingService implements FileFormatImportingService {
     private static final Logger log = LogManager.getLogger(RDFDataImportingService.class);
 
     public static Model loadModel(List<File> files) throws IOException {

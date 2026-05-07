@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.DataFileImportingService;
+import cz.lukaskabc.ontology.ontopus.api.service.FileFormatImportingService;
 import cz.lukaskabc.ontology.ontopus.api.service.core.FileToDatabaseImportingService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.FileImportException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 @Service
 public class FileImportingService implements FileToDatabaseImportingService {
     private static final Logger log = LogManager.getLogger(FileImportingService.class);
-    private final List<DataFileImportingService> dataFileImportingServices;
+    private final List<FileFormatImportingService> dataFileImportingServices;
 
-    public FileImportingService(List<DataFileImportingService> dataFileImportingServices) {
+    public FileImportingService(List<FileFormatImportingService> dataFileImportingServices) {
         this.dataFileImportingServices = dataFileImportingServices;
         if (dataFileImportingServices.isEmpty()) {
             throw new InitializationException("No data file importing service found!");
@@ -36,7 +36,7 @@ public class FileImportingService implements FileToDatabaseImportingService {
         final ArrayList<File> importedFiles = new ArrayList<>(filesToImport.size());
         final ArrayList<File> remainingFiles = new ArrayList<>(filesToImport);
         final ArrayList<File> toImport = new ArrayList<>(filesToImport.size());
-        for (DataFileImportingService importingService : dataFileImportingServices) {
+        for (FileFormatImportingService importingService : dataFileImportingServices) {
             for (File file : remainingFiles) {
                 if (importingService.supports(file)) {
                     toImport.add(file);
@@ -68,7 +68,7 @@ public class FileImportingService implements FileToDatabaseImportingService {
     }
 
     public boolean supports(File file) {
-        for (DataFileImportingService importingService : dataFileImportingServices) {
+        for (FileFormatImportingService importingService : dataFileImportingServices) {
             if (!importingService.supports(file)) {
                 return false;
             }

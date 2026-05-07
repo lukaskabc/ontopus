@@ -8,8 +8,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 
-// TODO: Design pattern Strategy
-
 /**
  * A service that is a part of the ontology importing process
  *

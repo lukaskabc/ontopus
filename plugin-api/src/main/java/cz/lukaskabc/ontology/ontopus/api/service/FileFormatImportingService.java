@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Service capable of importing data from local files into a database context
+ * Service capable of importing data from local files of a specific format(s) into a database context
  *
  * @implSpec Must be registered in Spring context (e.g. with {@link org.springframework.stereotype.Service @Service}
  *     annotation)
  */
-public interface DataFileImportingService {
+public interface FileFormatImportingService {
 
     /**
      * Imports the provided files into the database. If the file contains prefix declarations, it adds them to the

@@ -20,10 +20,7 @@ import java.util.stream.Collectors;
  */
 @OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
 public class ContextToControllerMapping extends AbstractPersistenceEntity<ContextToControllerMappingURI> {
-    /**
-     * URIs of the ontology that can be handled by the controllers. Always will contain the ontology URI and optionally
-     * also aliases of the ontology.
-     */
+    /** The ontology graph // TODO: replace set with a single value */
     @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject, fetch = FetchType.EAGER)
     private Set<URI> subjects = new HashSet<>();
 

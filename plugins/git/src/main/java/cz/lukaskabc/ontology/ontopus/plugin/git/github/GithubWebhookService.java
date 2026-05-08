@@ -19,7 +19,7 @@ public class GithubWebhookService extends BaseService<GithubWebhookURI, GithubWe
     public void deleteByVersionSeries(VersionSeriesURI artifactIdentifier) {
         final GithubWebhook toDelete =
                 repository.findByVersionSeries(artifactIdentifier).orElseThrow();
-        repository.delete(toDelete);
+        repository.deleteById(toDelete.getIdentifier());
     }
 
     public Optional<GithubWebhook> findByVersionSeries(VersionSeriesURI versionSeriesURI) {

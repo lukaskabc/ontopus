@@ -42,13 +42,6 @@ public abstract class AbstractRepository<
         this.defaultMaxPageSize = ontopusConfig.getDefaultMaxPageSize();
     }
 
-    /** @see #dao#delete(PersistenceEntity) */
-    @Transactional
-    public void delete(E entity) {
-        Objects.requireNonNull(entity.getIdentifier(), "Entity identifier must not be null");
-        dao.delete(entity.getIdentifier());
-    }
-
     @Transactional
     public void deleteById(I id) {
         dao.delete(id);

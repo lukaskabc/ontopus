@@ -18,9 +18,16 @@ import java.util.stream.Stream;
 @Service
 public class GraphService {
     private final GraphRepository graphRepository;
+    private final ResourceInContextMappingService resourceInContextMappingService;
+    private final ContextToControllerMappingService contextToControllerMappingService;
 
-    public GraphService(GraphRepository graphRepository) {
+    public GraphService(
+            GraphRepository graphRepository,
+            ResourceInContextMappingService resourceInContextMappingService,
+            ContextToControllerMappingService contextToControllerMappingService) {
         this.graphRepository = graphRepository;
+        this.resourceInContextMappingService = resourceInContextMappingService;
+        this.contextToControllerMappingService = contextToControllerMappingService;
     }
 
     /**
@@ -36,6 +43,12 @@ public class GraphService {
 
     public void delete(Collection<Statement> statements, GraphURI graphURI) {
         graphRepository.delete(statements, graphURI);
+    }
+
+    @Transactional
+    public void deleteGraph(GraphURI graphURI) {
+        graphRepository.deleteGraph(graphURI);
+        contextToControllerMappingService.deleteBySubject(graphURI);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */

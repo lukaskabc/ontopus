@@ -28,13 +28,6 @@ public class TemporaryContextRepository
         this.graphDao = graphDao;
     }
 
-    @Override
-    @Transactional
-    public void delete(TemporaryContext context) {
-        Objects.requireNonNull(context.getIdentifier(), "Context identifier cannot be null");
-        delete(context.getIdentifier());
-    }
-
     @Transactional
     public void delete(TemporaryContextURI identifier) {
         Objects.requireNonNull(identifier, "Context identifier cannot be null");

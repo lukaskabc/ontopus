@@ -7,12 +7,16 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToC
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingType;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ContextToControllerMappingDao
         extends AbstractDao<ContextToControllerMappingURI, ContextToControllerMapping> {
+    private static final Logger log = LogManager.getLogger(ContextToControllerMappingDao.class);
+
     public ContextToControllerMappingDao(EntityManager em, DescriptorFactory descriptorFactory) {
         super(
                 ContextToControllerMapping.class,
@@ -21,9 +25,31 @@ public class ContextToControllerMappingDao
                 descriptorFactory.contextToControllerMapping());
     }
 
+    public void deleteBySubject(GraphURI graphURI) {
+        try {
+            em.createNativeQuery("""
+					WITH ?context
+					DELETE {
+					    ?entity ?p ?o .
+					} WHERE {
+					    ?entity a ?type ;
+					        ?hasSubject ?subject ;
+					        ?p ?o .
+					}
+					""")
+                    .setParameter("context", entityGraphContext)
+                    .setParameter("type", typeUri)
+                    .setParameter("hasSubject", ContextToControllerMapping_.subjectPropertyIRI)
+                    .setParameter("subject", graphURI)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw persistenceException(log, "Failed to delete ContextToControllerMapping by subject", e);
+        }
+    }
+
     @Nullable public ContextToControllerMapping findByTypeAndContext(MappingType mappingType, GraphURI graphURI) {
         return resultOrNull(em.createQuery(
-                        "SELECT m FROM ContextToControllerMapping m WHERE m.mappingType = :mappingType AND m.subjects IN (:graphURI)",
+                        "SELECT m FROM ContextToControllerMapping m WHERE m.subject = :graphURI AND m.mappingType = :mappingType",
                         entityClass)
                 .setMaxResults(1)
                 .setParameter("mappingType", mappingType.getUri())

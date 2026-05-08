@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @NullMarked
@@ -26,7 +27,9 @@ public abstract class BaseService<
     }
 
     public void delete(E entity) {
-        repository.delete(entity);
+        final I identifier = entity.getIdentifier();
+        Objects.requireNonNull(identifier, "Entity identifier must not be null");
+        deleteById(identifier);
     }
 
     public void deleteById(I id) {

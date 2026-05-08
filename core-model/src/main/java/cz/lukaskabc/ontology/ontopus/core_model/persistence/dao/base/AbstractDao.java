@@ -171,7 +171,6 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     public void delete(I identifier) {
         Objects.requireNonNull(identifier, "The entity identifier must not be null");
         try {
-            // Optional.ofNullable(find(identifier)).ifPresent(em::remove);
             em.createNativeQuery("""
 					DELETE WHERE {
 					    GRAPH ?context {

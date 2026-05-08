@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,18 @@ import java.util.Optional;
 @Service
 public class VersionArtifactService
         extends BaseService<VersionArtifactURI, VersionArtifact, VersionArtifactRepository> {
-    public VersionArtifactService(VersionArtifactRepository repository) {
+    private final GraphService graphService;
+
+    public VersionArtifactService(VersionArtifactRepository repository, GraphService graphService) {
         super(repository);
+        this.graphService = graphService;
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(VersionArtifactURI id) {
+        super.deleteById(id);
+        graphService.deleteGraph(id);
     }
 
     public Page<VersionArtifact> find(VersionSeriesURI seriesURI, Pageable pageable, List<String> filter) {

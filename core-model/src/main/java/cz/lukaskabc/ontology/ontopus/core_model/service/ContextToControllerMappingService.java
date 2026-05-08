@@ -27,7 +27,7 @@ public class ContextToControllerMappingService
             Set<ContextToControllerMapping> existingMappings) {
         return existingMappings.stream()
                 .filter(mapping -> mapping.getMappingType().equals(mappingType))
-                .filter(mapping -> mapping.getSubjects().contains(contextURI))
+                .filter(mapping -> mapping.getSubject().equals(contextURI))
                 .findAny()
                 .map(mapping -> {
                     mapping.getControllers().addAll(controllers);
@@ -35,7 +35,7 @@ public class ContextToControllerMappingService
                 })
                 .orElseGet(() -> {
                     final ContextToControllerMapping mapping = new ContextToControllerMapping();
-                    mapping.addSubject(contextURI);
+                    mapping.setSubject(contextURI);
                     mapping.setMappingType(mappingType);
                     mapping.setControllers(new HashSet<>(controllers));
                     return mapping;
@@ -54,6 +54,10 @@ public class ContextToControllerMappingService
             Set<ControllerDescription> controllers,
             Set<ContextToControllerMapping> existingMappings) {
         return createMapping(contextURI, controllers, MappingType.RESOURCE, existingMappings);
+    }
+
+    public void deleteBySubject(GraphURI graphURI) {
+        repository.deleteBySubject(graphURI);
     }
 
     public ContextToControllerMapping findByTypeAndContext(MappingType type, GraphURI contextURI) {

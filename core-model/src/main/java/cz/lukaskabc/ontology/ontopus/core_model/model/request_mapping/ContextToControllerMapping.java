@@ -12,7 +12,6 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Mapping of an ontology document, or its entities (defined by {@link #mappingType}, to controllers capable of handling
@@ -20,9 +19,9 @@ import java.util.stream.Collectors;
  */
 @OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
 public class ContextToControllerMapping extends AbstractPersistenceEntity<ContextToControllerMappingURI> {
-    /** The ontology graph // TODO: replace set with a single value */
-    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject, fetch = FetchType.EAGER)
-    private Set<URI> subjects = new HashSet<>();
+    /** The ontology graph */
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject)
+    private URI subject;
 
     /** The controller capable of handling the resource */
     @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy, fetch = FetchType.EAGER)
@@ -37,10 +36,6 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         this.controllers.add(controller);
     }
 
-    public void addSubject(GraphURI subject) {
-        this.subjects.add(subject.toURI());
-    }
-
     public Set<ControllerDescription> getControllers() {
         return controllers;
     }
@@ -49,16 +44,12 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         return mappingType;
     }
 
-    public Set<GraphURI> getSubjects() {
-        return subjects.stream().map(GraphURIImpl::new).collect(Collectors.toUnmodifiableSet());
+    public GraphURI getSubject() {
+        return new GraphURIImpl(subject);
     }
 
     public void removeController(ControllerDescription controller) {
         this.controllers.remove(controller);
-    }
-
-    public void removeSubject(GraphURI subject) {
-        this.subjects.remove(subject.toURI());
     }
 
     public void setControllers(Set<ControllerDescription> controllers) {
@@ -69,8 +60,8 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         this.mappingType = mappingType;
     }
 
-    public void setSubjects(Set<GraphURI> subjects) {
-        this.subjects = subjects.stream().map(GraphURI::toURI).collect(Collectors.toSet());
+    public void setSubject(GraphURI graphURI) {
+        this.subject = graphURI.toURI();
     }
 
     @Override

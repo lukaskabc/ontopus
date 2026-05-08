@@ -34,6 +34,11 @@ public class GraphRepository {
         graphDao.delete(statements, context);
     }
 
+    @Transactional
+    public void deleteGraph(GraphURI graphURI) {
+        graphDao.delete(graphURI);
+    }
+
     @Transactional(readOnly = true)
     public boolean exists(
             @Nullable ResourceURI subject,

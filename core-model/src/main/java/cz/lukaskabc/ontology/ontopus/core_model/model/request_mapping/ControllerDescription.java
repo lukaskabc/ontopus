@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping;
 
+import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.util.Set;
 
 /** Controller description capable of retrieving a resource in a supported media type */
+@Context(Vocabulary.s_c_Controller)
 @OWLClass(iri = Vocabulary.s_c_Controller)
 public class ControllerDescription extends AbstractGeneratedPersistenceEntity<ControllerDescriptionURI> {
     /** The fully qualified name of the Java class */

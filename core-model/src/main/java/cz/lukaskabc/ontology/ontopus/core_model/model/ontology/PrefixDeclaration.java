@@ -1,9 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
-import cz.cvut.kbss.jopa.model.annotations.OWLClass;
-import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
-import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
-import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
+import cz.cvut.kbss.jopa.model.annotations.*;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import org.eclipse.rdf4j.model.Namespace;
@@ -12,6 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
+@Context(Vocabulary.s_c_PrefixDeclaration)
 @OWLClass(iri = Vocabulary.s_c_PrefixDeclaration)
 public class PrefixDeclaration extends Rdf4JAbstractNamespace {
     @NotEmpty @ParticipationConstraints(nonEmpty = true)

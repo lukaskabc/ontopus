@@ -6,6 +6,7 @@ import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.DocumentedOWLClass;
+import org.jspecify.annotations.Nullable;
 
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -28,7 +29,7 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version, simpleLiteral = true)
     private String version;
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_previousVersion)
+    @Nullable @OWLObjectProperty(iri = Vocabulary.s_p_dcat_previousVersion)
     private URI previousVersion;
     /*
      * Skipping distributions (left for impl class) Skipping frequency,
@@ -44,7 +45,7 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
         return languages;
     }
 
-    public ID getPreviousVersion() {
+    @Nullable public ID getPreviousVersion() {
         if (previousVersion == null) {
             return null;
         }
@@ -67,8 +68,12 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
         this.languages = languages;
     }
 
-    public void setPreviousVersion(ID previousVersion) {
-        this.previousVersion = previousVersion.toURI();
+    public void setPreviousVersion(@Nullable ID previousVersion) {
+        if (previousVersion == null) {
+            this.previousVersion = null;
+        } else {
+            this.previousVersion = previousVersion.toURI();
+        }
     }
 
     public void setSeriesURI(URI series) {

@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
+import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.Types;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
@@ -19,6 +20,7 @@ import java.util.Set;
  * that may differ in various ways, including natural language, media-type or format, schematic organization, temporal
  * and spatial resolution, level of detail or profiles (which might specify any or all of the above).
  */
+@Context(Vocabulary.s_c_dcat_Distribution)
 @OWLClass(iri = Vocabulary.s_c_dcat_Distribution)
 public class OntologyDistribution extends Distribution<DistributionURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(OntologyDistribution.class);

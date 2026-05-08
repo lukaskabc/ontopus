@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model;
 
+import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.cvut.kbss.jopa.model.annotations.ParticipationConstraints;
@@ -10,6 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import java.net.URI;
 
+@Context(Vocabulary.s_c_UserAccount)
 @OWLClass(iri = Vocabulary.s_c_UserAccount)
 public class User extends AbstractPersistenceEntity<UserURI> {
 

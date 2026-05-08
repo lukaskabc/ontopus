@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /** An ontology artifact containing a single ontology version release */
+@Context(Vocabulary.s_c_VersionArtifact)
 @OWLClass(iri = Vocabulary.s_c_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionArtifact.class);

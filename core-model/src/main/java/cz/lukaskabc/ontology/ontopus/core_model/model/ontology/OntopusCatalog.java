@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.ontology;
 
+import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.cvut.kbss.jopa.model.annotations.Types;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /** A catalog of {@link VersionArtifact} served by the ontopus instance */
+@Context(Vocabulary.s_c_OntopusCatalog)
 @OWLClass(iri = Vocabulary.s_c_OntopusCatalog)
 public class OntopusCatalog extends Catalog<OntopusCatalogURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(OntopusCatalog.class);

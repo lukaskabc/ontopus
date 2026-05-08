@@ -11,12 +11,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.MappedClassTypesResol
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.SerializableImportProcessContext;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Context(Vocabulary.s_c_VersionSeries)
 @OWLClass(iri = Vocabulary.s_c_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionSeries.class);
@@ -40,7 +42,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private URI first;
 
     /** Set of {@link VersionArtifactURI} of individual ontology versions */
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember, fetch = FetchType.LAZY)
+    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember, fetch = FetchType.LAZY)
     private Set<URI> members = new HashSet<>();
 
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)

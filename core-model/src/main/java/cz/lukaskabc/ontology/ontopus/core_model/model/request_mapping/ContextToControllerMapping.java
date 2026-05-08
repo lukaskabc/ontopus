@@ -17,6 +17,7 @@ import java.util.Set;
  * Mapping of an ontology document, or its entities (defined by {@link #mappingType}, to controllers capable of handling
  * requests for the resource.
  */
+@Context(Vocabulary.s_c_ContextToControllerMapping)
 @OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
 public class ContextToControllerMapping extends AbstractPersistenceEntity<ContextToControllerMappingURI> {
     /** The ontology graph */

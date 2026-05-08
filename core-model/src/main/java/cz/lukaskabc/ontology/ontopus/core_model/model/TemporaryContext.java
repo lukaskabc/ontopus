@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model;
 
+import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.jopa.model.annotations.OWLClass;
 import cz.cvut.kbss.jopa.model.annotations.OWLDataProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.Instant;
 
+@Context(Vocabulary.s_c_TemporaryContext)
 @OWLClass(iri = Vocabulary.s_c_TemporaryContext)
 public class TemporaryContext extends AbstractPersistenceEntity<TemporaryContextURI> {
 

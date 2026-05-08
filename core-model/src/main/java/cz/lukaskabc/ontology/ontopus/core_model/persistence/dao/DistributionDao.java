@@ -11,11 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DistributionDao extends AbstractDao<DistributionURI, OntologyDistribution> {
     @Autowired
-    public DistributionDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(
-                OntologyDistribution.class,
-                OntologyDistribution_.entityClassIRI,
-                em,
-                descriptorFactory.ontologyDistribution());
+    public DistributionDao(EntityManager em) {
+        super(OntologyDistribution.class, OntologyDistribution_.entityClassIRI, em);
     }
 }

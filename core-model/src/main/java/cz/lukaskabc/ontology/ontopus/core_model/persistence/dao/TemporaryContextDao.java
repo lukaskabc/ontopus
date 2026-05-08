@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 public class TemporaryContextDao extends AbstractDao<TemporaryContextURI, TemporaryContext> {
     private static final Logger log = LogManager.getLogger(TemporaryContextDao.class);
 
-    public TemporaryContextDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(TemporaryContext.class, TemporaryContext_.entityClassIRI, em, descriptorFactory.temporaryContext());
+    public TemporaryContextDao(EntityManager em) {
+        super(TemporaryContext.class, TemporaryContext_.entityClassIRI, em);
     }
 
     public Stream<TemporaryContextURI> findAll() {

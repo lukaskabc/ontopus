@@ -3,6 +3,7 @@
   "subtitle": "Ontology Publication Server",
   "confirm": "Confirm",
   "cancel": "Cancel",
+  "delete": "Delete",
   "language": "Language",
   "navigation": {
     "ontologies": "Ontologies",
@@ -10,6 +11,10 @@
       "ontologies": "View and manage ontologies",
       "settings": "Settings"
     }
+  },
+  "delete-dialog": {
+    "title": "Are you sure?",
+    "text": "Are you sure you want to delete {{entityName}}? This action is immidiete and can not be undone!"
   },
   "data-format": {
     "_comment_date_reference": "https://www.i18next.com/translation-function/formatting#datetime",

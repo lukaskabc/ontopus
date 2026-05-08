@@ -18,8 +18,8 @@ import java.util.Objects;
 public class VersionSeriesDao extends AbstractDao<VersionSeriesURI, VersionSeries> {
     private static final Logger log = LogManager.getLogger(VersionSeriesDao.class);
 
-    public VersionSeriesDao(EntityManager em, DescriptorFactory factory) {
-        super(VersionSeries.class, VersionSeries_.entityClassIRI, em, factory.ontologyVersionSeries());
+    public VersionSeriesDao(EntityManager em) {
+        super(VersionSeries.class, VersionSeries_.entityClassIRI, em);
     }
 
     @Nullable public VersionSeries findForArtifact(@Nullable VersionArtifactURI ontologyArtifact) {

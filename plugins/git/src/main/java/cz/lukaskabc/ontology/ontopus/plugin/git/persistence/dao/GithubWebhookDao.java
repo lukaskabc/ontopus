@@ -1,7 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
-import cz.cvut.kbss.jopa.model.descriptors.EntityDescriptor;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import cz.lukaskabc.ontology.ontopus.plugin.git.github.GithubWebhookURI;
@@ -17,11 +16,7 @@ public class GithubWebhookDao extends AbstractDao<GithubWebhookURI, GithubWebhoo
     private static final Logger log = LogManager.getLogger(GithubWebhookDao.class);
 
     public GithubWebhookDao(EntityManager em) {
-        super(
-                GithubWebhook.class,
-                GithubWebhook_.entityClassIRI,
-                em,
-                new EntityDescriptor(GithubWebhook_.entityClassIRI.toURI()));
+        super(GithubWebhook.class, GithubWebhook_.entityClassIRI, em);
     }
 
     @Nullable public GithubWebhook findByVersionSeries(VersionSeriesURI versionSeries) {

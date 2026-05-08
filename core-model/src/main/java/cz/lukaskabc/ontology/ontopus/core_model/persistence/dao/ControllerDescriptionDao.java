@@ -9,11 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ControllerDescriptionDao extends AbstractDao<ControllerDescriptionURI, ControllerDescription> {
-    public ControllerDescriptionDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(
-                ControllerDescription.class,
-                ControllerDescription_.entityClassIRI,
-                em,
-                descriptorFactory.controllerDescription());
+    public ControllerDescriptionDao(EntityManager em) {
+        super(ControllerDescription.class, ControllerDescription_.entityClassIRI, em);
     }
 }

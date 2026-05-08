@@ -19,6 +19,10 @@ public class ResourceInContextMappingService {
         this.repository = repository;
     }
 
+    public void deleteByContext(GraphURI graphURI) {
+        repository.deleteMappingForGraph(graphURI);
+    }
+
     public Optional<GraphURI> find(ResourceURI resource) {
         return repository.find(resource).map(ResourceInContextMapping::getObject);
     }

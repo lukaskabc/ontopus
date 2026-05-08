@@ -23,7 +23,7 @@ public abstract class BaseService<
     protected final R repository;
 
     public BaseService(R repository) {
-        this.repository = repository;
+        this.repository = Objects.requireNonNull(repository);
     }
 
     public void delete(E entity) {

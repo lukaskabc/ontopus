@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.regex.Pattern;
 
+@Context(value = Vocabulary.s_c_Webhook, propagate = true)
 @OWLClass(iri = Vocabulary.s_c_Webhook)
 public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebhookURI> {
 

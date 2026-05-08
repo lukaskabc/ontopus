@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.service;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Agent;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Agent_;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
@@ -39,6 +40,13 @@ public class CatalogService {
     }
 
     @Transactional
+    public void removeSeries(VersionSeriesURI versionSeriesURI) {
+        final OntopusCatalog catalog = findRequired();
+        catalog.removeVersionSeries(versionSeriesURI);
+        update(catalog);
+    }
+
+    @Transactional
     public OntopusCatalog update() {
         OntopusCatalog catalog = repository.findRequired();
         updateDetails(catalog);
@@ -65,7 +73,6 @@ public class CatalogService {
         catalog.setHomepage(config.getUri().toURI());
 
         Agent publisher = catalog.getPublisher();
-        ;
         if (publisher == null) {
             publisher = new Agent();
         }

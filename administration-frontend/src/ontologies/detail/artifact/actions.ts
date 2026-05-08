@@ -11,3 +11,8 @@ export function findVersionArtifact(
     .then((response) => response.json())
     .then((data) => new VersionArtifactResponse(data))
 }
+
+export function deleteVersionArtifact(versionArtifactUri: string) {
+  const params = new URLSearchParams({ artifact: versionArtifactUri })
+  return request('DELETE', 'series/artifacts?' + params.toString(), {}, [204])
+}

@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /** A catalog of {@link VersionArtifact} served by the ontopus instance */
-@Context(Vocabulary.s_c_OntopusCatalog)
+@Context(value = Vocabulary.s_c_OntopusCatalog, propagate = true)
 @OWLClass(iri = Vocabulary.s_c_OntopusCatalog)
 public class OntopusCatalog extends Catalog<OntopusCatalogURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(OntopusCatalog.class);

@@ -49,7 +49,7 @@ public class VersionSeriesUpdateFinalizationService implements ImportFinalizingS
         }
 
         final Instant timestamp = timeProvider.getInstant();
-        if (series.getLast() != null) {
+        if (series.getLast() != null && !series.getLast().equals(artifact.getIdentifier())) {
             setIfMissing(artifact::setPreviousVersion, artifact::getPreviousVersion, series.getLast());
         }
         setIfMissing(artifact::setReleaseDate, artifact::getReleaseDate, timestamp);

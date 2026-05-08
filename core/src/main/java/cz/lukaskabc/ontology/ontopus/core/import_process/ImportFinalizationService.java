@@ -65,9 +65,7 @@ public class ImportFinalizationService {
         final VersionArtifact artifact = context.getVersionArtifact();
 
         versionSeriesService.save(series);
-
-        versionArtifactService.delete(artifact);
-        versionArtifactService.persist(artifact);
+        versionArtifactService.save(artifact);
 
         updateCatalog(series);
     }

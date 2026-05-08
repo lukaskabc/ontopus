@@ -25,8 +25,8 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
     private static final Logger log = LogManager.getLogger(VersionArtifactDao.class);
 
     @Autowired
-    public VersionArtifactDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(VersionArtifact.class, VersionArtifact_.entityClassIRI, em, descriptorFactory.ontologyArtifact());
+    public VersionArtifactDao(EntityManager em) {
+        super(VersionArtifact.class, VersionArtifact_.entityClassIRI, em);
     }
 
     public long count(VersionSeriesURI seriesURI, List<String> filter) {
@@ -46,6 +46,20 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
         });
     }
 
+    public List<VersionArtifact> findByPrevVersion(VersionArtifactURI previousVersion) {
+        try {
+            return em.createQuery("""
+					    SELECT artifact FROM VersionArtifact artifact
+					    WHERE artifact.previousVersion = :prev
+					""", VersionArtifact.class)
+                    .setParameter("prev", previousVersion.toURI())
+                    .getResultList();
+        } catch (Exception e) {
+            throw persistenceException(
+                    log, "Failed to find VersionArtifact by previous version: " + previousVersion, e);
+        }
+    }
+
     @Nullable public VersionArtifact findByVersionUri(OntologyVersionURI versionURI) {
         try {
             return resultOrNull(em.createQuery(
@@ -56,6 +70,22 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
         } catch (Exception e) {
             throw AbstractDao.persistenceException(
                     log, "Failed to find version artifact with ontology version URI " + versionURI, e);
+        }
+    }
+
+    @Nullable public VersionArtifact findOldestFromSeries(VersionSeriesURI seriesURI, VersionArtifactURI excluded) {
+        try {
+            return resultOrNull(em.createQuery("""
+					SELECT artifact FROM VersionArtifact artifact
+					    WHERE artifact.series = :series
+					        AND artifact.identifier != :excluded
+					    ORDER BY artifact.releaseDate ASC
+					""", VersionArtifact.class)
+                    .setParameter("series", seriesURI.toURI())
+                    .setParameter("excluded", excluded.toURI())
+                    .setMaxResults(1)::getSingleResult);
+        } catch (Exception e) {
+            throw persistenceException(log, "Failed to find the oldest version artifact from series " + seriesURI, e);
         }
     }
 

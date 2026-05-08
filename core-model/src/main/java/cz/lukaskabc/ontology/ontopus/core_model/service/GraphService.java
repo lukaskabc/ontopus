@@ -49,6 +49,7 @@ public class GraphService {
     public void deleteGraph(GraphURI graphURI) {
         graphRepository.deleteGraph(graphURI);
         contextToControllerMappingService.deleteBySubject(graphURI);
+        resourceInContextMappingService.deleteByContext(graphURI);
     }
 
     /** @see GraphDao#findAllLanguageTags(GraphURI) */

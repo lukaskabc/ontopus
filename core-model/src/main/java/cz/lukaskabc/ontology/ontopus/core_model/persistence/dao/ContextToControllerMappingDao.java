@@ -17,18 +17,14 @@ public class ContextToControllerMappingDao
         extends AbstractDao<ContextToControllerMappingURI, ContextToControllerMapping> {
     private static final Logger log = LogManager.getLogger(ContextToControllerMappingDao.class);
 
-    public ContextToControllerMappingDao(EntityManager em, DescriptorFactory descriptorFactory) {
-        super(
-                ContextToControllerMapping.class,
-                ContextToControllerMapping_.entityClassIRI,
-                em,
-                descriptorFactory.contextToControllerMapping());
+    public ContextToControllerMappingDao(EntityManager em) {
+        super(ContextToControllerMapping.class, ContextToControllerMapping_.entityClassIRI, em);
     }
 
     public void deleteBySubject(GraphURI graphURI) {
         try {
             em.createNativeQuery("""
-					WITH ?context
+					WITH <?context>
 					DELETE {
 					    ?entity ?p ?o .
 					} WHERE {
@@ -36,11 +32,10 @@ public class ContextToControllerMappingDao
 					        ?hasSubject ?subject ;
 					        ?p ?o .
 					}
-					""")
-                    .setParameter("context", entityGraphContext)
+					""".replace("?context", entityGraphContext.toString()))
                     .setParameter("type", typeUri)
                     .setParameter("hasSubject", ContextToControllerMapping_.subjectPropertyIRI)
-                    .setParameter("subject", graphURI)
+                    .setParameter("subject", graphURI.toURI())
                     .executeUpdate();
         } catch (Exception e) {
             throw persistenceException(log, "Failed to delete ContextToControllerMapping by subject", e);

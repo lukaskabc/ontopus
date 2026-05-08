@@ -17,6 +17,11 @@
       "ontologyExists": "The ontology already exists",
       "versionSeriesMismatch": "Ontology version series <{0}> already contains a version artifact with the same version IRI <{1}>",
       "shaclViolation": "Data integrity violation during a database persistence operation.",
+      "noOldestVersionArtifact": "Failed to find oldest version artifact for version series <{0}>",
+      "failedToDelete": {
+        "title":"Failed to delete an entity",
+        "detail": "Failed to delete entity with identifier <{0}>"
+      },
       "versionURI": {
         "failed": "Failed to construct version URI",
         "missingOntologyURI": "Version series are missing ontology URI",

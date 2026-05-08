@@ -3,7 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base;
 import cz.cvut.kbss.jopa.exceptions.NoResultException;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.IRI;
-import cz.cvut.kbss.jopa.model.descriptors.Descriptor;
+import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.cvut.kbss.jopa.model.query.criteria.*;
@@ -21,6 +21,7 @@ import org.springframework.util.function.ThrowingSupplier;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,12 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         return persistenceException(log, message, cause);
     }
 
+    private static URI resolveContext(Class<?> clz) {
+        final Context annotation = clz.getAnnotation(Context.class);
+        Objects.requireNonNull(annotation, "No context annotation specified for entity class " + clz.getName());
+        return URI.create(annotation.value());
+    }
+
     /**
      * Executes the given supplier and returns its result. If a {@link NoResultException} is thrown during the
      * execution, null is returned instead.
@@ -68,16 +75,13 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
 
     protected final URI typeUri;
 
-    protected final Descriptor descriptor;
-
     protected final URI entityGraphContext;
 
-    public AbstractDao(Class<E> entityClass, IRI typeUri, EntityManager em, Descriptor descriptor) {
+    public AbstractDao(Class<E> entityClass, IRI typeUri, EntityManager em) {
         this.entityClass = entityClass;
         this.typeUri = typeUri.toURI();
         this.em = em;
-        this.descriptor = descriptor;
-        this.entityGraphContext = descriptor.getSingleContext().orElseThrow();
+        this.entityGraphContext = resolveContext(entityClass);
     }
 
     private <T> void buildFilteredQuery(
@@ -171,6 +175,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     public void delete(I identifier) {
         Objects.requireNonNull(identifier, "The entity identifier must not be null");
         try {
+            Optional.ofNullable(find(identifier)).ifPresent(em::remove);
             em.createNativeQuery("""
 					DELETE WHERE {
 					    GRAPH ?context {
@@ -203,7 +208,6 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
                     .setParameter("context", entityGraphContext)
                     .setParameter("entity", identifier.toURI())
                     .setParameter("type", typeUri)
-                    .setDescriptor(descriptor)
                     .getSingleResult();
         } catch (RuntimeException e) {
             throw persistenceException("Could not check for existence of " + identifier, e);
@@ -219,7 +223,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     @Nullable public E find(I identifier) {
         try {
             Objects.requireNonNull(identifier);
-            return em.find(entityClass, identifier.toURI(), descriptor);
+            return em.find(entityClass, identifier.toURI());
         } catch (RuntimeException e) {
             throw persistenceException("Could not find entity " + identifier, e);
         }
@@ -273,15 +277,6 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
         }
     }
 
-    public E findReference(I identifier) {
-        Objects.requireNonNull(identifier);
-        try {
-            return em.getReference(entityClass, identifier.toURI());
-        } catch (RuntimeException e) {
-            throw persistenceException("Failed to get reference for entity with identifier: " + identifier, e);
-        }
-    }
-
     public URI getTypeUri() {
         return typeUri;
     }
@@ -294,7 +289,8 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     public void merge(E entity) {
         Objects.requireNonNull(entity);
         try {
-            em.merge(entity, descriptor);
+            em.detach(entity);
+            em.merge(entity);
         } catch (RuntimeException e) {
             throw persistenceException("Failed to merge an entity", e);
         }
@@ -308,7 +304,7 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
     public void persist(E entity) {
         Objects.requireNonNull(entity);
         try {
-            em.persist(entity, descriptor);
+            em.persist(entity);
         } catch (RuntimeException e) {
             throw persistenceException("Failed to persist an entity", e);
         }

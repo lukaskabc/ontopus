@@ -23,6 +23,7 @@ import java.util.Optional;
 @Repository
 public class VersionArtifactRepository
         extends AbstractRepository<VersionArtifactURI, VersionArtifact, VersionArtifactDao> {
+
     public VersionArtifactRepository(
             VersionArtifactDao dao,
             Validator validator,
@@ -42,8 +43,19 @@ public class VersionArtifactRepository
     }
 
     @Transactional(readOnly = true)
+    public List<VersionArtifact> findByPrevVersion(VersionArtifactURI id) {
+        return dao.findByPrevVersion(id);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<VersionArtifact> findByVersionUri(OntologyVersionURI versionURI) {
         return Optional.ofNullable(dao.findByVersionUri(versionURI));
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<VersionArtifact> findOldestFromSeriesExcluding(
+            VersionSeriesURI seriesURI, VersionArtifactURI excluded) {
+        return Optional.ofNullable(dao.findOldestFromSeries(seriesURI, excluded));
     }
 
     @Transactional(readOnly = true)

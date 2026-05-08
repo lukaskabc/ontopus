@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
+// TODO: deduplicate prefix declarations and share them between ontologies/versions
 @Context(Vocabulary.s_c_PrefixDeclaration)
 @OWLClass(iri = Vocabulary.s_c_PrefixDeclaration)
 public class PrefixDeclaration extends Rdf4JAbstractNamespace {

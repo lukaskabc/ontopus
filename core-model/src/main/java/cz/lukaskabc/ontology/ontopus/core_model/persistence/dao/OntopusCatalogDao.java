@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OntopusCatalogDao extends AbstractDao<OntopusCatalogURI, OntopusCatalog> {
     @Autowired
-    public OntopusCatalogDao(EntityManager em, DescriptorFactory descriptorFactory) {
+    public OntopusCatalogDao(EntityManager em) {
 
-        super(OntopusCatalog.class, OntopusCatalog_.entityClassIRI, em, descriptorFactory.ontologyArtifactCatalog());
+        super(OntopusCatalog.class, OntopusCatalog_.entityClassIRI, em);
     }
 }

@@ -95,6 +95,7 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
         newArtifact.setVersionUri(existingArtifact.getVersionUri());
         newArtifact.setSeries(existingArtifact.getSeries());
         newArtifact.setReleaseDate(existingArtifact.getReleaseDate());
+        newArtifact.setPreviousVersion(existingArtifact.getPreviousVersion());
         return null;
     }
 }

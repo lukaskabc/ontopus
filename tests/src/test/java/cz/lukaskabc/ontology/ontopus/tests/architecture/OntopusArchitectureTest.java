@@ -11,6 +11,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @AnalyzeClasses(
-        packages = {"cz.lukaskabc.ontology.ontopus", "cz.cvut.kbss.jopa.model"},
+        packages = {OntopusArchitectureTest.ONTOPUS_PACKAGES, OntopusArchitectureTest.JOPA_MODEL_PACKAGES},
         importOptions = ImportOption.Predefined.DoNotIncludePackageInfos.class)
-public @interface OntopusArchitectureTest {}
+public @interface OntopusArchitectureTest {
+    public static final String ONTOPUS_PACKAGES = "cz.lukaskabc.ontology.ontopus..";
+    public static final String JOPA_MODEL_PACKAGES = "cz.cvut.kbss.jopa.model..";
+}

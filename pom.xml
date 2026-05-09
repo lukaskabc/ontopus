@@ -36,7 +36,6 @@
         <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
 
         <!-- Dependency versions -->
-        <archunit.junit5.version>1.4.1</archunit.junit5.version>
         <error-prone.version>2.36.0</error-prone.version>
         <jackson.annotations.version>2.21</jackson.annotations.version>
         <jackson.version>3.1.2</jackson.version>
@@ -256,11 +255,6 @@
             <artifactId>log4j-api</artifactId>
             <scope>${ontopus.inherited.dependency.scope}</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j2-impl</artifactId>
-            <scope>${ontopus.inherited.dependency.scope}</scope>
-        </dependency>
 
         <!-- Testing -->
         <dependency>
@@ -268,16 +262,17 @@
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.tngtech.archunit</groupId>
-            <artifactId>archunit-junit5</artifactId>
-            <version>${archunit.junit5.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

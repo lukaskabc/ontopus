@@ -59,7 +59,7 @@ ENV XDG_CONFIG_HOME=/tmp/xdg_config
 
 EXPOSE ${SERVER_PORT}/tcp
 
-COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
+COPY --from=backend /build/core/target/*-executable.jar /ontopus/core.jar
 COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
 COPY --from=backend /build/plugin-api/target/*.jar /ontopus/plugins/
 

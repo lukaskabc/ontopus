@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.versioning;
+package cz.lukaskabc.ontology.ontopus.plugin.versioning.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
@@ -12,6 +12,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.plugin.versioning.VersioningContextParameters;
+import cz.lukaskabc.ontology.ontopus.plugin.versioning.VersioningPlugin;
 import cz.lukaskabc.ontology.ontopus.plugin.versioning.service.PredicateService;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;

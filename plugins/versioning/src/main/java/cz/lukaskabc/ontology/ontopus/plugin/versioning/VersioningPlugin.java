@@ -7,14 +7,14 @@ import java.util.Set;
 
 /** OntoPuS plugin providing versioning services for date based and semantic versioning. */
 public class VersioningPlugin implements Plugin {
-    static final Set<URI> VERSION_EXAMPLES = Set.of(
+    public static final Set<URI> VERSION_EXAMPLES = Set.of(
             URI.create("http://purl.org/dc/terms/hasVersion"),
             URI.create("http://purl.org/pav/version"),
             URI.create("http://schema.org/schemaVersion"),
             URI.create("http://www.w3.org/ns/dcat#version"),
             URI.create("http://www.w3.org/2002/07/owl#versionInfo"));
-    static final Set<URI> VERSION_IRI_EXAMPLES = Set.of(URI.create("http://www.w3.org/2002/07/owl#versionIRI"));
-    static final Set<URI> PREVIOUS_VERSION_EXAMPLE = Set.of(
+    public static final Set<URI> VERSION_IRI_EXAMPLES = Set.of(URI.create("http://www.w3.org/2002/07/owl#versionIRI"));
+    public static final Set<URI> PREVIOUS_VERSION_EXAMPLE = Set.of(
             URI.create("https://www.w3.org/2002/07/owl#priorVersion"),
             URI.create("http://purl.org/dc/terms/replaces"),
             URI.create("http://purl.org/pav/previousVersion"));

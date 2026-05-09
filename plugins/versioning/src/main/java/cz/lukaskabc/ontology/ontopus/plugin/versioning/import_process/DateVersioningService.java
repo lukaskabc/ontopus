@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.versioning;
+package cz.lukaskabc.ontology.ontopus.plugin.versioning.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;

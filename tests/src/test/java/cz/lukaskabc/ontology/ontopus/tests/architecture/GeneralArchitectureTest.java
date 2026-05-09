@@ -11,7 +11,6 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.dependencies.SliceAssignment;
 import com.tngtech.archunit.library.dependencies.SliceIdentifier;
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
-import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.util.PropertyMapper;
 import org.apache.logging.log4j.Logger;
 
@@ -22,13 +21,6 @@ public class GeneralArchitectureTest extends BaseArchitectureTest {
     @ArchTest
     static final ArchRule initializationServicesShouldResideInInitPackage =
             classes().that().implement(InitializationService.class).should().resideInAPackage("..service.init..");
-
-    @ArchTest
-    static final ArchRule orderedImportServicesResidesInOrderedPackage = classes()
-            .that()
-            .implement(OrderedImportPipelineService.class)
-            .should()
-            .resideInAPackage("..import_process.ordered..");
 
     @ArchTest
     static final ArchRule pluginArchitectureShouldBeStrictlyRespected = layeredArchitecture()

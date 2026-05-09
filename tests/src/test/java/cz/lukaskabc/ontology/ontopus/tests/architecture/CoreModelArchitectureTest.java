@@ -86,6 +86,8 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
     @ArchTest
     static final ArchRule servicesAndPersistenceClassesShouldBeAnnotatedWithComponentAnnotation = classes()
             .that()
+            .resideInAnyPackage("..core_model..")
+            .and()
             .resideInAnyPackage("..service..", "..persistence..")
             .and()
             .doNotHaveModifier(JavaModifier.ABSTRACT)

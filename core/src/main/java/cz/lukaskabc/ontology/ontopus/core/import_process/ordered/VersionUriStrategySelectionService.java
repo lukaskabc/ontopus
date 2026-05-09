@@ -5,6 +5,7 @@ import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ResultHandlingServiceWrapper;
+import cz.lukaskabc.ontology.ontopus.core.import_process.ImportProcessServiceOrder;
 import cz.lukaskabc.ontology.ontopus.core.import_process.VersionURIConstructionService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;

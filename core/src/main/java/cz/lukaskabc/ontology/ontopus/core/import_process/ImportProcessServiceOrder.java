@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
+package cz.lukaskabc.ontology.ontopus.core.import_process;
 
 public class ImportProcessServiceOrder {
     private static final int SINGLE_STAGE = 1000;

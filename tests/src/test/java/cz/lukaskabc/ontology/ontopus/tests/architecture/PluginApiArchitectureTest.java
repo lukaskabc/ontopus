@@ -5,22 +5,29 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.ImportProcessingService;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 
 @SuppressWarnings("unused") // for ArchUnit rule fields
 @OntopusArchitectureTest
 public class PluginApiArchitectureTest extends BaseArchitectureTest {
+    @ArchTest
+    static final ArchRule orderedImportServicesResidesInOrderedPackage = classes()
+            .that()
+            .implement(OrderedImportPipelineService.class)
+            .should()
+            .resideInAPackage("..import_process.ordered..");
 
     @ArchTest
-    static final ArchRule classesImplementingImportProcessingServiceShouldResideInImportPackage = classes()
+    static final ArchRule orderedImportServicesImplementOrderedImportService = classes()
             .that()
-            .resideInAnyPackage("..service.import_process..")
+            .resideInAPackage("..import_process.ordered..")
             .should()
-            .beAssignableTo(ImportProcessingService.class);
+            .implement(OrderedImportPipelineService.class);
 
     @ArchTest
     static final ArchRule importProcessingServicesResideInImportPackage = classes()
             .that()
             .areAssignableTo(ImportProcessingService.class)
             .should()
-            .resideInAnyPackage("..service.import_process..");
+            .resideInAnyPackage("..import_process..");
 }

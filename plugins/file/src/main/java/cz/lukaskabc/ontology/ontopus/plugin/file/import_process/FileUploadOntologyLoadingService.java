@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.file;
+package cz.lukaskabc.ontology.ontopus.plugin.file.import_process;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;

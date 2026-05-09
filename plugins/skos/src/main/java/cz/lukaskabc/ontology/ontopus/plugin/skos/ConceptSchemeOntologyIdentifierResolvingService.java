@@ -1,6 +1,6 @@
-package cz.lukaskabc.ontology.ontopus.plugin.owl;
+package cz.lukaskabc.ontology.ontopus.plugin.skos;
 
-import cz.cvut.kbss.jopa.vocabulary.OWL;
+import cz.cvut.kbss.jopa.vocabulary.SKOS;
 import cz.lukaskabc.ontology.ontopus.api.service.OntologyIdentifierResolvingService;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TemporaryContextURI;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
@@ -11,11 +11,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class OWLOntologyIdentifierResolvingService implements OntologyIdentifierResolvingService {
-    static final URI OWL_ONTOLOGY = URI.create(OWL.ONTOLOGY);
+public class ConceptSchemeOntologyIdentifierResolvingService implements OntologyIdentifierResolvingService {
+    static final URI CONCEPT_SCHEME = URI.create(SKOS.CONCEPT_SCHEME);
     private final GraphService graphService;
 
-    public OWLOntologyIdentifierResolvingService(GraphService graphService) {
+    public ConceptSchemeOntologyIdentifierResolvingService(GraphService graphService) {
         this.graphService = graphService;
     }
 
@@ -23,7 +23,7 @@ public class OWLOntologyIdentifierResolvingService implements OntologyIdentifier
     public Set<URI> resolve(TemporaryContextURI databaseContext) {
         try {
             return graphService
-                    .findAllSubjectsOfType(OWL_ONTOLOGY, databaseContext)
+                    .findAllSubjectsOfType(CONCEPT_SCHEME, databaseContext)
                     .collect(Collectors.toSet());
         } catch (Exception e) {
             return Set.of();

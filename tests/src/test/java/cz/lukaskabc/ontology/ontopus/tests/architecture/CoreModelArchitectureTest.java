@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core_model;
+package cz.lukaskabc.ontology.ontopus.tests.architecture;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
@@ -12,8 +12,6 @@ import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
-import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
-import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

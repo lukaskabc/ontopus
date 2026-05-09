@@ -115,17 +115,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cz.lukaskabc.ontology.ontopus</groupId>
-            <artifactId>test-utils</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>

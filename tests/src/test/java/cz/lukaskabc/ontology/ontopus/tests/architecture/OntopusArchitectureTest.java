@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.test.utils;
+package cz.lukaskabc.ontology.ontopus.tests.architecture;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;

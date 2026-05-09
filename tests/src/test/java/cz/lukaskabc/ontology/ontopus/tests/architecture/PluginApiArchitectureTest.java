@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.api;
+package cz.lukaskabc.ontology.ontopus.tests.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;

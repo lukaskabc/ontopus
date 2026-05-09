@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core;
+package cz.lukaskabc.ontology.ontopus.tests.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
@@ -11,8 +11,6 @@ import com.tngtech.archunit.library.dependencies.SliceAssignment;
 import com.tngtech.archunit.library.dependencies.SliceIdentifier;
 import cz.lukaskabc.ontology.ontopus.api.service.core.InitializationService;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
-import cz.lukaskabc.ontology.ontopus.test.utils.BaseArchitectureTest;
-import cz.lukaskabc.ontology.ontopus.test.utils.OntopusArchitectureTest;
 
 @SuppressWarnings("unused") // for ArchUnit rule fields
 @OntopusArchitectureTest

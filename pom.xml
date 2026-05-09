@@ -21,8 +21,8 @@
         <module>plugins/skos</module>
         <module>plugins/versioning</module>
         <module>plugins/widoco</module>
-        <module>test-utils</module>
         <module>config-doc-gen</module>
+        <module>tests</module>
     </modules>
 
     <!-- spotless:off -->

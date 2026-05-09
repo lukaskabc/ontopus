@@ -40,6 +40,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Holds an instance of {@link ImportProcessContext} for the current web session and controls concurrent access to the
+ * instance.
+ */
 @SessionScope
 @NullMarked
 @Component

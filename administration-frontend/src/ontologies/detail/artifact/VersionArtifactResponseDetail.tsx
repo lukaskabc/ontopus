@@ -58,7 +58,7 @@ export default function VersionArtifactResponseDetail({ versionArtifact }: Versi
           positiveColor={'error'}
           negativeColor={'primary'}
         >
-          {t('delete-dialog.text', { entityName: t('entity.version-artifact.title') })}
+          {t('delete-dialog.version-artifact-text', { entityName: t('entity.version-artifact.title') })}
         </ActionConfirmDialog>
       </PromiseArea>
     </>

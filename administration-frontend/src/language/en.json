@@ -14,7 +14,7 @@
   },
   "delete-dialog": {
     "title": "Are you sure?",
-    "text": "Are you sure you want to delete {{entityName}}? This action is immidiete and can not be undone!"
+    "version-artifact-text": "Are you sure you want to delete {{entityName}}? This action is immidiete and can not be undone! Deleting the latest version will make the ontology unavailable at the onotlogy URI until a new version is published!"
   },
   "data-format": {
     "_comment_date_reference": "https://www.i18next.com/translation-function/formatting#datetime",

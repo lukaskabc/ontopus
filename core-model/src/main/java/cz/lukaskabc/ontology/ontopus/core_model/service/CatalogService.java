@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Agent_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.util.DcatIdentifierProvider;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +18,17 @@ public class CatalogService {
     private final CatalogRepository repository;
     private final TimeProvider timeProvider;
     private final OntopusConfig.DcatCatalog config;
+    private final DcatIdentifierProvider identifierProvider;
 
-    public CatalogService(CatalogRepository repository, TimeProvider timeProvider, OntopusConfig config) {
+    public CatalogService(
+            CatalogRepository repository,
+            TimeProvider timeProvider,
+            OntopusConfig config,
+            DcatIdentifierProvider identifierProvider) {
         this.repository = repository;
         this.timeProvider = timeProvider;
         this.config = config.getDcatCatalog();
+        this.identifierProvider = identifierProvider;
     }
 
     public boolean catalogExists() {
@@ -59,7 +66,7 @@ public class CatalogService {
     }
 
     protected void updateDetails(OntopusCatalog catalog) {
-        // catalog.setIdentifier(config.getUri());
+        catalog.setIdentifier(identifierProvider.getCatalogUri());
 
         // resource
         catalog.getDescription().set(config.getLanguage(), config.getDescription());
@@ -70,7 +77,7 @@ public class CatalogService {
         catalog.setModifiedDate(catalog.getReleaseDate());
 
         // catalog
-        // catalog.setHomepage(config.getUri().toURI());
+        catalog.setHomepage(catalog.getIdentifier().toURI());
 
         Agent publisher = catalog.getPublisher();
         if (publisher == null) {

@@ -1,5 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.service;
 
+import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ContextToControllerMappingURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
@@ -25,6 +27,8 @@ public class ContextToControllerMappingService
             Set<ControllerDescription> controllers,
             MappingType mappingType,
             Set<ContextToControllerMapping> existingMappings) {
+
+        // attempt to reuse existing mapping
         return existingMappings.stream()
                 .filter(mapping -> mapping.getMappingType().equals(mappingType))
                 .filter(mapping -> mapping.getSubject().equals(contextURI))
@@ -33,6 +37,10 @@ public class ContextToControllerMappingService
                     mapping.getControllers().addAll(controllers);
                     return mapping;
                 })
+                // attempt to reuse existing mapping from database
+                .or(() -> repository.findByTypeAndContext(MappingType.ONTOLOGY_DOCUMENT, contextURI))
+                // replace controllers overriding data from database
+                .map(existing -> existing.setControllers(controllers))
                 .orElseGet(() -> {
                     final ContextToControllerMapping mapping = new ContextToControllerMapping();
                     mapping.setSubject(contextURI);
@@ -61,17 +69,10 @@ public class ContextToControllerMappingService
     }
 
     public ContextToControllerMapping findByTypeAndContext(MappingType type, GraphURI contextURI) {
-        return repository.findByTypeAndContext(type, contextURI);
+        return repository.findByTypeAndContext(type, contextURI).orElseThrow(() -> NotFoundException.builder()
+                .internalMessage("ContextToControllerMapping not found for type " + type + " and context " + contextURI)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .titleMessageCode("ontopus.core.error.notFound.title")
+                .build());
     }
-
-    // public ContextToControllerMapping findOntologyMappingByContext(GraphURI
-    // graphURI) {
-    // return repository.findByTypeAndContext(MappingType.ONTOLOGY_DOCUMENT,
-    // graphURI);
-    // }
-    //
-    // public ContextToControllerMapping findResourceMappingByContext(GraphURI
-    // graphURI) {
-    // return repository.findByTypeAndContext(MappingType.RESOURCE, graphURI);
-    // }
 }

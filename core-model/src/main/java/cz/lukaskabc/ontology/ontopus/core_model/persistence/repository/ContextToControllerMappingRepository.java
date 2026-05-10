@@ -1,8 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.repository;
 
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ContextToControllerMappingURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.ContextToControllerMapping;
@@ -35,13 +33,7 @@ public class ContextToControllerMappingRepository
     }
 
     @Transactional(readOnly = true)
-    public ContextToControllerMapping findByTypeAndContext(MappingType mappingType, GraphURI graphURI) {
-        return Optional.ofNullable(dao.findByTypeAndContext(mappingType, graphURI))
-                .orElseThrow(() -> NotFoundException.builder()
-                        .internalMessage("ContextToControllerMapping not found for type " + mappingType
-                                + " and context " + graphURI)
-                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                        .titleMessageCode("ontopus.core.error.notFound.title")
-                        .build());
+    public Optional<ContextToControllerMapping> findByTypeAndContext(MappingType mappingType, GraphURI graphURI) {
+        return Optional.ofNullable(dao.findByTypeAndContext(mappingType, graphURI));
     }
 }

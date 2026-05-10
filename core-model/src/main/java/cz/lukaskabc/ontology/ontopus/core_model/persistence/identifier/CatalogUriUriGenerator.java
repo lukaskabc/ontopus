@@ -19,6 +19,10 @@ public class CatalogUriUriGenerator implements IdentifierGenerator<OntopusCatalo
 
     @Override
     public OntopusCatalogURI generate(OntopusCatalog entity) {
+        return getUri();
+    }
+
+    public OntopusCatalogURI getUri() {
         return uri;
     }
 

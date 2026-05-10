@@ -53,16 +53,19 @@ public class ContextToControllerMapping extends AbstractPersistenceEntity<Contex
         this.controllers.remove(controller);
     }
 
-    public void setControllers(Set<ControllerDescription> controllers) {
+    public ContextToControllerMapping setControllers(Set<ControllerDescription> controllers) {
         this.controllers = controllers;
+        return this;
     }
 
-    public void setMappingType(MappingType mappingType) {
+    public ContextToControllerMapping setMappingType(MappingType mappingType) {
         this.mappingType = mappingType;
+        return this;
     }
 
-    public void setSubject(GraphURI graphURI) {
+    public ContextToControllerMapping setSubject(GraphURI graphURI) {
         this.subject = graphURI.toURI();
+        return this;
     }
 
     @Override

@@ -83,11 +83,12 @@ FROM ontopus-base-fe AS ontopus
 USER ontopus:ontopus
 WORKDIR /ontopus
 
+COPY --from=backend /build/plugins/*/target/*.jar /ontopus/plugins/
+
 ARG ONTOPUS_VERSION
 ARG ONTOPUS_PERSISTENT_DATA_DIR
 
 ENV ONTOPUS_PLUGIN_WIDOCO_PATH=/data/widoco/
 ENV ONTOPUS_PLUGIN_WIDOCO_FILES_DIRECTORY=${ONTOPUS_PERSISTENT_DATA_DIR}/widoco
 
-COPY --from=backend /build/plugins/*/target/*.jar /ontopus/plugins/
 

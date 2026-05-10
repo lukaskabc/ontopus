@@ -40,7 +40,7 @@ public class ContextToControllerMappingService
                 // attempt to reuse existing mapping from database
                 .or(() -> repository.findByTypeAndContext(MappingType.ONTOLOGY_DOCUMENT, contextURI))
                 // replace controllers overriding data from database
-                .map(existing -> existing.setControllers(controllers))
+                .map(existing -> existing.setControllers(new HashSet<>(controllers)))
                 .orElseGet(() -> {
                     final ContextToControllerMapping mapping = new ContextToControllerMapping();
                     mapping.setSubject(contextURI);

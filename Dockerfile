@@ -39,7 +39,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 RUN rm ./*/target/original-*.jar || true
 RUN rm ./plugins/*/target/original-*.jar
 
-FROM eclipse-temurin:25-jre-alpine as ontopus-base
+FROM eclipse-temurin:25-jre-alpine AS ontopus-base
 # OntoPuS Core, Core model and plugin api, with no additional plugins and without frontend
 
 RUN addgroup -S ontopus && adduser -S ontopus -G ontopus
@@ -70,7 +70,7 @@ ENTRYPOINT ["java", \
 "-XX:+UseStringDeduplication", \
 "-jar", "./core.jar"]
 
-FROM ontopus-base as ontopus-base-fe
+FROM ontopus-base AS ontopus-base-fe
 # OntoPuS Core, Core model, plugin API and frontend, with no additional plugins
 USER ontopus:ontopus
 WORKDIR /ontopus
@@ -78,7 +78,7 @@ WORKDIR /ontopus
 ENV ONTOPUS_FRONTEND_INDEX_FILE=/ontopus/admin/index.html
 COPY --from=frontend /administration-frontend/dist /ontopus/admin
 
-FROM ontopus-base-fe as ontopus
+FROM ontopus-base-fe AS ontopus
 # OntoPuS Core, Core model, plugin API, frontend and all plugins
 USER ontopus:ontopus
 WORKDIR /ontopus
@@ -89,7 +89,5 @@ ARG ONTOPUS_PERSISTENT_DATA_DIR
 ENV ONTOPUS_PLUGIN_WIDOCO_PATH=/data/widoco/
 ENV ONTOPUS_PLUGIN_WIDOCO_FILES_DIRECTORY=${ONTOPUS_PERSISTENT_DATA_DIR}/widoco
 
-COPY --from=backend /build/core/target/*.jar /ontopus/core.jar
-COPY --from=backend /build/core-model/target/*.jar /ontopus/plugins/
 COPY --from=backend /build/plugins/*/target/*.jar /ontopus/plugins/
 

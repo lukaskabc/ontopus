@@ -26,15 +26,15 @@ COPY pom.xml .
 COPY --parents ./*/pom.xml .
 COPY --parents ./plugins/*/pom.xml .
 
-ARG ONTOPUS_VERSION
-
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -Drevision=${ONTOPUS_VERSION} -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+    ./mvnw -Drevision=cached -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
 
 COPY --exclude=administration-frontend . .
 
+ARG ONTOPUS_VERSION
+
 RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw clean package -Drevision=${ONTOPUS_VERSION} -Dspotless.skip -DskipTests
+    ./mvnw clean package -Drevision=${ONTOPUS_VERSION} -Dspotless.skip
 
 RUN rm ./*/target/original-*.jar || true
 RUN rm ./plugins/*/target/original-*.jar

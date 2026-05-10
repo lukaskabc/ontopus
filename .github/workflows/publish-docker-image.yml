@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+    branches: # only build and maintain cache used by tags
+      - main
 
 env:
   REGISTRY: ghcr.io

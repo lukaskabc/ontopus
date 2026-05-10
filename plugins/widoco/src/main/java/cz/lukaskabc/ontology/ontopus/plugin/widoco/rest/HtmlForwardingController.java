@@ -6,6 +6,7 @@ import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.plugin.widoco.persistence.repository.OntologyRepository;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Set;
 
 @NullMarked
@@ -23,8 +25,11 @@ public class HtmlForwardingController
             Set.of(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML);
     private final OntopusConfig ontopusConfig;
 
-    public HtmlForwardingController(OntopusConfig ontopusConfig) {
+    private final OntologyRepository ontologyRepository;
+
+    public HtmlForwardingController(OntopusConfig ontopusConfig, OntologyRepository ontologyRepository) {
         this.ontopusConfig = ontopusConfig;
+        this.ontologyRepository = ontologyRepository;
     }
 
     private UriComponentsBuilder buildRedirectDestination(OntopusRequest requestContext) {
@@ -33,6 +38,12 @@ public class HtmlForwardingController
                 .path("/")
                 .path(StringUtils.base64EncodeUri(
                         requestContext.ontologyVersionUri().toString()));
+    }
+
+    /// @see <a href="https://github.com/lukaskabc/ontopus/issues/14">GitHub Issue
+    ///      #14</a>
+    private URI findPreferredNamespace(OntopusRequest requestContext) {
+        return ontologyRepository.findPreferredNamespaceByVersionURI(requestContext.ontologyVersionUri());
     }
 
     private <T> ResponseEntity<T> found(String destination) {
@@ -56,8 +67,11 @@ public class HtmlForwardingController
     /** Forwards requests for resource to requests of the ontology */
     @Override
     public ResponseEntity<StreamingResponseBody> handleResourceRequest(OntopusRequest requestContext) {
+        final URI namespace = findPreferredNamespace(requestContext);
+        final String resourceWithoutNamespace =
+                requestContext.requestedURI().toString().replace(namespace.toString(), "");
         final String destination = buildRedirectDestination(requestContext)
-                .fragment(requestContext.requestedURI().toString())
+                .fragment(resourceWithoutNamespace)
                 .toUriString();
         return found(destination);
     }

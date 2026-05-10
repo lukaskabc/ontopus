@@ -38,7 +38,7 @@ public class OntopusConfig {
 
     @Valid private Database database = new Database();
 
-    @Valid private DcatCatalog dcatCatalog = new DcatCatalog(this);
+    @Valid private DcatCatalog dcatCatalog = new DcatCatalog();
 
     @Valid private Files files = new Files();
 
@@ -170,8 +170,7 @@ public class OntopusConfig {
     }
 
     @NullUnmarked
-    public static class DcatCatalog {
-        private final OntopusConfig ontopusConfig;
+    public class DcatCatalog {
         /**
          * Base URI used for DCAT resource identifiers. The URI must not contain a fragment.
          *
@@ -198,13 +197,9 @@ public class OntopusConfig {
         /** The name of the catalog publisher */
         @NotEmpty private String publisherName;
 
-        public DcatCatalog(OntopusConfig ontopusConfig) {
-            this.ontopusConfig = ontopusConfig;
-        }
-
         public URI getBaseUri() {
             if (baseUri == null) {
-                return ontopusConfig.getSystemUri().resolve("/dcat/");
+                return getSystemUri().resolve("/dcat/");
             }
             return baseUri;
         }

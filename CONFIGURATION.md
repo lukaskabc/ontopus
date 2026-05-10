@@ -8,13 +8,13 @@
 | ```ONTOPUS_DCAT_CATALOG_PUBLISHER_NAME```**\*** | The name of the catalog publisher<br>value must be present and not empty |
 | ```ONTOPUS_DCAT_CATALOG_PUBLISHER_TYPE```**\*** | The type of catalog publisher. The publisher is an<a href="http://xmlns.com/foaf/0.1/Agent"> ```foaf:Agent```</a>.<p>Example values:<br><br>```http://xmlns.com/foaf/0.1/Person```<br><br>```http://xmlns.com/foaf/0.1/Organization```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_TITLE```**\*** | Title of the catalog<br>Default value: ```OntoPuS Ontology Catalog```<br>value must be present and not empty |
-| ```ONTOPUS_DCAT_CATALOG_URI```**\*** | Default value: ```URI.create("http://localhost/ontopus/catalog")```<br>value must be present |
 | ```ONTOPUS_PLUGIN_WIDOCO_EXECUTION_TIMEOUT```**\*** | Default value: ```Duration.ofMinutes(10)```<br>value must be present |
 | ```ONTOPUS_PLUGIN_WIDOCO_FILES_DIRECTORY```**\*** | Persistent directory for generated files<br>value must be present |
 | ```ONTOPUS_PLUGIN_WIDOCO_PATH```**\*** | Path to widoco executable jar<br>value must be present |
 | ```ONTOPUS_SYSTEM_URI```**\*** | The URI dedicated for the OntoPuS. Base paths are not supported. Usually you want to keep HTTP protocol and<br>replace the domain with dedicated subdomain for the server. Example: ```http://example.com```<br>Default value: ```URI.create("http://localhost")```<br>value must be present |
 | ```ONTOPUS_DATABASE_PASSWORD``` | Password for authentication with database repository |
 | ```ONTOPUS_DATABASE_USERNAME``` | Username for authentication with database repository |
+| ```ONTOPUS_DCAT_CATALOG_BASE_URI``` | Base URI used for DCAT resource identifiers. The URI must not contain a fragment.<br>Default value: ```systemURI with ; {@code /dcat/}; path``` |
 | ```ONTOPUS_DCAT_CATALOG_LANGUAGE``` | Language of the catalog metadata (title, description).<br>Default value: ```null``` |
 | ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100``` |
 | ```ONTOPUS_FILES_DEFAULT_GLOB_PATTERN``` | Default value: ```**.{nt,rdf,ttl,trig,trigs,brf,ttls}``` |

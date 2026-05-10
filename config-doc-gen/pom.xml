@@ -61,8 +61,8 @@
                                     <sources>
                                         <source>../core/src/main/java</source>
                                         <source>../core-model/src/main/java</source>
-                                        <source>../plugin-widoco/src/main/java</source>
-                                        <source>../plugin-git/src/main/java</source>
+                                        <source>../plugins/widoco/src/main/java</source>
+                                        <source>../plugins/git/src/main/java</source>
                                     </sources>
                                 </configuration>
                             </execution>

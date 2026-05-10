@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class DistributionUriGenerator extends AbstractIdentifierGenerator<DistributionURI, OntologyDistribution> {
@@ -24,9 +25,9 @@ public class DistributionUriGenerator extends AbstractIdentifierGenerator<Distri
         String format = StringUtils.sanitize(entity.getFormat());
 
         int attempt = 0;
-        final String base = OntologyDistribution_.entityClassIRI + "/" + title + "/" + format;
+        final String base = OntologyDistribution_.entityClassIRI + "/" + title + "/" + format + "/";
         while (attempt < MAX_GENERATION_ATTEMPTS) {
-            URI generated = URI.create(base + (attempt > 0 ? attempt : ""));
+            URI generated = URI.create(base + UUID.randomUUID());
 
             if (isUnique(generated)) {
                 return new DistributionURI(generated);

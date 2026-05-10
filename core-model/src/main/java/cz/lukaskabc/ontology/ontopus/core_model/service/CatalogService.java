@@ -59,7 +59,7 @@ public class CatalogService {
     }
 
     protected void updateDetails(OntopusCatalog catalog) {
-        catalog.setIdentifier(config.getUri());
+        // catalog.setIdentifier(config.getUri());
 
         // resource
         catalog.getDescription().set(config.getLanguage(), config.getDescription());
@@ -70,7 +70,7 @@ public class CatalogService {
         catalog.setModifiedDate(catalog.getReleaseDate());
 
         // catalog
-        catalog.setHomepage(config.getUri().toURI());
+        // catalog.setHomepage(config.getUri().toURI());
 
         Agent publisher = catalog.getPublisher();
         if (publisher == null) {

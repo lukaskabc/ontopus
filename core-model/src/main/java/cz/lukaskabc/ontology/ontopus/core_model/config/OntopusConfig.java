@@ -1,6 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -38,7 +38,7 @@ public class OntopusConfig {
 
     @Valid private Database database = new Database();
 
-    @Valid private DcatCatalog dcatCatalog = new DcatCatalog();
+    @Valid private DcatCatalog dcatCatalog = new DcatCatalog(this);
 
     @Valid private Files files = new Files();
 
@@ -88,9 +88,8 @@ public class OntopusConfig {
         this.dcatCatalog = dcatCatalog;
     }
 
-    public OntopusConfig setDefaultMaxPageSize(int defaultMaxPageSize) {
+    public void setDefaultMaxPageSize(int defaultMaxPageSize) {
         this.defaultMaxPageSize = defaultMaxPageSize;
-        return this;
     }
 
     public void setFiles(Files files) {
@@ -172,7 +171,13 @@ public class OntopusConfig {
 
     @NullUnmarked
     public static class DcatCatalog {
-        @NotNull private URI uri;
+        private final OntopusConfig ontopusConfig;
+        /**
+         * Base URI used for DCAT resource identifiers. The URI must not contain a fragment.
+         *
+         * @configurationdoc.default systemURI with {@code /dcat/} path
+         */
+        @Nullable private URI baseUri;
         /** Description of the catalog */
         @NotEmpty private String description = "Catalog of published ontologies on this OntoPuS instance";
         /** Title of the catalog */
@@ -192,6 +197,17 @@ public class OntopusConfig {
 
         /** The name of the catalog publisher */
         @NotEmpty private String publisherName;
+
+        public DcatCatalog(OntopusConfig ontopusConfig) {
+            this.ontopusConfig = ontopusConfig;
+        }
+
+        public URI getBaseUri() {
+            if (baseUri == null) {
+                return ontopusConfig.getSystemUri().resolve("/dcat/");
+            }
+            return baseUri;
+        }
 
         public String getDescription() {
             return description;
@@ -213,8 +229,22 @@ public class OntopusConfig {
             return title;
         }
 
-        public OntopusCatalogURI getUri() {
-            return new OntopusCatalogURI(uri);
+        public void setBaseUri(@Nullable URI baseUri) {
+            if (baseUri == null) {
+                this.baseUri = null;
+                return;
+            }
+
+            // getFragment returns empty string if the URI contains # with no value
+            if (baseUri.toString().contains("#")) {
+                throw new InitializationException("DCAT base URI must not contain a fragment!");
+            }
+
+            if (!baseUri.toString().endsWith("/")) {
+                baseUri = URI.create(baseUri + "/");
+            }
+
+            this.baseUri = baseUri;
         }
 
         public void setDescription(String description) {
@@ -225,22 +255,16 @@ public class OntopusConfig {
             this.language = language;
         }
 
-        public DcatCatalog setPublisherName(String publisherName) {
+        public void setPublisherName(String publisherName) {
             this.publisherName = publisherName;
-            return this;
         }
 
-        public DcatCatalog setPublisherType(URI publisherType) {
+        public void setPublisherType(URI publisherType) {
             this.publisherType = publisherType;
-            return this;
         }
 
         public void setTitle(String title) {
             this.title = title;
-        }
-
-        public void setUri(URI uri) {
-            this.uri = uri;
         }
     }
 
@@ -312,9 +336,8 @@ public class OntopusConfig {
             return trailingSlashFallsBackToNoSlash;
         }
 
-        public Resource setCacheControlMaxAge(Duration cacheControlMaxAge) {
+        public void setCacheControlMaxAge(Duration cacheControlMaxAge) {
             this.cacheControlMaxAge = cacheControlMaxAge;
-            return this;
         }
 
         public void setHttpFallsBackToHttps(boolean httpFallsBackToHttps) {

@@ -1,9 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier;
 
-import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.IdentifierGenerationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntopusCatalogURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
+import cz.lukaskabc.ontology.ontopus.core_model.util.DcatIdentifierProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -13,8 +13,8 @@ public class CatalogUriUriGenerator implements IdentifierGenerator<OntopusCatalo
     private static final Logger log = LogManager.getLogger(CatalogUriUriGenerator.class);
     private final OntopusCatalogURI uri;
 
-    public CatalogUriUriGenerator(OntopusConfig ontopusConfig) {
-        this.uri = ontopusConfig.getDcatCatalog().getUri();
+    public CatalogUriUriGenerator(DcatIdentifierProvider provider) {
+        this.uri = provider.getCatalogUri();
     }
 
     @Override

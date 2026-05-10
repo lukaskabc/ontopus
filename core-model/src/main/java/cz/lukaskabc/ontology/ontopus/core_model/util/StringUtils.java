@@ -10,6 +10,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils extends org.springframework.util.StringUtils {
@@ -20,6 +21,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
     private static final Pattern SLASH_PLUS = Pattern.compile("/+");
 
     private static final Pattern MINUS_PLUS = Pattern.compile("-+");
+
+    private static final Pattern ALLOWED_CHARACTERS_MERGER = Pattern.compile("[-_]{2,}");
 
     /**
      * Decodes the string using {@link Base64#getUrlDecoder()} and {@link StandardCharsets#UTF_8}, which expects a
@@ -96,10 +99,13 @@ public class StringUtils extends org.springframework.util.StringUtils {
                 sanitized.append("_");
             }
         }
+
         if (sanitized.isEmpty()) {
             throw ValidationException.fromValidationError("Sanitized string cannot be empty");
         }
-        return sanitized.toString();
+
+        Matcher matcher = ALLOWED_CHARACTERS_MERGER.matcher(sanitized.toString());
+        return matcher.replaceAll("-");
     }
 
     /**

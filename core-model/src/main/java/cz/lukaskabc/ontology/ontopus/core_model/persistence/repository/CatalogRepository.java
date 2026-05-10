@@ -20,7 +20,7 @@ public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, Ont
             CatalogUriUriGenerator catalogUriUriGenerator,
             OntopusConfig config) {
         super(dao, validator, catalogUriUriGenerator, config);
-        this.catalogUri = config.getDcatCatalog().getUri();
+        this.catalogUri = new OntopusCatalogURI("aa"); // config.getDcatCatalog().getUri();
     }
 
     @Transactional(readOnly = true)

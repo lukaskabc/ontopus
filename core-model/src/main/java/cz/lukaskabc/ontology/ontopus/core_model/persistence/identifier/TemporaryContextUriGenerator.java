@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class TemporaryContextUriGenerator extends AbstractIdentifierGenerator<TemporaryContextURI, TemporaryContext> {
@@ -19,17 +20,14 @@ public class TemporaryContextUriGenerator extends AbstractIdentifierGenerator<Te
     @Override
     public TemporaryContextURI generate(TemporaryContext entity) {
         Objects.requireNonNull(entity);
-        String baseId = TemporaryContext_.entityClassIRI.toString();
+        String baseId = TemporaryContext_.entityClassIRI + "/";
 
-        int attempt = 0;
-        while (attempt < MAX_GENERATION_ATTEMPTS) {
-            URI generated = URI.create(baseId + attempt);
+        for (int attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
+            URI generated = URI.create(baseId + UUID.randomUUID());
 
             if (isUnique(generated)) {
                 return new TemporaryContextURI(generated);
             }
-
-            attempt++;
         }
 
         throw failedToGenerate(entity);

@@ -18,6 +18,10 @@
       "versionSeriesMismatch": "Ontology version series <{0}> already contains a version artifact with the same version IRI <{1}>",
       "shaclViolation": "Data integrity violation during a database persistence operation.",
       "noOldestVersionArtifact": "Failed to find oldest version artifact for version series <{0}>",
+      "uriGeneration": {
+        "title": "Internal Error",
+        "detail": "Failed to generate unique identifier for entity: {0}"
+      },
       "failedToDelete": {
         "title":"Failed to delete an entity",
         "detail": "Failed to delete entity with identifier <{0}>"
@@ -34,6 +38,8 @@
         }
       },
       "fileProcessing": {
+        "title": "File processing failed",
+        "detail": "An error occurred when processing a file: {0}",
         "importFailed": "Failed to import a file",
         "unsupportedFormat": "Unsupported format of files: {0}",
         "importFailedForFile": "Unable to import file: {0}"

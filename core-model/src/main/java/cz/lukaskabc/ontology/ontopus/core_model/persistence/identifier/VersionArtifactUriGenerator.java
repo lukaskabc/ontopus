@@ -29,9 +29,9 @@ public class VersionArtifactUriGenerator extends AbstractIdentifierGenerator<Ver
 
     public VersionArtifactURI generate(VersionArtifact entity, boolean checkUnique) {
         Objects.requireNonNull(entity);
-        final String label = sanitizeString(entity.getTitle());
+        final String title = sanitizeString(entity.getTitle());
         final VersionArtifactURI generated =
-                dcatIdentifierProvider.getVersionArtifactUri(entity.getVersionUri(), label, entity.getVersion());
+                dcatIdentifierProvider.getVersionArtifactUri(entity.getVersionUri(), title, entity.getVersion());
 
         // Not trying more attempts, the ID should be unique for the given version
         if (!checkUnique || isUnique(generated.toURI())) {

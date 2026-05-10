@@ -19,9 +19,18 @@ public class InternalException extends OntopusException {
         return InternalException.builder()
                 .errorType(Vocabulary.u_i_file_processing)
                 .internalMessage(internalMessage)
-                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .detailMessageArguments(messageOrEmptyArguments(e))
+                .titleMessageCode("ontopus.core.error.fileProcessing.title")
+                .detailMessageCode("ontopus.core.error.fileProcessing.detail")
                 .cause(e)
                 .build();
+    }
+
+    private static Object[] messageOrEmptyArguments(@Nullable Throwable throwable) {
+        if (throwable != null && throwable.getMessage() != null) {
+            return new Object[] {throwable.getMessage()};
+        }
+        return OntopusException.EMPTY_ARGUMENTS;
     }
 
     public static InternalException serializationException(String internalMessage, Exception e) {

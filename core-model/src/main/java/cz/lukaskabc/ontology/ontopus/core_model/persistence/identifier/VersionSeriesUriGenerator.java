@@ -23,8 +23,8 @@ public class VersionSeriesUriGenerator extends AbstractIdentifierGenerator<Versi
     @NonNull @Override
     public VersionSeriesURI generate(VersionSeries entity) {
         Objects.requireNonNull(entity);
-        final String label = sanitizeString(entity.getTitle());
-        final VersionSeriesURI generated = dcatIdentifierProvider.getVersionSeriesUri(entity.getOntologyURI(), label);
+        final String title = sanitizeString(entity.getTitle());
+        final VersionSeriesURI generated = dcatIdentifierProvider.getVersionSeriesUri(entity.getOntologyURI(), title);
 
         // Not trying more attempts, the ID should be unique for the given ontology
         if (isUnique(generated.toURI())) {

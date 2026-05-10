@@ -13,9 +13,9 @@ import java.util.UUID;
 
 @Component
 public class DcatIdentifierProvider {
-    private static void requireNotBlank(String string) {
+    private static void requireNotBlank(String string, String valueName) {
         if (!StringUtils.hasText(string)) {
-            throw new IdentifierGenerationException("Given string value cannot be blank!");
+            throw new IdentifierGenerationException("Given string value cannot be blank!", valueName);
         }
     }
 
@@ -42,11 +42,11 @@ public class DcatIdentifierProvider {
         return new OntopusCatalogURI(uri);
     }
 
-    public VersionArtifactURI getVersionArtifactUri(OntologyVersionURI versionURI, String label, String version) {
-        requireNotBlank(label);
-        requireNotBlank(version);
+    public VersionArtifactURI getVersionArtifactUri(OntologyVersionURI versionURI, String title, String version) {
+        requireNotBlank(title, "VersionArtifact.title");
+        requireNotBlank(version, "VersionArtifact.version");
         final UUID uuid = uuidFor(versionURI);
-        final String safeLabel = StringUtils.sanitize(label);
+        final String safeLabel = StringUtils.sanitize(title);
         final String safeVersion = StringUtils.sanitize(version);
         final URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/version-artifact/")
@@ -60,10 +60,10 @@ public class DcatIdentifierProvider {
         return new VersionArtifactURI(uri);
     }
 
-    public VersionSeriesURI getVersionSeriesUri(OntologyURI ontologyURI, String label) {
-        requireNotBlank(label);
+    public VersionSeriesURI getVersionSeriesUri(OntologyURI ontologyURI, String title) {
+        requireNotBlank(title, "VersionSeries.title");
         final UUID uuid = uuidFor(ontologyURI);
-        final String safeLabel = StringUtils.sanitize(label);
+        final String safeLabel = StringUtils.sanitize(title);
         final URI uri = UriComponentsBuilder.fromUri(baseUri)
                 .path("/version-series/")
                 .path(safeLabel)

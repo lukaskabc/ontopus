@@ -31,7 +31,9 @@ public class CatalogUriUriGenerator implements IdentifierGenerator<OntopusCatalo
         if (entity.getIdentifier() == null) {
             OntopusCatalogURI uri = generate(entity);
             if (uri == null) {
-                throw log.throwing(new IdentifierGenerationException("Failed to generate ontopus catalog URI"));
+                throw log.throwing(new IdentifierGenerationException(
+                        "Failed to generate ontopus catalog URI",
+                        entity.getClass().getName()));
             }
             entity.setIdentifier(uri);
         }

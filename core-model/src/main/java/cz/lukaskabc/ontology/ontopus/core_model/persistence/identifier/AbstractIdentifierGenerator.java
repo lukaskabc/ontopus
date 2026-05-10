@@ -49,7 +49,9 @@ public abstract class AbstractIdentifierGenerator<I extends TypedIdentifier, E e
     }
 
     protected IdentifierGenerationException failedToGenerate(E entity) {
-        return log.throwing(new IdentifierGenerationException("Failed to generate an identifier for entity " + entity));
+        return log.throwing(new IdentifierGenerationException(
+                "Failed to generate an identifier for entity " + entity,
+                entity.getClass().getName()));
     }
 
     protected boolean isUnique(URI identifier) {

@@ -18,30 +18,30 @@ class DcatIdentifierProviderTest {
     @Test
     void getVersionArtifactUriReturnsStableIdentifier() {
         final OntologyVersionURI versionURI = new OntologyVersionURI("http://example.com/ontology/v1");
-        final String label = "Very\\/Interesting\\\\_óntologý #- n4m3";
+        final String title = "Very\\/Interesting\\\\_óntologý #- n4m3";
         final String version = "v.1";
 
         final String ontologyUriUUID = "92514e73-060d-3c7f-9b1c-b1320a283422";
-        final String sanitizedLabel = "VeryInteresting_óntologý-n4m3";
+        final String sanitizedTitle = "VeryInteresting_óntologý-n4m3";
         final String sanitizedVersion = "v1";
-        final URI expected = URI.create("http://example.com/my/path/version-artifact/" + sanitizedLabel + "/"
+        final URI expected = URI.create("http://example.com/my/path/version-artifact/" + sanitizedTitle + "/"
                 + sanitizedVersion + "/" + ontologyUriUUID);
 
-        final VersionArtifactURI generated = provider.getVersionArtifactUri(versionURI, label, version);
+        final VersionArtifactURI generated = provider.getVersionArtifactUri(versionURI, title, version);
         assertEquals(expected, generated.toURI());
     }
 
     @Test
     void getVersionSeriesUriReturnsStableIdentifier() {
         final OntologyURI ontologyURI = new OntologyURI("http://example.com/ontology");
-        final String label = "Very\\/Interesting\\\\_óntologý #- n4m3";
+        final String title = "Very\\/Interesting\\\\_óntologý #- n4m3";
 
         final String ontologyUriUUID = "9d514926-fa50-3e9d-a26f-0af72da73bfe";
-        final String sanitizedLabel = "VeryInteresting_óntologý-n4m3";
+        final String sanitizedTitle = "VeryInteresting_óntologý-n4m3";
         final URI expected =
-                URI.create("http://example.com/my/path/version-series/" + sanitizedLabel + "/" + ontologyUriUUID);
+                URI.create("http://example.com/my/path/version-series/" + sanitizedTitle + "/" + ontologyUriUUID);
 
-        final VersionSeriesURI generated = provider.getVersionSeriesUri(ontologyURI, label);
+        final VersionSeriesURI generated = provider.getVersionSeriesUri(ontologyURI, title);
         assertEquals(expected, generated.toURI());
     }
 

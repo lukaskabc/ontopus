@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.dcat;
 
 import cz.cvut.kbss.jopa.model.annotations.CascadeType;
+import cz.cvut.kbss.jopa.model.annotations.FetchType;
 import cz.cvut.kbss.jopa.model.annotations.MappedSuperclass;
 import cz.cvut.kbss.jopa.model.annotations.OWLObjectProperty;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
@@ -16,7 +17,7 @@ public abstract class Catalog<ID extends TypedIdentifier> extends Resource<ID> {
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_homepage)
     private URI homepage;
 
-    @OWLObjectProperty(iri = Vocabulary.s_i_dcat_publisher, cascade = CascadeType.ALL)
+    @OWLObjectProperty(iri = Vocabulary.s_i_dcat_publisher, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Agent publisher;
 
     public URI getHomepage() {

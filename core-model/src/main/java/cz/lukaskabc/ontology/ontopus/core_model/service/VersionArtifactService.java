@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.PrefixDeclarationRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
@@ -27,16 +28,19 @@ public class VersionArtifactService
     private final GraphService graphService;
     private final VersionSeriesService versionSeriesService;
     private final TimeProvider clockProvider;
+    private final PrefixDeclarationRepository prefixDeclarationRepository;
 
     public VersionArtifactService(
             VersionArtifactRepository repository,
             GraphService graphService,
             VersionSeriesService versionSeriesService,
-            TimeProvider clockProvider) {
+            TimeProvider clockProvider,
+            PrefixDeclarationRepository prefixDeclarationRepository) {
         super(repository);
         this.graphService = graphService;
         this.versionSeriesService = versionSeriesService;
         this.clockProvider = clockProvider;
+        this.prefixDeclarationRepository = prefixDeclarationRepository;
     }
 
     @Transactional
@@ -53,6 +57,7 @@ public class VersionArtifactService
             });
 
             super.deleteById(id);
+            prefixDeclarationRepository.removeOrphans();
             graphService.deleteGraph(toDelete.getVersionUri());
         } catch (OntopusException ex) {
             throw ex;
@@ -77,5 +82,20 @@ public class VersionArtifactService
 
     public List<PrefixDeclaration> findPrefixDeclarations(OntologyVersionURI ontologyVersionURI) {
         return repository.findPrefixDeclarations(ontologyVersionURI);
+    }
+
+    @Transactional
+    @Override
+    public void persist(VersionArtifact entity) {
+        prefixDeclarationRepository.deduplicate(entity.getPrefixDeclarations());
+        super.persist(entity);
+        prefixDeclarationRepository.removeOrphans();
+    }
+
+    @Transactional
+    @Override
+    public void update(VersionArtifact entity) {
+        super.update(entity);
+        prefixDeclarationRepository.removeOrphans();
     }
 }

@@ -7,13 +7,12 @@ FROM node:25-alpine AS frontend
 
 WORKDIR /administration-frontend
 COPY administration-frontend/package.json administration-frontend/package-lock.json* ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci
+
+RUN npm ci
 
 COPY administration-frontend .
 
-RUN --mount=type=cache,target=/root/.npm \
-    npm run build -- --base=/admin/
+RUN npm run build -- --base=/admin/
 
 FROM maven:3-eclipse-temurin-25-alpine AS backend
 
@@ -26,15 +25,13 @@ COPY pom.xml .
 COPY --parents ./*/pom.xml .
 COPY --parents ./plugins/*/pom.xml .
 
-RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -Drevision=cached -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+RUN ./mvnw -Drevision=cached -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
 
 COPY --exclude=administration-frontend . .
 
 ARG ONTOPUS_VERSION
 
-RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw clean package -Drevision=${ONTOPUS_VERSION} -Dspotless.skip
+RUN ./mvnw clean package -Drevision=${ONTOPUS_VERSION} -Dspotless.skip
 
 RUN rm ./*/target/original-*.jar || true
 RUN rm ./plugins/*/target/original-*.jar

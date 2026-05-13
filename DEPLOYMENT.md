@@ -1,11 +1,31 @@
 # Deployment
-The application consist of a single Java Spring Boot application and PReact frontend, which is served directly by the Java application.
+The application consists of a single [Spring Boot](https://spring.io/projects/spring-boot) application running on Java 25 LTS and [PReact](https://preactjs.com/) frontend, which is served directly by the Java application.
 Deployment is realized using Docker and Docker Compose.
 
+```mermaid
+architecture-beta
+    group docker(cloud)[Docker]
+    group ontopus(server)[OntoPuS container] in docker
+
+    service java(server)[Java application] in ontopus
+    service preact(server)[Preact application] in ontopus
+    service files(disk)[Ontopus persistent data volume] in docker
+
+    service db(database)[GraphDB container] in docker
+
+    service user(none)[user]
+
+    java:R -- L:preact
+    java:L -- R:db
+    java:B -- R:files
+
+    user:R -- T:java
+```
+
 ## Prerequisites
-- Subdomain dedicated for the OntoPuS application (e.g. ontopus.example.com)
+- Subdomain dedicated for the OntoPuS instance (e.g. ontopus.example.com)
   - The subdomain hosts the administration frontend, administration API and some public endpoints (e.g. Widoco generated HTML documentation for the ontologies).
-  - The subdomain **CAN NOT** be replaced with a path (e.g. example.com/ontopus), subdomain is required
+  - The subdomain **CAN NOT** be replaced with a path (e.g. example.com/ontopus), subdomain is required and must not contain a base path
 - [Optional] Existing [GraphDB](https://graphdb.ontotext.com/) server
 - [Optional] Existing reverse proxy server (e.g. Nginx, Apache) for SSL termination and routing
 

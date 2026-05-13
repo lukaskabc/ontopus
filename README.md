@@ -95,3 +95,12 @@ flowchart TD
 
     OntoPuS --- address ~~~ negotiation --> User
 ```
+
+The versioning is illustrated by the following diagram:
+> Clement Jonquet, María Poveda-Villalón. About versioning ontologies or any digital objects with clear semantics. DaMaLOS 2023 - 3rd Workshop on Metadata and Research (objects) Management for Linked Open Science, L. J. Castro; S. Schimmler; J. Dierkes; D. Dessì; D. Rebholz-Schuhmann, May 2023, Hersonissos (Crète), Greece. ⟨10.4126/FRL01-006444994⟩. ⟨hal-04094847v2⟩. Available from https://hal.science/hal-04094847v2
+
+<img width="1080" height="670" alt="ontology-versioning" src="https://github.com/user-attachments/assets/ae5e9b5d-5b3b-4ed2-98e0-3b73d53d1712" />
+
+
+
+

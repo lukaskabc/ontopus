@@ -53,18 +53,35 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
     }
 
     /**
-     * Immediately pop itself from the service stack if there already is an ontology identifier.
+     * Checks whether the given identifier exists as a subject in the context.
      *
-     * @param context The process context with service stack with this service at the top.
+     * @param identifier the ontology identifier to search for
+     * @return true when the identifier exists as a subject in the ontology.
      */
-    @Override
-    public void afterStackPush(ImportProcessContext context) {
-        if (context.getVersionSeries().getIdentifier() != null) {
-            if (context.peekService() != this) {
-                throw log.throwing(InternalException.unexpectedServiceStackState());
-            }
-            context.popService();
+    private boolean exists(OntologyURI identifier, ReadOnlyImportProcessContext context) {
+        return graphService.subjectExists(identifier, context.getTemporaryDatabaseContext());
+    }
+
+    /**
+     * Uses {@link #resolvers} to find possible identifiers of the ontology from the context. The identifiers are sorted
+     * with a score = number of resolvers that returned the identifier.
+     *
+     * @param context the import context
+     * @return an ordered set of identifiers of possible ontologies, the identifiers are sorted in descending order by
+     *     their score.
+     */
+    private LinkedHashSet<URI> findIdentifierCandidates(ReadOnlyImportProcessContext context) {
+        // score = number of resolvers that returned the identifier
+        final Map<URI, Integer> identifiersWithScores = new HashMap<>();
+        for (OntologyIdentifierResolvingService resolver : resolvers) {
+            Set<URI> resolved = resolver.resolve(context.getTemporaryDatabaseContext());
+            resolved.forEach(uri -> identifiersWithScores.compute(uri, (k, v) -> v == null ? 1 : v + 1));
         }
+        // sort identifiers by their scores in descending order
+        return identifiersWithScores.entrySet().stream()
+                .sorted(Map.Entry.<URI, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .collect(LinkedHashSet::new, Set::add, Set::addAll);
     }
 
     @Override
@@ -80,19 +97,22 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
         final OntologyURI existingIdentifier = context.getVersionSeries().getOntologyURI();
-
-        // score = number of resolvers that returned the identifier
-        final Map<URI, Integer> identifiersWithScores = new HashMap<>();
-        for (OntologyIdentifierResolvingService resolver : resolvers) {
-            Set<URI> resolved = resolver.resolve(context.getTemporaryDatabaseContext());
-            resolved.forEach(uri -> identifiersWithScores.compute(uri, (k, v) -> v == null ? 1 : v + 1));
+        if (existingIdentifier != null) {
+            if (exists(existingIdentifier, context)) {
+                // ontology identifier exists in the ontology
+                return null;
+            } else {
+                throw JsonFormSubmitException.builder()
+                        .errorType(Vocabulary.u_i_form_submit)
+                        .internalMessage("Ontology identifier does not exists in the ontology")
+                        .titleMessageCode("ontopus.core.error.notFound.title")
+                        .detailMessageArguments(new Object[] {existingIdentifier})
+                        .detailMessageCode("ontopus.core.error.notFound.resourceInOntology")
+                        .build();
+            }
         }
 
-        // sort identifiers by their scores in descending order
-        LinkedHashSet<URI> identifiers = identifiersWithScores.entrySet().stream()
-                .sorted(Map.Entry.<URI, Integer>comparingByValue().reversed())
-                .map(Map.Entry::getKey)
-                .collect(LinkedHashSet::new, Set::add, Set::addAll);
+        LinkedHashSet<URI> identifiers = findIdentifierCandidates(context);
 
         String translationRoot =
                 "ontopus.core.service.OrderedImportPipelineService.OntologyIdentifierProcessingService.";
@@ -116,10 +136,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
             throw log.throwing(InternalException.unexpectedServiceStackState());
         }
         context.popService();
-
-        if (existingIdentifier == null || identifiersWithScores.containsKey(existingIdentifier.toURI())) {
-            context.pushService(selector);
-        }
+        context.pushService(selector);
 
         return null;
     }

@@ -42,7 +42,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
                     .internalMessage("Resource does not exists in the ontology")
                     .titleMessageCode("ontopus.core.error.notFound.title")
                     .detailMessageArguments(new Object[] {resource})
-                    .detailMessageCode("ontopus.core.error.notFound.resource")
+                    .detailMessageCode("ontopus.core.error.notFound.resourceInOntology")
                     .build();
         }
     }

@@ -18,6 +18,7 @@
       "versionSeriesMismatch": "Ontology version series <{0}> already contains a version artifact with the same version IRI <{1}>",
       "shaclViolation": "Data integrity violation during a database persistence operation.",
       "noOldestVersionArtifact": "Failed to find oldest version artifact for version series <{0}>",
+      "invalidValueSubmitted": "An invalid value or attribute submitted: {0}",
       "uriGeneration": {
         "title": "Internal Error",
         "detail": "Failed to generate unique identifier for entity: {0}"

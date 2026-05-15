@@ -1,10 +1,14 @@
 package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
+import cz.cvut.kbss.jopa.model.MultilingualString;
+import cz.cvut.kbss.jopa.model.metamodel.Attribute;
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
 import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
 import cz.lukaskabc.ontology.ontopus.core.import_process.ImportProcessServiceOrder;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Dataset;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Dataset_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
@@ -146,7 +150,57 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) {
+        final ObjectNode emptyObject = objectMapper.createObjectNode();
+        formResult
+                .formData()
+                .getOrDefault("version-series", emptyObject)
+                .forEachEntry((attrName, data) -> mapAttributeValue(attrName, data, context.getVersionSeries()));
+        formResult
+                .formData()
+                .getOrDefault("version-artifact", emptyObject)
+                .forEachEntry((attrName, data) -> mapAttributeValue(attrName, data, context.getVersionArtifact()));
         return null;
+    }
+
+    private void mapAttributeValue(String attrName, JsonNode data, Object target) {
+        final Attribute<?, ?> attribute =
+                switch (attrName) {
+                    case "title" -> Dataset_.title;
+                    case "description" -> Dataset_.description;
+                    case "version", "versionUri", "ontologyURI" -> null;
+                    case null, default ->
+                        throw JsonFormSubmitException.builder()
+                                .errorType(Vocabulary.u_i_illegal_value)
+                                .internalMessage("Illegal attribute submitted: " + attrName)
+                                .titleMessageCode("ontopus.core.error.invalidData")
+                                .detailMessageArguments(new Object[] {attrName})
+                                .detailMessageCode("invalidValueSubmitted")
+                                .build();
+                };
+
+        if (attribute == null) return;
+
+        final MultilingualString value = parseMultilingualString(data);
+        if (!value.isEmpty()) {
+            assert attribute.getJavaField().getType().isAssignableFrom(MultilingualString.class);
+            try {
+                attribute.getJavaField().set(target, value);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
+    private MultilingualString parseMultilingualString(JsonNode data) {
+        final MultilingualString result = new MultilingualString();
+        if (data.isObject()) {
+            data.asObject().forEachEntry((lang, value) -> {
+                if (value.isString()) {
+                    result.set(lang, value.asString());
+                }
+            });
+        }
+        return result;
     }
 
     private void putDatasetFormData(Dataset<?, ?> dataset, ObjectNode formData) {

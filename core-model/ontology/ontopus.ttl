@@ -320,6 +320,11 @@ ontopus-problem:form-submit rdf:type ontopus:ProblemDetail ;
                                               rdfs:label "Automatic Service Error"@en ;
                                               rdfs:comment "An error occurred during execution of an automatic import process service that does not require user input."@en .
 
+<http://ontology.lukaskabc.cz/application/ontopus/problem/form-submit/illegal-value> rdf:type ontopus:ProblemDetail ;
+                                              rdfs:subClassOf ontopus-problem:form-submit ;
+                                              rdfs:label "Illegal value submitted"@en ;
+                                              rdfs:comment "The submitted data contains an illegal value or attribute."@en .
+
 ontopus-problem:git rdf:type ontopus:ProblemDetail ;
                              rdfs:label "GIT error"@en ;
                              rdfs:comment "An error occurred during a GIT operation."@en .

@@ -309,7 +309,7 @@ public class OntopusConfig {
         private boolean noSlashFallsBackToTrailingSlash = true;
 
         /** The value of {@code max-age} in cache control HTTP header */
-        private Duration cacheControlMaxAge = Duration.ofDays(1);
+        private Duration cacheControlMaxAge = Duration.ofHours(1);
 
         public Duration getCacheControlMaxAge() {
             return cacheControlMaxAge;

@@ -16,7 +16,7 @@ public enum Argument {
     // not including help
     // not including htaccess (unused in ontopus)
     IGNORE_INDIVIDUALS("ignoreIndividuals", "boolean"),
-    INCLUDE_ANNOTATION_PROPERTIES("includeAnnotationProperties", "boolean", true),
+    INCLUDE_ANNOTATION_PROPERTIES("includeAnnotationProperties", "boolean"),
     INCLUDE_IMPORTED_ONTOLOGIES("includeImportedOntologies", "boolean"),
     IMPORT("import", "string"),
     LANG("lang", "array_string"),

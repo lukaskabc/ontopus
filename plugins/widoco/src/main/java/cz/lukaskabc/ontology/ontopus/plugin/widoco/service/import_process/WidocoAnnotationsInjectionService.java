@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
@@ -24,6 +25,7 @@ import tools.jackson.databind.JsonNode;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -52,8 +54,14 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
         return null;
     }
 
-    private String getOntologyURIString(OntologyURI ontologyURI) {
-        String uri = ontologyURI.toString();
+    @Override
+    public String getServiceName() {
+        return this.getClass().getName();
+    }
+
+    private String getVersionURIString(OntologyVersionURI versionURI) {
+        Objects.requireNonNull(versionURI, "Version URI cannot be null");
+        String uri = versionURI.toString();
 
         if (widocoPluginConfig.isForceHttpsForSerializationLinks() && uri.startsWith("http://")) {
             uri = "https://" + uri.substring("http://".length());
@@ -67,15 +75,11 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
     }
 
     @Override
-    public String getServiceName() {
-        return this.getClass().getName();
-    }
-
-    @Override
     public Model handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         Set<Statement> statements = new HashSet<>(WIDOCO_SERIALIZATION_TO_FILE_EXTENSION_MAP.size());
         final OntologyURI ontologyURI = context.getVersionSeries().getOntologyURI();
-        final String ontologyURIString = getOntologyURIString(ontologyURI);
+        final String versionURIString =
+                getVersionURIString(context.getVersionArtifact().getVersionUri());
 
         final ValueFactory vf = SimpleValueFactory.getInstance();
         final IRI subject = vf.createIRI(ontologyURI.toString());
@@ -84,7 +88,7 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
         WIDOCO_SERIALIZATION_TO_FILE_EXTENSION_MAP.forEach((serializationPredicate, fileExtension) -> {
             if (fileExtension != null) {
                 final IRI predicate = vf.createIRI(serializationPredicate);
-                final IRI object = vf.createIRI(ontologyURIString + "." + fileExtension);
+                final IRI object = vf.createIRI(versionURIString + "." + fileExtension);
                 statements.add(vf.createStatement(subject, predicate, object, graph));
             }
         });

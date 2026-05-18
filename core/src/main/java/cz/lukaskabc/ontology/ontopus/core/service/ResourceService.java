@@ -48,17 +48,17 @@ public class ResourceService {
         return (ResponseEntity<StreamingResponseBody>) response;
     }
 
-    private final OntopusConfig ontopusConfig;
+    protected final OntopusConfig ontopusConfig;
 
-    private final ApplicationContext applicationContext;
-    private final ContentNegotiationResolver contentNegotiationResolver;
-    private final ResourceInContextMappingService resourceInContextMappingService;
-    private final ContextToControllerMappingService contextToControllerMappingService;
-    private final VersionSeriesService versionSeriesService;
+    protected final ApplicationContext applicationContext;
+    protected final ContentNegotiationResolver contentNegotiationResolver;
+    protected final ResourceInContextMappingService resourceInContextMappingService;
+    protected final ContextToControllerMappingService contextToControllerMappingService;
+    protected final VersionSeriesService versionSeriesService;
 
-    private final MediaTypeResolver mediaTypeResolver;
+    protected final MediaTypeResolver mediaTypeResolver;
 
-    private final ResourceRequestFallbackService resourceRequestFallbackService;
+    protected final ResourceRequestFallbackService resourceRequestFallbackService;
 
     public ResourceService(
             ApplicationContext applicationContext,
@@ -84,6 +84,14 @@ public class ResourceService {
         return contextToControllerMappingService.findByTypeAndContext(mappingType, graphURI);
     }
 
+    /**
+     * Optionally resolves file extension from the requested resource URI suffix<br>
+     * and calls {@link #getResource(ResourceURI, MediaType[])} with fallbacks {@link #resourceRequestFallbackService}
+     *
+     * @param requestedResource the requested resource
+     * @param requestedTypes the requested types from accept header
+     * @return the response
+     */
     @Transactional(readOnly = true)
     public ResponseEntity<StreamingResponseBody> findResource(
             ResourceURI requestedResource, MediaType @Nullable [] requestedTypes) {
@@ -109,6 +117,13 @@ public class ResourceService {
         }
     }
 
+    /**
+     * Finds the requested resource and resolves the most preferred media type.
+     *
+     * @param resourceURI the requested resource
+     * @param mediaTypes acceptable media types
+     * @return the resource or multiple choice if no media type matched
+     */
     public ResponseEntity<StreamingResponseBody> getResource(
             ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);

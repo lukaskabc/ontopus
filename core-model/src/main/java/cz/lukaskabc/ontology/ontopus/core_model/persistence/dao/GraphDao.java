@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core_model.persistence.dao;
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.cvut.kbss.jopa.model.query.TypedQuery;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURIImpl;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
 import org.apache.logging.log4j.LogManager;
@@ -14,15 +15,13 @@ import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Nullable;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -263,6 +262,37 @@ public class GraphDao {
         } catch (Exception e) {
             throw AbstractDao.persistenceException(
                     log, "Failed to find all subject of graph " + contextUri + " with subject " + subject, e);
+        }
+    }
+
+    /**
+     * Finds the graph that contains the triple {@code <resourceURI> rdf:type ?type}.
+     *
+     * @param resourceURI the resource to lookup
+     * @param graphs the set of graphs to search
+     */
+    @Nullable public GraphURI findGraphOfEntity(ResourceURI resourceURI, Set<GraphURI> graphs) {
+        Objects.requireNonNull(resourceURI);
+        Objects.requireNonNull(graphs);
+        final String fromClause = graphs.stream()
+                .map(GraphURI.class::cast)
+                .map(g -> "FROM <" + g.toURI() + ">")
+                .collect(Collectors.joining(" "));
+        try {
+            final URI graph =
+                    AbstractDao.resultOrNull(em.createNativeQuery("""
+					SELECT ?graph
+					FROM_CLAUSE
+					WHERE {
+					    GRAPH ?graph {
+					        ?resource a ?type .
+					    }
+					}
+					""".replace("FROM_CLAUSE", fromClause), URI.class)
+                            .setMaxResults(1)::getSingleResult);
+            return new GraphURIImpl(graph);
+        } catch (Exception e) {
+            throw AbstractDao.persistenceException(log, "Failed to find graph for resource " + resourceURI, e);
         }
     }
 

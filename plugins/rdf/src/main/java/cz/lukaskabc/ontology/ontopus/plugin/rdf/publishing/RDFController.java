@@ -19,7 +19,6 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,15 +31,6 @@ public class RDFController
     public RDFController(GraphService graphService, VersionArtifactService versionArtifactService) {
         this.graphService = graphService;
         this.versionArtifactService = versionArtifactService;
-    }
-
-    private Optional<RDFFormat> findCompatible(MediaType mediaType) {
-        return RDFWriterRegistry.getInstance().getKeys().stream()
-                .filter(rdfFormat -> rdfFormat.getMIMETypes().stream()
-                        .map(MediaType::valueOf)
-                        // .filter(Predicate.not(MediaType.TEXT_PLAIN::isCompatibleWith))
-                        .anyMatch(mediaType::isCompatibleWith))
-                .findAny();
     }
 
     @Override
@@ -63,7 +53,7 @@ public class RDFController
         final List<PrefixDeclaration> namespaces =
                 versionArtifactService.findPrefixDeclarations(request.ontologyVersionUri());
 
-        final RDFFormat rdfFormat = resolveRdfFormat(request.mediaType());
+        final RDFFormat rdfFormat = RdfFormatResolver.resolveRdfFormat(request.mediaType());
         final RDFWriterFactory writerFactory =
                 RDFWriterRegistry.getInstance().get(rdfFormat).orElseThrow();
         return ResponseEntity.status(HttpStatus.OK)
@@ -76,20 +66,5 @@ public class RDFController
         final GraphURI graph = requestContext.ontologyVersionUri();
         final ResourceURI resource = requestContext.requestedURI();
         return handleRequestWithData(requestContext, () -> graphService.findAllWithSubject(graph, resource));
-    }
-
-    /**
-     * Resolve a compatible RDF format for the given media type.
-     *
-     * @param mediaType the media type to resolve
-     * @return a compatible RDF format
-     * @throws IllegalStateException if no compatible RDF format is found
-     */
-    private RDFFormat resolveRdfFormat(MediaType mediaType) {
-        return findCompatible(mediaType)
-                // throwing indicates that the configuration of OntoPuS changed and previously
-                // supported format is not supported anymore
-                .orElseThrow(
-                        () -> new IllegalStateException("No compatible RDF format found for media type: " + mediaType));
     }
 }

@@ -11,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Nullable;
 import java.net.URI;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Repository
@@ -76,6 +75,17 @@ public class GraphRepository {
     @Transactional(readOnly = true)
     public List<Statement> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
         return graphDao.findAllWithSubject(contextUri, subject);
+    }
+
+    /**
+     * Finds the graph that contains the triple {@code <resourceURI> rdf:type ?type}.
+     *
+     * @param resourceURI the resource to lookup
+     * @param graphs the set of graphs to search
+     */
+    public Optional<GraphURI> findGraphOfEntity(ResourceURI resourceURI, @Nullable Set<GraphURI> graphs) {
+        graphs = Objects.requireNonNullElseGet(graphs, Set::of);
+        return Optional.ofNullable(graphDao.findGraphOfEntity(resourceURI, graphs));
     }
 
     /** @see GraphDao#move(GraphURI, GraphURI) */

@@ -10,7 +10,14 @@ services:
         condition: "service_healthy"
     environment:
       ONTOPUS_DATABASE_URL: "http://graphdb:7200/repositories/ontopus"
-      ONTOPUS_SYSTEM_URI: "http://localhost"
+      ONTOPUS_SYSTEM_URI: "http://localhost" # base path is NOT allowed
+
+      # Configure the publisher of the DCAT catalog
+      ONTOPUS_DCAT_CATALOG_PUBLISHER_NAME: "CHANGE ME"
+      ONTOPUS_DCAT_CATALOG_PUBLISHER_TYPE: "http://xmlns.com/foaf/0.1/Person" # OR "http://xmlns.com/foaf/0.1/Organization"
+      # If you deploy using HTTP system URI but want to generate Widoco serialization links with HTTPS
+      # ONTOPUS_PLUGIN_WIDOCO_FORCE_HTTPS_FOR_SERIALIZATION_LINKS: true
+
     #    ports:
     #      - "8080:8080"
     read_only: true

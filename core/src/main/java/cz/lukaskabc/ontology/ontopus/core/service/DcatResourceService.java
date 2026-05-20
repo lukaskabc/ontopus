@@ -1,11 +1,8 @@
-package cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.service;
+package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.cvut.kbss.jopa.model.IRI;
-import cz.lukaskabc.ontology.ontopus.api.rest.NegotiableController;
-import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
-import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
+import cz.lukaskabc.ontology.ontopus.api.rest.*;
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
-import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.resource_fallback.ResourceRequestFallbackService;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
@@ -15,7 +12,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURIImpl;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
@@ -24,22 +20,19 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.GraphRepo
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
-import cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.CatalogController;
-import cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.DistributionController;
-import cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.VersionArtifactController;
-import cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.VersionSeriesController;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Service
 public class DcatResourceService extends ResourceService {
     private static final Set<GraphURI> ENTITY_GRAPHS = Stream.of(
                     OntopusCatalog_.entityClassIRI, VersionSeries_.entityClassIRI, VersionArtifact_.entityClassIRI)
@@ -118,20 +111,24 @@ public class DcatResourceService extends ResourceService {
                     .build();
         }
 
-        Optional<ResponseEntity<StreamingResponseBody>> result = Optional.ofNullable(mediaTypes)
-                .flatMap(types -> contentNegotiationResolver.resolveController(types, controllers))
-                .map(candidate -> {
-                    final OntopusRequest request = new OntopusRequest(
-                            candidate.mediaType(), resourceURI, new OntologyVersionURI(graphURI.toURI()));
-                    try {
-                        return this.handleRequest(candidate, mapping.getMappingType(), request);
-                    } catch (IllegalStateException e) {
-                        log.error(e.getMessage());
-                        return null;
-                    }
-                })
-                .map(ResourceService::cast);
+        // Optional<ResponseEntity<StreamingResponseBody>> result =
+        // Optional.ofNullable(mediaTypes)
+        // .flatMap(types -> contentNegotiationResolver.resolveController(types,
+        // controllers))
+        // .map(candidate -> {
+        // final OntopusRequest request = new OntopusRequest(
+        // candidate.mediaType(), resourceURI, new
+        // OntologyVersionURI(graphURI.toURI()));
+        // try {
+        // return this.handleRequest(candidate, mapping.getMappingType(), request);
+        // } catch (IllegalStateException e) {
+        // log.error(e.getMessage());
+        // return null;
+        // }
+        // })
+        // .map(ResourceService::cast);
 
-        return result.orElseGet(() -> multipleChoice(mapping, resourceURI));
+        return ResponseEntity.noContent().build();
+        // return result.orElseGet(() -> multipleChoice(mapping, resourceURI));
     }
 }

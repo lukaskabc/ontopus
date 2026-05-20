@@ -290,6 +290,9 @@ public class GraphDao {
 					}
 					""".replace("FROM_CLAUSE", fromClause), URI.class)
                             .setMaxResults(1)::getSingleResult);
+            if (graph == null) {
+                return null;
+            }
             return new GraphURIImpl(graph);
         } catch (Exception e) {
             throw AbstractDao.persistenceException(log, "Failed to find graph for resource " + resourceURI, e);

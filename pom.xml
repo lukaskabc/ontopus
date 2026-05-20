@@ -14,7 +14,6 @@
         <module>core</module>
         <module>plugin-api</module>
         <module>core-model</module>
-        <module>plugins/dcat-publisher</module>
         <module>plugins/file</module>
         <module>plugins/git</module>
         <module>plugins/owl</module>

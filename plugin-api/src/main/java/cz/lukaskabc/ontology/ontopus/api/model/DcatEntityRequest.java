@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.request;
+package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import org.springframework.http.MediaType;

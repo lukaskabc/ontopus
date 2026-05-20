@@ -1,9 +1,7 @@
-package cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest;
+package cz.lukaskabc.ontology.ontopus.api.rest;
 
-import cz.lukaskabc.ontology.ontopus.api.rest.NegotiableController;
-import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
+import cz.lukaskabc.ontology.ontopus.api.model.DcatEntityRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.DistributionURI;
-import cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.request.DcatEntityRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface DistributionController extends NegotiableController {

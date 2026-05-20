@@ -1,10 +1,9 @@
-package cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.config;
+package cz.lukaskabc.ontology.ontopus.core.rest.utils;
 
+import cz.lukaskabc.ontology.ontopus.core.rest.controller.PublicDcatController;
 import cz.lukaskabc.ontology.ontopus.core.rest.controller.ResourceController;
-import cz.lukaskabc.ontology.ontopus.core.rest.utils.RequestUrlNotStartsWithCondition;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
-import cz.lukaskabc.ontology.ontopus.plugin.dcat_publisher.rest.PublicDcatController;
 import org.jspecify.annotations.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

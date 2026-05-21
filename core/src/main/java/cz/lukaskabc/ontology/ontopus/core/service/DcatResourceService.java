@@ -16,8 +16,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
-import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.GraphRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
 import org.jspecify.annotations.Nullable;
@@ -40,14 +40,9 @@ public class DcatResourceService extends ResourceService {
             .map(GraphURIImpl::new)
             .collect(Collectors.toUnmodifiableSet());
 
-    private final Set<CatalogController> catalogControllers;
-    private final Set<VersionSeriesController> seriesControllers;
-    private final Set<VersionArtifactController> artifactControllers;
-    private final Set<DistributionController> distributionControllers;
-
     private final Map<URI, Set<? extends NegotiableController>> graphToControllersMap;
 
-    private final GraphRepository graphRepository;
+    private final GraphService graphService;
 
     public DcatResourceService(
             ApplicationContext applicationContext,
@@ -62,7 +57,7 @@ public class DcatResourceService extends ResourceService {
             Set<VersionSeriesController> seriesControllers,
             Set<VersionArtifactController> artifactControllers,
             Set<DistributionController> distributionControllers,
-            GraphRepository graphRepository) {
+            GraphService graphService) {
         super(
                 applicationContext,
                 contentNegotiationResolver,
@@ -73,11 +68,7 @@ public class DcatResourceService extends ResourceService {
                 ontopusConfig,
                 resourceRequestFallbackService);
 
-        this.catalogControllers = catalogControllers;
-        this.seriesControllers = seriesControllers;
-        this.artifactControllers = artifactControllers;
-        this.distributionControllers = distributionControllers;
-        this.graphRepository = graphRepository;
+        this.graphService = graphService;
 
         graphToControllersMap = Map.of(
                 OntopusCatalog_.entityClassIRI.toURI(),
@@ -93,7 +84,7 @@ public class DcatResourceService extends ResourceService {
     @Override
     public ResponseEntity<StreamingResponseBody> getResource(
             ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
-        final GraphURI graphURI = graphRepository
+        final GraphURI graphURI = graphService
                 .findGraphOfEntity(resourceURI, ENTITY_GRAPHS)
                 .orElseThrow(() -> NotFoundException.builder()
                         .internalMessage("Requested resource not found: " + resourceURI)
@@ -111,6 +102,7 @@ public class DcatResourceService extends ResourceService {
                     .build();
         }
 
+        // EntityManagerImpl
         // Optional<ResponseEntity<StreamingResponseBody>> result =
         // Optional.ofNullable(mediaTypes)
         // .flatMap(types -> contentNegotiationResolver.resolveController(types,
@@ -118,7 +110,7 @@ public class DcatResourceService extends ResourceService {
         // .map(candidate -> {
         // final OntopusRequest request = new OntopusRequest(
         // candidate.mediaType(), resourceURI, new
-        // OntologyVersionURI(graphURI.toURI()));
+        // graphURI.toURI());
         // try {
         // return this.handleRequest(candidate, mapping.getMappingType(), request);
         // } catch (IllegalStateException e) {

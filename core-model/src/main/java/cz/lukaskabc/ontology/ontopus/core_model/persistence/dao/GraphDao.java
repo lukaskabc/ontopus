@@ -276,7 +276,7 @@ public class GraphDao {
         Objects.requireNonNull(graphs);
         final String fromClause = graphs.stream()
                 .map(GraphURI.class::cast)
-                .map(g -> "FROM <" + g.toURI() + ">")
+                .map(g -> "FROM NAMED <" + g.toURI() + ">")
                 .collect(Collectors.joining(" "));
         try {
             final URI graph =
@@ -289,6 +289,7 @@ public class GraphDao {
 					    }
 					}
 					""".replace("FROM_CLAUSE", fromClause), URI.class)
+                            .setParameter("resource", resourceURI.toURI())
                             .setMaxResults(1)::getSingleResult);
             if (graph == null) {
                 return null;

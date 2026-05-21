@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @Service
@@ -75,6 +77,10 @@ public class GraphService {
     /** @see GraphDao#findAllWithSubject(GraphURI, ResourceURI) */
     public List<Statement> findAllWithSubject(GraphURI contextUri, ResourceURI subject) {
         return graphRepository.findAllWithSubject(contextUri, subject);
+    }
+
+    public Optional<GraphURI> findGraphOfEntity(ResourceURI resourceURI, Set<GraphURI> entityGraphs) {
+        return graphRepository.findGraphOfEntity(resourceURI, entityGraphs);
     }
 
     /**

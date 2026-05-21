@@ -83,6 +83,7 @@ public class GraphRepository {
      * @param resourceURI the resource to lookup
      * @param graphs the set of graphs to search
      */
+    @Transactional(readOnly = true)
     public Optional<GraphURI> findGraphOfEntity(ResourceURI resourceURI, @Nullable Set<GraphURI> graphs) {
         graphs = Objects.requireNonNullElseGet(graphs, Set::of);
         return Optional.ofNullable(graphDao.findGraphOfEntity(resourceURI, graphs));

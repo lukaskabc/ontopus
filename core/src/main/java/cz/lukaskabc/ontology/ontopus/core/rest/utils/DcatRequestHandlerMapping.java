@@ -25,7 +25,7 @@ public class DcatRequestHandlerMapping extends RequestMappingHandlerMapping {
 
     public DcatRequestHandlerMapping(PublicDcatController dcatController, OntopusConfig ontopusConfig) {
         this.dcatController = dcatController;
-        setOrder(1);
+        setOrder(2);
         this.ontopusConfig = ontopusConfig;
     }
 

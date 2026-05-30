@@ -73,6 +73,7 @@
                             <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
                             <with-java-uris>true</with-java-uris>
                             <vocabulary-only>true</vocabulary-only>
+                            <vocabulary-always-use-prefixes>true</vocabulary-always-use-prefixes>
                         </configuration>
                     </execution>
                     <execution>
@@ -87,6 +88,7 @@
                             <source-package>${project.groupId}.core_model.model</source-package>
                             <output-property-iris>true</output-property-iris>
                             <initialize-iris>true</initialize-iris>
+                            <model-always-use-prefixes>true</model-always-use-prefixes>
                         </configuration>
                     </execution>
                 </executions>

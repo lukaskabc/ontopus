@@ -17,20 +17,21 @@ import java.util.Set;
  * Mapping of an ontology document, or its entities (defined by {@link #mappingType}, to controllers capable of handling
  * requests for the resource.
  */
-@Context(Vocabulary.s_c_ContextToControllerMapping)
-@OWLClass(iri = Vocabulary.s_c_ContextToControllerMapping)
+@Context(Vocabulary.s_c_ontopus_ContextToControllerMapping)
+@OWLClass(iri = Vocabulary.s_c_ontopus_ContextToControllerMapping)
 public class ContextToControllerMapping extends AbstractPersistenceEntity<ContextToControllerMappingURI> {
     /** The ontology graph */
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_subject)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcterms_subject)
+    // TODO migrate dc elements to dc terms
     private URI subject;
 
     /** The controller capable of handling the resource */
-    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_mappedBy, fetch = FetchType.EAGER)
+    @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_mappedBy, fetch = FetchType.EAGER)
     private Set<ControllerDescription> controllers = new HashSet<>();
 
     /** The type of the mapping */
     @NotNull @Enumerated(EnumType.OBJECT_ONE_OF)
-    @OWLObjectProperty(iri = Vocabulary.s_p_uriMappingType)
+    @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_uriMappingType)
     private MappingType mappingType;
 
     public void addController(ControllerDescription controller) {

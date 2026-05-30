@@ -32,13 +32,13 @@ import java.util.Set;
 public class WidocoAnnotationsInjectionService implements OntologyAnnotationInjectionService {
     private static final Map<String, @Nullable String> WIDOCO_SERIALIZATION_TO_FILE_EXTENSION_MAP =
             Map.<String, @Nullable String>of(
-                    Vocabulary.s_p_ntSerialization,
+                    Vocabulary.s_p_widoco_ntSerialization,
                     RDFFormat.NTRIPLES.getDefaultFileExtension(),
-                    Vocabulary.s_p_jsonldSerialization,
+                    Vocabulary.s_p_widoco_jsonldSerialization,
                     RDFFormat.JSONLD.getDefaultFileExtension(),
-                    Vocabulary.s_p_rdfxmlSerialization,
+                    Vocabulary.s_p_widoco_rdfxmlSerialization,
                     RDFFormat.RDFXML.getDefaultFileExtension(),
-                    Vocabulary.s_p_turtleSerialization,
+                    Vocabulary.s_p_widoco_turtleSerialization,
                     RDFFormat.TURTLE.getDefaultFileExtension());
 
     private final OntopusConfig ontopusConfig;

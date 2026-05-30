@@ -12,7 +12,7 @@ public class InitializationException extends InternalException {
     public InitializationException(String internalMessage, @Nullable Throwable cause) {
         super(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                Vocabulary.u_i_initialization,
+                Vocabulary.u_i_ontopus_problem_initialization,
                 internalMessage,
                 null,
                 cause,

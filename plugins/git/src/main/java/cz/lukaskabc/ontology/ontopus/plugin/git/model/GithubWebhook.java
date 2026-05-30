@@ -12,21 +12,22 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.regex.Pattern;
 
-@Context(value = Vocabulary.s_c_Webhook, propagate = true)
-@OWLClass(iri = Vocabulary.s_c_Webhook)
+@Context(value = Vocabulary.s_c_ontopus_Webhook, propagate = true)
+@OWLClass(iri = Vocabulary.s_c_ontopus_Webhook)
 public class GithubWebhook extends AbstractGeneratedPersistenceEntity<GithubWebhookURI> {
 
     @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_sioc_related_to)
     private URI versionSeries;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_secret, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_ontopus_secret, simpleLiteral = true)
     @NotEmpty private String secret;
 
     @Enumerated(EnumType.STRING)
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_type, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_type, simpleLiteral = true)
+    // TODO: migrate from elements to terms
     @NotNull private GithubEvent event;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_regexPattern, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_ontopus_regexPattern, simpleLiteral = true)
     private Pattern ref;
 
     @Enumerated(EnumType.STRING)

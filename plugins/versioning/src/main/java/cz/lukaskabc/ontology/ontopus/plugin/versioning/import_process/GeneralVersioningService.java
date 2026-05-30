@@ -68,7 +68,7 @@ public class GeneralVersioningService implements OntologyVersioningService {
             context.getVersionArtifact().setVersion(version);
         } catch (Exception e) {
             throw JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_form_submit)
+                    .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                     .internalMessage("Failed to set version for version artifact")
                     .titleMessageCode("ontopus.plugin.versioning.error.noVersion")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

@@ -100,7 +100,7 @@ public class OntologyVersionResolvingService implements OntologyVersioningServic
                 .map(Statement::getObject)
                 .map(Value::stringValue)
                 .orElseThrow(() -> JsonFormSubmitException.builder()
-                        .errorType(Vocabulary.u_i_no_predicate)
+                        .errorType(Vocabulary.u_i_ontopus_problem_no_predicate)
                         .internalMessage(
                                 "Predicate <" + predicate + "> does not exist on the ontology <" + ontologyURI + ">")
                         .titleMessageCode("ontopus.plugin.versioning.error.noPredicate.title")

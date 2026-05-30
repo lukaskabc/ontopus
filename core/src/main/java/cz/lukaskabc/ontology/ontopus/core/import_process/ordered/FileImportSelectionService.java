@@ -60,7 +60,7 @@ public class FileImportSelectionService implements OrderedImportPipelineService<
             context.setOntologyFilePath(pathToImport);
         } catch (Exception e) {
             throw JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_file_import)
+                    .errorType(Vocabulary.u_i_ontopus_problem_file_import)
                     .internalMessage("Failed to import file: " + pathToImport)
                     .titleMessageCode("ontopus.core.error.fileProcessing.importFailed")
                     .detailMessageArguments(new Object[] {pathToImport.getFileName()})

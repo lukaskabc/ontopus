@@ -43,7 +43,7 @@ public class OntologyToFileSerializationService {
             writer.endRDF();
         } catch (Exception e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_serialization)
+                    .errorType(Vocabulary.u_i_ontopus_problem_serialization)
                     .internalMessage("Failed to serialize ontology to file")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.widoco.error.serializationFailure")

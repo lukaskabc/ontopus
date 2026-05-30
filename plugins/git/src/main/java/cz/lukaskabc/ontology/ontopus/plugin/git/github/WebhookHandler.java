@@ -83,7 +83,7 @@ public class WebhookHandler {
         Future<@Nullable Void> scheduleFuture = importService.submitCombinedData(contextRequest);
         if (scheduleFuture.isCancelled() || scheduleFuture.state().equals(Future.State.FAILED)) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_internal_error)
+                    .errorType(Vocabulary.u_i_ontopus_problem_internal_error)
                     .internalMessage("Failed to submit combined data, future state: "
                             + scheduleFuture.state().name())
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

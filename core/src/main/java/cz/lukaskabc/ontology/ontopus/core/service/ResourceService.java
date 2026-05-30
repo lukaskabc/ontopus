@@ -101,7 +101,7 @@ public class ResourceService {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
         } catch (ClassNotFoundException e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_internal_error)
+                    .errorType(Vocabulary.u_i_ontopus_problem_internal_error)
                     .internalMessage("Controller class not found: " + controller.getClassName())
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .cause(e)
@@ -144,7 +144,7 @@ public class ResourceService {
         }
 
         throw log.throwing(InternalException.builder()
-                .errorType(Vocabulary.u_i_not_supported)
+                .errorType(Vocabulary.u_i_ontopus_problem_not_supported)
                 .internalMessage("Controller " + controller.getClass().getName()
                         + " does not support the requested mapping type: " + mappingType.name())
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

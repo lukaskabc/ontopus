@@ -13,7 +13,7 @@ public class GitException extends OntopusException {
     public static GitExceptionBuilderStages.InternalMessageBuildStage builder() {
         return GitExceptionBuilderStages.start()
                 .statusCode(HttpStatus.BAD_REQUEST)
-                .errorType(Vocabulary.u_i_git);
+                .errorType(Vocabulary.u_i_ontopus_problem_git);
     }
 
     @org.immutables.builder.Builder.Constructor

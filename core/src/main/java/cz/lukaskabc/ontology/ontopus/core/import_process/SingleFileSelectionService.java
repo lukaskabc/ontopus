@@ -76,7 +76,7 @@ public class SingleFileSelectionService implements ImportProcessingService<Path>
                 return absolutePath;
             }
             throw JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_no_file)
+                    .errorType(Vocabulary.u_i_ontopus_problem_no_file)
                     .internalMessage("Selected file does not exists")
                     .titleMessageCode("ontopus.core.error.missingFile")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

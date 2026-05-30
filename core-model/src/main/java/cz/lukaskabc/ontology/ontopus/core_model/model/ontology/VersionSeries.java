@@ -18,8 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Context(Vocabulary.s_c_VersionSeries)
-@OWLClass(iri = Vocabulary.s_c_VersionSeries)
+@Context(Vocabulary.s_c_ontopus_VersionSeries)
+@OWLClass(iri = Vocabulary.s_c_ontopus_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionSeries.class);
 
@@ -27,10 +27,10 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private Set<URI> types = TYPES;
 
     /** Serialized import context of the last successful publishing process */
-    @Valid @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
+    @Valid @OWLDataProperty(iri = Vocabulary.s_p_ontopus_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
     /** The ontology version independent identifier */
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_ontologyIdentifier)
     private URI ontologyURI;
 
     /** The newest version of the ontology */
@@ -38,7 +38,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private URI last;
 
     /** The oldest version of the ontology */
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first_A)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first)
     private URI first;
 
     /** Set of {@link VersionArtifactURI} of individual ontology versions */

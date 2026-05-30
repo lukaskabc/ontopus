@@ -36,7 +36,7 @@ public class TypedIdentifierDeserializer extends ValueDeserializer<AbstractTyped
         Class<?> rawClass = property.getType().getRawClass();
         if (!AbstractTypedIdentifier.class.isAssignableFrom(rawClass)) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_internal_error)
+                    .errorType(Vocabulary.u_i_ontopus_problem_internal_error)
                     .internalMessage("Cannot use TypedIdentifierDeserializer for type " + rawClass.getName())
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .build());

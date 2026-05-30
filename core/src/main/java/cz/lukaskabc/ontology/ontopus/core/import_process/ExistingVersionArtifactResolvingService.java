@@ -51,7 +51,7 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
         if (existingArtifact != null
                 && !context.getVersionSeries().getIdentifier().equals(existingArtifact.getSeries())) {
             context.pushService(new ErrorThrowingService(JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_already_exists)
+                    .errorType(Vocabulary.u_i_ontopus_problem_already_exists)
                     .internalMessage("Unable to publish existing version as a new ontology")
                     .titleMessageCode("ontopus.core.error.ontologyExists")
                     .detailMessageArguments(

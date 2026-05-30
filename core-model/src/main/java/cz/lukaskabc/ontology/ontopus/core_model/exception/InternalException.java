@@ -17,7 +17,7 @@ public class InternalException extends OntopusException {
 
     public static InternalException fileProcessingException(String internalMessage, @Nullable IOException e) {
         return InternalException.builder()
-                .errorType(Vocabulary.u_i_file_processing)
+                .errorType(Vocabulary.u_i_ontopus_problem_file_processing)
                 .internalMessage(internalMessage)
                 .detailMessageArguments(messageOrEmptyArguments(e))
                 .titleMessageCode("ontopus.core.error.fileProcessing.title")
@@ -35,7 +35,7 @@ public class InternalException extends OntopusException {
 
     public static InternalException serializationException(String internalMessage, Exception e) {
         return InternalException.builder()
-                .errorType(Vocabulary.u_i_ontopus_serialization)
+                .errorType(Vocabulary.u_i_ontopus_problem_serialization)
                 .internalMessage(internalMessage)
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                 .cause(e)
@@ -44,7 +44,7 @@ public class InternalException extends OntopusException {
 
     public static InternalException unexpectedServiceStackState() {
         return InternalException.builder()
-                .errorType(Vocabulary.u_i_unknown)
+                .errorType(Vocabulary.u_i_ontopus_problem_unknown)
                 .internalMessage("Unexpected import process service stack state")
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                 .build();

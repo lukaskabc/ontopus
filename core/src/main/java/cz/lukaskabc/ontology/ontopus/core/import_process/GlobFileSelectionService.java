@@ -130,7 +130,7 @@ public class GlobFileSelectionService implements ImportProcessingService<List<Pa
         if (doPreview != null && doPreview.isBoolean() && doPreview.asBoolean()) {
             throw JsonFormSubmitExceptionBuilderStages.start()
                     .statusCode(HttpStatus.OK)
-                    .errorType(Vocabulary.u_i_preview)
+                    .errorType(Vocabulary.u_i_ontopus_problem_preview)
                     .internalMessage("Showing glob matched files preview")
                     .titleMessageCode("")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

@@ -8,11 +8,11 @@ import java.net.URI;
 /** The type of a resource mapping */
 public enum MappingType {
     /** The mapping is for the main ontology document */
-    @Individual(iri = Vocabulary.s_i_OntologyDocument)
-    ONTOLOGY_DOCUMENT(Vocabulary.u_i_OntologyDocument),
+    @Individual(iri = Vocabulary.s_i_ontopus_OntologyDocument)
+    ONTOLOGY_DOCUMENT(Vocabulary.u_i_ontopus_OntologyDocument),
     /** The mapping is for all resources defined in the ontology document */
-    @Individual(iri = Vocabulary.s_i_OntologyResource)
-    RESOURCE(Vocabulary.u_i_OntologyResource);
+    @Individual(iri = Vocabulary.s_i_ontopus_OntologyResource)
+    RESOURCE(Vocabulary.u_i_ontopus_OntologyResource);
 
     private final URI uri;
 

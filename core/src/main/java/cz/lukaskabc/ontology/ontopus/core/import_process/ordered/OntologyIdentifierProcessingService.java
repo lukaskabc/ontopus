@@ -103,7 +103,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
                 return null;
             } else {
                 throw JsonFormSubmitException.builder()
-                        .errorType(Vocabulary.u_i_form_submit)
+                        .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                         .internalMessage("Ontology identifier does not exists in the ontology")
                         .titleMessageCode("ontopus.core.error.notFound.title")
                         .detailMessageArguments(new Object[] {existingIdentifier})
@@ -145,7 +145,7 @@ public class OntologyIdentifierProcessingService implements OrderedImportPipelin
         final OntologyURI ontologyURI = new OntologyURI(identifier);
         if (seriesService.isOntologyURI(ontologyURI)) {
             throw JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_already_exists)
+                    .errorType(Vocabulary.u_i_ontopus_problem_already_exists)
                     .internalMessage("Ontology URI already exists")
                     .titleMessageCode("ontopus.core.error.ontologyExists")
                     .detailMessageArguments(new Object[] {identifier})

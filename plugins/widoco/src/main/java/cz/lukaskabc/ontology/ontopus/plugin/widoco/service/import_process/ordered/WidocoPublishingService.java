@@ -220,7 +220,7 @@ public class WidocoPublishingService implements OntologyPublishingService, Order
             throw e;
         } catch (Exception e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_widoco)
+                    .errorType(Vocabulary.u_i_ontopus_problem_widoco)
                     .internalMessage("Failure during ontology publishing with Widoco")
                     .detailMessageArguments(new Object[] {e.getMessage()})
                     .detailMessageCode("ontopus.plugin.widoco.error.widocoExecution.detail")

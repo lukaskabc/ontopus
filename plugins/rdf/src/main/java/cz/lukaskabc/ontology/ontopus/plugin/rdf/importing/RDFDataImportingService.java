@@ -38,7 +38,7 @@ public class RDFDataImportingService implements FileFormatImportingService {
         RDFFormat rdfFormat = resolveFormat(files.getFirst());
         if (rdfFormat == null) {
             throw FileImportException.builder()
-                    .errorType(Vocabulary.u_i_unsupported_format)
+                    .errorType(Vocabulary.u_i_ontopus_problem_unsupported_format)
                     .internalMessage("Failed to find an RDF format for a file: " + files.getFirst())
                     .detailMessageArguments(new Object[] {files.getFirst()})
                     .detailMessageCode("ontopus.core.error.fileProcessing.unsupportedFormat")

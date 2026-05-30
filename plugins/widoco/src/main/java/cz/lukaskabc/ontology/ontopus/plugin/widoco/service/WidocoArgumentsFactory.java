@@ -95,7 +95,7 @@ public class WidocoArgumentsFactory {
                 addLangs(value.asArray().valueStream());
             } else {
                 throw JsonFormSubmitException.builder()
-                        .errorType(Vocabulary.u_i_form_submit)
+                        .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                         .internalMessage("Unknown argument: " + argument + " with value " + value.toString())
                         .titleMessageCode("ontopus.core.error.invalidData")
                         .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

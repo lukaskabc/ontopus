@@ -13,7 +13,7 @@ public class NotFoundException extends OntopusException {
     public static NotFoundExceptionBuilderStages.InternalMessageBuildStage builder() {
         return NotFoundExceptionBuilderStages.start()
                 .statusCode(HttpStatus.NOT_FOUND)
-                .errorType(Vocabulary.u_i_not_found);
+                .errorType(Vocabulary.u_i_ontopus_problem_not_found);
     }
 
     @org.immutables.builder.Builder.Constructor

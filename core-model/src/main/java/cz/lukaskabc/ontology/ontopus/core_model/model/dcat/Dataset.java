@@ -23,8 +23,10 @@ public abstract class Dataset<DistributionIdentifier extends TypedIdentifier, ID
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_inSeries)
     private URI series;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_language, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_language, simpleLiteral = true)
     private Set<String> languages;
+    // TODO migrate from http://purl.org/dc/elements/1.1/language to
+    // http://purl.org/dc/terms/language
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_version, simpleLiteral = true)
     private String version;

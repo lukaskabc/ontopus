@@ -64,7 +64,7 @@ public class ResourceInContextMappingDao {
 					}
 					""")
                     .setParameter("context", CONTEXT)
-                    .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
+                    .setParameter("isPartOf", Vocabulary.u_p_dcterms_isPartOf)
                     .setParameter("sourceGraph", sourceGraph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
@@ -88,7 +88,7 @@ public class ResourceInContextMappingDao {
 					               }
 					""")
                     .setParameter("context", CONTEXT)
-                    .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
+                    .setParameter("isPartOf", Vocabulary.u_p_dcterms_isPartOf)
                     .setParameter("graph", graph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {
@@ -105,7 +105,7 @@ public class ResourceInContextMappingDao {
 					               }
 					""", ResourceInContextMapping.RESOURCE_IN_CONTEXT_MAPPING)
                             .setParameter("context", CONTEXT)
-                            .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
+                            .setParameter("isPartOf", Vocabulary.u_p_dcterms_isPartOf)
                             .setParameter("subject", resource.toURI())::getSingleResult);
         } catch (RuntimeException e) {
             throw persistenceException(log, "Failed to find resource mapping for " + resource, e);
@@ -120,7 +120,7 @@ public class ResourceInContextMappingDao {
 					               }
 					""", ResourceInContextMapping.RESOURCE_IN_CONTEXT_MAPPING)
                     .setParameter("context", CONTEXT)
-                    .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
+                    .setParameter("isPartOf", Vocabulary.u_p_dcterms_isPartOf)
                     .setParameter("object", graph.toURI())
                     .getResultStream();
         } catch (RuntimeException e) {
@@ -144,7 +144,7 @@ public class ResourceInContextMappingDao {
 					               }
 					""")
                     .setParameter("context", CONTEXT)
-                    .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
+                    .setParameter("isPartOf", Vocabulary.u_p_dcterms_isPartOf)
                     .setParameter("sourceGraph", sourceGraph.toURI())
                     .executeUpdate();
         } catch (RuntimeException e) {

@@ -13,15 +13,15 @@ import java.net.URI;
 import java.util.Set;
 
 /** Controller description capable of retrieving a resource in a supported media type */
-@Context(Vocabulary.s_c_Controller)
-@OWLClass(iri = Vocabulary.s_c_Controller)
+@Context(Vocabulary.s_c_ontopus_Controller)
+@OWLClass(iri = Vocabulary.s_c_ontopus_Controller)
 public class ControllerDescription extends AbstractGeneratedPersistenceEntity<ControllerDescriptionURI> {
     /** The fully qualified name of the Java class */
-    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_javaClassName, simpleLiteral = true)
+    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_ontopus_javaClassName, simpleLiteral = true)
     private String className;
 
     /** Supported media types for retrieving the resource */
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_format, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_format, simpleLiteral = true)
     private Set<MediaType> supportedMediaTypes;
 
     public String getClassName() {

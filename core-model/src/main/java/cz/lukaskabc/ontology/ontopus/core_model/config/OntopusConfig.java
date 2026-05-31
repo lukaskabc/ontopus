@@ -9,9 +9,9 @@ import org.springframework.validation.annotation.Validated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.io.File;
 import java.net.URI;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class OntopusConfig {
 
     @Nullable private File frontendIndexFile;
 
-    private int defaultMaxPageSize = 100;
+    @Positive private int defaultMaxPageSize = 100;
 
     @Valid private Database database = new Database();
 
@@ -231,6 +231,7 @@ public class OntopusConfig {
             }
 
             // getFragment returns empty string if the URI contains # with no value
+            // checking for its existence in string instead
             if (baseUri.toString().contains("#")) {
                 throw new InitializationException("DCAT base URI must not contain a fragment!");
             }
@@ -264,8 +265,6 @@ public class OntopusConfig {
     }
 
     public static class Files {
-        /** Directory for storing files used with ontology importing. */
-        private Path importFilesDirectory = Path.of("./");
 
         private String defaultGlobPattern = "**.{nt,rdf,ttl,trig,trigs,brf,ttls}";
 
@@ -273,16 +272,8 @@ public class OntopusConfig {
             return defaultGlobPattern;
         }
 
-        public Path getImportFilesDirectory() {
-            return importFilesDirectory;
-        }
-
         public void setDefaultGlobPattern(String defaultGlobPattern) {
             this.defaultGlobPattern = defaultGlobPattern;
-        }
-
-        public void setImportFilesDirectory(Path importFilesDirectory) {
-            this.importFilesDirectory = importFilesDirectory;
         }
     }
 

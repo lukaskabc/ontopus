@@ -16,9 +16,8 @@
 | ```ONTOPUS_DATABASE_USERNAME``` | Username for authentication with database repository |
 | ```ONTOPUS_DCAT_CATALOG_BASE_URI``` | Base URI used for DCAT resource identifiers. The URI must not contain a fragment.<br>Default value: ```systemURI with ; {@code /dcat/}; path``` |
 | ```ONTOPUS_DCAT_CATALOG_LANGUAGE``` | Language of the catalog metadata (title, description).<br>Default value: ```null``` |
-| ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100``` |
+| ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100```<br>0 < value |
 | ```ONTOPUS_FILES_DEFAULT_GLOB_PATTERN``` | Default value: ```**.{nt,rdf,ttl,trig,trigs,brf,ttls}``` |
-| ```ONTOPUS_FILES_IMPORT_FILES_DIRECTORY``` | Directory for storing files used with ontology importing.<br>Default value: ```./``` |
 | ```ONTOPUS_FRONTEND_INDEX_FILE``` |  |
 | ```ONTOPUS_PLUGIN_GIT_TIMEOUT``` | Default value: ```15``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL``` | Default value: ```https://github.com/dgarijo/Widoco/releases/download/v{version}/widoco-{version}-jar-with-dependencies_JDK-17.jar``` |

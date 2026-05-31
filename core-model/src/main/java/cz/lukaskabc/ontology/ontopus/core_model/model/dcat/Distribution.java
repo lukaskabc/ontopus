@@ -58,7 +58,7 @@ public abstract class Distribution<ID extends TypedIdentifier> extends Persisten
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_compressFormat)
     private MimeType compressFormat;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_compressFormat)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcat_packageFormat)
     private MimeType packageFormat;
     // skipping checksum
 

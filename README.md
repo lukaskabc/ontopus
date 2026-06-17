@@ -79,21 +79,17 @@ flowchart TD
         Doc --> Pub
     end
 
-    Ontology --> OntoPuS
-
     User[User]
 
-    negotiation@{ shape: braces, label: "<p style="white-space: nowrap">HTTP Content-Negotiation
+    negotiation@{ shape: datastore, label: "<p style="white-space: nowrap">HTTP Content-Negotiation
         or
         URI file extension (.ttl, .rdf, ...)</p>"}
-
-    negotiation ~~~ address
 
     address@{ shape: procs, label: "<p style="white-space: nowrap; text-align: left">http://example.com/ontology/
         http://example.com/ontology/v2
         http://example.com/ontology/resource</p>"}
 
-    OntoPuS --- address ~~~ negotiation --> User
+    Ontology --> OntoPuS --> address --- negotiation --> User
 ```
 
 The versioning is illustrated by the following diagram:

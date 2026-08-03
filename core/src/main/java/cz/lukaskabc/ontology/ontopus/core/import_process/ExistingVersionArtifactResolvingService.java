@@ -48,9 +48,10 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
     @Override
     public void afterStackPush(ImportProcessContext context) {
         findExisting(context);
-        Objects.requireNonNull(context.getVersionSeries().getIdentifier(), "VersionSeries identifier must not be null");
         if (existingArtifact != null
-                && !context.getVersionSeries().getIdentifier().equals(existingArtifact.getSeries())) {
+                && !existingArtifact
+                        .getSeries()
+                        .equals(context.getVersionSeries().getIdentifier())) {
 
             context.pushService(new ErrorThrowingService(JsonFormSubmitException.builder()
                     .errorType(Vocabulary.u_i_already_exists)

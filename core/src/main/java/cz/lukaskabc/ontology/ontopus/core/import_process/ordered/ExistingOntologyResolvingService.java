@@ -11,6 +11,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.InternalException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
+import cz.lukaskabc.ontology.ontopus.core_model.util.EntityMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +21,8 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Pushes {@link ExistingVersionArtifactResolvingService} to the stack
+ * Delays pushing of {@link ExistingVersionArtifactResolvingService} to the service stack to the moment when this
+ * service is auto-processed.
  *
  * @see ExistingVersionArtifactResolvingService
  */
@@ -28,12 +30,12 @@ import tools.jackson.databind.ObjectMapper;
 @Order(ImportProcessServiceOrder.EXISTING_ONTOLOGY_RESOLVING_SERVICE)
 public class ExistingOntologyResolvingService implements OrderedImportPipelineService<Void> {
     private static final Logger log = LogManager.getLogger(ExistingOntologyResolvingService.class);
-    private final VersionArtifactService versionArtifactService;
-    private final ObjectMapper objectMapper;
 
-    public ExistingOntologyResolvingService(VersionArtifactService versionArtifactService, ObjectMapper objectMapper) {
-        this.versionArtifactService = versionArtifactService;
-        this.objectMapper = objectMapper;
+    private final ImportProcessingService<?> service;
+
+    public ExistingOntologyResolvingService(
+            VersionArtifactService versionArtifactService, ObjectMapper objectMapper, EntityMapper entityMapper) {
+        this.service = new ExistingVersionArtifactResolvingService(versionArtifactService, objectMapper, entityMapper);
     }
 
     @Override
@@ -53,8 +55,6 @@ public class ExistingOntologyResolvingService implements OrderedImportPipelineSe
         }
         context.popService(); // pop self
 
-        ImportProcessingService<?> service =
-                new ExistingVersionArtifactResolvingService(versionArtifactService, objectMapper);
         context.pushService(service);
         return null;
     }

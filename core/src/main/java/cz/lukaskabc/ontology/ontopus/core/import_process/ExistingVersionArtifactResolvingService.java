@@ -10,6 +10,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
+import cz.lukaskabc.ontology.ontopus.core_model.util.EntityMapper;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
@@ -17,10 +18,7 @@ import tools.jackson.databind.node.ObjectNode;
 
 import java.util.Objects;
 
-/**
- * Checks whether there is an existing {@link cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact
- * VersionArtifact} for the given ontology version
- */
+/** Checks whether there is an existing {@link VersionArtifact} for the given ontology version */
 public class ExistingVersionArtifactResolvingService implements ImportProcessingService<Void> {
     private static final String TRANSLATION_ROOT =
             "ontopus.core.service.ImportProcessingService.ExistingVersionArtifactResolvingService";
@@ -37,17 +35,28 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
 
     private final JsonForm jsonForm;
 
+    private final EntityMapper entityMapper;
+
     @Nullable private VersionArtifact existingArtifact;
 
     public ExistingVersionArtifactResolvingService(
-            VersionArtifactService versionArtifactService, ObjectMapper objectMapper) {
+            VersionArtifactService versionArtifactService, ObjectMapper objectMapper, EntityMapper entityMapper) {
         this.versionArtifactService = versionArtifactService;
         this.jsonForm = makeForm(objectMapper);
+        this.entityMapper = entityMapper;
     }
 
+    /**
+     * Check that {@link ImportProcessContext} contains a version artifact that is already persisted in the databse. If
+     * an existing artifact is found check that it belongs to the
+     * {@link cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries VersionSeries} matching the current
+     * context.
+     *
+     * @param context The process context with service stack with this service at the top.
+     */
     @Override
     public void afterStackPush(ImportProcessContext context) {
-        findExisting(context);
+        this.existingArtifact = findExisting(context);
         if (existingArtifact != null
                 && !existingArtifact
                         .getSeries()
@@ -64,15 +73,28 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
         }
     }
 
-    private void findExisting(ImportProcessContext context) {
+    /**
+     * Resolves the {@link VersionArtifact} from the given context.
+     *
+     * @param context the import context
+     * @return Existing {@link VersionArtifact} from the database or {@code null}
+     */
+    @Nullable private VersionArtifact findExisting(ImportProcessContext context) {
         final String version = context.getVersionArtifact().getVersion();
         final OntologyVersionURI versionURI = context.getVersionArtifact().getVersionUri();
         Objects.requireNonNull(version, "Version of the version artifact must not be null");
         Objects.requireNonNull(versionURI, "Version URI of the version artifact must not be null");
-        this.existingArtifact =
-                versionArtifactService.findByVersionUri(versionURI).orElse(null);
+        return versionArtifactService.findByVersionUri(versionURI).orElse(null);
     }
 
+    /**
+     * Provides informative {@link JsonForm} explaining to the user that matching {@link VersionArtifact} already exists
+     * and will be overwritten.
+     *
+     * @param context The import process context. Contents should not be modified.
+     * @param previousFormData The data submitted in the previous import process of the ontology version series.
+     * @return the form or {@code null} if no artifact was found or the process is non-interactive.
+     */
     @Override
     public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
         if (existingArtifact == null || context.isNonInteractive()) {
@@ -91,14 +113,9 @@ public class ExistingVersionArtifactResolvingService implements ImportProcessing
         if (existingArtifact == null) {
             return null;
         }
+
         final VersionArtifact newArtifact = context.getVersionArtifact();
-        Objects.requireNonNull(existingArtifact);
-        newArtifact.setIdentifier(existingArtifact.getIdentifier());
-        newArtifact.setVersion(existingArtifact.getVersion());
-        newArtifact.setVersionUri(existingArtifact.getVersionUri());
-        newArtifact.setSeries(existingArtifact.getSeries());
-        newArtifact.setReleaseDate(existingArtifact.getReleaseDate());
-        newArtifact.setPreviousVersion(existingArtifact.getPreviousVersion());
+        entityMapper.copy(existingArtifact, newArtifact);
         return null;
     }
 }

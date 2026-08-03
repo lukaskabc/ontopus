@@ -17,7 +17,6 @@
 
     <properties>
         <ontopus.inherited.dependency.scope>compile</ontopus.inherited.dependency.scope>
-        <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <project.build.generated-source.directory>${project.basedir}/target/generated-sources</project.build.generated-source.directory>
         <spring.profiles.active/>
     </properties>
@@ -57,10 +56,10 @@
         </dependency>
 
         <!-- Serialization -->
+        <!-- Mapping -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
         </dependency>
         <!-- XML -->
         <dependency>

@@ -47,6 +47,7 @@
         <spring.boot.version>4.1.0</spring.boot.version>
         <jopa.spring.transactions.version>0.4.3</jopa.spring.transactions.version>
         <spring.doc.version>3.0.3</spring.doc.version>
+        <org.mapstruct.version>1.6.3</org.mapstruct.version>
     </properties>
     <!-- spotless:on -->
 
@@ -175,6 +176,12 @@
                 <groupId>org.eclipse.rdf4j</groupId>
                 <artifactId>rdf4j-repository-api</artifactId>
                 <version>${rdf4j.version}</version>
+            </dependency>
+            <!-- Mapping -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${org.mapstruct.version}</version>
             </dependency>
             <!-- Tests -->
             <dependency>

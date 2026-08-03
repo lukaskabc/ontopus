@@ -52,6 +52,7 @@ public class VersionSeriesService extends BaseService<VersionSeriesURI, VersionS
         final VersionArtifactURI artifactURI = versionArtifact.getIdentifier();
         Objects.requireNonNull(artifactURI, "VersionArtifactURI must not be null");
         final VersionSeries series = findRequiredById(versionArtifact.getSeries());
+        Objects.requireNonNull(series.getIdentifier(), "VersionSeries identifier must not be null");
         series.removeMember(artifactURI);
 
         if (series.getMembers().isEmpty()) {

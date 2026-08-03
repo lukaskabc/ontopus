@@ -77,7 +77,9 @@ public class CatalogService {
         catalog.setModifiedDate(catalog.getReleaseDate());
 
         // catalog
-        catalog.setHomepage(catalog.getIdentifier().toURI());
+        if (catalog.getIdentifier() != null) {
+            catalog.setHomepage(catalog.getIdentifier().toURI());
+        }
 
         Agent publisher = catalog.getPublisher();
         if (publisher == null) {

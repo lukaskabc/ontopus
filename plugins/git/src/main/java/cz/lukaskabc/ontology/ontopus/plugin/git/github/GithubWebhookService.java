@@ -7,6 +7,7 @@ import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository.GithubWeb
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -19,6 +20,7 @@ public class GithubWebhookService extends BaseService<GithubWebhookURI, GithubWe
     public void deleteByVersionSeries(VersionSeriesURI artifactIdentifier) {
         final GithubWebhook toDelete =
                 repository.findByVersionSeries(artifactIdentifier).orElseThrow();
+        Objects.requireNonNull(toDelete.getIdentifier(), "GithubWebhook identifier must not be null");
         repository.deleteById(toDelete.getIdentifier());
     }
 

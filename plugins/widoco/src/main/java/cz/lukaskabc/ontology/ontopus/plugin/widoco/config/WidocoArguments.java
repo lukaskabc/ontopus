@@ -87,7 +87,7 @@ public class WidocoArguments implements Map<String, String> {
         }
     }
 
-    @Override
+    @Nullable @Override
     public String remove(Object key) {
         Argument arg = validateAndParseKey(key);
         return delegate.remove(arg.argument());

@@ -1,6 +1,8 @@
 package cz.lukaskabc.ontology.ontopus.core_model.model.id;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.jspecify.annotations.Nullable;
+import org.springframework.lang.Contract;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.net.URI;
@@ -19,8 +21,9 @@ public abstract class AbstractTypedIdentifier implements TypedIdentifier {
         this.uri = uri;
     }
 
+    @Contract("null -> false")
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (!(o instanceof AbstractTypedIdentifier that)) return false;
         return Objects.equals(uri, that.uri);
     }

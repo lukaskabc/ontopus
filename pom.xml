@@ -36,15 +36,17 @@
         <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
 
         <!-- Dependency versions -->
-        <error-prone.version>2.36.0</error-prone.version>
-        <jackson.annotations.version>2.21</jackson.annotations.version>
-        <jackson.version>3.1.2</jackson.version>
+        <error-prone.version>2.50.0</error-prone.version>
+        <jackson.annotations.version>2.22</jackson.annotations.version>
+        <jackson.version>3.2.1</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.9.4</jopa.version>
-        <nullaway.version>0.12.3</nullaway.version>
-        <org.immutables.version>2.12.1</org.immutables.version>
-        <rdf4j.version>5.3.1</rdf4j.version>
-        <spring.boot.version>4.0.6</spring.boot.version>
+        <jopa.version>2.9.4</jopa.version> <!-- TODO: update to 2.11.1 -->
+        <nullaway.version>0.13.8</nullaway.version>
+        <org.immutables.version>2.12.2</org.immutables.version>
+        <rdf4j.version>5.3.2</rdf4j.version> <!-- TODO: update to 6.0.0 -->
+        <spring.boot.version>4.1.0</spring.boot.version>
+        <jopa.spring.transactions.version>0.4.3</jopa.spring.transactions.version>
+        <spring.doc.version>3.0.3</spring.doc.version>
     </properties>
     <!-- spotless:on -->
 
@@ -153,13 +155,13 @@
             <dependency>
                 <groupId>com.github.ledsoft</groupId>
                 <artifactId>jopa-spring-transaction</artifactId>
-                <version>0.4.3</version>
+                <version>${jopa.spring.transactions.version}</version>
             </dependency>
             <!-- Open Api documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-                <version>3.0.3</version>
+                <version>${spring.doc.version}</version>
             </dependency>
 
             <!-- RDF/XML export -->
@@ -188,7 +190,7 @@
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
             <scope>${ontopus.inherited.dependency.scope}</scope>
         </dependency>
         <dependency>
@@ -289,7 +291,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.14.1</version>
+                    <version>3.15.0</version>
                     <configuration>
                         <!-- Fork must be true for Java 16+ JVM args to be passed to Javac properly -->
                         <fork>true</fork>
@@ -334,7 +336,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -372,7 +374,7 @@
                 <!-- https://github.com/diffplug/spotless/tree/main/plugin-maven -->
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <ratchetFrom>${spotless.ratchetFrom}</ratchetFrom>
                     <formats>
@@ -461,7 +463,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.5</version>
+                <version>3.5.6</version>
             </plugin>
         </plugins>
     </build>

@@ -49,17 +49,27 @@ public class VersionSeriesUpdateFinalizationService implements ImportFinalizingS
         }
 
         final Instant timestamp = timeProvider.getInstant();
-        if (series.getLast() != null && !series.getLast().equals(artifact.getIdentifier())) {
-            setIfMissing(artifact::setPreviousVersion, artifact::getPreviousVersion, series.getLast());
+        final VersionArtifactURI previous = series.getLast();
+
+        // if the latest version is not this version
+        if (!Objects.equals(previous, artifact.getIdentifier())) {
+            // set if no previous version is known
+            setIfMissing(artifact::setPreviousVersion, artifact::getPreviousVersion, previous);
         }
+
         setIfMissing(artifact::setReleaseDate, artifact::getReleaseDate, timestamp);
-        setIfMissing(artifact::setModifiedDate, artifact::getModifiedDate, timestamp);
+        artifact.setModifiedDate(timestamp);
         Objects.requireNonNull(series.getIdentifier(), "Version series identifier must not be null");
         artifact.setSeries(series.getIdentifier());
 
         Objects.requireNonNull(artifact.getIdentifier(), "Version artifact identifier must not be null");
         series.addMember(artifact.getIdentifier());
-        series.setLast(artifact.getIdentifier());
+
+        // if the latest version is the previous version for this new version
+        // this new version becomes the latest
+        if (Objects.equals(artifact.getPreviousVersion(), series.getLast())) {
+            series.setLast(artifact.getIdentifier());
+        }
 
         setIfMissing(series::setFirst, series::getFirst, artifact.getIdentifier());
         series.setModifiedDate(timestamp);

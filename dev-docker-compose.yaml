@@ -10,6 +10,8 @@ services:
     container_name: "ontopus"
     hostname: "ontopus"
     domainname: "ontopus"
+    ports:
+      - "8080:8080"
     depends_on:
       graphdb:
         condition: "service_healthy"
@@ -17,6 +19,8 @@ services:
       # passthrough variables from .env file
       ONTOPUS_DATABASE_URL: "${ONTOPUS_DATABASE_URL}"
       ONTOPUS_SYSTEM_URI: "${ONTOPUS_SYSTEM_URI}"
+      ONTOPUS_DCAT_CATALOG_PUBLISHER_NAME: "${ONTOPUS_DCAT_CATALOG_PUBLISHER_NAME}"
+      ONTOPUS_DCAT_CATALOG_PUBLISHER_TYPE: "${ONTOPUS_DCAT_CATALOG_PUBLISHER_TYPE}"
     read_only: true
     volumes:
       - "ontopus-data:/data:rw"

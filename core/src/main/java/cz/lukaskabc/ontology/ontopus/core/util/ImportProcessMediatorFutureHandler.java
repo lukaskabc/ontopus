@@ -10,10 +10,6 @@ import java.util.concurrent.Future;
 
 @NullMarked
 public class ImportProcessMediatorFutureHandler {
-    private ImportProcessMediatorFutureHandler() {
-        throw new AssertionError();
-    }
-
     /**
      * Immediately returns a response entity based on the current future status.
      *
@@ -42,5 +38,9 @@ public class ImportProcessMediatorFutureHandler {
             case FAILED -> throw future.exceptionNow();
             case CANCELLED -> throw ImportProcessTaskConflictException.build();
         };
+    }
+
+    private ImportProcessMediatorFutureHandler() {
+        throw new AssertionError();
     }
 }

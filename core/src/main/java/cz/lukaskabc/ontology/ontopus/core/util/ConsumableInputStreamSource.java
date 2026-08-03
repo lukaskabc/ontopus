@@ -30,8 +30,6 @@ public class ConsumableInputStreamSource implements InputStreamSource {
         this.cleanable = OntoPuSApplication.CLEANER.register(cleanableFile, cleanFileAction);
     }
 
-    private record CleanableFile(File file) {}
-
     @Override
     public @NonNull InputStream getInputStream() throws IOException {
         if (cleanFileAction.wasCleaned()
@@ -41,6 +39,8 @@ public class ConsumableInputStreamSource implements InputStreamSource {
         }
         return new ConsumableInputStream(cleanableFile, cleanable);
     }
+
+    private record CleanableFile(File file) {}
 
     /** Thread safe action that deletes the provided file when executed. */
     private static class CleanFileAction implements Runnable {

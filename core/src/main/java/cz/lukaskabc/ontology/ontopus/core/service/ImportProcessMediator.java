@@ -53,6 +53,25 @@ public class ImportProcessMediator {
     }
 
     /**
+     * Copies files to context directory and constructs {@link FormFileRequest FormFileRequests} with the references to
+     * copied files.
+     *
+     * @param FormFileRequests files to copy
+     * @param context the import context
+     * @return Map of relative paths to the files in the context directory
+     */
+    private static Map<String, UploadedFile> copyFiles(
+            Map<FormFileRequest, InputStreamSource> FormFileRequests, ImportProcessContext context) {
+        final Map<String, UploadedFile> files = new HashMap<>(FormFileRequests.size());
+        for (Map.Entry<FormFileRequest, InputStreamSource> entry : FormFileRequests.entrySet()) {
+            FormFileRequest dto = entry.getKey();
+            UploadedFile file = copyFile(dto, entry.getValue(), context);
+            files.put(file.path(), file);
+        }
+        return files;
+    }
+
+    /**
      * Copies the file from the {@code source} to the context directory. Uploaded files always overwrites existing
      * files. Ensures the supplied file name with relative path is safe.
      *
@@ -83,25 +102,6 @@ public class ImportProcessMediator {
             throw log.throwing(
                     InternalException.fileProcessingException("Failed to copy a file to import context folder", e));
         }
-    }
-
-    /**
-     * Copies files to context directory and constructs {@link FormFileRequest FormFileRequests} with the references to
-     * copied files.
-     *
-     * @param FormFileRequests files to copy
-     * @param context the import context
-     * @return Map of relative paths to the files in the context directory
-     */
-    private static Map<String, UploadedFile> copyFiles(
-            Map<FormFileRequest, InputStreamSource> FormFileRequests, ImportProcessContext context) {
-        final Map<String, UploadedFile> files = new HashMap<>(FormFileRequests.size());
-        for (Map.Entry<FormFileRequest, InputStreamSource> entry : FormFileRequests.entrySet()) {
-            FormFileRequest dto = entry.getKey();
-            UploadedFile file = copyFile(dto, entry.getValue(), context);
-            files.put(file.path(), file);
-        }
-        return files;
     }
 
     private final ObjectMapper objectMapper;

@@ -80,6 +80,12 @@ public class WidocoArgumentsFactory {
             this.context = context;
         }
 
+        public void add(Argument argument, boolean value) {
+            if (value) {
+                arguments.put(argument, "");
+            }
+        }
+
         public void add(Argument argument, JsonNode value) {
             if (WidocoConstants.WIDOCO_DISALLOWED_ARGS.contains(argument)) {
                 return;
@@ -100,12 +106,6 @@ public class WidocoArgumentsFactory {
                         .titleMessageCode("ontopus.core.error.invalidData")
                         .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .build();
-            }
-        }
-
-        public void add(Argument argument, boolean value) {
-            if (value) {
-                arguments.put(argument, "");
             }
         }
 

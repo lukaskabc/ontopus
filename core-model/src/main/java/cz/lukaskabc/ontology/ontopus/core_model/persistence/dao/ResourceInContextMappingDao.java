@@ -41,8 +41,8 @@ public class ResourceInContextMappingDao {
     }
 
     /**
-     * Deletes all existing mappings of resources from the given source graph. Removes are all mappings to any graph for
-     * all resources that are subjects in the source graph.
+     * Deletes all existing mappings of resources from the given source graph. Removes all mappings to any graph for all
+     * resources that are subjects in the source graph.
      *
      * <pre>
      * <code>

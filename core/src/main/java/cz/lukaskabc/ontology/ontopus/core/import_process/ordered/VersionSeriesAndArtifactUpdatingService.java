@@ -14,9 +14,9 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionArtifactUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionSeriesUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 @Service
 @Order(ImportProcessServiceOrder.VERSION_SERIES_UPDATE)
 public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPipelineService<Void> {
-    private static final Logger log = LoggerFactory.getLogger(VersionSeriesAndArtifactUpdatingService.class);
+    private static final Logger log = LogManager.getLogger(VersionSeriesAndArtifactUpdatingService.class);
     private final TimeProvider timeProvider;
     private final VersionSeriesUriGenerator versionSeriesUriGenerator;
     private final VersionArtifactUriGenerator versionArtifactUriGenerator;

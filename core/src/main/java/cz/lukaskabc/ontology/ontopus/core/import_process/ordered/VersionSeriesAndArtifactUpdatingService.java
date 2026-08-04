@@ -74,8 +74,21 @@ public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPip
         }
 
         final Instant timestamp = timeProvider.getInstant();
-        final VersionArtifactURI previous = series.getLast();
 
+        updateArtifact(artifact, series, timestamp);
+        updateSeries(artifact, series, timestamp);
+
+        return null;
+    }
+
+    private <T> void setIfMissing(Consumer<T> setter, Supplier<T> getter, T value) {
+        if (getter.get() == null) {
+            setter.accept(value);
+        }
+    }
+
+    private void updateArtifact(VersionArtifact artifact, VersionSeries series, Instant timestamp) {
+        final VersionArtifactURI previous = series.getLast();
         final boolean isLatest = Objects.equals(previous, artifact.getIdentifier());
         final boolean isFirst = Objects.equals(series.getFirst(), artifact.getIdentifier());
 
@@ -91,7 +104,10 @@ public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPip
 
         Objects.requireNonNull(artifact.getIdentifier(), "Version artifact identifier must not be null");
         series.addMember(artifact.getIdentifier());
+    }
 
+    private void updateSeries(VersionArtifact artifact, VersionSeries series, Instant timestamp) {
+        Objects.requireNonNull(artifact.getIdentifier());
         final boolean isPreviousVersionLatest = Objects.equals(artifact.getPreviousVersion(), series.getLast());
 
         if (isPreviousVersionLatest) {
@@ -103,13 +119,5 @@ public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPip
         setIfMissing(series::setReleaseDate, series::getReleaseDate, timestamp);
 
         series.setVersion(timeProvider.getCurrentDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
-
-        return null;
-    }
-
-    private <T> void setIfMissing(Consumer<T> setter, Supplier<T> getter, T value) {
-        if (getter.get() == null) {
-            setter.accept(value);
-        }
     }
 }

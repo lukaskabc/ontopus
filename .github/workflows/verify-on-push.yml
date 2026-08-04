@@ -1,0 +1,32 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+    tags-ignore:
+      - '*'
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  build-java:
+    name: "Build Java"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Setup maven wrapper
+        run: chmod +x mvnw
+
+      - name: Run Maven Build & Test
+        run: ./mvnw clean verify

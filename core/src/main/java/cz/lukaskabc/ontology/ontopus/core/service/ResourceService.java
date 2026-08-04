@@ -114,6 +114,8 @@ public class ResourceService {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);
         ContextToControllerMapping mapping = findControllerMapping(resourceURI, graphURI);
 
+        log.debug("Mapped resource <{}> to context <{}>", resourceURI, graphURI);
+
         Optional<ResponseEntity<StreamingResponseBody>> result = Optional.ofNullable(mediaTypes)
                 .flatMap(types -> contentNegotiationResolver.resolveController(types, mapping.getControllers()))
                 .map(candidate -> {

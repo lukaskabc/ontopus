@@ -6,7 +6,10 @@ import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
 import cz.lukaskabc.ontology.ontopus.api.service.import_process.OntologyAnnotationInjectionService;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.*;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.AbstractTypedIdentifier;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
@@ -52,20 +55,6 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         this.versionArtifactService = versionArtifactService;
     }
 
-    @Nullable private String findPreviousVersion(ReadOnlyImportProcessContext context) {
-        final VersionArtifactURI latest = context.getVersionSeries().getLast();
-        if (latest == null) {
-            return null;
-        }
-        return versionArtifactService
-                .findById(latest)
-                .map(VersionArtifact::getVersionUri)
-                .filter(previousVersionURI ->
-                        !previousVersionURI.equals(context.getVersionArtifact().getVersionUri()))
-                .map(OntologyVersionURI::toString)
-                .orElse(null);
-    }
-
     @Nullable private Statement findStatement(ReadOnlyImportProcessContext context, @Nullable ResourceURI predicate) {
         if (predicate == null) {
             return null;
@@ -89,7 +78,7 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                 .orElse(null);
         final boolean versionIriValueMatches = versionIriValueMatches(context, versionIri);
 
-        final String previousVersionValue = findPreviousVersion(context);
+        final String previousVersionValue = getPreviousVersion(context);
         final Statement previousVersion = getPreviousVersionPredicate(context, previousFormData)
                 .map(predicate -> findStatement(context, predicate))
                 .orElse(null);
@@ -168,6 +157,16 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
         return new JsonForm(schema, uiSchema, formData);
     }
 
+    @Nullable private String getPreviousVersion(ReadOnlyImportProcessContext context) {
+        return Optional.ofNullable(context.getVersionArtifact().getPreviousVersion())
+                .flatMap(versionArtifactService::findById)
+                .map(VersionArtifact::getVersionUri)
+                .filter(previousVersion ->
+                        !previousVersion.equals(context.getVersionArtifact().getVersionUri()))
+                .map(AbstractTypedIdentifier::toString)
+                .orElse(null);
+    }
+
     private Optional<ResourceURI> getPreviousVersionPredicate(
             ReadOnlyImportProcessContext context, @Nullable JsonNode formdata) {
         return context.getAdditionalProperty(
@@ -239,7 +238,7 @@ public class VersionAnnotationInjectionService implements OntologyAnnotationInje
                 .orElse(null);
         final boolean versionIriValueMatches = versionIriValueMatches(context, versionIri);
 
-        final String previousVersionValue = findPreviousVersion(context);
+        final String previousVersionValue = getPreviousVersion(context);
         final Statement previousVersion = getPreviousVersionPredicate(context, formData)
                 .map(predicate -> findStatement(context, predicate))
                 .orElse(null);

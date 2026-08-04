@@ -59,6 +59,7 @@ public class AnnotationInjectionService implements OrderedImportPipelineService<
             ResultHandlingServiceWrapper<Model> wrapper =
                     new ResultHandlingServiceWrapper<>(service, this::persistModel);
             context.pushService(wrapper);
+            log.debug("Added annotation injection service to the service stack: {}", service::getServiceName);
         }
         return null;
     }

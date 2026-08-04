@@ -15,6 +15,8 @@ import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionAr
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionSeriesUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.JsonNode;
@@ -32,6 +34,7 @@ import java.util.function.Supplier;
 @Service
 @Order(ImportProcessServiceOrder.VERSION_SERIES_UPDATE)
 public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPipelineService<Void> {
+    private static final Logger log = LoggerFactory.getLogger(VersionSeriesAndArtifactUpdatingService.class);
     private final TimeProvider timeProvider;
     private final VersionSeriesUriGenerator versionSeriesUriGenerator;
     private final VersionArtifactUriGenerator versionArtifactUriGenerator;
@@ -57,6 +60,7 @@ public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPip
 
     @Override
     public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
+        log.debug("Updating version series and artifact");
         final VersionArtifact artifact = context.getVersionArtifact();
         final VersionSeries series = context.getVersionSeries();
 
@@ -72,8 +76,10 @@ public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPip
         final Instant timestamp = timeProvider.getInstant();
         final VersionArtifactURI previous = series.getLast();
 
-        // if the latest version is not this version
-        if (!Objects.equals(previous, artifact.getIdentifier())) {
+        final boolean isLatest = Objects.equals(previous, artifact.getIdentifier());
+        final boolean isFirst = Objects.equals(series.getFirst(), artifact.getIdentifier());
+
+        if (!isLatest && !isFirst) {
             // set if no previous version is known
             setIfMissing(artifact::setPreviousVersion, artifact::getPreviousVersion, previous);
         }
@@ -86,9 +92,9 @@ public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPip
         Objects.requireNonNull(artifact.getIdentifier(), "Version artifact identifier must not be null");
         series.addMember(artifact.getIdentifier());
 
-        // if the latest version is the previous version for this new version
-        // this new version becomes the latest
-        if (Objects.equals(artifact.getPreviousVersion(), series.getLast())) {
+        final boolean isPreviousVersionLatest = Objects.equals(artifact.getPreviousVersion(), series.getLast());
+
+        if (isPreviousVersionLatest) {
             series.setLast(artifact.getIdentifier());
         }
 

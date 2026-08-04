@@ -41,8 +41,16 @@ public class ResourceInContextMappingDao {
     }
 
     /**
-     * Deletes all existing mappings of resources from the given source graph. Removed are all mappings to any graph for
+     * Deletes all existing mappings of resources from the given source graph. Removes are all mappings to any graph for
      * all resources that are subjects in the source graph.
+     *
+     * <pre>
+     * <code>
+     *     for any subject in sourceGraph
+     *     delete mapping
+     *          subject -> any graph
+     * </code>
+     * </pre>
      *
      * @param sourceGraph the graph for which the existing mappings should be deleted
      */
@@ -75,6 +83,13 @@ public class ResourceInContextMappingDao {
 
     /**
      * Deletes all mappings of resources to the given graph.
+     *
+     * <pre>
+     * <code>
+     *     delete all mappings matching
+     *          anySubject -> graph
+     * </code>
+     * </pre>
      *
      * @param graph the graph for which the mappings should be deleted
      */
@@ -128,6 +143,11 @@ public class ResourceInContextMappingDao {
         }
     }
 
+    /**
+     * Creates new mapping for every resource in the given {@code sourceGraph}
+     *
+     * @param sourceGraph the source graph with resources to map
+     */
     public void mapResourcesFrom(GraphURI sourceGraph) {
         try {
             em.createNativeQuery("""
@@ -149,6 +169,50 @@ public class ResourceInContextMappingDao {
                     .executeUpdate();
         } catch (RuntimeException e) {
             throw persistenceException(log, "Failed to map resources from source graph " + sourceGraph, e);
+        }
+    }
+
+    /**
+     * Creates mappings for all resources from the given {@code sourceGraph} for which no mapping (to any graph)
+     * currently exists.
+     *
+     * <pre>
+     * <code>
+     *     for any subject in sourceGraph
+     *         where subject has no existing mapping to any graph
+     *     insert mapping
+     *          subject -> sourceGraph
+     * </code>
+     * </pre>
+     *
+     * @param sourceGraph the source graph with resources to map
+     */
+    public void mapUnmappedResourcesFromSourceGraph(GraphURI sourceGraph) {
+        try {
+            em.createNativeQuery("""
+					               INSERT {
+					                   GRAPH ?context {
+					                        ?subject ?isPartOf ?sourceGraph .
+					                        ?sourceGraph ?isPartOf ?sourceGraph .
+					                   }
+					               }
+					               WHERE {
+					                   GRAPH ?sourceGraph {
+					                        ?subject ?p ?o .
+					                   }
+					                   FILTER NOT EXISTS {
+					                       GRAPH ?context {
+					                           ?subject ?isPartOf ?anyGraph .
+					                       }
+					                   }
+					               }
+					""")
+                    .setParameter("context", CONTEXT)
+                    .setParameter("isPartOf", Vocabulary.u_p_dcat_isPartOf)
+                    .setParameter("sourceGraph", sourceGraph.toURI())
+                    .executeUpdate();
+        } catch (RuntimeException e) {
+            throw persistenceException(log, "Failed to map unmapped resources from source graph " + sourceGraph, e);
         }
     }
 }

@@ -18,6 +18,11 @@ public class ResourceInContextMappingRepository {
         this.dao = dao;
     }
 
+    /**
+     * Deletes all mappings that maps a resource to the given graph.
+     *
+     * @param graph the graph for which the mappings should be deleted
+     */
     @Transactional
     public void deleteMappingForGraph(GraphURI graph) {
         dao.deleteMappingForGraph(graph);
@@ -33,8 +38,27 @@ public class ResourceInContextMappingRepository {
         return dao.findAll(graph).map(ResourceInContextMapping.class::cast);
     }
 
+    /**
+     * Creates mappings for all resources from the {@code sourceGraph} for which no mapping exists.
+     *
+     * @param sourceGraph the source graph with resources to map
+     */
     @Transactional
-    public void mapResourcesFromSourceGraph(GraphURI sourceGraph) {
+    public void mapUnmappedResourcesFromSourceGraph(GraphURI sourceGraph) {
+        dao.mapUnmappedResourcesFromSourceGraph(sourceGraph);
+    }
+
+    /**
+     * Deletes all existing mappings of resources from the given {@code sourceGraph}.<br>
+     * Inserts mapping for each resource in the given {@code sourceGraph}.
+     *
+     * <p>Removed are all mappings to <b>any graph</b> for all resources that are <b>subjects</b> in the given
+     * {@code sourceGraph}.
+     *
+     * @param sourceGraph the source graph with resources to map
+     */
+    @Transactional
+    public void remapResourcesFromSourceGraph(GraphURI sourceGraph) {
         dao.deleteExistingMappingsForResourcesFrom(sourceGraph);
         dao.mapResourcesFrom(sourceGraph);
     }

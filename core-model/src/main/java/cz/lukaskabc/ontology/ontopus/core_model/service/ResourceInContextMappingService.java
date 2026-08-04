@@ -41,8 +41,20 @@ public class ResourceInContextMappingService {
      * @param sourceGraph the graph for which the mappings should be created
      */
     @Transactional
-    public void mapResourcesFromContext(GraphURI sourceGraph) {
+    public void remapResourcesFromContext(GraphURI sourceGraph) {
         repository.deleteMappingForGraph(sourceGraph);
-        repository.mapResourcesFromSourceGraph(sourceGraph);
+        repository.remapResourcesFromSourceGraph(sourceGraph);
+    }
+
+    /**
+     * Removes all mappings for the given {@code sourceGraph} and maps all resources from the sourceGraph that are
+     * missing a mapping.
+     *
+     * @param sourceGraph the source graph from which unmapped resources should be mapped
+     */
+    @Transactional
+    public void remapUnmappedResourcesFromContext(GraphURI sourceGraph) {
+        repository.deleteMappingForGraph(sourceGraph);
+        repository.mapUnmappedResourcesFromSourceGraph(sourceGraph);
     }
 }

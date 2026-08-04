@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.api.util.FileUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.NotFoundException;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.core_model.util.VaryHeaderBuilder;
 import cz.lukaskabc.ontology.ontopus.plugin.widoco.config.WidocoPluginConfig;
@@ -53,8 +54,23 @@ public class WidocoController {
                 .build();
     }
 
+    private static String safeDecodeBase64(String base64EncodedUri) {
+        try {
+            return StringUtils.base64DecodeUri(base64EncodedUri);
+        } catch (IllegalArgumentException e) {
+            throw ValidationException.builder()
+                    .internalMessage("Invalid Base64")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .titleMessageCode("ontopus.core.error.invalidData")
+                    .detailMessageCode("ontopus.core.error.invalidBase64")
+                    .cause(e)
+                    .build();
+        }
+    }
+
     private final Path filesDirectory;
     private final URI systemURI;
+
     private final Duration cacheControlMaxAge;
 
     public WidocoController(WidocoPluginConfig pluginConfig, OntopusConfig ontopusConfig) {
@@ -67,8 +83,7 @@ public class WidocoController {
     public ResponseEntity<FileSystemResource> getOntologyFile(
             @PathVariable("base64EncodedUri") String base64EncodedUri, HttpServletRequest request) throws IOException {
         // sanitized version IRI of the artifact
-        final String decodedSanitizedUri =
-                StringUtils.sanitizeUriAsComponent(StringUtils.base64DecodeUri(base64EncodedUri));
+        final String decodedSanitizedUri = StringUtils.sanitizeUriAsComponent(safeDecodeBase64(base64EncodedUri));
         // the requested path inside the version artifact directory
         final String requestedPath = resolveRequestedPath(base64EncodedUri, request);
         // relative requested path inside the widoco directory

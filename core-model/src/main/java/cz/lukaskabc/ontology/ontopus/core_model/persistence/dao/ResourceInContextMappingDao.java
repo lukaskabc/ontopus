@@ -160,6 +160,7 @@ public class ResourceInContextMappingDao {
 					               WHERE {
 					                   GRAPH ?sourceGraph {
 					                        ?subject ?p ?o .
+					                        FILTER(!isBlank(?subject))
 					                   }
 					               }
 					""")
@@ -199,6 +200,7 @@ public class ResourceInContextMappingDao {
 					               WHERE {
 					                   GRAPH ?sourceGraph {
 					                        ?subject ?p ?o .
+					                        FILTER(!isBlank(?subject))
 					                   }
 					                   FILTER NOT EXISTS {
 					                       GRAPH ?context {

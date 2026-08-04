@@ -1,16 +1,23 @@
-package cz.lukaskabc.ontology.ontopus.core.import_process.finalization;
+package cz.lukaskabc.ontology.ontopus.core.import_process.ordered;
 
 import cz.lukaskabc.ontology.ontopus.api.model.ImportProcessContext;
-import cz.lukaskabc.ontology.ontopus.api.service.ImportFinalizingService;
+import cz.lukaskabc.ontology.ontopus.api.model.JsonForm;
+import cz.lukaskabc.ontology.ontopus.api.model.ReadOnlyImportProcessContext;
+import cz.lukaskabc.ontology.ontopus.api.service.import_process.OrderedImportPipelineService;
+import cz.lukaskabc.ontology.ontopus.core.import_process.ImportProcessServiceOrder;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.JsonFormSubmitException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
+import cz.lukaskabc.ontology.ontopus.core_model.model.util.FormResult;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionArtifactUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionSeriesUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -18,14 +25,18 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Updates the {@link ImportProcessContext#versionSeries VersionSeries} and {@link ImportProcessContext#versionArtifact
+ * VersionArtifact} setting creation and modification timestamps and connecting the previous version chain.
+ */
 @Service
-@Order(FinalizationServiceOrder.VERSION_SERIES_UPDATE)
-public class VersionSeriesUpdateFinalizationService implements ImportFinalizingService {
+@Order(ImportProcessServiceOrder.VERSION_SERIES_UPDATE)
+public class VersionSeriesAndArtifactUpdatingService implements OrderedImportPipelineService<Void> {
     private final TimeProvider timeProvider;
     private final VersionSeriesUriGenerator versionSeriesUriGenerator;
     private final VersionArtifactUriGenerator versionArtifactUriGenerator;
 
-    public VersionSeriesUpdateFinalizationService(
+    public VersionSeriesAndArtifactUpdatingService(
             TimeProvider timeProvider,
             VersionSeriesUriGenerator versionSeriesUriGenerator,
             VersionArtifactUriGenerator versionArtifactUriGenerator) {
@@ -35,7 +46,17 @@ public class VersionSeriesUpdateFinalizationService implements ImportFinalizingS
     }
 
     @Override
-    public void finalizeImport(ImportProcessContext context) {
+    public @Nullable JsonForm getJsonForm(ReadOnlyImportProcessContext context, @Nullable JsonNode previousFormData) {
+        return null;
+    }
+
+    @Override
+    public String getServiceName() {
+        return this.getClass().getName();
+    }
+
+    @Override
+    public Void handleSubmit(FormResult formResult, ImportProcessContext context) throws JsonFormSubmitException {
         final VersionArtifact artifact = context.getVersionArtifact();
         final VersionSeries series = context.getVersionSeries();
 
@@ -76,6 +97,8 @@ public class VersionSeriesUpdateFinalizationService implements ImportFinalizingS
         setIfMissing(series::setReleaseDate, series::getReleaseDate, timestamp);
 
         series.setVersion(timeProvider.getCurrentDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        return null;
     }
 
     private <T> void setIfMissing(Consumer<T> setter, Supplier<T> getter, T value) {

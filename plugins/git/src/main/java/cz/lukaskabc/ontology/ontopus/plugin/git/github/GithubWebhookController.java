@@ -81,7 +81,7 @@ public class GithubWebhookController {
 
             if (!isSignatureValid) {
                 throw OntopusSecurityException.builder()
-                        .errorType(Vocabulary.u_i_invalid_signature)
+                        .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
                         .internalMessage("Invalid X-Hub-Signature-256")
                         .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
@@ -89,7 +89,7 @@ public class GithubWebhookController {
             }
         } catch (InvalidKeyException e) {
             throw OntopusSecurityException.builder()
-                    .errorType(Vocabulary.u_i_invalid_signature)
+                    .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
                     .internalMessage("Failed to calculate webhook signature")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
@@ -104,7 +104,7 @@ public class GithubWebhookController {
                 || eventSignature == null
                 || !eventSignature.startsWith(SIGNATURE_HEADER_PREFIX)) {
             throw OntopusSecurityException.builder()
-                    .errorType(Vocabulary.u_i_invalid_signature)
+                    .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
                     .internalMessage("Missing X-Hub-Signature-256 or invalid signature header")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
@@ -145,7 +145,7 @@ public class GithubWebhookController {
         if (httpRequest.getContentLength() > REQUEST_BODY_CACHE_LIMIT || httpRequest.getContentLength() < 0) {
             throw ValidationExceptionBuilderStages.start()
                     .statusCode(HttpStatus.BAD_REQUEST)
-                    .errorType(Vocabulary.u_i_too_large)
+                    .errorType(Vocabulary.u_i_ontopus_problem_too_large)
                     .internalMessage("Request body is too large")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .build();

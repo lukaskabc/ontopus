@@ -69,7 +69,7 @@ public class WidocoService {
             return future.get(config.getExecutionTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
         } catch (CancellationException | InterruptedException | TimeoutException e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_widoco)
+                    .errorType(Vocabulary.u_i_ontopus_problem_widoco)
                     .internalMessage("Exception during Widoco execution")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .cause(e)
@@ -79,7 +79,7 @@ public class WidocoService {
                 throw we;
             } else {
                 throw log.throwing(InternalException.builder()
-                        .errorType(Vocabulary.u_i_widoco)
+                        .errorType(Vocabulary.u_i_ontopus_problem_widoco)
                         .internalMessage("Widoco execution error")
                         .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .cause(e)
@@ -106,7 +106,7 @@ public class WidocoService {
         final String message = Objects.requireNonNullElse(e.getCause(), e).getMessage();
 
         throw log.throwing(InternalException.builder()
-                .errorType(Vocabulary.u_i_widoco)
+                .errorType(Vocabulary.u_i_ontopus_problem_widoco)
                 .internalMessage("Failure during Widoco execution")
                 .detailMessageArguments(new Object[] {message, logUri})
                 .detailMessageCode("ontopus.plugin.widoco.error.widocoExecution.detailLog")
@@ -132,7 +132,7 @@ public class WidocoService {
             FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
         } catch (IOException e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_file_processing)
+                    .errorType(Vocabulary.u_i_ontopus_problem_file_processing)
                     .internalMessage("Failed to persist Widoco output")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.widoco.error.persistOutput")
@@ -149,7 +149,7 @@ public class WidocoService {
                     .findAny()
                     .map(Path::getParent)
                     .orElseThrow(() -> log.throwing(InternalException.builder()
-                            .errorType(Vocabulary.u_i_file_processing)
+                            .errorType(Vocabulary.u_i_ontopus_problem_file_processing)
                             .internalMessage("Failed to resolve Widoco root output folder")
                             .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                             .titleMessageCode("ontopus.plugin.widoco.error.noWidocoOutputFolder")

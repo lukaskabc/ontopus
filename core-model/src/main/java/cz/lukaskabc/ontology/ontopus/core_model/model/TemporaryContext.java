@@ -10,8 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.Instant;
 
-@Context(Vocabulary.s_c_TemporaryContext)
-@OWLClass(iri = Vocabulary.s_c_TemporaryContext)
+@Context(Vocabulary.s_c_ontopus_TemporaryContext)
+@OWLClass(iri = Vocabulary.s_c_ontopus_TemporaryContext)
 public class TemporaryContext extends AbstractPersistenceEntity<TemporaryContextURI> {
 
     @NotNull @OWLDataProperty(iri = Vocabulary.s_p_sioc_created_at)

@@ -11,12 +11,12 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import java.net.URI;
 
-@Context(Vocabulary.s_c_UserAccount)
-@OWLClass(iri = Vocabulary.s_c_UserAccount)
+@Context(Vocabulary.s_c_ontopus_UserAccount)
+@OWLClass(iri = Vocabulary.s_c_ontopus_UserAccount)
 public class User extends AbstractPersistenceEntity<UserURI> {
 
     @NotEmpty @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = Vocabulary.s_p_password, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_ontopus_password, simpleLiteral = true)
     private String password;
 
     @Pattern(regexp = "[a-zA-Z0-9][a-zA-Z0-9_-]{3,}[a-zA-Z0-9]") @NotEmpty @ParticipationConstraints(nonEmpty = true)

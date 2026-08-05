@@ -14,21 +14,21 @@ import java.time.Instant;
 
 /** Resource published or curated by a single agent. */
 @MappedSuperclass
-@DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Resource_A)
+@DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Resource)
 public abstract class Resource<ID extends TypedIdentifier> extends PersistenceEntityWithDcatIdentifier<ID> {
     /*
      * skipping access rights, conforms to, contact point, creator
      */
-    @OWLDataProperty(iri = Vocabulary.s_p_sioc_description)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_description)
     private MultilingualString description = new MultilingualString();
 
-    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_sioc_title)
+    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_dcterms_title)
     private MultilingualString title = new MultilingualString();
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcterms_issued)
     private Instant releaseDate;
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcterms_modified)
     private Instant modifiedDate;
 
     /*

@@ -170,7 +170,7 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
                     case "version", "versionUri", "ontologyURI" -> null;
                     case null, default ->
                         throw JsonFormSubmitException.builder()
-                                .errorType(Vocabulary.u_i_illegal_value)
+                                .errorType(Vocabulary.u_i_ontopus_problem_illegal_value)
                                 .internalMessage("Illegal attribute submitted: " + attrName)
                                 .titleMessageCode("ontopus.core.error.invalidData")
                                 .detailMessageArguments(new Object[] {attrName})

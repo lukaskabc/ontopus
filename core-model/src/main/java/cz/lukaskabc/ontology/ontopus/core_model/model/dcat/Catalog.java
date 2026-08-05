@@ -14,10 +14,10 @@ import java.net.URI;
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Catalog)
 public abstract class Catalog<ID extends TypedIdentifier> extends Resource<ID> {
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dcat_homepage)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_foaf_homepage)
     private URI homepage;
 
-    @OWLObjectProperty(iri = Vocabulary.s_i_dcat_publisher, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OWLObjectProperty(iri = Vocabulary.s_i_dcterms_publisher, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Agent publisher;
 
     public URI getHomepage() {

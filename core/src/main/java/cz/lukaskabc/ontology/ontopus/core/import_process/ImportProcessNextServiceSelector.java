@@ -63,7 +63,7 @@ public abstract class ImportProcessNextServiceSelector<S extends ImportProcessin
             }
         }
         throw JsonFormSubmitException.builder()
-                .errorType(Vocabulary.u_i_form_submit)
+                .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                 .internalMessage("Invalid service index " + serviceIndex)
                 .titleMessageCode("ontopus.core.error.invalidData")
                 .detailMessageArguments(new Object[] {serviceIndex})

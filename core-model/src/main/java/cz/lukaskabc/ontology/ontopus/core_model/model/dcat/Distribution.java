@@ -22,16 +22,16 @@ import java.time.Instant;
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Distribution)
 public abstract class Distribution<ID extends TypedIdentifier> extends PersistenceEntityWithDcatIdentifier<ID> {
-    @OWLDataProperty(iri = Vocabulary.s_p_sioc_title)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_title)
     private MultilingualString title;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_sioc_description)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_description)
     private MultilingualString description;
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_issued)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcterms_issued)
     private Instant releaseDate;
 
-    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcat_modified)
+    @NotNull @OWLDataProperty(iri = Vocabulary.s_p_dcterms_modified)
     private Instant modifiedDate;
     /*
      * Skipping license, access right, rights, has policy
@@ -52,7 +52,7 @@ public abstract class Distribution<ID extends TypedIdentifier> extends Persisten
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_mediaType)
     private MimeType mediaType;
 
-    @OWLDataProperty(iri = Vocabulary.s_p_dcat_format, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_dcterms_format, simpleLiteral = true)
     private String format;
 
     @OWLDataProperty(iri = Vocabulary.s_p_dcat_compressFormat)

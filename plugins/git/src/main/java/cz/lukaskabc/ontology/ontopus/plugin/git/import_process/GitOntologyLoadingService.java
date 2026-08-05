@@ -82,7 +82,7 @@ public class GitOntologyLoadingService implements OntologyLoadingService {
             }
         } catch (IOException e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_file_processing)
+                    .errorType(Vocabulary.u_i_ontopus_problem_file_processing)
                     .internalMessage("Failed to move cloned repository to import context temp folder")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.plugin.git.error.repositoryMoveFailed")

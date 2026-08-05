@@ -18,7 +18,7 @@ public class ImportProcessTaskConflictException extends OntopusException {
     public static ImportProcessTaskConflictException build() {
         return ImportProcessTaskConflictExceptionBuilderStages.start()
                 .statusCode(HttpStatus.CONFLICT)
-                .errorType(Vocabulary.u_i_task_conflict)
+                .errorType(Vocabulary.u_i_ontopus_problem_task_conflict)
                 .internalMessage("Another import task is already in progress")
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                 .titleMessageCode("ontopus.core.error.failedToSubmitTask")

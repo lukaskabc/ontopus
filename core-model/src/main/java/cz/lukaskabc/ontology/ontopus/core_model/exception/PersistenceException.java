@@ -12,7 +12,7 @@ public class PersistenceException extends OntopusException {
     public static PersistenceExceptionBuilderStages.InternalMessageBuildStage builder() {
         return PersistenceExceptionBuilderStages.start()
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-                .errorType(Vocabulary.u_i_persistence);
+                .errorType(Vocabulary.u_i_ontopus_problem_persistence);
     }
 
     @org.immutables.builder.Builder.Constructor

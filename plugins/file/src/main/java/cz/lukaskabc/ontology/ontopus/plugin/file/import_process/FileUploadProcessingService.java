@@ -28,7 +28,7 @@ import java.util.Map;
 public class FileUploadProcessingService implements ImportProcessingService<Map<String, UploadedFile>> {
     private static JsonFormSubmitException noFileException(String internalMessage) {
         return JsonFormSubmitException.builder()
-                .errorType(Vocabulary.u_i_no_file)
+                .errorType(Vocabulary.u_i_ontopus_problem_no_file)
                 .internalMessage(internalMessage)
                 .titleMessageCode("ontopus.core.error.missingFile")
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

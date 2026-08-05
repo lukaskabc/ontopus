@@ -78,6 +78,7 @@
                             <prefix-mapping-file>${project.basedir}/ontology/prefixes.jopa.txt</prefix-mapping-file>
                             <with-java-uris>true</with-java-uris>
                             <vocabulary-only>true</vocabulary-only>
+                            <vocabulary-always-use-prefixes>true</vocabulary-always-use-prefixes>
                         </configuration>
                     </execution>
                     <execution>

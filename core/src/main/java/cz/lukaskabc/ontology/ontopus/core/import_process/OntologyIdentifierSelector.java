@@ -38,7 +38,7 @@ public class OntologyIdentifierSelector implements ImportProcessingService<URI> 
     private void ensureExists(ResourceURI resource, ImportProcessContext context) throws JsonFormSubmitException {
         if (!graphService.subjectExists(resource, context.getTemporaryDatabaseContext())) {
             throw JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_form_submit)
+                    .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                     .internalMessage("Resource does not exists in the ontology")
                     .titleMessageCode("ontopus.core.error.notFound.title")
                     .detailMessageArguments(new Object[] {resource})

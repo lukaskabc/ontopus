@@ -8,7 +8,7 @@ import cz.cvut.kbss.jopa.model.JOPAPersistenceProperties;
 import cz.cvut.kbss.jopa.model.JOPAPersistenceProvider;
 import cz.cvut.kbss.ontodriver.config.OntoDriverProperties;
 import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
-import cz.lukaskabc.ontology.ontopus.core.PluginRegistryApplicationInitializer;
+import cz.lukaskabc.ontology.ontopus.core.PluginRegistryBeanRegistryPostProcessor;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
@@ -85,8 +85,8 @@ public class PersistenceFactoryConfig {
     }
 
     /**
-     * Packages are collected in {@link PluginRegistryApplicationInitializer PluginRegistryApplicationInitializer} and
-     * passed to Spring context as {@link JopaEntityPackagesHolder}. The {@link JopaEntityPackagesHolder} bean is
+     * Packages are collected in {@link PluginRegistryBeanRegistryPostProcessor PluginRegistryApplicationInitializer}
+     * and passed to Spring context as {@link JopaEntityPackagesHolder}. The {@link JopaEntityPackagesHolder} bean is
      * removed from the context after the packages are retrieved.
      *
      * @return set of packages to scan for JOPA entities

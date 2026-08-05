@@ -27,6 +27,11 @@ public class PrefixDeclaration extends Rdf4JAbstractNamespace {
         this.namespace = URI.create(namespace.getName());
     }
 
+    public PrefixDeclaration(String prefix, URI namespace) {
+        this.prefix = prefix;
+        this.namespace = namespace;
+    }
+
     /**
      * Gets the name of the current namespace (i.e. its IRI).
      *

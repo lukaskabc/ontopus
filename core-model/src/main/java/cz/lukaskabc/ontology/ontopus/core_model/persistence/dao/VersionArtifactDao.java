@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -89,15 +90,26 @@ public class VersionArtifactDao extends AbstractDao<VersionArtifactURI, VersionA
         }
     }
 
+    /**
+     * Returns a sorted list of prefix declarations associated with the given ontology version
+     *
+     * @param ontologyVersionURI Ontology version to lookup
+     * @return sorted list of prefix declarations, sorted by prefix and then by namespace
+     */
     public List<PrefixDeclaration> findPrefixDeclarations(OntologyVersionURI ontologyVersionURI) {
         try {
-            return em.createQuery("""
+            final List<PrefixDeclaration> result = em.createQuery("""
 					    SELECT artifact.prefixDeclarations
 					    FROM VersionArtifact artifact
 					    WHERE artifact.versionUri = :iri
 					""", PrefixDeclaration.class)
                     .setParameter("iri", ontologyVersionURI.toURI())
                     .getResultList();
+            result.sort(
+                    Comparator.comparing(PrefixDeclaration::getPrefix).thenComparing(PrefixDeclaration::getNamespace));
+            // FIXME: Replace sort with ORDER BY once
+            // https://github.com/kbss-cvut/jopa/issues/460 is resolved
+            return result;
         } catch (Exception e) {
             throw AbstractDao.persistenceException(
                     log, "Failed to find prefix declarations for artifact " + ontologyVersionURI, e);

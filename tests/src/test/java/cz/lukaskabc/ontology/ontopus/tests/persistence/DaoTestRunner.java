@@ -19,4 +19,4 @@ import org.springframework.test.context.ContextConfiguration;
         initializers = {ConfigDataApplicationContextInitializer.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("test")
-public abstract class DaoTestRunner {}
+public abstract class DaoTestRunner extends TransactionalRunner {}

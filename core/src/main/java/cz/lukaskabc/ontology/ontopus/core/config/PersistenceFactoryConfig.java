@@ -35,10 +35,10 @@ public class PersistenceFactoryConfig {
 
     private static final Logger log = LogManager.getLogger(PersistenceFactoryConfig.class);
 
-    @Nullable private EntityManagerFactory factory;
+    @Nullable protected EntityManagerFactory factory;
 
-    private final OntopusConfig serverConfig;
-    private final DefaultListableBeanFactory defaultListableBeanFactory;
+    protected final OntopusConfig serverConfig;
+    protected final DefaultListableBeanFactory defaultListableBeanFactory;
 
     public PersistenceFactoryConfig(OntopusConfig serverConfig, DefaultListableBeanFactory defaultListableBeanFactory) {
         this.serverConfig = serverConfig;
@@ -52,35 +52,7 @@ public class PersistenceFactoryConfig {
         }
     }
 
-    @Bean
-    @Primary
-    public @Nullable EntityManagerFactory entityManagerFactory() {
-        return factory;
-    }
-
-    /**
-     * Packages are collected in {@link PluginRegistryApplicationInitializer PluginRegistryApplicationInitializer} and
-     * passed to Spring context as {@link JopaEntityPackagesHolder}. The {@link JopaEntityPackagesHolder} bean is
-     * removed from the context after the packages are retrieved.
-     *
-     * @return set of packages to scan for JOPA entities
-     */
-    private Set<String> getPackagesForEntityScan() {
-        final JopaEntityPackagesHolder holder = defaultListableBeanFactory.getBean(JopaEntityPackagesHolder.class);
-        defaultListableBeanFactory.destroySingleton(JopaEntityPackagesHolder.BEAN_NAME); // not needed anymore
-        return holder.packagesToScan();
-    }
-
-    @PostConstruct
-    private void init() {
-        try {
-            initializeFactory();
-        } catch (Exception e) {
-            throw log.throwing(new InitializationException("Failed to initialize JOPA persistence factory", e));
-        }
-    }
-
-    private void initializeFactory() {
+    protected Map<String, String> createFactoryProperties() {
         final OntopusConfig.Database dbConfig = serverConfig.getDatabase();
         final Map<String, String> properties = new HashMap<>();
 
@@ -103,6 +75,38 @@ public class PersistenceFactoryConfig {
 
         properties.put(Rdf4jOntoDriverProperties.LOAD_ALL_THRESHOLD, "1");
         properties.put(JOPAPersistenceProperties.LRU_CACHE_CAPACITY, "32768");
-        this.factory = Persistence.createEntityManagerFactory("ontopusPersistenceUnit", properties);
+        return properties;
+    }
+
+    @Bean
+    @Primary
+    public @Nullable EntityManagerFactory entityManagerFactory() {
+        return factory;
+    }
+
+    /**
+     * Packages are collected in {@link PluginRegistryApplicationInitializer PluginRegistryApplicationInitializer} and
+     * passed to Spring context as {@link JopaEntityPackagesHolder}. The {@link JopaEntityPackagesHolder} bean is
+     * removed from the context after the packages are retrieved.
+     *
+     * @return set of packages to scan for JOPA entities
+     */
+    protected Set<String> getPackagesForEntityScan() {
+        final JopaEntityPackagesHolder holder = defaultListableBeanFactory.getBean(JopaEntityPackagesHolder.class);
+        defaultListableBeanFactory.destroySingleton(JopaEntityPackagesHolder.BEAN_NAME); // not needed anymore
+        return holder.packagesToScan();
+    }
+
+    @PostConstruct
+    private void init() {
+        try {
+            this.factory = initializeFactory();
+        } catch (Exception e) {
+            throw log.throwing(new InitializationException("Failed to initialize JOPA persistence factory", e));
+        }
+    }
+
+    protected EntityManagerFactory initializeFactory() {
+        return Persistence.createEntityManagerFactory("ontopusPersistenceUnit", createFactoryProperties());
     }
 }

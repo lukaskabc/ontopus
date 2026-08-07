@@ -1,0 +1,13 @@
+changelog:
+  - changeSet:
+      # Migrate dcelements:language to dcterms
+      id: v0.18.0_01
+      changes:
+        - type: renameResource
+          oldIri: "http://purl.org/dc/elements/1.1/language"
+          newIri: "http://purl.org/dc/terms/language"
+          graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionSeries"
+        - type: renameResource
+          oldIri: "http://purl.org/dc/elements/1.1/language"
+          newIri: "http://purl.org/dc/terms/language"
+          graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"

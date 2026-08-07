@@ -19,6 +19,7 @@ import java.time.Instant;
  * various ways, including natural language, media-type or format, schematic organization, temporal and spatial
  * resolution, level of detail or profiles (which might specify any or all of the above).
  */
+// FIXME: Distributions yes or no?
 @MappedSuperclass
 @DocumentedOWLClass(iri = Vocabulary.s_c_dcat_Distribution)
 public abstract class Distribution<ID extends TypedIdentifier> extends PersistenceEntityWithDcatIdentifier<ID> {

@@ -32,6 +32,9 @@ public class PrefixDeclarationRepository
         Iterator<PrefixDeclaration> it = declarations.iterator();
         while (it.hasNext()) {
             final PrefixDeclaration declaration = it.next();
+            if (declaration.getIdentifier() != null) {
+                continue;
+            }
             findByPrefixAndNamespace(declaration.getPrefix(), declaration.getName())
                     .ifPresent(existing -> {
                         it.remove();

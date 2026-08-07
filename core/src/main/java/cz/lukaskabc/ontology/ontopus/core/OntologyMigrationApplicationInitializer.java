@@ -38,7 +38,7 @@ public class OntologyMigrationApplicationInitializer
         final MigrationRunner migrationRunner = MigrationRunner.repository(database.getUrl())
                 .username(database.getUsername())
                 .password(database.getPassword())
-                .changelogFile("root-changelog.yaml")
+                .changelogFile("migration/root-changelog.yaml")
                 .build();
 
         log.info("Performing data migration...");

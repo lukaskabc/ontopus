@@ -45,12 +45,9 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember, fetch = FetchType.LAZY)
     private Set<URI> members = new HashSet<>();
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
-    private Set<URI> distributions = new HashSet<>();
-
     @Override
     public void addDistribution(DistributionURI distributionURI) {
-        distributions.add(distributionURI.toURI());
+        throw new UnsupportedOperationException("VersionSeries should not have distributions");
     }
 
     @Override
@@ -60,7 +57,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public Set<DistributionURI> getDistributions() {
-        return distributions.stream().map(DistributionURI::new).collect(Collectors.toUnmodifiableSet());
+        throw new UnsupportedOperationException("VersionSeries should not have distributions");
     }
 
     @Override
@@ -101,7 +98,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public boolean hasDistribution(DistributionURI distributionURI) {
-        return distributions.contains(distributionURI.toURI());
+        return false;
     }
 
     @Override
@@ -111,7 +108,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public void removeDistribution(DistributionURI distributionURI) {
-        distributions.remove(distributionURI.toURI());
+        throw new UnsupportedOperationException("VersionSeries should not have distributions");
     }
 
     @Override

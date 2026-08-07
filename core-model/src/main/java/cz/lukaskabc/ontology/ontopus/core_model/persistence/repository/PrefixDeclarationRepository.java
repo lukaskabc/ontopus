@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class PrefixDeclarationRepository
@@ -28,17 +28,17 @@ public class PrefixDeclarationRepository
      * @param declarations declarations to deduplicate against the database
      */
     @Transactional(readOnly = true)
-    public void deduplicate(Set<PrefixDeclaration> declarations) {
-        Iterator<PrefixDeclaration> it = declarations.iterator();
-        while (it.hasNext()) {
-            final PrefixDeclaration declaration = it.next();
+    public void deduplicate(Collection<PrefixDeclaration> declarations) {
+        for (PrefixDeclaration declaration : declarations) {
             if (declaration.getIdentifier() != null) {
                 continue;
             }
             findByPrefixAndNamespace(declaration.getPrefix(), declaration.getName())
                     .ifPresent(existing -> {
-                        it.remove();
-                        declarations.add(existing);
+                        Objects.requireNonNull(
+                                existing.getIdentifier(),
+                                "Identifier of an existing PrefixDeclaration must not be null!");
+                        declaration.setIdentifier(existing.getIdentifier());
                     });
         }
     }

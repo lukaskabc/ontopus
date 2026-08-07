@@ -36,11 +36,11 @@ public class PrefixDeclarationRepositoryTest extends BaseDaoTest {
 
         assertEquals(2, newDeclarations.size(), "The amount of declarations must remain the same");
 
-        assertTrue(
-                newDeclarations.stream().noneMatch(d -> d == newEx), "Collection must not contain deduplicated object");
-
         assertTrue(newDeclarations.contains(ex), "Collection must contain deduplicated object replacement");
         assertTrue(newDeclarations.contains(unrelated), "Collection must contain unrelated object");
+
+        assertNotNull(newEx.getIdentifier());
+        assertEquals(ex.getIdentifier(), newEx.getIdentifier());
 
         assertEquals("unrelated", unrelated.getPrefix());
         assertNull(unrelated.getIdentifier(), "Non existing prefix declaration must not be deduplicated");

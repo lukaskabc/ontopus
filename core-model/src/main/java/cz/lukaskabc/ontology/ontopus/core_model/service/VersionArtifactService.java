@@ -95,6 +95,7 @@ public class VersionArtifactService
     @Transactional
     @Override
     public void update(VersionArtifact entity) {
+        prefixDeclarationRepository.deduplicate(entity.getPrefixDeclarations());
         super.update(entity);
         prefixDeclarationRepository.removeOrphans();
     }

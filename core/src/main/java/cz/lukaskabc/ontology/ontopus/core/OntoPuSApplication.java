@@ -18,6 +18,7 @@ public class OntoPuSApplication {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(OntoPuSApplication.class);
+        app.addInitializers(new OntologyMigrationApplicationInitializer());
         app.run(args);
     }
 }

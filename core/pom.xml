@@ -103,6 +103,15 @@
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
+        <!-- Ontology migration -->
+        <!-- https://github.com/kbss-cvut/ontology-migration-tool -->
+        <!-- Only available on KBSS Maven repository -->
+        <dependency>
+            <groupId>cz.cvut.kbss</groupId>
+            <artifactId>ontology-migration-tool</artifactId>
+            <version>0.4.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- Development dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -115,6 +124,15 @@
         </dependency>
 
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>kbss</id>
+            <name>ČVUT KBSS</name>
+            <url>https://kbss.felk.cvut.cz/m2repo</url>
+            <!-- included only for ontology-migration-tool -->
+        </repository>
+    </repositories>
 
     <build>
         <!-- Allows properties expanding to application.yml and similar -->

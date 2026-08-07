@@ -96,7 +96,7 @@ public class DcatResourceService extends ResourceService {
 
         if (controllers == null) {
             throw InternalException.builder()
-                    .errorType(Vocabulary.u_i_internal_error)
+                    .errorType(Vocabulary.u_i_ontopus_problem_internal_error)
                     .internalMessage("Unknown entity graph: " + graphURI)
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .build();

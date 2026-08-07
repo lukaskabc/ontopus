@@ -9,8 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PrefixDeclarationRepositoryTest extends BaseDaoTest {
 
@@ -26,19 +27,22 @@ public class PrefixDeclarationRepositoryTest extends BaseDaoTest {
         assertNotNull(ex.getIdentifier());
         assertNotNull(example.getIdentifier());
 
-        List<PrefixDeclaration> newDeclarations = new ArrayList<>(List.of(
-                new PrefixDeclaration(ex.getPrefix(), ex.getNamespace().toURI()),
-                new PrefixDeclaration("unrelated", URI.create("http://ex/unrelated"))));
+        final PrefixDeclaration newEx =
+                new PrefixDeclaration(ex.getPrefix(), ex.getNamespace().toURI());
+        final PrefixDeclaration unrelated = new PrefixDeclaration("unrelated", URI.create("http://ex/unrelated"));
+        Set<PrefixDeclaration> newDeclarations = new HashSet<>(List.of(newEx, unrelated));
 
         sut.deduplicate(newDeclarations);
 
         assertEquals(2, newDeclarations.size(), "The amount of declarations must remain the same");
-        assertNotNull(
-                newDeclarations.getFirst().getIdentifier(), "Deduplicated object must have an existing identifier");
-        assertEquals(ex, newDeclarations.getFirst(), "Existing declaration must be deduplicated");
 
-        assertEquals("unrelated", newDeclarations.getLast().getPrefix());
-        assertNull(
-                newDeclarations.getLast().getIdentifier(), "Non existing prefix declaration must not be deduplicated");
+        assertTrue(
+                newDeclarations.stream().noneMatch(d -> d == newEx), "Collection must not contain deduplicated object");
+
+        assertTrue(newDeclarations.contains(ex), "Collection must contain deduplicated object replacement");
+        assertTrue(newDeclarations.contains(unrelated), "Collection must contain unrelated object");
+
+        assertEquals("unrelated", unrelated.getPrefix());
+        assertNull(unrelated.getIdentifier(), "Non existing prefix declaration must not be deduplicated");
     }
 }

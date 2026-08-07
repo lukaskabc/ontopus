@@ -8,7 +8,6 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Objects;
 
 /** Helps with loading JSON files from the classpath resource directory. */
@@ -47,7 +46,7 @@ public class JsonResourceLoader {
      * @throws OntopusException if the resource is missing or cannot be parsed
      */
     public static JsonNode loadJsonSchema(String directory, String baseName) {
-        return load(Path.of(directory, baseName + JSON_SCHEMA_SUFFIX).toString());
+        return load(directory + "/" + baseName + JSON_SCHEMA_SUFFIX);
     }
 
     /**
@@ -61,7 +60,7 @@ public class JsonResourceLoader {
      * @throws OntopusException if the resource is missing or cannot be parsed
      */
     public static JsonNode loadUiSchema(String directory, String baseName) {
-        return load(Path.of(directory, baseName + UI_SCHEMA_SUFFIX).toString());
+        return load(directory + "/" + baseName + UI_SCHEMA_SUFFIX);
     }
 
     private JsonResourceLoader() {

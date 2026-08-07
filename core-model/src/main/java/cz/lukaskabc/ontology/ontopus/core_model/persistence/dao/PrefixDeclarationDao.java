@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
+
 @Component
 public class PrefixDeclarationDao extends AbstractDao<Rdf4JAbstractNamespaceURI, PrefixDeclaration> {
     private static final Logger log = LogManager.getLogger(PrefixDeclarationDao.class);
@@ -24,7 +26,7 @@ public class PrefixDeclarationDao extends AbstractDao<Rdf4JAbstractNamespaceURI,
                             "SELECT d FROM PrefixDeclaration d WHERE d.prefix = :prefix AND d.namespace = :namespace",
                             PrefixDeclaration.class)
                     .setParameter("prefix", prefix)
-                    .setParameter("namespace", namespace)
+                    .setParameter("namespace", URI.create(namespace))
                     .setMaxResults(1)::getSingleResult);
         } catch (Exception e) {
             throw persistenceException(log, "Failed to find prefix declaration for prefix " + prefix, e);

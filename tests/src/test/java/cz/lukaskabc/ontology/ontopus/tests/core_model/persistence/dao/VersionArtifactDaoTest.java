@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import java.net.URI;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-@Import(VersionArtifactDao.class)
 public class VersionArtifactDaoTest extends BaseDaoTest {
     @Autowired
     private VersionArtifactDao sut;

@@ -1,13 +1,9 @@
 package cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing;
 
-import cz.cvut.kbss.jopa.model.IRI;
 import cz.lukaskabc.ontology.ontopus.api.model.DcatEntityRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.*;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.*;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
-import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriterFactory;
@@ -34,7 +30,7 @@ public class DcatRDFController
 
     @Override
     public ResponseEntity<StreamingResponseBody> getCatalog(DcatEntityRequest<OntopusCatalogURI> request) {
-        return handleRequest(request, OntopusCatalog_.entityClassIRI);
+        return handleRequest(request);
     }
 
     @Override
@@ -54,17 +50,16 @@ public class DcatRDFController
 
     @Override
     public ResponseEntity<StreamingResponseBody> getVersionArtifact(DcatEntityRequest<VersionArtifactURI> request) {
-        return handleRequest(request, VersionArtifact_.entityClassIRI);
+        return handleRequest(request);
     }
 
     @Override
     public ResponseEntity<StreamingResponseBody> getVersionSeries(DcatEntityRequest<VersionSeriesURI> request) {
-        return handleRequest(request, VersionSeries_.entityClassIRI);
+        return handleRequest(request);
     }
 
-    protected ResponseEntity<StreamingResponseBody> handleRequest(
-            DcatEntityRequest<? extends ResourceURI> request, IRI graphURI) {
-        final GraphURI graph = new GraphURIImpl(graphURI.toURI());
+    protected ResponseEntity<StreamingResponseBody> handleRequest(DcatEntityRequest<? extends ResourceURI> request) {
+        final GraphURI graph = new GraphURIImpl(request.graph().toURI());
         return handleRequestWithData(request, () -> graphService.findAllWithSubject(graph, request.identifier()));
     }
 

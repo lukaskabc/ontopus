@@ -4,6 +4,11 @@ import cz.lukaskabc.ontology.ontopus.api.model.DcatEntityRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * Controller capable of providing an internal Version Series DCAT entity in a supported format
+ *
+ * @see cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries
+ */
 public interface VersionSeriesController extends NegotiableController {
     /**
      * Provides the requested version series in the requested media type.

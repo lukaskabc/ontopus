@@ -6,6 +6,11 @@ import org.springframework.http.MediaType;
 
 import java.util.Optional;
 
+/**
+ * Helper class for resolving an {@link RDFFormat} from {@link MediaType}
+ *
+ * @see RDFWriterRegistry
+ */
 public class RdfFormatResolver {
     public static Optional<RDFFormat> findCompatible(MediaType mediaType) {
         return RDFWriterRegistry.getInstance().getKeys().stream()

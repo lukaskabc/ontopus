@@ -13,7 +13,7 @@ import java.util.Collection;
 
 public abstract class BaseDaoTest extends DaoTestRunner {
     @Autowired
-    private EntityManager em;
+    protected EntityManager em;
 
     /**
      * Persists given statements

@@ -40,7 +40,7 @@ public class VersionArtifactDaoTest extends BaseDaoTest {
                     artifact.addPrefixDeclaration(prefix);
                     expectedCount.incrementAndGet();
                 });
-        withEntities(List.of(series, artifact));
+        withEntities(series, artifact);
 
         List<PrefixDeclaration> result = sut.findPrefixDeclarations(artifact.getVersionUri());
 

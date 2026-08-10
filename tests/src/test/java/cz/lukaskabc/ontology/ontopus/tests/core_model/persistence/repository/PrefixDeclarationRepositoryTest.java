@@ -22,7 +22,7 @@ public class PrefixDeclarationRepositoryTest extends BaseDaoTest {
     void deduplicateReplacesDuplicatesWithManagedInstances() {
         final PrefixDeclaration ex = new PrefixDeclaration("ex", URI.create("http://ex/namespace"));
         final PrefixDeclaration example = new PrefixDeclaration("example", URI.create("http://example/namespace"));
-        withEntities(List.of(ex, example));
+        withEntities(ex, example);
 
         assertNotNull(ex.getIdentifier());
         assertNotNull(example.getIdentifier());

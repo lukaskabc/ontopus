@@ -71,11 +71,6 @@
             </dependency>
             <dependency>
                 <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
-                <artifactId>public-dcat-plugin</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                 <artifactId>file-upload-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -75,7 +75,9 @@ public class ContextSerializationFinalizationService implements ImportFinalizing
 
         context.getVersionSeries().setSerializableImportProcessContext(serializedContext);
 
-        log.warn(() -> objectMapper.writeValueAsString(serializedContext));
+        log.debug(
+                "Updated serialization context for VersionSeries <{}>",
+                context.getVersionSeries().getIdentifier());
     }
 
     private FormDataDto serializeFormData(Map<String, JsonNode> stringJsonNodeMap) {

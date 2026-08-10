@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
+import cz.lukaskabc.ontology.ontopus.api.model.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.*;
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;

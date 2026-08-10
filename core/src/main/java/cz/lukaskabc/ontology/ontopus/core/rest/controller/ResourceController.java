@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
+/** Default resource controller handling requests to ontology resources */
 @Primary
 @NullMarked
 @Controller

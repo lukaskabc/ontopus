@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .headers(SecurityConfig::publicHeaderCustomizer)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .with(new UsernamePasswordAuthenticationConfigurer<>())
-                .authorizeHttpRequests(this::configureSystemUriAuthorization);
+                .authorizeHttpRequests(this::configureRequestAuthorization);
         return http.build();
     }
 
@@ -72,7 +72,12 @@ public class SecurityConfig {
         return new ProviderManager(authenticationProvider);
     }
 
-    private void configureSystemUriAuthorization(
+    /**
+     * Configures the access rules
+     *
+     * @param auth
+     */
+    private void configureRequestAuthorization(
             AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth
                 // login endpoint
@@ -85,6 +90,8 @@ public class SecurityConfig {
                 .requestMatchers("/public/**")
                 .permitAll();
 
+        // When the DCAT identifiers are system URI based
+        // they need to be allowed
         final URI dcatBaseUri = ontopusConfig.getDcatCatalog().getBaseUri();
         if (dcatBaseUri
                 .toString()

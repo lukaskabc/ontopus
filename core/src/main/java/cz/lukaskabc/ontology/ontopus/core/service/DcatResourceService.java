@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 @Service
 public class DcatResourceService extends ResourceService {
+    /** List of graphs from which resources are publicly accessible */
     private static final Set<GraphURI> ENTITY_GRAPHS = Stream.of(
                     OntopusCatalog_.entityClassIRI, VersionSeries_.entityClassIRI, VersionArtifact_.entityClassIRI)
             .map(IRI::toURI)

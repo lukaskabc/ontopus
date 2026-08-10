@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.api.rest;
 
+import cz.lukaskabc.ontology.ontopus.api.model.OntopusRequest;
 import org.springframework.http.ResponseEntity;
 
 /**

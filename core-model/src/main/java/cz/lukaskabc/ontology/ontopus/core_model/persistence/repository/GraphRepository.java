@@ -82,6 +82,7 @@ public class GraphRepository {
      *
      * @param resourceURI the resource to lookup
      * @param graphs the set of graphs to search
+     * @throws IllegalArgumentException when {@code null} or empty set are passed as arguments
      */
     @Transactional(readOnly = true)
     public Optional<GraphURI> findGraphOfEntity(ResourceURI resourceURI, @Nullable Set<GraphURI> graphs) {

@@ -270,14 +270,16 @@ public class GraphDao {
      *
      * @param resourceURI the resource to lookup
      * @param graphs the set of graphs to search
+     * @throws IllegalArgumentException when {@code null} or empty set are passed as arguments
      */
     @Nullable public GraphURI findGraphOfEntity(ResourceURI resourceURI, Set<GraphURI> graphs) {
         Objects.requireNonNull(resourceURI);
         Objects.requireNonNull(graphs);
-        final String fromClause = graphs.stream()
-                .map(GraphURI.class::cast)
-                .map(g -> "FROM NAMED <" + g.toURI() + ">")
-                .collect(Collectors.joining(" "));
+        if (graphs.isEmpty()) {
+            throw new IllegalArgumentException("Graphs set must not be empty!");
+        }
+        final String fromClause =
+                graphs.stream().map(g -> "FROM NAMED <" + g.toURI() + ">").collect(Collectors.joining(" "));
         try {
             final URI graph =
                     AbstractDao.resultOrNull(em.createNativeQuery("""

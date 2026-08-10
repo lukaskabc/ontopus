@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.api.rest;
+package cz.lukaskabc.ontology.ontopus.api.model;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;

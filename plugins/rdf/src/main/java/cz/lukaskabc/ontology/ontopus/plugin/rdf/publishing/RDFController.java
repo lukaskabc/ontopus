@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing;
 
+import cz.lukaskabc.ontology.ontopus.api.model.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
-import cz.lukaskabc.ontology.ontopus.api.rest.OntopusRequest;
 import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;

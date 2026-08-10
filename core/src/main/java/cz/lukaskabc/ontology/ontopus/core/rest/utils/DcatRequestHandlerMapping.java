@@ -38,8 +38,7 @@ public class DcatRequestHandlerMapping extends RequestMappingHandlerMapping {
             final URI baseUri = ontopusConfig.getDcatCatalog().getBaseUri();
 
             RequestMappingInfo mappingInfo = RequestMappingInfo.paths("/**")
-                    .customCondition(new cz.lukaskabc.ontology.ontopus.core.rest.utils.NotRequestCondition(
-                            new RequestUrlNotStartsWithCondition(baseUri)))
+                    .customCondition(new NagatingRequestCondition(new RequestUrlNotStartsWithCondition(baseUri)))
                     .methods(RequestMethod.GET)
                     .build();
 

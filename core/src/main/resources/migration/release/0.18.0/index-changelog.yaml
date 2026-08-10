@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kbss-cvut/ontology-migration-tool/refs/heads/main/src/main/resources/changelog-scheme.json
+
 changelog:
   - changeSet:
       # Migrate dcelements:language to dcterms
@@ -11,3 +13,25 @@ changelog:
           oldIri: "http://purl.org/dc/elements/1.1/language"
           newIri: "http://purl.org/dc/terms/language"
           graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"
+
+  - changeSet:
+      id: v0.18.0_02
+      changes:
+        - type: sparqlUpdate
+          query: |
+            PREFIX ontopus: <http://ontology.lukaskabc.cz/application/ontopus/>
+            DELETE {
+              GRAPH ontopus:VersionSeries {
+                ?s ontopus:serializedImportContext ?o .
+              }
+            }
+            INSERT {
+              GRAPH ontopus:serializedImportContext {
+                ?s ontopus:serializedImportContext ?o .
+              }
+            }
+            WHERE {
+              GRAPH ontopus:VersionSeries {
+                ?s ontopus:serializedImportContext ?o .
+              }
+            }

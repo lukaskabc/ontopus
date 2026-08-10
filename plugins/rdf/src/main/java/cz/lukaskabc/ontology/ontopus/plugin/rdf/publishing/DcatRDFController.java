@@ -19,24 +19,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
-public class DcatRDFController
-        implements CatalogController, VersionSeriesController, VersionArtifactController, DistributionController {
+public class DcatRDFController implements UniversalDcatController {
 
     private final GraphService graphService;
 
     public DcatRDFController(GraphService graphService) {
         this.graphService = graphService;
-    }
-
-    @Override
-    public ResponseEntity<StreamingResponseBody> getCatalog(DcatEntityRequest<OntopusCatalogURI> request) {
-        return handleRequest(request);
-    }
-
-    @Override
-    public ResponseEntity<StreamingResponseBody> getDistribution(DcatEntityRequest<DistributionURI> request) {
-        // return handleRequest(request, Distribution_.entityClassIRI);
-        throw new UnsupportedOperationException("Distributions are not implemented");
     }
 
     @Override
@@ -49,16 +37,7 @@ public class DcatRDFController
     }
 
     @Override
-    public ResponseEntity<StreamingResponseBody> getVersionArtifact(DcatEntityRequest<VersionArtifactURI> request) {
-        return handleRequest(request);
-    }
-
-    @Override
-    public ResponseEntity<StreamingResponseBody> getVersionSeries(DcatEntityRequest<VersionSeriesURI> request) {
-        return handleRequest(request);
-    }
-
-    protected ResponseEntity<StreamingResponseBody> handleRequest(DcatEntityRequest<? extends ResourceURI> request) {
+    public ResponseEntity<StreamingResponseBody> handleRequest(DcatEntityRequest<? extends ResourceURI> request) {
         final GraphURI graph = new GraphURIImpl(request.graph().toURI());
         return handleRequestWithData(request, () -> graphService.findAllWithSubject(graph, request.identifier()));
     }

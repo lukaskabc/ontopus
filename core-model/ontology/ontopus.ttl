@@ -223,6 +223,11 @@ ontopus:OntologyResource rdf:type owl:NamedIndividual ,
                        rdfs:comment "A thing that participates in an ontology"@en ;
                        rdfs:label "Ontology Entity"@en .
 
+ontopus:Temporary rdf:type owl:NamedIndividual  ,
+                           rdfs:Resource ;
+                  rdfs:comment "A temporary resource that should not be persisted."@en ;
+                  rdfs:label "Temporary resource"@en .
+
 ontopus-problem:access-denied rdf:type ontopus:ProblemDetail ;
                              rdfs:label "Access Denied"@en ;
                              rdfs:comment "User is not authorized to access the requested resource."@en .

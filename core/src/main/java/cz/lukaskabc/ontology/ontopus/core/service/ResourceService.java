@@ -34,10 +34,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Primary
@@ -46,7 +43,7 @@ public class ResourceService {
     private static final Logger log = LogManager.getLogger(ResourceService.class);
 
     @SuppressWarnings("unchecked")
-    private static ResponseEntity<StreamingResponseBody> cast(
+    protected static ResponseEntity<StreamingResponseBody> cast(
             ResponseEntity<? extends StreamingResponseBody> response) {
         return (ResponseEntity<StreamingResponseBody>) response;
     }
@@ -107,7 +104,7 @@ public class ResourceService {
                 resourceURI, (fallbackUri) -> getResource(fallbackUri, mediaTypes));
     }
 
-    private Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
+    protected Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
         try {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
         } catch (ClassNotFoundException e) {
@@ -148,10 +145,10 @@ public class ResourceService {
                 })
                 .map(ResourceService::cast);
 
-        return result.orElseGet(() -> multipleChoice(mapping, resourceURI));
+        return result.orElseGet(() -> multipleChoice(mapping.getControllers(), resourceURI));
     }
 
-    private ResponseEntity<? extends StreamingResponseBody> handleRequest(
+    protected ResponseEntity<? extends StreamingResponseBody> handleRequest(
             ControllerCandidate candidate, MappingType mappingType, OntopusRequest ontopusRequest) {
         NegotiableController controller = applicationContext.getBean(getControllerClass(candidate.controller()));
         if (mappingType == MappingType.RESOURCE
@@ -172,9 +169,9 @@ public class ResourceService {
                 .build());
     }
 
-    private ResponseEntity<StreamingResponseBody> multipleChoice(
-            ContextToControllerMapping mapping, ResourceURI resourceURI) {
-        Map<String, MediaType> supportedExtensions = resolveSupportedFileExtensions(mapping);
+    protected ResponseEntity<StreamingResponseBody> multipleChoice(
+            Collection<ControllerDescription> controllerDescriptions, ResourceURI resourceURI) {
+        Map<String, MediaType> supportedExtensions = resolveSupportedFileExtensions(controllerDescriptions);
         if (supportedExtensions.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
@@ -184,7 +181,7 @@ public class ResourceService {
                 .body(new MultipleChoiceResponseWriter(supportedExtensions, resourceURI, ontopusConfig));
     }
 
-    private MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {
+    protected MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {
         if (requestedURI.equals(graphURI)) {
             return MappingType.ONTOLOGY_DOCUMENT;
         }
@@ -195,7 +192,7 @@ public class ResourceService {
         return MappingType.RESOURCE;
     }
 
-    private Optional<MediaType> resolveSuffixType(ResourceURI resourceURI) {
+    protected Optional<MediaType> resolveSuffixType(ResourceURI resourceURI) {
         final String extension =
                 StringUtils.getFilenameExtension(resourceURI.toURI().getPath());
         if (extension == null) {
@@ -204,9 +201,10 @@ public class ResourceService {
         return mediaTypeResolver.resolveMediaType(extension);
     }
 
-    private Map<String, MediaType> resolveSupportedFileExtensions(ContextToControllerMapping mapping) {
+    protected Map<String, MediaType> resolveSupportedFileExtensions(
+            Collection<ControllerDescription> controllerDescriptions) {
         Map<String, MediaType> fileExtensions = new HashMap<>();
-        for (ControllerDescription controller : mapping.getControllers()) {
+        for (ControllerDescription controller : controllerDescriptions) {
             for (MediaType type : controller.getSupportedMediaTypes()) {
                 List<String> extensions = mediaTypeResolver.resolveFileExtensions(type);
                 if (extensions.isEmpty()) {
@@ -224,7 +222,7 @@ public class ResourceService {
         return fileExtensions;
     }
 
-    private ResourceURI withoutSuffix(ResourceURI resourceURI) {
+    protected ResourceURI withoutSuffix(ResourceURI resourceURI) {
         final URI original = resourceURI.toURI();
         final String fileExt = StringUtils.getFilenameExtension(original.getPath());
         if (fileExt == null) {

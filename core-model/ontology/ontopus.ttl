@@ -12,7 +12,6 @@
 @base <http://ontology.lukaskabc.cz/application/ontopus/> .
 
 <http://ontology.lukaskabc.cz/application/ontopus> rdf:type owl:Ontology ;
-                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0-dev> ;
                                                     owl:imports <http://www.w3.org/2002/07/owl> ,
                                                                 <http://www.w3.org/1999/02/22-rdf-syntax-ns> ,
                                                                 <http://www.w3.org/2000/01/rdf-schema> ,
@@ -28,7 +27,8 @@
                                                     sh:suggestedShapesGraph <http://ontology.lukaskabc.cz/application/ontopus/shacl> ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
                                                     rdfs:label "OntoPuS" ;
-                                                    owl:versionInfo "Development version 0.0.1"@en .
+                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0.1> ;
+                                                    owl:versionInfo "Version 1.0.1"@en .
 
 hydra:Error a hydra:Class ;
     rdfs:label "Error" ;
@@ -262,7 +262,7 @@ ontopus-problem:internal-error rdf:type ontopus:ProblemDetail ;
 <http://ontology.lukaskabc.cz/application/ontopus/problem/internal-error/initialization> rdf:type ontopus:ProblemDetail ;
                                               rdfs:subClassOf ontopus-problem:internal-error ;
                                               rdfs:label "Initialization error"@en ;
-                                              rdfs:comment "The controller does not support the requested mapping of the resource."@en .
+                                              rdfs:comment "The application failed to initialize."@en .
 
 <http://ontology.lukaskabc.cz/application/ontopus/problem/internal-error/serialization> rdf:type ontopus:ProblemDetail ;
                                               rdfs:subClassOf ontopus-problem:internal-error ;

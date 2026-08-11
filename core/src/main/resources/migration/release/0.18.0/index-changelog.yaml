@@ -46,3 +46,9 @@ changelog:
           oldIri: "http://ontology.lukaskabc.cz/application/ontopus/hasPrefixDeclaration"
           newIri: "http://www.w3.org/ns/shacl#declare"
           graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"
+
+  - changeSet:
+      id: v0.18.0_04
+      changes:
+        - type: custom
+          class: cz.lukaskabc.ontology.ontopus.core.service.migration.OutOfLocalhostCatalogMigrationChange

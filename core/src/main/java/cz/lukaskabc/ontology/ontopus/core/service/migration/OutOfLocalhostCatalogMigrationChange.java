@@ -1,0 +1,145 @@
+package cz.lukaskabc.ontology.ontopus.core.service.migration;
+
+import cz.cvut.kbss.jopa.model.annotations.Context;
+import cz.cvut.kbss.model.change.custom.CustomChange;
+import cz.cvut.kbss.repository.OntologyRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+
+import java.net.URI;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Custom change capable of migrating catalog and related resource identifiers.
+ *
+ * <p>Requires {@link #CATALOG_PREFIX_MIGRATION_SOURCE} and {@link #CATALOG_PREFIX_MIGRATION_TARGET} environment
+ * variables set to the original identifier prefix and the new prefix.
+ */
+public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
+    /** The prefix of old identifiers that should be replaced. */
+    private static final String CATALOG_PREFIX_MIGRATION_SOURCE = "CATALOG_MIGRATION_SOURCE";
+    /** The new prefix to use in entity identifiers. */
+    private static final String CATALOG_PREFIX_MIGRATION_TARGET = "CATALOG_MIGRATION_TARGET";
+
+    private static final String BASE_PACKAGE = "cz.lukaskabc.ontology.ontopus";
+    private static final Logger log = LogManager.getLogger(OutOfLocalhostCatalogMigrationChange.class);
+
+    private static URI getEnvUri(String envVar) {
+        try {
+            return new URI(System.getenv(envVar));
+        } catch (Exception e) {
+            throw new CatalogMigrationException("Invalid or missing URI for environment variable: " + envVar);
+        }
+    }
+
+    private static Set<URI> resolveContexts() {
+        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AnnotationTypeFilter(Context.class));
+        return provider.findCandidateComponents(BASE_PACKAGE).stream()
+                .map(BeanDefinition::getBeanClassName)
+                .map(className -> {
+                    try {
+                        return Class.forName(className);
+                    } catch (ClassNotFoundException e) {
+                        throw new CatalogMigrationException("Class not found: " + className);
+                    }
+                })
+                .map(clazz -> clazz.getAnnotation(Context.class))
+                .map(Context::value)
+                .map(URI::create)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void apply(OntologyRepository ontologyRepository) {
+        final URI source = getEnvUri(CATALOG_PREFIX_MIGRATION_SOURCE);
+        final URI target = getEnvUri(CATALOG_PREFIX_MIGRATION_TARGET);
+        log.warn("Performing catalog migration from identifier prefix <{}> to <{}>", source, target);
+        final Set<URI> contexts = resolveContexts();
+        if (contexts.isEmpty()) {
+            throw new CatalogMigrationException("No contexts for migration found!");
+        }
+        log.warn(
+                "Selected database graphs for identifier prefix migration: <{}>",
+                contexts.stream().map(URI::toString).collect(Collectors.joining(">, <")));
+
+        for (URI graph : contexts) {
+            log.info("Performing identifier prefix migration in graph <{}>", graph);
+            final Replacement replacement = new Replacement(graph, source, target);
+            replaceSubjects(ontologyRepository, replacement);
+            replaceObjects(ontologyRepository, replacement);
+        }
+    }
+
+    private void replaceObjects(OntologyRepository ontologyRepository, Replacement replacement) {
+        final String sparqlUpdateObjects = """
+				DELETE {
+				    GRAPH <?graph> {
+				        ?s ?p ?o .
+				    }
+				}
+				INSERT {
+				    GRAPH <?graph> {
+				        ?s ?p ?newO .
+				    }
+				}
+				WHERE {
+				    GRAPH <?graph> {
+				        ?s ?p ?o .
+				        FILTER (isIRI(?o) && STRSTARTS(STR(?o), "?sourcePrefix")) .
+				        BIND(IRI(CONCAT("?targetPrefix", SUBSTR(STR(?o), ?sourceLen))) AS ?newO)
+				    }
+				}
+				""".replace(
+                        "?graph", replacement.graph().toString())
+                .replace("?sourcePrefix", replacement.source().toString())
+                .replace("?targetPrefix", replacement.target().toString())
+                .replace("?sourceLen", String.valueOf(replacement.sourceSparqlLength()));
+
+        ontologyRepository.update(sparqlUpdateObjects);
+    }
+
+    private void replaceSubjects(OntologyRepository ontologyRepository, Replacement replacement) {
+        final String sparqlUpdateSubjects = """
+				DELETE {
+				    GRAPH <?graph> {
+				        ?s ?p ?o .
+				    }
+				}
+				INSERT {
+				    GRAPH <?graph> {
+				        ?newS ?p ?o .
+				    }
+				}
+				WHERE {
+				    GRAPH <?graph> {
+				        ?s ?p ?o .
+				        FILTER (isIRI(?s) && STRSTARTS(STR(?s), "?sourcePrefix")) .
+				        BIND(IRI(CONCAT("?targetPrefix", SUBSTR(STR(?s), ?sourceLen))) AS ?newS)
+				    }
+				}
+				""".replace(
+                        "?graph", replacement.graph().toString())
+                .replace("?sourcePrefix", replacement.source().toString())
+                .replace("?targetPrefix", replacement.target().toString())
+                .replace("?sourceLen", String.valueOf(replacement.sourceSparqlLength()));
+
+        ontologyRepository.update(sparqlUpdateSubjects);
+    }
+
+    private static class CatalogMigrationException extends RuntimeException {
+        public CatalogMigrationException(String message) {
+            super(message);
+        }
+    }
+
+    private record Replacement(URI graph, URI source, URI target) {
+        public int sourceSparqlLength() {
+            return source.toString().length() + 1;
+        }
+    }
+}

@@ -32,7 +32,9 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
         try {
             return new URI(System.getenv(envVar));
         } catch (Exception e) {
-            throw new CatalogMigrationException("Invalid or missing URI for environment variable: " + envVar);
+            throw new CatalogMigrationException(
+                    "Invalid or missing URI for environment variable: " + envVar
+                            + "\n Please refer to the v0.1.0 release notes: https://github.com/lukaskabc/ontopus/releases/tag/v0.1.0");
         }
     }
 

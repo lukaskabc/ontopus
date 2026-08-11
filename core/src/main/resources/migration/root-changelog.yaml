@@ -2,5 +2,5 @@
 
 changelog:
   - include:
-      file: release/0.18.0/index-changelog.yaml
+      file: release/0.1.0/index-changelog.yaml
       relativeToChangelogFile: true

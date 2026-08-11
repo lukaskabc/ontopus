@@ -3,7 +3,7 @@
 changelog:
   - changeSet:
       # Migrate dcelements:language to dcterms
-      id: v0.18.0_01
+      id: v0.1.0_01
       changes:
         - type: renameResource
           oldIri: "http://purl.org/dc/elements/1.1/language"
@@ -17,7 +17,7 @@ changelog:
   - changeSet:
       # Move serializedImportContexts into standalone graph
       # VersionSeries graph is now public and must not contain sensitive information
-      id: v0.18.0_02
+      id: v0.1.0_02
       changes:
         - type: sparqlUpdate
           query: |
@@ -40,7 +40,7 @@ changelog:
 
   - changeSet:
       # Migrate custom hasPrefixDeclaration predicate to standard shacl declare predicate
-      id: v0.18.0_03
+      id: v0.1.0_03
       changes:
         - type: renameResource
           oldIri: "http://ontology.lukaskabc.cz/application/ontopus/hasPrefixDeclaration"
@@ -48,7 +48,7 @@ changelog:
           graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"
 
   - changeSet:
-      id: v0.18.0_04
+      id: v0.1.0_04
       changes:
         - type: custom
           class: cz.lukaskabc.ontology.ontopus.core.service.migration.OutOfLocalhostCatalogMigrationChange

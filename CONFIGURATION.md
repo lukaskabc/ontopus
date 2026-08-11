@@ -15,7 +15,7 @@
 | ```ONTOPUS_SYSTEM_URI```**\*** | The URI dedicated for the OntoPuS. Base paths are not supported. Usually you want to keep HTTP protocol and<br>replace the domain with dedicated subdomain for the server. Example: ```http://example.com```<br>Default value: ```URI.create("http://localhost")```<br>value must be present |
 | ```ONTOPUS_DATABASE_PASSWORD``` | Password for authentication with database repository |
 | ```ONTOPUS_DATABASE_USERNAME``` | Username for authentication with database repository |
-| ```ONTOPUS_DCAT_CATALOG_BASE_URI``` | Base URI used for DCAT resource identifiers. The URI must not contain a fragment.<br>Default value: ```systemURI with ; {@code /dcat/}; path``` |
+| ```ONTOPUS_DCAT_CATALOG_BASE_URI``` | Base URI used for DCAT resource identifiers. The URI must not contain a fragment. The URI must not be a<br>prefix of the System URI.<br>Default value: ```systemURI with ; {@code /dcat/}; path``` |
 | ```ONTOPUS_DCAT_CATALOG_LANGUAGE``` | Language of the catalog metadata (title, description).<br>Default value: ```null``` |
 | ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100```<br>0 < value |
 | ```ONTOPUS_FILES_DEFAULT_GLOB_PATTERN``` | Default value: ```**.{nt,rdf,ttl,trig,trigs,brf,ttls}``` |

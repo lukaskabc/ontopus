@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Validated
+@ValidOntopusConfig
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
@@ -174,7 +175,8 @@ public class OntopusConfig {
     @NullUnmarked
     public class DcatCatalog {
         /**
-         * Base URI used for DCAT resource identifiers. The URI must not contain a fragment.
+         * Base URI used for DCAT resource identifiers. The URI must not contain a fragment. The URI must not be a
+         * prefix of the System URI.
          *
          * @configurationdoc.default systemURI with {@code /dcat/} path
          */

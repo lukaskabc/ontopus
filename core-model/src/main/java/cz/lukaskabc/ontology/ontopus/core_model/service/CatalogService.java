@@ -5,13 +5,16 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Agent;
 import cz.lukaskabc.ontology.ontopus.core_model.model.dcat.Agent_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.OntopusCatalogDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.CatalogRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.util.DcatIdentifierProvider;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
+import org.eclipse.rdf4j.model.Statement;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class CatalogService {
@@ -40,6 +43,11 @@ public class CatalogService {
         updateDetails(catalog);
         repository.persist(catalog);
         return catalog;
+    }
+
+    /** @see OntopusCatalogDao#findAllTriples() */
+    public List<Statement> findAllTriples() {
+        return repository.findAllTriples();
     }
 
     public OntopusCatalog findRequired() {

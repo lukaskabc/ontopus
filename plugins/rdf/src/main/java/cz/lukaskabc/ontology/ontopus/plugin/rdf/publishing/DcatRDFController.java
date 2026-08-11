@@ -8,6 +8,7 @@ import cz.lukaskabc.ontology.ontopus.api.rest.VersionSeriesController;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.*;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
+import cz.lukaskabc.ontology.ontopus.core_model.service.CatalogService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -34,21 +35,27 @@ public class DcatRDFController implements CatalogController, VersionSeriesContro
                 .toList();
     }
 
+    private final CatalogService catalogService;
+
     private final List<PrefixDeclaration> prefixDeclarations;
 
     private final GraphService graphService;
     private final VersionArtifactService artifactService;
 
     public DcatRDFController(
-            GraphService graphService, VersionArtifactService artifactService, OntopusConfig ontopusConfig) {
+            GraphService graphService,
+            VersionArtifactService artifactService,
+            OntopusConfig ontopusConfig,
+            CatalogService catalogService) {
         this.graphService = graphService;
         this.artifactService = artifactService;
         this.prefixDeclarations = getPrefixDeclarations(ontopusConfig.getDcatCatalog());
+        this.catalogService = catalogService;
     }
 
     @Override
     public ResponseEntity<StreamingResponseBody> getCatalog(DcatEntityRequest<OntopusCatalogURI> request) {
-        return handleRequest(request);
+        return handleRequestWithData(request, catalogService::findAllTriples);
     }
 
     @Override

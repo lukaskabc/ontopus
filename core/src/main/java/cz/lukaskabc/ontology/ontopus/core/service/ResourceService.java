@@ -1,7 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
 import cz.lukaskabc.ontology.ontopus.api.model.OntopusRequest;
-import cz.lukaskabc.ontology.ontopus.api.rest.*;
+import cz.lukaskabc.ontology.ontopus.api.rest.NegotiableController;
+import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
+import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
+import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ControllerCandidate;
@@ -41,6 +44,8 @@ import java.util.*;
 public class ResourceService {
 
     private static final Logger log = LogManager.getLogger(ResourceService.class);
+
+    private static final MediaType TURTLE = MediaType.valueOf("text/turtle");
 
     @SuppressWarnings("unchecked")
     protected static ResponseEntity<StreamingResponseBody> cast(
@@ -99,6 +104,8 @@ public class ResourceService {
         final MediaType[] mediaTypes =
                 suffixType.map(type -> new MediaType[] {type}).orElse(requestedTypes);
         final ResourceURI resourceURI = suffixType.isPresent() ? withoutSuffix(requestedResource) : requestedResource;
+
+        replaceUniversalMediaType(mediaTypes);
 
         return resourceRequestFallbackService.withFallback(
                 resourceURI, (fallbackUri) -> getResource(fallbackUri, mediaTypes));
@@ -179,6 +186,18 @@ public class ResourceService {
         return ResponseEntity.status(HttpStatus.MULTIPLE_CHOICES)
                 .contentType(MediaType.TEXT_HTML)
                 .body(new MultipleChoiceResponseWriter(supportedExtensions, resourceURI, ontopusConfig));
+    }
+
+    protected void replaceUniversalMediaType(MediaType @Nullable [] mediaTypes) {
+        if (mediaTypes == null) {
+            return;
+        }
+        for (int i = 0; i < mediaTypes.length; i++) {
+            final MediaType requested = mediaTypes[i];
+            if (MediaType.ALL.equalsTypeAndSubtype(requested)) {
+                mediaTypes[i] = TURTLE.copyQualityValue(requested);
+            }
+        }
     }
 
     protected MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {

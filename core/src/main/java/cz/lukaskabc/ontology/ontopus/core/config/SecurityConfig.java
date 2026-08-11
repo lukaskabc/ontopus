@@ -72,11 +72,7 @@ public class SecurityConfig {
         return new ProviderManager(authenticationProvider);
     }
 
-    /**
-     * Configures the access rules
-     *
-     * @param auth
-     */
+    /** Configures the access rules */
     private void configureRequestAuthorization(
             AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth
@@ -89,21 +85,6 @@ public class SecurityConfig {
                 // public resources
                 .requestMatchers("/public/**")
                 .permitAll();
-
-        // When the DCAT identifiers are system URI based
-        // they need to be allowed
-        final URI dcatBaseUri = ontopusConfig.getDcatCatalog().getBaseUri();
-        if (dcatBaseUri
-                .toString()
-                .toLowerCase()
-                .startsWith(ontopusConfig.getSystemUri().toString().toLowerCase())) {
-            String path = dcatBaseUri.getPath();
-            if (!path.endsWith("/")) {
-                path += "/";
-            }
-            // dcat resources (identifiers)
-            auth.requestMatchers(path + "**").permitAll();
-        }
 
         auth.anyRequest().authenticated();
     }

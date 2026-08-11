@@ -253,7 +253,7 @@ public class GraphDao {
                     BindingSet bs = result.next();
                     IRI predicate = (IRI) bs.getValue("p");
                     Value object = bs.getValue("o");
-                    Statement stmt = vf.createStatement(subjectIri, predicate, object, contextIri);
+                    Statement stmt = vf.createStatement(subjectIri, predicate, object);
                     sortedStatements.add(stmt);
                 }
             }

@@ -5,6 +5,7 @@
 | ```ONTOPUS_DATABASE_LANGUAGE```**\*** | The default persistence language<br>Default value: ```en```<br>value must be present |
 | ```ONTOPUS_DATABASE_URL```**\*** | Database repository URL<br>Default value: ```http://localhost:7200/repositories/ontopus```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_DESCRIPTION```**\*** | Description of the catalog<br>Default value: ```Catalog of published ontologies on this OntoPuS instance```<br>value must be present and not empty |
+| ```ONTOPUS_DCAT_CATALOG_PREFIX_DECLARATIONS```**\*** | Prefix declarations ```"prefix" -> "namespace"``` that will be included in responses to internal DCAT<br>model.<p>Environment variable must have format ```ONTOPUS_DCATCATALOG_PREFIXDECLARATIONS_<PREFIX>="<NAMESPACE>"```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_PUBLISHER_NAME```**\*** | The name of the catalog publisher<br>value must be present and not empty |
 | ```ONTOPUS_DCAT_CATALOG_PUBLISHER_TYPE```**\*** | The type of catalog publisher. The publisher is an<a href="http://xmlns.com/foaf/0.1/Agent"> ```foaf:Agent```</a>.<p>Example values:<br><br>```http://xmlns.com/foaf/0.1/Person```<br><br>```http://xmlns.com/foaf/0.1/Organization```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_TITLE```**\*** | Title of the catalog<br>Default value: ```OntoPuS Ontology Catalog```<br>value must be present and not empty |

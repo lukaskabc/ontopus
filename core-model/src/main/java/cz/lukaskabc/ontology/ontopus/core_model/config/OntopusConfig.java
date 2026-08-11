@@ -13,7 +13,9 @@ import jakarta.validation.constraints.Positive;
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Validated
 @ConfigurationProperties(prefix = "ontopus")
@@ -197,6 +199,27 @@ public class OntopusConfig {
         /** The name of the catalog publisher */
         @NotEmpty private String publisherName;
 
+        /**
+         * Prefix declarations {@code "prefix" -> "namespace"} that will be included in responses to internal DCAT
+         * model.
+         *
+         * <p>Environment variable must have format
+         * {@code ONTOPUS_DCATCATALOG_PREFIXDECLARATIONS_<PREFIX>="<NAMESPACE>"}
+         */
+        @NotNull private Map<String, String> prefixDeclarations = new HashMap<>(Map.of(
+                "dcat",
+                "http://www.w3.org/ns/dcat#",
+                "dcterms",
+                "http://purl.org/dc/terms/",
+                "foaf",
+                "http://xmlns.com/foaf/0.1/",
+                "xsd",
+                "http://www.w3.org/2001/XMLSchema#",
+                "sh",
+                "http://www.w3.org/ns/shacl#",
+                "ontopus",
+                "http://ontology.lukaskabc.cz/application/ontopus/"));
+
         public URI getBaseUri() {
             if (baseUri == null) {
                 return getSystemUri().resolve("/dcat/");
@@ -210,6 +233,10 @@ public class OntopusConfig {
 
         public @Nullable String getLanguage() {
             return language;
+        }
+
+        public Map<String, String> getPrefixDeclarations() {
+            return prefixDeclarations;
         }
 
         public String getPublisherName() {
@@ -249,6 +276,10 @@ public class OntopusConfig {
 
         public void setLanguage(@Nullable String language) {
             this.language = language;
+        }
+
+        public void setPrefixDeclarations(Map<String, String> prefixDeclarations) {
+            this.prefixDeclarations = prefixDeclarations;
         }
 
         public void setPublisherName(String publisherName) {

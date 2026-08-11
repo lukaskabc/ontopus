@@ -15,6 +15,8 @@ changelog:
           graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"
 
   - changeSet:
+      # Move serializedImportContexts into standalone graph
+      # VersionSeries graph is now public and must not contain sensitive information
       id: v0.18.0_02
       changes:
         - type: sparqlUpdate
@@ -35,3 +37,12 @@ changelog:
                 ?s ontopus:serializedImportContext ?o .
               }
             }
+
+  - changeSet:
+      # Migrate custom hasPrefixDeclaration predicate to standard shacl declare predicate
+      id: v0.18.0_03
+      changes:
+        - type: renameResource
+          oldIri: "http://ontology.lukaskabc.cz/application/ontopus/hasPrefixDeclaration"
+          newIri: "http://www.w3.org/ns/shacl#declare"
+          graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"

@@ -29,10 +29,7 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
 
-    @OWLObjectProperty(
-            iri = Vocabulary.s_p_ontopus_hasPrefixDeclaration,
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL)
+    @OWLObjectProperty(iri = Vocabulary.s_p_shacl_declare, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<PrefixDeclaration> prefixDeclarations = new HashSet<>();
 
     @Override

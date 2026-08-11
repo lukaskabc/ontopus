@@ -91,13 +91,6 @@ ontopus:hasMapping rdf:type owl:ObjectProperty ;
                    rdfs:comment "A mapping of a webhook entry."@en ;
                    rdfs:label "Has mapping"@en .
 
-###  http://ontology.lukaskabc.cz/application/ontopus/hasPrefixDeclaration
-ontopus:hasPrefixDeclaration rdf:type owl:ObjectProperty ;
-                   rdfs:domain ontopus:VersionArtifact ;
-                   rdfs:range sh:PrefixDeclaration ;
-                   rdfs:comment "A prefix declaration used by the ontology"@en ;
-                   rdfs:label "Has prefix declaration"@en .
-
 
 #################################################################
 #    Data properties

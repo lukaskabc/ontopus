@@ -22,7 +22,7 @@ public class TestPersistenceFactoryConfig extends PersistenceFactoryConfig {
     protected Map<String, String> createFactoryProperties() {
         final Map<String, String> properties = super.createFactoryProperties();
         properties.put(Rdf4jOntoDriverProperties.USE_VOLATILE_STORAGE, "true");
-        properties.put(Rdf4jOntoDriverProperties.USE_INFERENCE, "true");
+        properties.put(Rdf4jOntoDriverProperties.USE_INFERENCE, "false");
         return properties;
     }
 }

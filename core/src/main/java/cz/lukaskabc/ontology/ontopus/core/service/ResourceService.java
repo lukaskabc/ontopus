@@ -45,8 +45,6 @@ public class ResourceService {
 
     private static final Logger log = LogManager.getLogger(ResourceService.class);
 
-    private static final MediaType TURTLE = MediaType.valueOf("text/turtle");
-
     @SuppressWarnings("unchecked")
     protected static ResponseEntity<StreamingResponseBody> cast(
             ResponseEntity<? extends StreamingResponseBody> response) {
@@ -64,6 +62,7 @@ public class ResourceService {
     protected final MediaTypeResolver mediaTypeResolver;
 
     protected final ResourceRequestFallbackService resourceRequestFallbackService;
+    protected final MediaType fallbackType;
 
     public ResourceService(
             ApplicationContext applicationContext,
@@ -82,6 +81,7 @@ public class ResourceService {
         this.mediaTypeResolver = mediaTypeResolver;
         this.ontopusConfig = ontopusConfig;
         this.resourceRequestFallbackService = resourceRequestFallbackService;
+        this.fallbackType = ontopusConfig.getResource().getFallbackMediatype();
     }
 
     private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {
@@ -195,7 +195,7 @@ public class ResourceService {
         for (int i = 0; i < mediaTypes.length; i++) {
             final MediaType requested = mediaTypes[i];
             if (MediaType.ALL.equalsTypeAndSubtype(requested)) {
-                mediaTypes[i] = TURTLE.copyQualityValue(requested);
+                mediaTypes[i] = fallbackType.copyQualityValue(requested);
             }
         }
     }

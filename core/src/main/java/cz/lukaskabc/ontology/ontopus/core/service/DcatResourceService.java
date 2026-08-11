@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -76,7 +77,10 @@ public class DcatResourceService extends ResourceService {
     }
 
     protected static Set<ControllerDescription> mapToDescriptions(Set<? extends NegotiableController> controllers) {
-        return controllers.stream().map(DcatResourceService::mapToDescription).collect(Collectors.toSet());
+        Map<NegotiableController, ControllerDescription> descriptionMap = new HashMap<>();
+        return controllers.stream()
+                .map(controller -> descriptionMap.computeIfAbsent(controller, DcatResourceService::mapToDescription))
+                .collect(Collectors.toSet());
     }
 
     private final Map<URI, Set<ControllerDescription>> graphToControllersMap;

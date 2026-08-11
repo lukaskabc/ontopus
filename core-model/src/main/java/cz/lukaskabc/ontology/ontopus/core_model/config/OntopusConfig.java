@@ -4,6 +4,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationExceptio
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.Valid;
@@ -335,8 +336,15 @@ public class OntopusConfig {
         /** The value of {@code max-age} in cache control HTTP header */
         private Duration cacheControlMaxAge = Duration.ofHours(1);
 
+        /** Which content type should be preferred when no other acceptable type is available. */
+        private MediaType fallbackMediatype = MediaType.valueOf("text/turtle");
+
         public Duration getCacheControlMaxAge() {
             return cacheControlMaxAge;
+        }
+
+        public MediaType getFallbackMediatype() {
+            return fallbackMediatype;
         }
 
         public boolean isHttpFallsBackToHttps() {
@@ -357,6 +365,11 @@ public class OntopusConfig {
 
         public void setCacheControlMaxAge(Duration cacheControlMaxAge) {
             this.cacheControlMaxAge = cacheControlMaxAge;
+        }
+
+        public Resource setFallbackMediatype(MediaType fallbackMediatype) {
+            this.fallbackMediatype = fallbackMediatype;
+            return this;
         }
 
         public void setHttpFallsBackToHttps(boolean httpFallsBackToHttps) {

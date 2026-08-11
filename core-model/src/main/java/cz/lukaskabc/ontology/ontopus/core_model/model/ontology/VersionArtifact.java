@@ -21,7 +21,7 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionArtifact.class);
 
     @Types
-    private Set<URI> types = TYPES;
+    private Set<URI> types = new HashSet<>(TYPES);
 
     @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_ontologyVersionIdentifier)
     private URI versionUri;

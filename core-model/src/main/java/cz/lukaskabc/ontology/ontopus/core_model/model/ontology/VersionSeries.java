@@ -24,7 +24,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionSeries.class);
 
     @Types
-    private Set<URI> types = TYPES;
+    private Set<URI> types = new HashSet<>(TYPES);
 
     /** Serialized import context of the last successful publishing process */
     @Context(Vocabulary.s_p_ontopus_serializedImportContext)

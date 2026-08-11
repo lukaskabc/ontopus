@@ -1,14 +1,15 @@
 package cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing;
 
 import cz.lukaskabc.ontology.ontopus.api.model.DcatEntityRequest;
+import cz.lukaskabc.ontology.ontopus.api.rest.CatalogController;
 import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
-import cz.lukaskabc.ontology.ontopus.api.rest.UniversalDcatController;
+import cz.lukaskabc.ontology.ontopus.api.rest.VersionArtifactController;
+import cz.lukaskabc.ontology.ontopus.api.rest.VersionSeriesController;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURIImpl;
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.*;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.service.GraphService;
+import cz.lukaskabc.ontology.ontopus.core_model.service.VersionArtifactService;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriterFactory;
 import org.eclipse.rdf4j.rio.RDFWriterRegistry;
@@ -24,7 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
-public class DcatRDFController implements UniversalDcatController {
+public class DcatRDFController implements CatalogController, VersionSeriesController, VersionArtifactController {
 
     private static List<PrefixDeclaration> getPrefixDeclarations(OntopusConfig.DcatCatalog catalogConfig) {
         return catalogConfig.getPrefixDeclarations().entrySet().stream()
@@ -36,10 +37,18 @@ public class DcatRDFController implements UniversalDcatController {
     private final List<PrefixDeclaration> prefixDeclarations;
 
     private final GraphService graphService;
+    private final VersionArtifactService artifactService;
 
-    public DcatRDFController(GraphService graphService, OntopusConfig ontopusConfig) {
+    public DcatRDFController(
+            GraphService graphService, VersionArtifactService artifactService, OntopusConfig ontopusConfig) {
         this.graphService = graphService;
+        this.artifactService = artifactService;
         this.prefixDeclarations = getPrefixDeclarations(ontopusConfig.getDcatCatalog());
+    }
+
+    @Override
+    public ResponseEntity<StreamingResponseBody> getCatalog(DcatEntityRequest<OntopusCatalogURI> request) {
+        return handleRequest(request);
     }
 
     @Override
@@ -52,6 +61,15 @@ public class DcatRDFController implements UniversalDcatController {
     }
 
     @Override
+    public ResponseEntity<StreamingResponseBody> getVersionArtifact(DcatEntityRequest<VersionArtifactURI> request) {
+        return handleRequestWithData(request, () -> artifactService.findAllTriples(request.identifier()));
+    }
+
+    @Override
+    public ResponseEntity<StreamingResponseBody> getVersionSeries(DcatEntityRequest<VersionSeriesURI> request) {
+        return handleRequest(request);
+    }
+
     public ResponseEntity<StreamingResponseBody> handleRequest(DcatEntityRequest<? extends ResourceURI> request) {
         final GraphURI graph = new GraphURIImpl(request.graph().toURI());
         return handleRequestWithData(request, () -> graphService.findAllWithSubject(graph, request.identifier()));

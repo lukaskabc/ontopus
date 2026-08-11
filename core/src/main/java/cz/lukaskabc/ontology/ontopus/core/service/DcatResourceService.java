@@ -172,15 +172,19 @@ public class DcatResourceService extends ResourceService {
         final IRI graphIri = IRI.create(entityRequest.graph().toString());
 
         if (graphIri.equals(OntopusCatalog_.entityClassIRI)) {
-            return ((CatalogController) controller).getCatalog((DcatEntityRequest<OntopusCatalogURI>) entityRequest);
+            DcatEntityRequest<OntopusCatalogURI> catalogRequest =
+                    entityRequest.withTypedIdentifier(OntopusCatalogURI::new);
+            return ((CatalogController) controller).getCatalog(catalogRequest);
         }
         if (graphIri.equals(VersionSeries_.entityClassIRI)) {
-            return ((VersionSeriesController) controller)
-                    .getVersionSeries((DcatEntityRequest<VersionSeriesURI>) entityRequest);
+            DcatEntityRequest<VersionSeriesURI> seriesRequest =
+                    entityRequest.withTypedIdentifier(VersionSeriesURI::new);
+            return ((VersionSeriesController) controller).getVersionSeries(seriesRequest);
         }
         if (graphIri.equals(VersionArtifact_.entityClassIRI)) {
-            return ((VersionArtifactController) controller)
-                    .getVersionArtifact((DcatEntityRequest<VersionArtifactURI>) entityRequest);
+            DcatEntityRequest<VersionArtifactURI> artifactRequest =
+                    entityRequest.withTypedIdentifier(VersionArtifactURI::new);
+            return ((VersionArtifactController) controller).getVersionArtifact(artifactRequest);
         }
         throw new IllegalArgumentException("Unsupported graph IRI: " + graphIri);
     }

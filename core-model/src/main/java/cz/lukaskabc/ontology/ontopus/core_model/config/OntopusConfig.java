@@ -6,6 +6,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -179,7 +180,7 @@ public class OntopusConfig {
          * Base URI used for DCAT resource identifiers. The URI must not contain a fragment. The URI must not be a
          * prefix of the System URI.
          *
-         * @configurationdoc.default systemURI with {@code /dcat/} path
+         * @configurationdoc.default systemURI with {@code /dcat/} path appended
          */
         @Nullable private URI baseUri;
         /** Description of the catalog */
@@ -224,10 +225,15 @@ public class OntopusConfig {
                 "http://ontology.lukaskabc.cz/application/ontopus/"));
 
         public URI getBaseUri() {
-            if (baseUri == null) {
-                return getSystemUri().resolve("/dcat/");
+            if (baseUri != null) {
+                return baseUri;
             }
-            return baseUri;
+
+            this.baseUri = UriComponentsBuilder.fromUri(getSystemUri())
+                    .path("/dcat")
+                    .build()
+                    .toUri();
+            return this.baseUri;
         }
 
         public String getDescription() {

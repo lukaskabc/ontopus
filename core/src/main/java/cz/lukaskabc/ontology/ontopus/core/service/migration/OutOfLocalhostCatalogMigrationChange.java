@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.migration;
 import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.model.change.custom.CustomChange;
 import cz.cvut.kbss.repository.OntologyRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,15 +111,22 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 				}
 				WHERE {
 				    GRAPH <?graph> {
-				        ?s ?p ?o .
-				        FILTER (isIRI(?o) && STRSTARTS(STR(?o), "?sourcePrefix")) .
-				        BIND(IRI(CONCAT("?targetPrefix", SUBSTR(STR(?o), ?sourceLen))) AS ?newO)
+				        {
+				            ?s ?p ?o .
+				            FILTER (isIRI(?o) && STRSTARTS(STR(?o), "?sourcePrefix")) .
+				            BIND(IRI(CONCAT("?targetPrefix", SUBSTR(STR(?o), ?sourceLen))) AS ?newO)
+				        } UNION {
+				            ?s ?p ?o .
+				            FILTER(isLITERAL(?o) && ?p = <?identifier> && STRSTARTS(STR(?o), "?sourcePrefix")) .
+				            BIND(CONCAT("?targetPrefix", SUBSTR(STR(?o), ?sourceLen)) AS ?newO)
+				        }
 				    }
 				}
 				""".replace(
                         "?graph", replacement.graph().toString())
                 .replace("?sourcePrefix", replacement.source().toString())
                 .replace("?targetPrefix", replacement.target().toString())
+                .replace("?identifier", Vocabulary.s_p_dcterms_identifier)
                 .replace("?sourceLen", String.valueOf(replacement.sourceSparqlLength()));
 
         ontologyRepository.update(sparqlUpdateObjects);

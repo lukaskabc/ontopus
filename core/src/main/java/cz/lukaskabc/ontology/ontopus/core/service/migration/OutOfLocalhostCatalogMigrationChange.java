@@ -81,6 +81,13 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
             log.info("Performing identifier prefix migration in graph <{}>", graph);
             runReplacement(graph, source, target, ontologyRepository);
             runReplacement(graph, URI.create("http://localhost/ontopus/"), target, ontologyRepository);
+            runReplacement(
+                    graph, Vocabulary.u_c_ontopus_VersionSeries, target.resolve("version-series"), ontologyRepository);
+            runReplacement(
+                    graph,
+                    Vocabulary.u_c_ontopus_VersionArtifact,
+                    target.resolve("version-artifact"),
+                    ontologyRepository);
         }
     }
 

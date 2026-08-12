@@ -47,7 +47,7 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
     private static Set<URI> resolveContexts() {
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AnnotationTypeFilter(Context.class));
-        return provider.findCandidateComponents(BASE_PACKAGE).stream()
+        Set<URI> contexts = provider.findCandidateComponents(BASE_PACKAGE).stream()
                 .map(BeanDefinition::getBeanClassName)
                 .map(className -> {
                     try {
@@ -60,6 +60,9 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
                 .map(Context::value)
                 .map(URI::create)
                 .collect(Collectors.toSet());
+        // annotated field
+        contexts.add(Vocabulary.u_p_ontopus_serializedImportContext);
+        return contexts;
     }
 
     @Override
@@ -81,16 +84,20 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 
         mergeLocalCatalog(target, ontologyRepository);
 
+        final URI versionSeries = UriComponentsBuilder.fromUri(Vocabulary.u_c_ontopus_VersionSeries)
+                .path("/")
+                .build()
+                .toUri();
+        final URI versionArtifact = UriComponentsBuilder.fromUri(Vocabulary.u_c_ontopus_VersionArtifact)
+                .path("/")
+                .build()
+                .toUri();
+
         for (URI graph : contexts) {
             log.info("Performing identifier prefix migration in graph <{}>", graph);
             runReplacement(graph, source, target, ontologyRepository);
-            runReplacement(
-                    graph, Vocabulary.u_c_ontopus_VersionSeries, target.resolve("version-series"), ontologyRepository);
-            runReplacement(
-                    graph,
-                    Vocabulary.u_c_ontopus_VersionArtifact,
-                    target.resolve("version-artifact"),
-                    ontologyRepository);
+            runReplacement(graph, versionSeries, target.resolve("version-series/"), ontologyRepository);
+            runReplacement(graph, versionArtifact, target.resolve("version-artifact/"), ontologyRepository);
         }
     }
 

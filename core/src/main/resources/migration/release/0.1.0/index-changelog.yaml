@@ -52,3 +52,10 @@ changelog:
       changes:
         - type: custom
           class: cz.lukaskabc.ontology.ontopus.core.service.migration.OutOfLocalhostCatalogMigrationChange
+
+  - changeSet:
+      id: v0.1.0_05
+      changes:
+        - type: deleteResource
+          iri: "http://localhost/ontopus/catalog"
+          graph: "http://ontology.lukaskabc.cz/application/ontopus/OntopusCatalog"

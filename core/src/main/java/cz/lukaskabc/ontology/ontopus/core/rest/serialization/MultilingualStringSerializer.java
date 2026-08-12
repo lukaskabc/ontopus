@@ -1,4 +1,6 @@
-package cz.lukaskabc.ontology.ontopus.core.util;
+package cz.lukaskabc.ontology.ontopus.core.rest.serialization;
+
+import static cz.lukaskabc.ontology.ontopus.core.rest.serialization.MultilingualStringDeserializer.NO_LANGUAGE_KEY;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
 import tools.jackson.core.JacksonException;
@@ -14,7 +16,7 @@ public class MultilingualStringSerializer extends ValueSerializer<MultilingualSt
         gen.writeStartObject();
         nullableKeyMap.forEach((key, value) -> {
             if (key == null) {
-                key = "none";
+                key = NO_LANGUAGE_KEY;
             }
             gen.writeName(key);
             gen.writeString(value);

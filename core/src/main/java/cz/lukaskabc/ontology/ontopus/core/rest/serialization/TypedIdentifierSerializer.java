@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.util;
+package cz.lukaskabc.ontology.ontopus.core.rest.serialization;
 
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import tools.jackson.core.JacksonException;

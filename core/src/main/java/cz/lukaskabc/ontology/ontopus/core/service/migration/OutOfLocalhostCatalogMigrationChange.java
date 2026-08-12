@@ -3,6 +3,7 @@ package cz.lukaskabc.ontology.ontopus.core.service.migration;
 import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.model.change.custom.CustomChange;
 import cz.cvut.kbss.repository.OntologyRepository;
+import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog_;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -58,6 +59,10 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 
     @Override
     public void apply(OntologyRepository ontologyRepository) {
+        if (!catalogExists(ontologyRepository)) {
+            log.warn("Catalog not found, skipping catalog identifier migration");
+            return;
+        }
         final URI source = getEnvUri(CATALOG_PREFIX_MIGRATION_SOURCE);
         final URI target = getEnvUri(CATALOG_PREFIX_MIGRATION_TARGET);
         log.warn("Performing catalog migration from identifier prefix <{}> to <{}>", source, target);
@@ -75,6 +80,16 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
             replaceSubjects(ontologyRepository, replacement);
             replaceObjects(ontologyRepository, replacement);
         }
+    }
+
+    private boolean catalogExists(OntologyRepository repository) {
+        return repository.ask("""
+				ASK {
+				    GRAPH <?catalog> {
+				        ?s a <?catalog> .
+				    }
+				}
+				""".replace("?catalog", OntopusCatalog_.entityClassIRI.toString()));
     }
 
     private void replaceObjects(OntologyRepository ontologyRepository, Replacement replacement) {

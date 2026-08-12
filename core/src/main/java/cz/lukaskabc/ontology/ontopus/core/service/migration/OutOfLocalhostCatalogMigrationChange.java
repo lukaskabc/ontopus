@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Set;
@@ -31,7 +32,10 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 
     private static URI getEnvUri(String envVar) {
         try {
-            return new URI(System.getenv(envVar));
+            return UriComponentsBuilder.fromUriString(System.getenv(envVar))
+                    .path("/")
+                    .build()
+                    .toUri();
         } catch (Exception e) {
             throw new CatalogMigrationException(
                     "Invalid or missing URI for environment variable: " + envVar

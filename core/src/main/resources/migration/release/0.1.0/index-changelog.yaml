@@ -2,6 +2,13 @@
 
 changelog:
   - changeSet:
+      # Verify that catalog is not too old for migration (if localhost catalog exists, the new system uri based must exist as well)
+      id: v0.1.0_00
+      changes:
+        - type: custom
+          class: cz.lukaskabc.ontology.ontopus.core.service.migration.release.v0_1_0.EnsureSystemUriBasedCatalogExists
+
+  - changeSet:
       # Migrate dcelements:language to dcterms
       id: v0.1.0_01
       changes:
@@ -48,12 +55,14 @@ changelog:
           graph: "http://ontology.lukaskabc.cz/application/ontopus/VersionArtifact"
 
   - changeSet:
+      # Migrate identifiers from systemURI based to new explicit setting
       id: v0.1.0_04
       changes:
         - type: custom
-          class: cz.lukaskabc.ontology.ontopus.core.service.migration.OutOfLocalhostCatalogMigrationChange
+          class: cz.lukaskabc.ontology.ontopus.core.service.migration.release.v0_1_0.OutOfLocalhostCatalogMigrationChange
 
   - changeSet:
+      # Delete old localhost based catalog
       id: v0.1.0_05
       changes:
         - type: deleteResource

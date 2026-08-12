@@ -1,4 +1,4 @@
-package cz.lukaskabc.ontology.ontopus.core.service.migration;
+package cz.lukaskabc.ontology.ontopus.core.service.migration.release.v0_1_0;
 
 import cz.cvut.kbss.jopa.model.annotations.Context;
 import cz.cvut.kbss.model.change.custom.CustomChange;
@@ -26,10 +26,12 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
     /** The new prefix to use in entity identifiers. */
     private static final String ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET = "ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET";
 
+    static final String ONTOPUS_SYSTEM_URI = "ONTOPUS_SYSTEM_URI";
+
     private static final String BASE_PACKAGE = "cz.lukaskabc.ontology.ontopus";
     private static final Logger log = LogManager.getLogger(OutOfLocalhostCatalogMigrationChange.class);
 
-    private static URI getEnvUri(String envVar) {
+    static URI getEnvUri(String envVar) {
         try {
             return UriComponentsBuilder.fromUriString(System.getenv(envVar))
                     .path("/")
@@ -66,7 +68,7 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
             log.warn("Catalog not found, skipping catalog identifier migration");
             return;
         }
-        final URI source = getEnvUri("ONTOPUS_SYSTEM_URI").resolve("/dcat/");
+        final URI source = getEnvUri(ONTOPUS_SYSTEM_URI).resolve("/dcat/");
         final URI target = getEnvUri(ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET);
         log.warn("Performing catalog migration from identifier prefix <{}> to <{}>", source, target);
         final Set<URI> contexts = resolveContexts();
@@ -77,10 +79,11 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
                 "Selected database graphs for identifier prefix migration: <{}>",
                 contexts.stream().map(URI::toString).collect(Collectors.joining(">, <")));
 
+        mergeLocalCatalog(target, ontologyRepository);
+
         for (URI graph : contexts) {
             log.info("Performing identifier prefix migration in graph <{}>", graph);
             runReplacement(graph, source, target, ontologyRepository);
-            runReplacement(graph, URI.create("http://localhost/ontopus/"), target, ontologyRepository);
             runReplacement(
                     graph, Vocabulary.u_c_ontopus_VersionSeries, target.resolve("version-series"), ontologyRepository);
             runReplacement(
@@ -99,6 +102,33 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 				    }
 				}
 				""".replace("?catalog", OntopusCatalog_.entityClassIRI.toString()));
+    }
+
+    private void mergeLocalCatalog(URI target, OntologyRepository ontologyRepository) {
+        ontologyRepository.update(
+                """
+				PREFIX dcat: <http://www.w3.org/ns/dcat#>
+				PREFIX localhost: <http://localhost/ontopus/>
+				PREFIX ontopus: <http://ontology.lukaskabc.cz/application/ontopus/>
+
+				DELETE {
+				    GRAPH ontopus:OntopusCatalog {
+				        localhost:catalog dcat:dataset ?o .
+				    }
+				}
+				INSERT {
+				    GRAPH ontopus:OntopusCatalog {
+				        <?newCatalog> dcat:dataset ?o .
+				    }
+				}
+				WHERE {
+				  localhost:catalog dcat:dataset ?o .
+
+				  FILTER NOT EXISTS {
+				    <?newCatalog> dcat:dataset ?o .
+				  }
+				}
+				""".replace("?newCatalog", target.resolve("catalog").toString()));
     }
 
     private void replaceObjects(OntologyRepository ontologyRepository, Replacement replacement) {

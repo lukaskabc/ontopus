@@ -14,14 +14,22 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.TriConsumer;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.query.*;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.function.ThrowingSupplier;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -307,6 +315,57 @@ public abstract class AbstractDao<I extends TypedIdentifier, E extends Persisten
             em.persist(entity);
         } catch (RuntimeException e) {
             throw persistenceException("Failed to persist an entity", e);
+        }
+    }
+
+    /** Runs an RDF4J CONSTRUCT/DESCRIBE query. */
+    protected List<Statement> runGraphQuery(Function<RepositoryConnection, GraphQuery> queryConstructor) {
+        final Repository repository = em.unwrap(Repository.class);
+
+        try (RepositoryConnection conn = repository.getConnection()) {
+            GraphQuery query = queryConstructor.apply(conn);
+            List<Statement> statements = new ArrayList<>();
+
+            try (GraphQueryResult result = query.evaluate()) {
+                while (result.hasNext()) {
+                    statements.add(result.next());
+                }
+            }
+            return statements;
+        } catch (Exception e) {
+            throw persistenceException("Failed to run an RDF4J graph query", e);
+        }
+    }
+
+    /**
+     * Runs RDF4J SELECT query. The query must output triples {@code ?s ?p? ?o}.
+     *
+     * @param queryConstructor the function constructing the query
+     * @return the list of statements
+     */
+    protected List<Statement> runSelectQuery(Function<RepositoryConnection, TupleQuery> queryConstructor) {
+        final Repository repository = em.unwrap(Repository.class);
+        final ValueFactory vf = repository.getValueFactory();
+
+        try (RepositoryConnection conn = repository.getConnection()) {
+            TupleQuery query = queryConstructor.apply(conn);
+
+            List<Statement> sortedStatements = new ArrayList<>();
+
+            try (TupleQueryResult result = query.evaluate()) {
+                while (result.hasNext()) {
+                    BindingSet bs = result.next();
+                    org.eclipse.rdf4j.model.IRI subject = (org.eclipse.rdf4j.model.IRI) bs.getValue("s");
+                    org.eclipse.rdf4j.model.IRI predicate = (org.eclipse.rdf4j.model.IRI) bs.getValue("p");
+                    Value object = bs.getValue("o");
+                    Statement stmt = vf.createStatement(subject, predicate, object);
+                    sortedStatements.add(stmt);
+                }
+            }
+
+            return sortedStatements;
+        } catch (Exception e) {
+            throw persistenceException("Failed to run an RDF4J query", e);
         }
     }
 }

@@ -8,11 +8,12 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 public abstract class BaseDaoTest extends DaoTestRunner {
     @Autowired
-    private EntityManager em;
+    protected EntityManager em;
 
     /**
      * Persists given statements
@@ -35,7 +36,7 @@ public abstract class BaseDaoTest extends DaoTestRunner {
      *
      * @param entities entities to persist
      */
-    protected void withEntities(Collection<? extends PersistenceEntity<?>> entities) {
-        transactional(() -> entities.forEach(em::persist));
+    protected void withEntities(PersistenceEntity<?>... entities) {
+        transactional(() -> Arrays.stream(entities).forEach(em::persist));
     }
 }

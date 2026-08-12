@@ -12,6 +12,7 @@
 
     <properties>
         <archunit.junit5.version>1.4.2</archunit.junit5.version>
+        <cz.cvut.kbss.jsonld.version>0.17.0</cz.cvut.kbss.jsonld.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -64,6 +65,12 @@
             <artifactId>archunit-junit5</artifactId>
             <version>${archunit.junit5.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>cz.cvut.kbss.jsonld</groupId>
+            <artifactId>jb4jsonld-jackson</artifactId>
+            <version>${cz.cvut.kbss.jsonld.version}</version>
         </dependency>
     </dependencies>
 </project>

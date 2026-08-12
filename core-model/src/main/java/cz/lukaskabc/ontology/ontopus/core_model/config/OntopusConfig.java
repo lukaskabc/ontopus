@@ -4,18 +4,23 @@ import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationExceptio
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.io.File;
 import java.net.URI;
-import java.nio.file.Path;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Validated
+@ValidOntopusConfig
 @ConfigurationProperties(prefix = "ontopus")
 public class OntopusConfig {
 
@@ -34,7 +39,7 @@ public class OntopusConfig {
 
     @Nullable private File frontendIndexFile;
 
-    private int defaultMaxPageSize = 100;
+    @Positive private int defaultMaxPageSize = 100;
 
     @Valid private Database database = new Database();
 
@@ -172,9 +177,10 @@ public class OntopusConfig {
     @NullUnmarked
     public class DcatCatalog {
         /**
-         * Base URI used for DCAT resource identifiers. The URI must not contain a fragment.
+         * Base URI used for DCAT resource identifiers. The URI must not contain a fragment. The URI must not be a
+         * prefix of the System URI.
          *
-         * @configurationdoc.default systemURI with {@code /dcat/} path
+         * @configurationdoc.default systemURI with {@code /dcat/} path appended
          */
         @Nullable private URI baseUri;
         /** Description of the catalog */
@@ -197,11 +203,38 @@ public class OntopusConfig {
         /** The name of the catalog publisher */
         @NotEmpty private String publisherName;
 
+        /**
+         * Prefix declarations {@code "prefix" -> "namespace"} that will be included in responses to internal DCAT
+         * model.
+         *
+         * <p>Environment variable must have format
+         * {@code ONTOPUS_DCATCATALOG_PREFIXDECLARATIONS_<PREFIX>="<NAMESPACE>"}
+         */
+        @NotNull private Map<String, String> prefixDeclarations = new HashMap<>(Map.of(
+                "dcat",
+                "http://www.w3.org/ns/dcat#",
+                "dcterms",
+                "http://purl.org/dc/terms/",
+                "foaf",
+                "http://xmlns.com/foaf/0.1/",
+                "xsd",
+                "http://www.w3.org/2001/XMLSchema#",
+                "sh",
+                "http://www.w3.org/ns/shacl#",
+                "ontopus",
+                "http://ontology.lukaskabc.cz/application/ontopus/"));
+
         public URI getBaseUri() {
-            if (baseUri == null) {
-                return getSystemUri().resolve("/dcat/");
+            if (baseUri != null) {
+                return baseUri;
             }
-            return baseUri;
+
+            this.baseUri = UriComponentsBuilder.fromUri(getSystemUri())
+                    .scheme("http")
+                    .path("/dcat")
+                    .build()
+                    .toUri();
+            return this.baseUri;
         }
 
         public String getDescription() {
@@ -210,6 +243,10 @@ public class OntopusConfig {
 
         public @Nullable String getLanguage() {
             return language;
+        }
+
+        public Map<String, String> getPrefixDeclarations() {
+            return prefixDeclarations;
         }
 
         public String getPublisherName() {
@@ -231,6 +268,7 @@ public class OntopusConfig {
             }
 
             // getFragment returns empty string if the URI contains # with no value
+            // checking for its existence in string instead
             if (baseUri.toString().contains("#")) {
                 throw new InitializationException("DCAT base URI must not contain a fragment!");
             }
@@ -250,6 +288,10 @@ public class OntopusConfig {
             this.language = language;
         }
 
+        public void setPrefixDeclarations(Map<String, String> prefixDeclarations) {
+            this.prefixDeclarations = prefixDeclarations;
+        }
+
         public void setPublisherName(String publisherName) {
             this.publisherName = publisherName;
         }
@@ -264,8 +306,6 @@ public class OntopusConfig {
     }
 
     public static class Files {
-        /** Directory for storing files used with ontology importing. */
-        private Path importFilesDirectory = Path.of("./");
 
         private String defaultGlobPattern = "**.{nt,rdf,ttl,trig,trigs,brf,ttls}";
 
@@ -273,16 +313,8 @@ public class OntopusConfig {
             return defaultGlobPattern;
         }
 
-        public Path getImportFilesDirectory() {
-            return importFilesDirectory;
-        }
-
         public void setDefaultGlobPattern(String defaultGlobPattern) {
             this.defaultGlobPattern = defaultGlobPattern;
-        }
-
-        public void setImportFilesDirectory(Path importFilesDirectory) {
-            this.importFilesDirectory = importFilesDirectory;
         }
     }
 
@@ -311,8 +343,15 @@ public class OntopusConfig {
         /** The value of {@code max-age} in cache control HTTP header */
         private Duration cacheControlMaxAge = Duration.ofHours(1);
 
+        /** Which content type should be preferred when no other acceptable type is available. */
+        private MediaType fallbackMediatype = MediaType.valueOf("text/turtle");
+
         public Duration getCacheControlMaxAge() {
             return cacheControlMaxAge;
+        }
+
+        public MediaType getFallbackMediatype() {
+            return fallbackMediatype;
         }
 
         public boolean isHttpFallsBackToHttps() {
@@ -333,6 +372,11 @@ public class OntopusConfig {
 
         public void setCacheControlMaxAge(Duration cacheControlMaxAge) {
             this.cacheControlMaxAge = cacheControlMaxAge;
+        }
+
+        public Resource setFallbackMediatype(MediaType fallbackMediatype) {
+            this.fallbackMediatype = fallbackMediatype;
+            return this;
         }
 
         public void setHttpFallsBackToHttps(boolean httpFallsBackToHttps) {

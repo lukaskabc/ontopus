@@ -9,6 +9,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.VersionArtifactDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.VersionArtifactUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
+import org.eclipse.rdf4j.model.Statement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,12 @@ public class VersionArtifactRepository
         List<VersionArtifact> content = dao.find(seriesURI, pageable, filter);
         long totalCount = dao.count(seriesURI, filter);
         return new PageImpl<>(content, pageable, totalCount);
+    }
+
+    /** @see VersionArtifactDao#findAllTriples(VersionArtifactURI) */
+    @Transactional(readOnly = true)
+    public List<Statement> findAllTriples(VersionArtifactURI artifactURI) {
+        return dao.findAllTriples(artifactURI);
     }
 
     @Transactional(readOnly = true)

@@ -14,6 +14,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,11 +40,17 @@ public class SecurityConfig {
                 new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)));
     }
 
+    private final OntopusConfig ontopusConfig;
+
+    public SecurityConfig(OntopusConfig ontopusConfig) {
+        this.ontopusConfig = ontopusConfig;
+    }
+
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain administrationSecurityFilter(
-            HttpSecurity http, AuthenticationManager authenticationManager, OntopusConfig config) {
-        http.securityMatcher(new SystemUriSecurityMatcher(config))
+            HttpSecurity http, AuthenticationManager authenticationManager) {
+        http.securityMatcher(new SystemUriSecurityMatcher(ontopusConfig))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -53,14 +60,7 @@ public class SecurityConfig {
                 .headers(SecurityConfig::publicHeaderCustomizer)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .with(new UsernamePasswordAuthenticationConfigurer<>())
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/login")
-                        .permitAll()
-                        .requestMatchers("/admin/**")
-                        .permitAll()
-                        .requestMatchers("/public/**")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated());
+                .authorizeHttpRequests(this::configureRequestAuthorization);
         return http.build();
     }
 
@@ -72,10 +72,27 @@ public class SecurityConfig {
         return new ProviderManager(authenticationProvider);
     }
 
+    /** Configures the access rules */
+    private void configureRequestAuthorization(
+            AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        auth
+                // login endpoint
+                .requestMatchers("/login")
+                .permitAll()
+                // administration frontend
+                .requestMatchers("/admin/**")
+                .permitAll()
+                // public resources
+                .requestMatchers("/public/**")
+                .permitAll();
+
+        auth.anyRequest().authenticated();
+    }
+
     @Bean
-    UrlBasedCorsConfigurationSource corsConfigurationSource(OntopusConfig config) {
+    UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(config.getAdministrationAllowedOrigins().stream()
+        configuration.setAllowedOrigins(ontopusConfig.getAdministrationAllowedOrigins().stream()
                 .map(URI::toString)
                 .toList());
         configuration.setAllowCredentials(true);

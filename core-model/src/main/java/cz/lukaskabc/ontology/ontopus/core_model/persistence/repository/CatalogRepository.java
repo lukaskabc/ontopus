@@ -6,9 +6,12 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.OntopusCatalog;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.OntopusCatalogDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.identifier.CatalogUriUriGenerator;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.base.AbstractRepository;
+import org.eclipse.rdf4j.model.Statement;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
+
+import java.util.List;
 
 @Repository
 public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, OntopusCatalog, OntopusCatalogDao> {
@@ -26,6 +29,12 @@ public class CatalogRepository extends AbstractRepository<OntopusCatalogURI, Ont
     @Transactional(readOnly = true)
     public boolean catalogExists() {
         return dao.exists(catalogUri);
+    }
+
+    /** @see OntopusCatalogDao#findAllTriples() */
+    @Transactional(readOnly = true)
+    public List<Statement> findAllTriples() {
+        return dao.findAllTriples();
     }
 
     @Transactional(readOnly = true)

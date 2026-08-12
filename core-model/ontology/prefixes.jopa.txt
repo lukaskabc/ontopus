@@ -8,3 +8,4 @@ http://ontology.lukaskabc.cz/application/ontopus/problem/=ontopus-problem
 http://www.w3.org/ns/dcat=dcat
 http://purl.org/dc/terms=dcterms
 http://rdfs.org/sioc/ns#=sioc
+http://www.w3.org/ns/shacl#=shacl

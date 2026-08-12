@@ -21,7 +21,7 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionArtifact.class);
 
     @Types
-    private Set<URI> types = TYPES;
+    private Set<URI> types = new HashSet<>(TYPES);
 
     @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_ontologyVersionIdentifier)
     private URI versionUri;
@@ -29,10 +29,7 @@ public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
 
-    @OWLObjectProperty(
-            iri = Vocabulary.s_p_ontopus_hasPrefixDeclaration,
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL)
+    @OWLObjectProperty(iri = Vocabulary.s_p_shacl_declare, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<PrefixDeclaration> prefixDeclarations = new HashSet<>();
 
     @Override

@@ -1,4 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kbss-cvut/ontology-migration-tool/refs/heads/main/src/main/resources/changelog-scheme.json
+
 changelog:
   - include:
-      file: release/0.18.0/index-changelog.yaml
+      file: release/0.1.0/index-changelog.yaml
       relativeToChangelogFile: true

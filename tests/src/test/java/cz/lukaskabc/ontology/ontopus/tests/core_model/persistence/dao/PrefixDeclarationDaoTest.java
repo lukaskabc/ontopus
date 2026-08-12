@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
-import java.util.List;
 
 public class PrefixDeclarationDaoTest extends BaseDaoTest {
     @Autowired
@@ -23,7 +22,7 @@ public class PrefixDeclarationDaoTest extends BaseDaoTest {
         final PrefixDeclaration unrelatedPrefix = new PrefixDeclaration("unrelated", URI.create("http://ex/namespace"));
         final PrefixDeclaration unrelated = new PrefixDeclaration("unrelated", URI.create("http://ex/unrelated"));
 
-        withEntities(List.of(existing, unrelatedNamespace, unrelatedPrefix, unrelated));
+        withEntities(existing, unrelatedNamespace, unrelatedPrefix, unrelated);
 
         final PrefixDeclaration result = sut.findByPrefixAndNamespace(existing.getPrefix(), existing.getName());
         assertNotNull(result);

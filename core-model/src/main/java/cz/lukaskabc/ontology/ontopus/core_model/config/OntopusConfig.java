@@ -230,6 +230,7 @@ public class OntopusConfig {
             }
 
             this.baseUri = UriComponentsBuilder.fromUri(getSystemUri())
+                    .scheme("http")
                     .path("/dcat")
                     .build()
                     .toUri();

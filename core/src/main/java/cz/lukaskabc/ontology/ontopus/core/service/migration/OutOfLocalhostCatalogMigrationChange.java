@@ -66,7 +66,7 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
             log.warn("Catalog not found, skipping catalog identifier migration");
             return;
         }
-        final URI source = getEnvUri("ONTOPUS_SYSTEM_URI");
+        final URI source = getEnvUri("ONTOPUS_SYSTEM_URI").resolve("/dcat/");
         final URI target = getEnvUri(ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET);
         log.warn("Performing catalog migration from identifier prefix <{}> to <{}>", source, target);
         final Set<URI> contexts = resolveContexts();

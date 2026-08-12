@@ -81,9 +81,8 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 
         for (URI graph : contexts) {
             log.info("Performing identifier prefix migration in graph <{}>", graph);
-            final Replacement replacement = new Replacement(graph, source, target);
-            replaceSubjects(ontologyRepository, replacement);
-            replaceObjects(ontologyRepository, replacement);
+            runReplacement(graph, source, target, ontologyRepository);
+            runReplacement(graph, URI.create("http://localhost/dcat/"), target, ontologyRepository);
         }
     }
 
@@ -158,6 +157,12 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
                 .replace("?sourceLen", String.valueOf(replacement.sourceSparqlLength()));
 
         ontologyRepository.update(sparqlUpdateSubjects);
+    }
+
+    private void runReplacement(URI graph, URI source, URI target, OntologyRepository ontologyRepository) {
+        final Replacement replacement = new Replacement(graph, source, target);
+        replaceSubjects(ontologyRepository, replacement);
+        replaceObjects(ontologyRepository, replacement);
     }
 
     private static class CatalogMigrationException extends RuntimeException {

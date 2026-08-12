@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
 /**
  * Custom change capable of migrating catalog and related resource identifiers.
  *
- * <p>Requires {@link #CATALOG_PREFIX_MIGRATION_SOURCE} and {@link #CATALOG_PREFIX_MIGRATION_TARGET} environment
- * variables set to the original identifier prefix and the new prefix.
+ * <p>Requires {@code ONTOPUS_SYSTEM_URL} and {@link #ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET} environment variables set
+ * to the original identifier prefix and the new prefix.
  */
 public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
-    /** The prefix of old identifiers that should be replaced. */
-    private static final String CATALOG_PREFIX_MIGRATION_SOURCE = "CATALOG_MIGRATION_SOURCE";
     /** The new prefix to use in entity identifiers. */
-    private static final String CATALOG_PREFIX_MIGRATION_TARGET = "CATALOG_MIGRATION_TARGET";
+    private static final String ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET = "ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET";
 
     private static final String BASE_PACKAGE = "cz.lukaskabc.ontology.ontopus";
     private static final Logger log = LogManager.getLogger(OutOfLocalhostCatalogMigrationChange.class);
@@ -68,8 +66,8 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
             log.warn("Catalog not found, skipping catalog identifier migration");
             return;
         }
-        final URI source = getEnvUri(CATALOG_PREFIX_MIGRATION_SOURCE);
-        final URI target = getEnvUri(CATALOG_PREFIX_MIGRATION_TARGET);
+        final URI source = getEnvUri("ONTOPUS_SYSTEM_URI");
+        final URI target = getEnvUri(ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET);
         log.warn("Performing catalog migration from identifier prefix <{}> to <{}>", source, target);
         final Set<URI> contexts = resolveContexts();
         if (contexts.isEmpty()) {

@@ -129,11 +129,13 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 				    }
 				}
 				WHERE {
-				  localhost:catalog dcat:dataset ?o .
+				                GRAPH ontopus:OntopusCatalog {
+				                    localhost:catalog dcat:dataset ?o .
 
-				  FILTER NOT EXISTS {
-				    <?newCatalog> dcat:dataset ?o .
-				  }
+				                    FILTER NOT EXISTS {
+				                        <?newCatalog> dcat:dataset ?o .
+				                    }
+				                }
 				}
 				""".replace("?newCatalog", target.resolve("catalog").toString()));
     }

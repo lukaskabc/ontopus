@@ -8,12 +8,12 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
-import java.net.URI;
 
 /** Registers {@link ResourceController} as catch all endpoint {@code /**} with {@link RequestUrlStartsWith}. */
 @Component
@@ -33,10 +33,12 @@ public class DcatRequestHandlerMapping extends RequestMappingHandlerMapping {
             Method method =
                     PublicDcatController.class.getMethod("getResource", MediaType[].class, HttpServletRequest.class);
 
-            final URI baseUri = ontopusConfig.getDcatCatalog().getBaseUri();
+            final RequestCondition<?> customCondition = new OrRequestCondition(
+                    new RequestUrlStartsWith(ontopusConfig.getDcatCatalog().getBaseUri()),
+                    new RequestUrlStartsWith(ontopusConfig.getDcatCatalog().getHttpsBaseUri()));
 
             RequestMappingInfo mappingInfo = RequestMappingInfo.paths("/**")
-                    .customCondition(new RequestUrlStartsWith(baseUri))
+                    .customCondition(customCondition)
                     .methods(RequestMethod.GET)
                     .build();
 

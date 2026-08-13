@@ -229,12 +229,11 @@ public class OntopusConfig {
                 return baseUri;
             }
 
-            this.baseUri = UriComponentsBuilder.fromUri(getSystemUri())
+            return UriComponentsBuilder.fromUri(getSystemUri())
                     .scheme("http")
                     .path("/dcat")
                     .build()
                     .toUri();
-            return this.baseUri;
         }
 
         public String getDescription() {

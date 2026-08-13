@@ -6,19 +6,19 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class SystemUriSecurityMatcher implements RequestMatcher {
-    private final RequestUrlNotStartsWithCondition urlNotStartsWithSystemUri;
-    private final RequestUrlNotStartsWithCondition urlNotStartsWithDcatUri;
+    private final RequestUrlStartsWith urlStartsWithSystemUri;
+    private final RequestUrlStartsWith urlStartsWithDcatUri;
 
     public SystemUriSecurityMatcher(OntopusConfig config) {
-        this.urlNotStartsWithSystemUri = new RequestUrlNotStartsWithCondition(config.getSystemUri());
-        this.urlNotStartsWithDcatUri =
-                new RequestUrlNotStartsWithCondition(config.getDcatCatalog().getBaseUri());
+        this.urlStartsWithSystemUri = new RequestUrlStartsWith(config.getSystemUri());
+        this.urlStartsWithDcatUri =
+                new RequestUrlStartsWith(config.getDcatCatalog().getBaseUri());
     }
 
     @Override
     public boolean matches(HttpServletRequest request) {
-        final boolean isSystemUrl = urlNotStartsWithSystemUri.getMatchingCondition(request) == null;
-        final boolean isDcatUrl = urlNotStartsWithDcatUri.getMatchingCondition(request) == null;
+        final boolean isSystemUrl = urlStartsWithSystemUri.getMatchingCondition(request) != null;
+        final boolean isDcatUrl = urlStartsWithDcatUri.getMatchingCondition(request) != null;
         return isSystemUrl && !isDcatUrl;
     }
 }

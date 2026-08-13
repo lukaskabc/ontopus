@@ -27,8 +27,8 @@
                                                     sh:suggestedShapesGraph <http://ontology.lukaskabc.cz/application/ontopus/shacl> ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
                                                     rdfs:label "OntoPuS" ;
-                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0.1> ;
-                                                    owl:versionInfo "Version 1.0.1"@en .
+                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.1.0> ;
+                                                    owl:versionInfo "Version 0.1.0"@en .
 
 hydra:Error a hydra:Class ;
     rdfs:label "Error" ;

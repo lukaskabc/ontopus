@@ -15,9 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.net.URI;
 
-/**
- * Registers {@link ResourceController} as catch all endpoint {@code /**} with {@link RequestUrlNotStartsWithCondition}.
- */
+/** Registers {@link ResourceController} as catch all endpoint {@code /**} with {@link RequestUrlStartsWith}. */
 @Component
 public class DcatRequestHandlerMapping extends RequestMappingHandlerMapping {
     private final PublicDcatController dcatController;
@@ -38,7 +36,7 @@ public class DcatRequestHandlerMapping extends RequestMappingHandlerMapping {
             final URI baseUri = ontopusConfig.getDcatCatalog().getBaseUri();
 
             RequestMappingInfo mappingInfo = RequestMappingInfo.paths("/**")
-                    .customCondition(new NagatingRequestCondition(new RequestUrlNotStartsWithCondition(baseUri)))
+                    .customCondition(new RequestUrlStartsWith(baseUri))
                     .methods(RequestMethod.GET)
                     .build();
 

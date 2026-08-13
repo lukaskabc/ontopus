@@ -71,8 +71,10 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
             log.warn("Catalog not found, skipping catalog identifier migration");
             return;
         }
-        final URI source = getEnvUri(ONTOPUS_SYSTEM_URI).resolve("/dcat/");
+        final URI systemUri = getEnvUri(ONTOPUS_SYSTEM_URI);
+        final URI source = systemUri.resolve("/dcat/");
         final URI target = getEnvUri(ONTOPUS_CATALOG_PREFIX_MIGRATION_TARGET);
+        ensureNotPrefix(systemUri, target);
         log.warn("Performing catalog migration from identifier prefix <{}> to <{}>", source, target);
         final Set<URI> contexts = resolveContexts();
         if (contexts.isEmpty()) {
@@ -109,6 +111,14 @@ public class OutOfLocalhostCatalogMigrationChange implements CustomChange {
 				    }
 				}
 				""".replace("?catalog", OntopusCatalog_.entityClassIRI.toString()));
+    }
+
+    private void ensureNotPrefix(URI systemUri, URI target) {
+        final String systemUriStr = systemUri.toString().replaceAll("[#/]+$", "");
+        final String dcatUri = target.toString().replaceAll("[#/]+$", "");
+        if (systemUriStr.startsWith(dcatUri)) {
+            throw new CatalogMigrationException("DCAT catalog prefix must not be prefix of the System URI!");
+        }
     }
 
     private void mergeLocalCatalog(URI target, OntologyRepository ontologyRepository) {

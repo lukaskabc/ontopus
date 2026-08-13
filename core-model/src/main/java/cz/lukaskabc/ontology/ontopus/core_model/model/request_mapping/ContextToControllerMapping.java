@@ -21,7 +21,7 @@ import java.util.Set;
 @OWLClass(iri = Vocabulary.s_c_ontopus_ContextToControllerMapping)
 public class ContextToControllerMapping extends AbstractPersistenceEntity<ContextToControllerMappingURI> {
     /** The ontology graph */
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dc_subject)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_dc_subject) // TODO: migrate to dcterms
     private URI subject;
 
     /** The controller capable of handling the resource */

@@ -5,6 +5,7 @@
 | ```ONTOPUS_DATABASE_LANGUAGE```**\*** | The default persistence language<br>Default value: ```en```<br>value must be present |
 | ```ONTOPUS_DATABASE_URL```**\*** | Database repository URL<br>Default value: ```http://localhost:7200/repositories/ontopus```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_DESCRIPTION```**\*** | Description of the catalog<br>Default value: ```Catalog of published ontologies on this OntoPuS instance```<br>value must be present and not empty |
+| ```ONTOPUS_DCAT_CATALOG_PREFIX_DECLARATIONS```**\*** | Prefix declarations ```"prefix" -> "namespace"``` that will be included in responses to internal DCAT<br>model.<p>Environment variable must have format ```ONTOPUS_DCATCATALOG_PREFIXDECLARATIONS_<PREFIX>="<NAMESPACE>"```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_PUBLISHER_NAME```**\*** | The name of the catalog publisher<br>value must be present and not empty |
 | ```ONTOPUS_DCAT_CATALOG_PUBLISHER_TYPE```**\*** | The type of catalog publisher. The publisher is an<a href="http://xmlns.com/foaf/0.1/Agent"> ```foaf:Agent```</a>.<p>Example values:<br><br>```http://xmlns.com/foaf/0.1/Person```<br><br>```http://xmlns.com/foaf/0.1/Organization```<br>value must be present |
 | ```ONTOPUS_DCAT_CATALOG_TITLE```**\*** | Title of the catalog<br>Default value: ```OntoPuS Ontology Catalog```<br>value must be present and not empty |
@@ -14,17 +15,17 @@
 | ```ONTOPUS_SYSTEM_URI```**\*** | The URI dedicated for the OntoPuS. Base paths are not supported. Usually you want to keep HTTP protocol and<br>replace the domain with dedicated subdomain for the server. Example: ```http://example.com```<br>Default value: ```URI.create("http://localhost")```<br>value must be present |
 | ```ONTOPUS_DATABASE_PASSWORD``` | Password for authentication with database repository |
 | ```ONTOPUS_DATABASE_USERNAME``` | Username for authentication with database repository |
-| ```ONTOPUS_DCAT_CATALOG_BASE_URI``` | Base URI used for DCAT resource identifiers. The URI must not contain a fragment.<br>Default value: ```systemURI with ; {@code /dcat/}; path``` |
+| ```ONTOPUS_DCAT_CATALOG_BASE_URI``` | Base URI used for DCAT resource identifiers. The URI must not contain a fragment. The URI must not be a<br>prefix of the System URI.<br>Default value: ```systemURI with ; {@code /dcat/}; path appended``` |
 | ```ONTOPUS_DCAT_CATALOG_LANGUAGE``` | Language of the catalog metadata (title, description).<br>Default value: ```null``` |
-| ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100``` |
+| ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100```<br>0 < value |
 | ```ONTOPUS_FILES_DEFAULT_GLOB_PATTERN``` | Default value: ```**.{nt,rdf,ttl,trig,trigs,brf,ttls}``` |
-| ```ONTOPUS_FILES_IMPORT_FILES_DIRECTORY``` | Directory for storing files used with ontology importing.<br>Default value: ```./``` |
 | ```ONTOPUS_FRONTEND_INDEX_FILE``` |  |
 | ```ONTOPUS_PLUGIN_GIT_TIMEOUT``` | Default value: ```15``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL``` | Default value: ```https://github.com/dgarijo/Widoco/releases/download/v{version}/widoco-{version}-jar-with-dependencies_JDK-17.jar``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL_PARAMETERS``` | Widoco version to automatically download<br>Default value: ```Map.of("version", "1.4.25")``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_FORCE_HTTPS_FOR_SERIALIZATION_LINKS``` | Whether the links to ontology serializations should use the ontology IRI schema or forced to use HTTPS schema.<br>When ```true```, the links to ontology serialization will always be generated with HTTPS.<br>Default value: ```false``` |
 | ```ONTOPUS_RESOURCE_CACHE_CONTROL_MAX_AGE``` | The value of ```max-age``` in cache control HTTP header<br>Default value: ```Duration.ofHours(1)``` |
+| ```ONTOPUS_RESOURCE_FALLBACK_MEDIATYPE``` | Which content type should be preferred when no other acceptable type is available.<br>Default value: ```text/turtle``` |
 | ```ONTOPUS_RESOURCE_HTTPS_FALLS_BACK_TO_HTTP``` | Request to ```https``` prefixed resource that does not exist, will fall back to the same resource with ```http```.<br>Default value: ```true``` |
 | ```ONTOPUS_RESOURCE_HTTP_FALLS_BACK_TO_HTTPS``` | Request to ```http``` prefixed resource that does not exist, will fall back to the same resource with ```https```.<br>Default value: ```false``` |
 | ```ONTOPUS_RESOURCE_NO_SLASH_FALLS_BACK_TO_TRAILING_SLASH``` | Request to resource without trailing slash that does not exist, will fall back to the same resource with<br>trailing slash.<br>Default value: ```true``` |

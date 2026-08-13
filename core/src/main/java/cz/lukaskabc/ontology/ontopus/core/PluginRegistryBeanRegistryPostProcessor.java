@@ -31,8 +31,8 @@ import java.util.*;
  * classes are also registered in the application context under their names.
  */
 @Component
-public class PluginRegistryApplicationInitializer implements BeanDefinitionRegistryPostProcessor {
-    private static final Logger log = LogManager.getLogger(PluginRegistryApplicationInitializer.class);
+public class PluginRegistryBeanRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
+    private static final Logger log = LogManager.getLogger(PluginRegistryBeanRegistryPostProcessor.class);
 
     private static void scanForSpringBeans(
             Collection<String> basePackages, BeanDefinitionRegistry beanDefinitionRegistry) {
@@ -51,7 +51,7 @@ public class PluginRegistryApplicationInitializer implements BeanDefinitionRegis
 
     private final ObjectMapper objectMapper;
 
-    public PluginRegistryApplicationInitializer() {
+    public PluginRegistryBeanRegistryPostProcessor() {
         this.plugins = ServiceLoader.load(Plugin.class);
         this.objectMapper = new ObjectMapper();
 

@@ -9,15 +9,15 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
-@Context(Vocabulary.s_c_PrefixDeclaration)
-@OWLClass(iri = Vocabulary.s_c_PrefixDeclaration)
+@Context(Vocabulary.s_c_shacl_PrefixDeclaration)
+@OWLClass(iri = Vocabulary.s_c_shacl_PrefixDeclaration)
 public class PrefixDeclaration extends Rdf4JAbstractNamespace {
     @NotEmpty @ParticipationConstraints(nonEmpty = true)
-    @OWLDataProperty(iri = Vocabulary.s_p_prefix, simpleLiteral = true)
+    @OWLDataProperty(iri = Vocabulary.s_p_shacl_prefix, simpleLiteral = true)
     private String prefix;
 
     @NotNull @ParticipationConstraints(nonEmpty = true)
-    @OWLObjectProperty(iri = Vocabulary.s_p_namespace)
+    @OWLObjectProperty(iri = Vocabulary.s_p_shacl_namespace)
     private URI namespace;
 
     public PrefixDeclaration() {}
@@ -25,6 +25,11 @@ public class PrefixDeclaration extends Rdf4JAbstractNamespace {
     public PrefixDeclaration(Namespace namespace) {
         this.prefix = namespace.getPrefix();
         this.namespace = URI.create(namespace.getName());
+    }
+
+    public PrefixDeclaration(String prefix, URI namespace) {
+        this.prefix = prefix;
+        this.namespace = namespace;
     }
 
     /**

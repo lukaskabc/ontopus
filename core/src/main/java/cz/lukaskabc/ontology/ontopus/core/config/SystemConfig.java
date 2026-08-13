@@ -3,8 +3,9 @@ package cz.lukaskabc.ontology.ontopus.core.config;
 import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
 
 import cz.cvut.kbss.jopa.model.MultilingualString;
-import cz.lukaskabc.ontology.ontopus.core.util.MultilingualStringSerializer;
-import cz.lukaskabc.ontology.ontopus.core.util.TypedIdentifierSerializer;
+import cz.lukaskabc.ontology.ontopus.core.rest.serialization.MultilingualStringDeserializer;
+import cz.lukaskabc.ontology.ontopus.core.rest.serialization.MultilingualStringSerializer;
+import cz.lukaskabc.ontology.ontopus.core.rest.serialization.TypedIdentifierSerializer;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ public class SystemConfig {
     @Bean
     public SimpleModule jacksonModule() {
         SimpleModule module = new SimpleModule();
+        module.addDeserializer(MultilingualString.class, new MultilingualStringDeserializer());
         module.addSerializer(MultilingualString.class, new MultilingualStringSerializer());
         module.addSerializer(TypedIdentifier.class, new TypedIdentifierSerializer());
         return module;

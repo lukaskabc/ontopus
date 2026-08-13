@@ -13,7 +13,7 @@ public class ImportProcessNotInitializedException extends OntopusException {
     public static final ImportProcessNotInitializedException INSTANCE =
             ImportProcessNotInitializedExceptionBuilderStages.start()
                     .statusCode(HttpStatus.RESET_CONTENT)
-                    .errorType(Vocabulary.u_i_not_initialized)
+                    .errorType(Vocabulary.u_i_ontopus_problem_not_initialized)
                     .internalMessage("Import process not initialized")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .titleMessageCode("ontopus.core.error.importProcessNotInitialized")

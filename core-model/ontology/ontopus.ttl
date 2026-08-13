@@ -12,7 +12,6 @@
 @base <http://ontology.lukaskabc.cz/application/ontopus/> .
 
 <http://ontology.lukaskabc.cz/application/ontopus> rdf:type owl:Ontology ;
-                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0-dev> ;
                                                     owl:imports <http://www.w3.org/2002/07/owl> ,
                                                                 <http://www.w3.org/1999/02/22-rdf-syntax-ns> ,
                                                                 <http://www.w3.org/2000/01/rdf-schema> ,
@@ -28,7 +27,8 @@
                                                     sh:suggestedShapesGraph <http://ontology.lukaskabc.cz/application/ontopus/shacl> ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
                                                     rdfs:label "OntoPuS" ;
-                                                    owl:versionInfo "Development version 0.0.1"@en .
+                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/1.0.1> ;
+                                                    owl:versionInfo "Version 1.0.1"@en .
 
 hydra:Error a hydra:Class ;
     rdfs:label "Error" ;
@@ -90,13 +90,6 @@ ontopus:hasMapping rdf:type owl:ObjectProperty ;
                    rdfs:range ontopus:JsonMappingEntry ;
                    rdfs:comment "A mapping of a webhook entry."@en ;
                    rdfs:label "Has mapping"@en .
-
-###  http://ontology.lukaskabc.cz/application/ontopus/hasPrefixDeclaration
-ontopus:hasPrefixDeclaration rdf:type owl:ObjectProperty ;
-                   rdfs:domain ontopus:VersionArtifact ;
-                   rdfs:range sh:PrefixDeclaration ;
-                   rdfs:comment "A prefix declaration used by the ontology"@en ;
-                   rdfs:label "Has prefix declaration"@en .
 
 
 #################################################################
@@ -223,6 +216,11 @@ ontopus:OntologyResource rdf:type owl:NamedIndividual ,
                        rdfs:comment "A thing that participates in an ontology"@en ;
                        rdfs:label "Ontology Entity"@en .
 
+ontopus:Temporary rdf:type owl:NamedIndividual  ,
+                           rdfs:Resource ;
+                  rdfs:comment "A temporary resource that should not be persisted."@en ;
+                  rdfs:label "Temporary resource"@en .
+
 ontopus-problem:access-denied rdf:type ontopus:ProblemDetail ;
                              rdfs:label "Access Denied"@en ;
                              rdfs:comment "User is not authorized to access the requested resource."@en .
@@ -262,7 +260,7 @@ ontopus-problem:internal-error rdf:type ontopus:ProblemDetail ;
 <http://ontology.lukaskabc.cz/application/ontopus/problem/internal-error/initialization> rdf:type ontopus:ProblemDetail ;
                                               rdfs:subClassOf ontopus-problem:internal-error ;
                                               rdfs:label "Initialization error"@en ;
-                                              rdfs:comment "The controller does not support the requested mapping of the resource."@en .
+                                              rdfs:comment "The application failed to initialize."@en .
 
 <http://ontology.lukaskabc.cz/application/ontopus/problem/internal-error/serialization> rdf:type ontopus:ProblemDetail ;
                                               rdfs:subClassOf ontopus-problem:internal-error ;

@@ -201,7 +201,7 @@ public class ImportProcessMediator {
         Future<Void> scheduled = holder.runWithContextNow(this::processAutoServices);
         if (scheduled.isCancelled()) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_c_internal_error)
+                    .errorType(Vocabulary.u_c_ontopus_problem_internal_error)
                     .internalMessage("Failed to schedule service processing during import context initialization")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .build());
@@ -249,7 +249,7 @@ public class ImportProcessMediator {
                 context.pushService(new ErrorThrowingService(e));
             } catch (Exception e) {
                 throw log.throwing(InternalException.builder()
-                        .errorType(Vocabulary.u_i_auto_service_error)
+                        .errorType(Vocabulary.u_i_ontopus_problem_auto_service_error)
                         .internalMessage("A non-Ontopus exception thrown during auto service processing.")
                         .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                         .cause(e)

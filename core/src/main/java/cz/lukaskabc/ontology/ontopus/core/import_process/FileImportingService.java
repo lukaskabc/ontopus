@@ -57,7 +57,7 @@ public class FileImportingService implements FileToDatabaseImportingService {
                     .map(Path::toString)
                     .collect(Collectors.joining(", "));
             throw FileImportException.builder()
-                    .errorType(Vocabulary.u_i_unsupported_format)
+                    .errorType(Vocabulary.u_i_ontopus_problem_unsupported_format)
                     .internalMessage("Failed to import files into the database: Unsupported format")
                     .detailMessageArguments(new Object[] {unimportedFiles})
                     .detailMessageCode("ontopus.core.error.fileProcessing.unsupportedFormat")

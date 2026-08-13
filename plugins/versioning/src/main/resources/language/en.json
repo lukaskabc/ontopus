@@ -8,19 +8,19 @@
         "description": "OntoPuS will resolve the values for specified properties on each ontology release, it is the responsibility of the ontology author to change the values before releasing a new version. \nSelect the annotation properties that will be used to determine the version and version IRI of the ontology.",
         "fields": {
           "version": {
-            "title": "Version",
-            "description": "The version of the ontology e.g. 1.2.3 ([semantic versioning](https://semver.org/)), 2024-06-01 (date based versioning) or other preferred version scheme."
+            "title": "Version predicate",
+            "description": "The predicate that describes the version of the ontology. The value must be present in the ontology. The value must be a string."
           },
           "versionIri": {
-            "title": "Version IRI",
-            "description": "The version IRI of the ontology. Unique IRI for this specific ontology version."
+            "title": "Version IRI predicate",
+            "description": "The predicate that describes the version IRI of the ontology. The value must be present in the ontology. The value must be an identifier."
           }
         }
       }
     },
     "GeneralVersioningService": {
       "title": "User defined version",
-      "description": "Manually enter the version of the ontology. Note that this will prevent auto-releasing new versions, since the user input will be required.",
+      "description": "Manually enter the version of the ontology. Note that this will prevent auto-releasing new versions, since the user input will be required. When automatic release is triggered, the last version will be overwritten!",
       "fields.version.title": "Version"
     },
     "DateVersioningService": {

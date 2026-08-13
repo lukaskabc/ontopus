@@ -1,6 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core.service;
 
-import cz.lukaskabc.ontology.ontopus.api.rest.*;
+import cz.lukaskabc.ontology.ontopus.api.model.OntopusRequest;
+import cz.lukaskabc.ontology.ontopus.api.rest.NegotiableController;
+import cz.lukaskabc.ontology.ontopus.api.rest.OntologyController;
+import cz.lukaskabc.ontology.ontopus.api.rest.ResourceController;
+import cz.lukaskabc.ontology.ontopus.api.rest.StreamingResponseBody;
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ContentNegotiationResolver;
 import cz.lukaskabc.ontology.ontopus.core.service.content_negotiation.ControllerCandidate;
@@ -23,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,33 +37,32 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
+@Primary
 public class ResourceService {
 
     private static final Logger log = LogManager.getLogger(ResourceService.class);
 
     @SuppressWarnings("unchecked")
-    private static ResponseEntity<StreamingResponseBody> cast(
+    protected static ResponseEntity<StreamingResponseBody> cast(
             ResponseEntity<? extends StreamingResponseBody> response) {
         return (ResponseEntity<StreamingResponseBody>) response;
     }
 
-    private final OntopusConfig ontopusConfig;
+    protected final OntopusConfig ontopusConfig;
 
-    private final ApplicationContext applicationContext;
-    private final ContentNegotiationResolver contentNegotiationResolver;
-    private final ResourceInContextMappingService resourceInContextMappingService;
-    private final ContextToControllerMappingService contextToControllerMappingService;
-    private final VersionSeriesService versionSeriesService;
+    protected final ApplicationContext applicationContext;
+    protected final ContentNegotiationResolver contentNegotiationResolver;
+    protected final ResourceInContextMappingService resourceInContextMappingService;
+    protected final ContextToControllerMappingService contextToControllerMappingService;
+    protected final VersionSeriesService versionSeriesService;
 
-    private final MediaTypeResolver mediaTypeResolver;
+    protected final MediaTypeResolver mediaTypeResolver;
 
-    private final ResourceRequestFallbackService resourceRequestFallbackService;
+    protected final ResourceRequestFallbackService resourceRequestFallbackService;
+    protected final MediaType fallbackType;
 
     public ResourceService(
             ApplicationContext applicationContext,
@@ -77,6 +81,7 @@ public class ResourceService {
         this.mediaTypeResolver = mediaTypeResolver;
         this.ontopusConfig = ontopusConfig;
         this.resourceRequestFallbackService = resourceRequestFallbackService;
+        this.fallbackType = ontopusConfig.getResource().getFallbackMediatype();
     }
 
     private ContextToControllerMapping findControllerMapping(ResourceURI requestedURI, GraphURI graphURI) {
@@ -84,6 +89,14 @@ public class ResourceService {
         return contextToControllerMappingService.findByTypeAndContext(mappingType, graphURI);
     }
 
+    /**
+     * Optionally resolves file extension from the requested resource URI suffix<br>
+     * and calls {@link #getResource(ResourceURI, MediaType[])} with fallbacks {@link #resourceRequestFallbackService}
+     *
+     * @param requestedResource the requested resource
+     * @param requestedTypes the requested types from accept header
+     * @return the response
+     */
     @Transactional(readOnly = true)
     public ResponseEntity<StreamingResponseBody> findResource(
             ResourceURI requestedResource, MediaType @Nullable [] requestedTypes) {
@@ -92,16 +105,18 @@ public class ResourceService {
                 suffixType.map(type -> new MediaType[] {type}).orElse(requestedTypes);
         final ResourceURI resourceURI = suffixType.isPresent() ? withoutSuffix(requestedResource) : requestedResource;
 
+        replaceUniversalMediaType(mediaTypes);
+
         return resourceRequestFallbackService.withFallback(
                 resourceURI, (fallbackUri) -> getResource(fallbackUri, mediaTypes));
     }
 
-    private Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
+    protected Class<? extends NegotiableController> getControllerClass(ControllerDescription controller) {
         try {
             return Class.forName(controller.getClassName()).asSubclass(NegotiableController.class);
         } catch (ClassNotFoundException e) {
             throw log.throwing(InternalException.builder()
-                    .errorType(Vocabulary.u_i_internal_error)
+                    .errorType(Vocabulary.u_i_ontopus_problem_internal_error)
                     .internalMessage("Controller class not found: " + controller.getClassName())
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .cause(e)
@@ -109,6 +124,13 @@ public class ResourceService {
         }
     }
 
+    /**
+     * Finds the requested resource and resolves the most preferred media type.
+     *
+     * @param resourceURI the requested resource
+     * @param mediaTypes acceptable media types
+     * @return the resource or multiple choice if no media type matched
+     */
     public ResponseEntity<StreamingResponseBody> getResource(
             ResourceURI resourceURI, MediaType @Nullable [] mediaTypes) {
         final GraphURI graphURI = resourceInContextMappingService.findRequired(resourceURI);
@@ -130,10 +152,10 @@ public class ResourceService {
                 })
                 .map(ResourceService::cast);
 
-        return result.orElseGet(() -> multipleChoice(mapping, resourceURI));
+        return result.orElseGet(() -> multipleChoice(mapping.getControllers(), resourceURI));
     }
 
-    private ResponseEntity<? extends StreamingResponseBody> handleRequest(
+    protected ResponseEntity<? extends StreamingResponseBody> handleRequest(
             ControllerCandidate candidate, MappingType mappingType, OntopusRequest ontopusRequest) {
         NegotiableController controller = applicationContext.getBean(getControllerClass(candidate.controller()));
         if (mappingType == MappingType.RESOURCE
@@ -146,7 +168,7 @@ public class ResourceService {
         }
 
         throw log.throwing(InternalException.builder()
-                .errorType(Vocabulary.u_i_not_supported)
+                .errorType(Vocabulary.u_i_ontopus_problem_not_supported)
                 .internalMessage("Controller " + controller.getClass().getName()
                         + " does not support the requested mapping type: " + mappingType.name())
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
@@ -154,9 +176,9 @@ public class ResourceService {
                 .build());
     }
 
-    private ResponseEntity<StreamingResponseBody> multipleChoice(
-            ContextToControllerMapping mapping, ResourceURI resourceURI) {
-        Map<String, MediaType> supportedExtensions = resolveSupportedFileExtensions(mapping);
+    protected ResponseEntity<StreamingResponseBody> multipleChoice(
+            Collection<ControllerDescription> controllerDescriptions, ResourceURI resourceURI) {
+        Map<String, MediaType> supportedExtensions = resolveSupportedFileExtensions(controllerDescriptions);
         if (supportedExtensions.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
@@ -166,7 +188,19 @@ public class ResourceService {
                 .body(new MultipleChoiceResponseWriter(supportedExtensions, resourceURI, ontopusConfig));
     }
 
-    private MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {
+    protected void replaceUniversalMediaType(MediaType @Nullable [] mediaTypes) {
+        if (mediaTypes == null) {
+            return;
+        }
+        for (int i = 0; i < mediaTypes.length; i++) {
+            final MediaType requested = mediaTypes[i];
+            if (MediaType.ALL.equalsTypeAndSubtype(requested)) {
+                mediaTypes[i] = fallbackType.copyQualityValue(requested);
+            }
+        }
+    }
+
+    protected MappingType resolveMappingType(ResourceURI requestedURI, GraphURI graphURI) {
         if (requestedURI.equals(graphURI)) {
             return MappingType.ONTOLOGY_DOCUMENT;
         }
@@ -177,7 +211,7 @@ public class ResourceService {
         return MappingType.RESOURCE;
     }
 
-    private Optional<MediaType> resolveSuffixType(ResourceURI resourceURI) {
+    protected Optional<MediaType> resolveSuffixType(ResourceURI resourceURI) {
         final String extension =
                 StringUtils.getFilenameExtension(resourceURI.toURI().getPath());
         if (extension == null) {
@@ -186,9 +220,10 @@ public class ResourceService {
         return mediaTypeResolver.resolveMediaType(extension);
     }
 
-    private Map<String, MediaType> resolveSupportedFileExtensions(ContextToControllerMapping mapping) {
+    protected Map<String, MediaType> resolveSupportedFileExtensions(
+            Collection<ControllerDescription> controllerDescriptions) {
         Map<String, MediaType> fileExtensions = new HashMap<>();
-        for (ControllerDescription controller : mapping.getControllers()) {
+        for (ControllerDescription controller : controllerDescriptions) {
             for (MediaType type : controller.getSupportedMediaTypes()) {
                 List<String> extensions = mediaTypeResolver.resolveFileExtensions(type);
                 if (extensions.isEmpty()) {
@@ -206,7 +241,7 @@ public class ResourceService {
         return fileExtensions;
     }
 
-    private ResourceURI withoutSuffix(ResourceURI resourceURI) {
+    protected ResourceURI withoutSuffix(ResourceURI resourceURI) {
         final URI original = resourceURI.toURI();
         final String fileExt = StringUtils.getFilenameExtension(original.getPath());
         if (fileExt == null) {

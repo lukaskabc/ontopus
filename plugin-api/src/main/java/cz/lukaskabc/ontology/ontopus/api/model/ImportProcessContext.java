@@ -222,7 +222,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
                 throw e;
             } catch (Exception e) {
                 throw log.throwing(JsonFormSubmitException.builder()
-                        .errorType(Vocabulary.u_i_unknown)
+                        .errorType(Vocabulary.u_i_ontopus_problem_unknown)
                         .internalMessage("Unknown error during form result handling")
                         .titleMessageCode("ontopus.core.error.unknown")
                         .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
@@ -235,7 +235,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
             }
         } else {
             throw log.throwing(JsonFormSubmitException.builder()
-                    .errorType(Vocabulary.u_i_form_submit)
+                    .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                     .internalMessage("No unprocessed services available for the form data submission")
                     .titleMessageCode("ontopus.core.error.noUnprocessedService")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
@@ -282,7 +282,7 @@ public class ImportProcessContext implements ReadOnlyImportProcessContext {
         }
 
         throw log.throwing(InternalException.builder()
-                .errorType(Vocabulary.u_i_internal_error)
+                .errorType(Vocabulary.u_i_ontopus_problem_internal_error)
                 .internalMessage("Duplicate service identifier: " + identifier)
                 .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                 .build());

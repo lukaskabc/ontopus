@@ -170,7 +170,7 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
                     case "version", "versionUri", "ontologyURI" -> null;
                     case null, default ->
                         throw JsonFormSubmitException.builder()
-                                .errorType(Vocabulary.u_i_illegal_value)
+                                .errorType(Vocabulary.u_i_ontopus_problem_illegal_value)
                                 .internalMessage("Illegal attribute submitted: " + attrName)
                                 .titleMessageCode("ontopus.core.error.invalidData")
                                 .detailMessageArguments(new Object[] {attrName})
@@ -180,7 +180,7 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
 
         if (attribute == null) return;
 
-        final MultilingualString value = parseMultilingualString(data);
+        final MultilingualString value = objectMapper.treeToValue(data, MultilingualString.class);
         if (!value.isEmpty()) {
             assert attribute.getJavaField().getType().isAssignableFrom(MultilingualString.class);
             try {
@@ -189,18 +189,6 @@ public class ArtifactReviewService implements OrderedImportPipelineService<Void>
                 throw new IllegalStateException(e);
             }
         }
-    }
-
-    private MultilingualString parseMultilingualString(JsonNode data) {
-        final MultilingualString result = new MultilingualString();
-        if (data.isObject()) {
-            data.asObject().forEachEntry((lang, value) -> {
-                if (value.isString()) {
-                    result.set(lang, value.asString());
-                }
-            });
-        }
-        return result;
     }
 
     private void putDatasetFormData(Dataset<?, ?> dataset, ObjectNode formData) {

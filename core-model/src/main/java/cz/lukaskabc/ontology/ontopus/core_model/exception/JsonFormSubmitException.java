@@ -15,7 +15,7 @@ public class JsonFormSubmitException extends OntopusException {
 
     public static JsonFormSubmitException missingValue(String paramName) {
         return JsonFormSubmitException.builder()
-                .errorType(Vocabulary.u_i_form_submit)
+                .errorType(Vocabulary.u_i_ontopus_problem_form_submit)
                 .internalMessage("Form data are missing value for " + paramName)
                 .titleMessageCode("ontopus.core.error.form.missingValue.title")
                 .detailMessageArguments(new Object[] {paramName})

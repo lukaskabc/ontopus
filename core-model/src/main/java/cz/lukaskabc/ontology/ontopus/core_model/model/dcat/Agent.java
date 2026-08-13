@@ -8,12 +8,13 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.AbstractGeneratedPersistenceEntity;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.AgentURI;
 
+import jakarta.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.Set;
 
-@OWLClass(iri = Vocabulary.s_c_sioc_Agent)
+@OWLClass(iri = Vocabulary.s_c_foaf_Agent)
 public class Agent extends AbstractGeneratedPersistenceEntity<AgentURI> {
-    @OWLDataProperty(iri = Vocabulary.s_p_vocab_name)
+    @NotEmpty @OWLDataProperty(iri = Vocabulary.s_p_foaf_name)
     private MultilingualString name = new MultilingualString();
 
     @Types

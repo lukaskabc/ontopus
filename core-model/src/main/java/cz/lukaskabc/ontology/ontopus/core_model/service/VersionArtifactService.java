@@ -7,12 +7,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.PrefixDeclaration;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact;
+import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.VersionArtifactDao;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.PrefixDeclarationRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.repository.VersionArtifactRepository;
 import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import cz.lukaskabc.ontology.ontopus.core_model.util.TimeProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.model.Statement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -76,6 +78,12 @@ public class VersionArtifactService
         return repository.find(seriesURI, pageable, filter);
     }
 
+    /** @see VersionArtifactDao#findAllTriples(VersionArtifactURI) */
+    @Transactional(readOnly = true)
+    public List<Statement> findAllTriples(VersionArtifactURI artifactURI) {
+        return repository.findAllTriples(artifactURI);
+    }
+
     public Optional<VersionArtifact> findByVersionUri(OntologyVersionURI versionURI) {
         return repository.findByVersionUri(versionURI);
     }
@@ -95,6 +103,7 @@ public class VersionArtifactService
     @Transactional
     @Override
     public void update(VersionArtifact entity) {
+        prefixDeclarationRepository.deduplicate(entity.getPrefixDeclarations());
         super.update(entity);
         prefixDeclarationRepository.removeOrphans();
     }

@@ -12,7 +12,7 @@ public class ValidationException extends OntopusException {
     public static ValidationExceptionBuilderStages.InternalMessageBuildStage builder() {
         return ValidationExceptionBuilderStages.start()
                 .statusCode(HttpStatus.BAD_REQUEST)
-                .errorType(Vocabulary.u_i_validation);
+                .errorType(Vocabulary.u_i_ontopus_problem_validation);
     }
 
     public static ValidationException fromValidationError(String message) {

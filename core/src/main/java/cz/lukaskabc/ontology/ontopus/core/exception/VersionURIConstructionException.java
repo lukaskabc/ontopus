@@ -13,7 +13,7 @@ public class VersionURIConstructionException extends OntopusException {
     public static VersionURIConstructionExceptionBuilderStages.InternalMessageBuildStage builder() {
         return VersionURIConstructionExceptionBuilderStages.start()
                 .statusCode(HttpStatus.BAD_REQUEST)
-                .errorType(Vocabulary.u_i_version_uri_construction);
+                .errorType(Vocabulary.u_i_ontopus_problem_version_uri_construction);
     }
 
     @org.immutables.builder.Builder.Constructor

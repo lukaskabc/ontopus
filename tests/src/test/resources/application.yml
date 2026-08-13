@@ -1,0 +1,7 @@
+ontopus:
+  database:
+    # Tests uses an in-memory database
+    url: ontopus
+  dcat-catalog:
+    publisher-name: test
+    publisher-type: http://example.com/test

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -29,13 +29,16 @@ public class PrefixDeclarationRepository
      */
     @Transactional(readOnly = true)
     public void deduplicate(Collection<PrefixDeclaration> declarations) {
-        Iterator<PrefixDeclaration> it = declarations.iterator();
-        while (it.hasNext()) {
-            final PrefixDeclaration declaration = it.next();
+        for (PrefixDeclaration declaration : declarations) {
+            if (declaration.getIdentifier() != null) {
+                continue;
+            }
             findByPrefixAndNamespace(declaration.getPrefix(), declaration.getName())
                     .ifPresent(existing -> {
-                        it.remove();
-                        declarations.add(existing);
+                        Objects.requireNonNull(
+                                existing.getIdentifier(),
+                                "Identifier of an existing PrefixDeclaration must not be null!");
+                        declaration.setIdentifier(existing.getIdentifier());
                     });
         }
     }

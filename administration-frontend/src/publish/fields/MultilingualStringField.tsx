@@ -142,7 +142,6 @@ function MultilingualStringField(props: FieldProps) {
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Autocomplete
             size="small"
-            freeSolo
             options={languageOptions}
             value={selectedLanguage || null}
             onChange={onLanguageChange}

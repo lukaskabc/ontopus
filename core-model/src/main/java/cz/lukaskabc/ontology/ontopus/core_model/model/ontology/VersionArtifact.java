@@ -15,21 +15,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /** An ontology artifact containing a single ontology version release */
-@Context(Vocabulary.s_c_VersionArtifact)
-@OWLClass(iri = Vocabulary.s_c_VersionArtifact)
+@Context(Vocabulary.s_c_ontopus_VersionArtifact)
+@OWLClass(iri = Vocabulary.s_c_ontopus_VersionArtifact)
 public class VersionArtifact extends Dataset<DistributionURI, VersionArtifactURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionArtifact.class);
 
     @Types
-    private Set<URI> types = TYPES;
+    private Set<URI> types = new HashSet<>(TYPES);
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_ontologyVersionIdentifier)
+    @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_ontologyVersionIdentifier)
     private URI versionUri;
 
     @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
     private Set<URI> distributions = new HashSet<>();
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_hasPrefixDeclaration, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OWLObjectProperty(iri = Vocabulary.s_p_shacl_declare, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<PrefixDeclaration> prefixDeclarations = new HashSet<>();
 
     @Override

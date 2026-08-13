@@ -18,19 +18,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Context(Vocabulary.s_c_VersionSeries)
-@OWLClass(iri = Vocabulary.s_c_VersionSeries)
+@Context(Vocabulary.s_c_ontopus_VersionSeries)
+@OWLClass(iri = Vocabulary.s_c_ontopus_VersionSeries)
 public class VersionSeries extends DatasetSeries<VersionArtifactURI, DistributionURI, VersionSeriesURI> {
     public static final Set<URI> TYPES = MappedClassTypesResolver.resolveTypes(VersionSeries.class);
 
     @Types
-    private Set<URI> types = TYPES;
+    private Set<URI> types = new HashSet<>(TYPES);
 
     /** Serialized import context of the last successful publishing process */
-    @Valid @OWLDataProperty(iri = Vocabulary.s_p_serializedImportContext, simpleLiteral = true)
+    @Context(Vocabulary.s_p_ontopus_serializedImportContext)
+    @Valid @OWLDataProperty(iri = Vocabulary.s_p_ontopus_serializedImportContext, simpleLiteral = true)
     private SerializableImportProcessContext serializableImportProcessContext;
     /** The ontology version independent identifier */
-    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontologyIdentifier)
+    @NotNull @OWLObjectProperty(iri = Vocabulary.s_p_ontopus_ontologyIdentifier)
     private URI ontologyURI;
 
     /** The newest version of the ontology */
@@ -38,19 +39,16 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
     private URI last;
 
     /** The oldest version of the ontology */
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first_A)
+    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_first)
     private URI first;
 
     /** Set of {@link VersionArtifactURI} of individual ontology versions */
     @NotEmpty @OWLObjectProperty(iri = Vocabulary.s_p_dcat_seriesMember, fetch = FetchType.LAZY)
     private Set<URI> members = new HashSet<>();
 
-    @OWLObjectProperty(iri = Vocabulary.s_p_dcat_distribution, fetch = FetchType.EAGER)
-    private Set<URI> distributions = new HashSet<>();
-
     @Override
     public void addDistribution(DistributionURI distributionURI) {
-        distributions.add(distributionURI.toURI());
+        throw new UnsupportedOperationException("VersionSeries should not have distributions");
     }
 
     @Override
@@ -60,7 +58,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public Set<DistributionURI> getDistributions() {
-        return distributions.stream().map(DistributionURI::new).collect(Collectors.toUnmodifiableSet());
+        throw new UnsupportedOperationException("VersionSeries should not have distributions");
     }
 
     @Override
@@ -101,7 +99,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public boolean hasDistribution(DistributionURI distributionURI) {
-        return distributions.contains(distributionURI.toURI());
+        return false;
     }
 
     @Override
@@ -111,7 +109,7 @@ public class VersionSeries extends DatasetSeries<VersionArtifactURI, Distributio
 
     @Override
     public void removeDistribution(DistributionURI distributionURI) {
-        distributions.remove(distributionURI.toURI());
+        throw new UnsupportedOperationException("VersionSeries should not have distributions");
     }
 
     @Override

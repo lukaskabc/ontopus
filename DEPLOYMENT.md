@@ -26,6 +26,8 @@ architecture-beta
 - Subdomain dedicated for the OntoPuS instance (e.g. ontopus.example.com)
   - The subdomain hosts the administration frontend, administration API and some public endpoints (e.g. Widoco generated HTML documentation for the ontologies).
   - The subdomain **CAN NOT** be replaced with a path (e.g. example.com/ontopus is not allowed), subdomain is required and must not contain a base path (e.g. ontopus.example.com/base/path is not allowed)
+- [Optional] A subdomain/namespace for publicly accessible DCAT entities.
+  - The subdomain dedicated for the OntoPuS instance can also be used
 - [Optional] Existing [GraphDB](https://graphdb.ontotext.com/) server
 - [Optional] Existing reverse proxy server (e.g. Nginx, Apache) for SSL termination and routing
 

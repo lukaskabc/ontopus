@@ -18,6 +18,10 @@ services:
       # If you deploy using HTTP system URI but want to generate Widoco serialization links with HTTPS
       # ONTOPUS_PLUGIN_WIDOCO_FORCE_HTTPS_FOR_SERIALIZATION_LINKS: true
 
+      # Base URI which will be used for internal DCAT identifiers and at which the DCAT entities will be publicly available.
+      # Defaults to "${ONTOPUS_SYSTEM_URI}/dcat"
+      # ONTOPUS_DCAT_CATALOG_BASE_URI: "http://example.com/dcat"
+
     #    ports:
     #      - "8080:8080"
     read_only: true

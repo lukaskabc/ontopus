@@ -7,7 +7,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.condition.CompositeRequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -38,11 +37,13 @@ public class CatchAllRequestHandlerMapping extends RequestMappingHandlerMapping 
                     ResourceController.class.getMethod("getResource", MediaType[].class, HttpServletRequest.class);
 
             final RequestCondition<?> doesNotStartWithSystemUri =
-                    new NagatingRequestCondition(new RequestUrlStartsWith(ontopusConfig.getSystemUri()));
-            final RequestCondition<?> doesNotStartWithDcatUri = new NagatingRequestCondition(
-                    new RequestUrlStartsWith(ontopusConfig.getDcatCatalog().getBaseUri()));
-            final RequestCondition<?> combinedConditions =
-                    new CompositeRequestCondition(doesNotStartWithSystemUri, doesNotStartWithDcatUri);
+                    new RequestUrlStartsWith(ontopusConfig.getSystemUri());
+            final RequestCondition<?> doesNotStartWithDcatUri =
+                    new RequestUrlStartsWith(ontopusConfig.getDcatCatalog().getBaseUri());
+            final RequestCondition<?> doesNotStartWithHttpsDcatUri =
+                    new RequestUrlStartsWith(ontopusConfig.getDcatCatalog().getHttpsBaseUri());
+            final RequestCondition<?> combinedConditions = new NegatingRequestCondition(new OrRequestCondition(
+                    doesNotStartWithSystemUri, doesNotStartWithDcatUri, doesNotStartWithHttpsDcatUri));
 
             RequestMappingInfo mappingInfo = RequestMappingInfo.paths("/**")
                     .customCondition(combinedConditions)

@@ -240,6 +240,13 @@ public class OntopusConfig {
             return description;
         }
 
+        public URI getHttpsBaseUri() {
+            return UriComponentsBuilder.fromUri(getBaseUri())
+                    .scheme("https")
+                    .build()
+                    .toUri();
+        }
+
         public @Nullable String getLanguage() {
             return language;
         }

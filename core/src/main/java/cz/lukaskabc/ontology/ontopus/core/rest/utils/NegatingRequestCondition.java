@@ -7,25 +7,25 @@ import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import jakarta.servlet.http.HttpServletRequest;
 
 /** Negates the result of the wrapped request condition */
-public class NagatingRequestCondition implements RequestCondition<NagatingRequestCondition> {
+public class NegatingRequestCondition implements RequestCondition<NegatingRequestCondition> {
     private final RequestCondition<?> condition;
 
-    public NagatingRequestCondition(RequestCondition<?> condition) {
+    public NegatingRequestCondition(RequestCondition<?> condition) {
         this.condition = condition;
     }
 
     @Override
-    public @NonNull NagatingRequestCondition combine(@NonNull NagatingRequestCondition other) {
+    public @NonNull NegatingRequestCondition combine(@NonNull NegatingRequestCondition other) {
         throw new UnsupportedOperationException("Combining NotRequestCondition is not supported");
     }
 
     @Override
-    public int compareTo(@NonNull NagatingRequestCondition other, @NonNull HttpServletRequest request) {
+    public int compareTo(@NonNull NegatingRequestCondition other, @NonNull HttpServletRequest request) {
         throw new UnsupportedOperationException("Comparing NotRequestCondition is not supported");
     }
 
     @Override
-    public @Nullable NagatingRequestCondition getMatchingCondition(@NonNull HttpServletRequest request) {
+    public @Nullable NegatingRequestCondition getMatchingCondition(@NonNull HttpServletRequest request) {
         return condition.getMatchingCondition(request) == null ? this : null;
     }
 }

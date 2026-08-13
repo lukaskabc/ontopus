@@ -68,3 +68,28 @@ changelog:
         - type: deleteResource
           iri: "http://localhost/ontopus/catalog"
           graph: "http://ontology.lukaskabc.cz/application/ontopus/OntopusCatalog"
+
+  - changeSet:
+      # Remove catalog agent orphans
+      id: v0.1.0_06
+      changes:
+        - type: sparqlUpdate
+          query: |
+            PREFIX ontopus: <http://ontology.lukaskabc.cz/application/ontopus/>
+            PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+            
+            DELETE {
+              GRAPH ontopus:OntopusCatalog {
+              ?agent ?p ?s .
+              }
+            } WHERE {
+              GRAPH ontopus:OntopusCatalog {
+                ?catalog a ontopus:OntopusCatalog .
+                ?agent a foaf:Agent ;
+                ?p ?s .
+                
+                FILTER NOT EXISTS {
+                  ?catalog ?hasAgent ?agent .
+                }
+              }
+            }

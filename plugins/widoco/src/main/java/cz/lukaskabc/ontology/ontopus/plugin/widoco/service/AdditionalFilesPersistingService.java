@@ -74,7 +74,7 @@ public class AdditionalFilesPersistingService {
             ImportProcessContext context, URI property, Path ontologyFileDir, Path filesDestination) {
         final Set<Path> resolvedPaths = resolveProperty(context, property);
         for (Path path : resolvedPaths) {
-            final Path safeSource = FileUtils.resolvePath(ontologyFileDir, path);
+            final Path safeSource = FileUtils.resolvePath(context.getTempFolder(), ontologyFileDir, path);
             copyFile(safeSource, filesDestination.resolve(path));
         }
     }

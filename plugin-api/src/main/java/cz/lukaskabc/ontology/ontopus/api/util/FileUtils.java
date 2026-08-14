@@ -44,6 +44,28 @@ public class FileUtils {
      * @throws ValidationException if the resolved path escapes the base directory
      */
     public static Path resolvePath(final Path baseDirPath, final Path userPath) {
+        return resolvePath(baseDirPath, baseDirPath, userPath);
+    }
+
+    /**
+     * Resolves an untrusted user-specified path against the API's base directory. Paths that try to escape the absolute
+     * root directory are rejected.
+     *
+     * @param absoluteRoot the absolute path of the root directory that all user-specified paths should be within
+     * @param baseDirPath the absolute path against which the user path should be resolved
+     * @param userPath the untrusted path provided by the API user, expected to be relative to {@code baseDirPath} and
+     *     must not escape {@code absoluteRoot}
+     * @see <a href="https://stackoverflow.com/a/33084369/12690791">Author at StackOverflow</a>
+     * @throws ValidationException if the resolved path escapes the absolute root directory
+     */
+    public static Path resolvePath(final Path absoluteRoot, final Path baseDirPath, final Path userPath) {
+        if (!absoluteRoot.isAbsolute()) {
+            throw ValidationException.builder()
+                    .internalMessage("Root path must be absolute")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
+        }
+
         if (!baseDirPath.isAbsolute()) {
             throw ValidationException.builder()
                     .internalMessage("Base path must be absolute")
@@ -65,9 +87,9 @@ public class FileUtils {
 
         // Make sure the resulting path is still within the required directory.
         // (In the example above, "/foo/bar/attack" is not.)
-        if (!resolvedPath.startsWith(baseDirPath)) {
+        if (!resolvedPath.startsWith(absoluteRoot)) {
             throw ValidationException.builder()
-                    .internalMessage("User path escapes the base path")
+                    .internalMessage("User path escapes the absolute root directory")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
                     .build();
         }

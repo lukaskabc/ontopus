@@ -16,17 +16,22 @@ import java.util.stream.Stream;
 public class FileUtils {
     private static final Logger log = LogManager.getLogger(FileUtils.class);
 
+    /** Strips any root component, forcing the path to be relative. */
     public static Path forceRelativePath(String pathString) {
-        Objects.requireNonNull(pathString);
-        final Path path = Path.of(pathString);
-        if (path.startsWith("/") || path.startsWith("\\")) {
-            return Path.of("/").relativize(path);
+        Objects.requireNonNull(pathString, "pathString must not be null");
+        Path path = Path.of(pathString);
+
+        if (path.isAbsolute() || path.getRoot() != null) {
+            Path root = path.getRoot();
+            return root != null ? root.relativize(path) : path;
         }
+
         return path;
     }
 
     @MustBeClosed
     public static Stream<Path> listRecursively(Path directory) {
+        Objects.requireNonNull(directory, "directory must not be null");
         try {
             return Files.walk(directory);
         } catch (IOException e) {
@@ -59,6 +64,10 @@ public class FileUtils {
      * @throws ValidationException if the resolved path escapes the absolute root directory
      */
     public static Path resolvePath(final Path absoluteRoot, final Path baseDirPath, final Path userPath) {
+        Objects.requireNonNull(absoluteRoot, "absoluteRoot must not be null");
+        Objects.requireNonNull(baseDirPath, "baseDirPath must not be null");
+        Objects.requireNonNull(userPath, "userPath must not be null");
+
         if (!absoluteRoot.isAbsolute()) {
             throw ValidationException.builder()
                     .internalMessage("Root path must be absolute")
@@ -80,14 +89,25 @@ public class FileUtils {
                     .build();
         }
 
+        // Normalize roots and base paths to ensure consistent segment comparisons
+        final Path normalizedRoot = absoluteRoot.normalize();
+        final Path normalizedBase = baseDirPath.normalize();
+
+        if (!normalizedBase.startsWith(normalizedRoot)) {
+            throw ValidationException.builder()
+                    .internalMessage("Base directory is outside of the absolute root directory")
+                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                    .build();
+        }
+
         // Join the two paths together, then normalize so that any ".." elements
         // in the userPath can remove parts of baseDirPath.
         // (e.g. "/foo/bar/baz" + "../attack" -> "/foo/bar/attack")
-        final Path resolvedPath = baseDirPath.resolve(userPath).normalize();
+        final Path resolvedPath = normalizedBase.resolve(userPath).normalize();
 
         // Make sure the resulting path is still within the required directory.
         // (In the example above, "/foo/bar/attack" is not.)
-        if (!resolvedPath.startsWith(absoluteRoot)) {
+        if (!resolvedPath.startsWith(normalizedRoot)) {
             throw ValidationException.builder()
                     .internalMessage("User path escapes the absolute root directory")
                     .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)

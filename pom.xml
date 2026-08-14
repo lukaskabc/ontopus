@@ -40,7 +40,7 @@
         <jackson.annotations.version>2.22</jackson.annotations.version>
         <jackson.version>3.2.1</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.11.1</jopa.version>
+        <jopa.version>2.11.2</jopa.version>
         <nullaway.version>0.13.8</nullaway.version>
         <org.immutables.version>2.12.2</org.immutables.version>
         <rdf4j.version>5.3.2</rdf4j.version> <!-- TODO: update to 6.0.0 -->

@@ -12,9 +12,12 @@ services:
     domainname: "ontopus"
     ports:
       - "8080:8080"
+      - "5005:5005"
     depends_on:
       graphdb:
         condition: "service_healthy"
+    # Allows Java debugging
+    entrypoint: ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "./core.jar"]
     environment:
       # passthrough variables from .env file
       ONTOPUS_DATABASE_URL: "${ONTOPUS_DATABASE_URL}"

@@ -28,8 +28,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Adds {@code https://w3id.org/widoco/vocab#XXXXSerialization} properties to the ontology in order to document them
+ * using Widoco.
+ */
 @Service
-public class WidocoAnnotationsInjectionService implements OntologyAnnotationInjectionService {
+public class WidocoSerializationAnnotationsInjectionService implements OntologyAnnotationInjectionService {
     private static final Map<String, @Nullable String> WIDOCO_SERIALIZATION_TO_FILE_EXTENSION_MAP =
             Map.<String, @Nullable String>of(
                     Vocabulary.s_p_widoco_ntSerialization,
@@ -44,7 +48,8 @@ public class WidocoAnnotationsInjectionService implements OntologyAnnotationInje
     private final OntopusConfig ontopusConfig;
     private final WidocoPluginConfig widocoPluginConfig;
 
-    public WidocoAnnotationsInjectionService(OntopusConfig ontopusConfig, WidocoPluginConfig widocoPluginConfig) {
+    public WidocoSerializationAnnotationsInjectionService(
+            OntopusConfig ontopusConfig, WidocoPluginConfig widocoPluginConfig) {
         this.ontopusConfig = ontopusConfig;
         this.widocoPluginConfig = widocoPluginConfig;
     }

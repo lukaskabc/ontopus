@@ -42,6 +42,7 @@ public class WidocoService {
     private final OntologyToFileSerializationService ontologyToFileSerializationService;
 
     private final WidocoProcessExecutionService exceptionService;
+    private final AdditionalFilesPersistingService additionalFilesPersistingService;
 
     private final WidocoPluginConfig config;
     private final URI systemUri;
@@ -49,10 +50,12 @@ public class WidocoService {
     public WidocoService(
             OntologyToFileSerializationService ontologyToFileSerializationService,
             WidocoProcessExecutionService exceptionService,
+            AdditionalFilesPersistingService additionalFilesPersistingService,
             WidocoPluginConfig widocoConfig,
             OntopusConfig ontopusConfig) {
         this.ontologyToFileSerializationService = ontologyToFileSerializationService;
         this.exceptionService = exceptionService;
+        this.additionalFilesPersistingService = additionalFilesPersistingService;
         this.config = widocoConfig;
         this.systemUri = ontopusConfig.getSystemUri();
     }
@@ -128,6 +131,7 @@ public class WidocoService {
                 context.getFinalDatabaseContext().toString());
         final Path filesDestination = FileUtils.resolvePath(config.getFilesDirectory(), Path.of(persistentContext));
         try {
+            additionalFilesPersistingService.persistAdditionalFiles(context, widocoOutput);
             FileSystemUtils.deleteRecursively(filesDestination);
             FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
         } catch (IOException e) {

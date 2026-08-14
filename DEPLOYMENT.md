@@ -78,6 +78,45 @@ Currently, the server does not have a user management implemented, to change the
 
 7. Access the administration interface at the system URI (e.g. http://ontopus.example.com/admin) and log in with the created user
 
+## Reverse Proxy Servers
+When placing OntoPuS behind a reverse proxy servers, they need to properly add forward HTTP headers
+for ontopus to resolve URIs correctly.
+
+If using the [docker compose](./docker/docker-compose.yaml) with nginx, 
+make sure to update the [ontopus_proxy_pass.conf](./docker/nginx/includes/ontopus_proxy_pass.conf) based on your setup.
+
+**Proxy redirecting HTTP to HTTPS**  
+Proxy configuration redirecting from HTTP to HTTPS should add the following HTTP headers to
+accept any cross-origin and instruct browsers to upgrade insecure requests from HTTP to HTTPS.
+
+Note that requests going to OntoPuS are likely not exclusive to the OntoPuS system URI but also all your domains used in ontologies.
+```
+Access-Control-Allow-Origin "*"
+Content-Security-Policy "upgrade-insecure-requests"
+```
+
+**First proxy**  
+The first proxy that is being hit by the client (or other proxy depending on your setup that has the information from original request available)
+should also set the content security policy header for upgrading insecure requests,
+needs to set the forwarded protocol and port and needs to be configured to **preserve the original Host**.
+```
+Content-Security-Policy "upgrade-insecure-requests"
+X-Forwarded-Proto "https"
+X-Forwarded-Port "443"
+```
+Preserving original Host:
+```
+# Apache2:
+ProxyPreserveHost On
+
+# Nginx:
+proxy_set_header Host $http_host;
+```
+
+**Any other intermediate proxy**
+If there are multiple proxies the other between the first proxy and ontopus
+must not modify the forwarded headers and must also **preserve the original Host**
+
 ## Changing the user account password
 The password value uses bcrypt hash.
 The hash can be generated for example with [CyberChef](https://cyberchef.org/#recipe=Bcrypt(10)&input=YWJlY2VkYQ).

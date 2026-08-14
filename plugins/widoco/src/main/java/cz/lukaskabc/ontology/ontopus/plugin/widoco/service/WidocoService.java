@@ -131,9 +131,9 @@ public class WidocoService {
                 context.getFinalDatabaseContext().toString());
         final Path filesDestination = FileUtils.resolvePath(config.getFilesDirectory(), Path.of(persistentContext));
         try {
+            additionalFilesPersistingService.persistAdditionalFiles(context, widocoOutput);
             FileSystemUtils.deleteRecursively(filesDestination);
             FileSystemUtils.copyRecursively(widocoOutput, filesDestination);
-            additionalFilesPersistingService.persistAdditionalFiles(context, filesDestination);
         } catch (IOException e) {
             throw log.throwing(InternalException.builder()
                     .errorType(Vocabulary.u_i_ontopus_problem_file_processing)

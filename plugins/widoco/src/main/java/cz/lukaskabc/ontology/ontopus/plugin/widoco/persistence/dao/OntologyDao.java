@@ -93,4 +93,42 @@ public class OntologyDao {
                     log, "Failed to find value for subject " + subject + " and predicate " + predicate, e);
         }
     }
+
+    public void replaceObjectStringValue(
+            GraphURI graphURI, OntologyURI subject, ResourceURI predicate, String originalValue, String newValue) {
+        Objects.requireNonNull(graphURI);
+        Objects.requireNonNull(subject);
+        Objects.requireNonNull(originalValue);
+        Objects.requireNonNull(newValue);
+        try {
+            entityManager
+                    .createNativeQuery("""
+					    DELETE {
+					        GRAPH ?context {
+					            ?subject ?predicate ?oldValue .
+					        }
+					    } INSERT {
+					        GRAPH ?context {
+					            ?subject ?predicate ?newValue .
+					        }
+					    } WHERE {
+					        GRAPH ?context {
+					            ?subject ?predicate ?oldValue .
+					        }
+					    }
+					""")
+                    .setParameter("context", graphURI.toURI())
+                    .setParameter("subject", subject.toURI())
+                    .setParameter("predicate", predicate.toURI())
+                    .setParameter("oldValue", originalValue)
+                    .setParameter("newValue", newValue)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw AbstractDao.persistenceException(
+                    log,
+                    "Failed to replace object for triple <" + subject + "> <" + predicate + "> '" + originalValue
+                            + "' with '" + newValue + "'",
+                    e);
+        }
+    }
 }

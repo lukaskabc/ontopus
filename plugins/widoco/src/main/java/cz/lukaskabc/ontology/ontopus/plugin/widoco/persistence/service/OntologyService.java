@@ -19,4 +19,9 @@ public class OntologyService {
     public Set<String> findValue(GraphURI graphURI, OntologyURI subject, ResourceURI predicate) {
         return ontologyRepository.findValue(graphURI, subject, predicate);
     }
+
+    public void replaceObjectStringValue(
+            GraphURI graphURI, OntologyURI subject, ResourceURI predicate, String originalValue, String newValue) {
+        ontologyRepository.replaceObjectStringValue(graphURI, subject, predicate, originalValue, newValue);
+    }
 }

@@ -28,4 +28,10 @@ public class OntologyRepository {
     public Set<String> findValue(GraphURI graphURI, OntologyURI subject, ResourceURI predicate) {
         return dao.findValue(graphURI, subject, predicate);
     }
+
+    @Transactional
+    public void replaceObjectStringValue(
+            GraphURI graphURI, OntologyURI subject, ResourceURI predicate, String originalValue, String newValue) {
+        dao.replaceObjectStringValue(graphURI, subject, predicate, originalValue, newValue);
+    }
 }

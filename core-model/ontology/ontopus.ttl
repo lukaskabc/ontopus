@@ -26,10 +26,13 @@
                                                     <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.lukaskabc.cz/application/ontopus/" ;
                                                     sh:suggestedShapesGraph <http://ontology.lukaskabc.cz/application/ontopus/shacl> ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
+                                                    rdfs:comment "Ontologický Publikační Server"@cs ;
                                                     rdfs:label "OntoPuS" ;
+                                                    rdfs:label "OntoPuS"@cs ;
+                                                    rdfs:label "OntoPuS"@en ;
                                                     foaf:logo "../../administration-frontend/src/assets/logo.svg" ;
-                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.1.0> ;
-                                                    owl:versionInfo "Version 0.1.0"@en .
+                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.1.1> ;
+                                                    owl:versionInfo "Version 0.1.1"@en .
 
 hydra:Error a hydra:Class ;
     rdfs:label "Error" ;

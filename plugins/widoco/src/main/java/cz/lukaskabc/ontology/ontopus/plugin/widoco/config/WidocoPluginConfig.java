@@ -6,9 +6,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Validated
 @NullUnmarked
@@ -35,6 +39,20 @@ public class WidocoPluginConfig {
      */
     private boolean forceHttpsForSerializationLinks = false;
 
+    /**
+     * A list of ontology properties that may contain a relative file path that should be included in the resulting
+     * documentation.
+     */
+    private Set<URI> relativeFilePathProperties = Stream.of(
+                    // Diagram
+                    // https://dgarijo.github.io/Widoco/doc/bestPractices/index-en.html#diagram
+                    "http://schema.org/image", "http://xmlns.com/foaf/0.1/depiction",
+                    // Logo
+                    // https://dgarijo.github.io/Widoco/doc/bestPractices/index-en.html#logo
+                    "http://schema.org/logo", "http://xmlns.com/foaf/0.1/logo")
+            .map(URI::create)
+            .collect(Collectors.toSet());
+
     public String getDownloadUrl() {
         return downloadUrl;
     }
@@ -53,6 +71,10 @@ public class WidocoPluginConfig {
 
     public Path getPath() {
         return path;
+    }
+
+    public Set<URI> getRelativeFilePathProperties() {
+        return relativeFilePathProperties;
     }
 
     public boolean isForceHttpsForSerializationLinks() {
@@ -82,5 +104,9 @@ public class WidocoPluginConfig {
 
     public void setPath(Path path) {
         this.path = path.toAbsolutePath();
+    }
+
+    public void setRelativeFilePathProperties(Set<URI> relativeFilePathProperties) {
+        this.relativeFilePathProperties = relativeFilePathProperties;
     }
 }

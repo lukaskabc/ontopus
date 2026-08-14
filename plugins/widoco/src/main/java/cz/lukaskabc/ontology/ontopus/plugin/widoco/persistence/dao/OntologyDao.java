@@ -2,7 +2,10 @@ package cz.lukaskabc.ontology.ontopus.plugin.widoco.persistence.dao;
 
 import cz.cvut.kbss.jopa.model.EntityManager;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.GraphURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionArtifact_;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries_;
 import cz.lukaskabc.ontology.ontopus.core_model.persistence.dao.base.AbstractDao;
@@ -12,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class OntologyDao {
@@ -64,6 +69,28 @@ public class OntologyDao {
         } catch (Exception e) {
             throw AbstractDao.persistenceException(
                     log, "Failed to find a preferred namespace for ontology version " + versionURI, e);
+        }
+    }
+
+    public Set<String> findValue(GraphURI graphURI, OntologyURI subject, ResourceURI predicate) {
+        Objects.requireNonNull(graphURI);
+        Objects.requireNonNull(subject);
+        Objects.requireNonNull(predicate);
+        try {
+            return entityManager
+                    .createNativeQuery("""
+					    SELECT ?value FROM ?graph WHERE {
+					        ?subject ?predicate ?value .
+					    }
+					""", String.class)
+                    .setParameter("graph", graphURI.toURI())
+                    .setParameter("subject", subject.toURI())
+                    .setParameter("predicate", predicate.toURI())
+                    .getResultStream()
+                    .collect(Collectors.toSet());
+        } catch (Exception e) {
+            throw AbstractDao.persistenceException(
+                    log, "Failed to find value for subject " + subject + " and predicate " + predicate, e);
         }
     }
 }

@@ -27,6 +27,7 @@
                                                     sh:suggestedShapesGraph <http://ontology.lukaskabc.cz/application/ontopus/shacl> ;
                                                     rdfs:comment "Ontology Publication Server"@en ;
                                                     rdfs:label "OntoPuS" ;
+                                                    foaf:logo "../../administration-frontend/src/assets/logo.svg" ;
                                                     owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.1.0> ;
                                                     owl:versionInfo "Version 0.1.0"@en .
 

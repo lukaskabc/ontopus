@@ -41,6 +41,7 @@ public class FileUtils {
      * @param baseDirPath the absolute path of the base directory that all user-specified paths should be within
      * @param userPath the untrusted path provided by the API user, expected to be relative to {@code baseDirPath}
      * @see <a href="https://stackoverflow.com/a/33084369/12690791">Author at StackOverflow</a>
+     * @throws ValidationException if the resolved path escapes the base directory
      */
     public static Path resolvePath(final Path baseDirPath, final Path userPath) {
         if (!baseDirPath.isAbsolute()) {

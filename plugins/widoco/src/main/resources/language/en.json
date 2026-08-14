@@ -8,6 +8,7 @@
         "detailLog": "An error occurred during Widoco execution: {0}, the full log is accessible at {1}"
       },
       "persistOutput": "Failed to persist Widoco output",
+      "copyAdditionalFile": "Failed to copy additional Widoco file",
       "noWidocoOutputFolder": "Failed to resolve Widoco root output folder"
     },
     "service": {

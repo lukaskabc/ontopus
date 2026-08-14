@@ -10,6 +10,7 @@ services:
         condition: "service_healthy"
     environment:
       ONTOPUS_DATABASE_URL: "http://graphdb:7200/repositories/ontopus"
+
       ONTOPUS_SYSTEM_URI: "http://localhost" # base path is NOT allowed
 
       # Configure the publisher of the DCAT catalog

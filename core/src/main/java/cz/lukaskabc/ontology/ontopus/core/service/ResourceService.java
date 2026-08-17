@@ -23,6 +23,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingTyp
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -33,10 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.*;
 
 @Service
@@ -100,10 +98,11 @@ public class ResourceService {
     @Transactional(readOnly = true)
     public ResponseEntity<StreamingResponseBody> findResource(
             ResourceURI requestedResource, MediaType @Nullable [] requestedTypes) {
-        final Optional<MediaType> suffixType = resolveSuffixType(requestedResource);
+        final Optional<MediaType> suffixType = mediaTypeResolver.resolveSuffixType(requestedResource.toURI());
         final MediaType[] mediaTypes =
                 suffixType.map(type -> new MediaType[] {type}).orElse(requestedTypes);
-        final ResourceURI resourceURI = suffixType.isPresent() ? withoutSuffix(requestedResource) : requestedResource;
+        final ResourceURI resourceURI =
+                suffixType.isPresent() ? StringUtils.withoutSuffix(requestedResource) : requestedResource;
 
         replaceUniversalMediaType(mediaTypes);
 
@@ -211,15 +210,6 @@ public class ResourceService {
         return MappingType.RESOURCE;
     }
 
-    protected Optional<MediaType> resolveSuffixType(ResourceURI resourceURI) {
-        final String extension =
-                StringUtils.getFilenameExtension(resourceURI.toURI().getPath());
-        if (extension == null) {
-            return Optional.empty();
-        }
-        return mediaTypeResolver.resolveMediaType(extension);
-    }
-
     protected Map<String, MediaType> resolveSupportedFileExtensions(
             Collection<ControllerDescription> controllerDescriptions) {
         Map<String, MediaType> fileExtensions = new HashMap<>();
@@ -239,22 +229,5 @@ public class ResourceService {
             }
         }
         return fileExtensions;
-    }
-
-    protected ResourceURI withoutSuffix(ResourceURI resourceURI) {
-        final URI original = resourceURI.toURI();
-        final String fileExt = StringUtils.getFilenameExtension(original.getPath());
-        if (fileExt == null) {
-            return resourceURI;
-        }
-
-        String originalPath = original.getPath();
-        String newPath = originalPath.substring(0, originalPath.length() - fileExt.length() - 1);
-
-        URI newUri = UriComponentsBuilder.fromUri(original)
-                .replacePath(newPath)
-                .build()
-                .toUri();
-        return new ResourceURI(newUri);
     }
 }

@@ -32,7 +32,7 @@
                                                     rdfs:label "OntoPuS"@en ;
                                                     foaf:logo "../../administration-frontend/src/assets/logo.svg" ;
                                                     owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.1.1> ;
-                                                    owl:versionInfo "Version 0.1.1"@en .
+                                                    owl:versionInfo "Version 0.2.0"@en .
 
 hydra:Error a hydra:Class ;
     rdfs:label "Error" ;
@@ -95,6 +95,9 @@ ontopus:hasMapping rdf:type owl:ObjectProperty ;
                    rdfs:comment "A mapping of a webhook entry."@en ;
                    rdfs:label "Has mapping"@en .
 
+ontopus:hasAlias rdf:type owl:ObjectProperty ;
+                   rdfs:comment "A mapping of an URI to an alias."@en ;
+                   rdfs:label "Has alias"@en .
 
 #################################################################
 #    Data properties
@@ -191,6 +194,10 @@ ontopus:VersionSeries rdf:type owl:Class ;
                                       ] ;
                       rdfs:comment "Dataset series of ontology artifacts representing different versions of a single ontology"@en ;
                       rdfs:label "Ontology version series"@en .
+
+ontopus:URIAliasMapping rdf:type owl:Class ;
+                      rdfs:comment "Maps a URI matching a Regex pattern to its alias"@en ;
+                      rdfs:label "URI Alias Mapping"@en .
 
 ###  http://ontology.lukaskabc.cz/application/ontopus/Webhook
 ontopus:Webhook rdf:type owl:Class ;

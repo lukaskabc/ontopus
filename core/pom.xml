@@ -203,6 +203,10 @@
             <dependencies>
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>alias-plugin</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
                     <artifactId>file-upload-plugin</artifactId>
                 </dependency>
                 <dependency>

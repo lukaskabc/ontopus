@@ -15,6 +15,21 @@ public abstract class BaseDaoTest extends DaoTestRunner {
     @Autowired
     protected EntityManager em;
 
+    /** Asks whether the given triple exists in the given graph. */
+    protected boolean tripleExists(Object subject, Object predicate, Object object, Object graph) {
+        return transactional(em.createNativeQuery("""
+				    ASK {
+				        GRAPH ?graph {
+				            ?subject ?predicate ?object
+				        }
+				    }
+				""", Boolean.class)
+                .setParameter("graph", graph)
+                .setParameter("subject", subject)
+                .setParameter("predicate", predicate)
+                .setParameter("object", object)::getSingleResult);
+    }
+
     /**
      * Persists given statements
      *

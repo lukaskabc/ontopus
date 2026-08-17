@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.util.function.Supplier;
+
 public abstract class TransactionalRunner {
     @Autowired
     protected PlatformTransactionManager txManager;
@@ -16,5 +18,9 @@ public abstract class TransactionalRunner {
 
     protected void transactional(Runnable procedure) {
         new TransactionTemplate(txManager).executeWithoutResult(_ -> procedure.run());
+    }
+
+    protected <T> T transactional(Supplier<T> procedure) {
+        return new TransactionTemplate(txManager).execute(_ -> procedure.get());
     }
 }

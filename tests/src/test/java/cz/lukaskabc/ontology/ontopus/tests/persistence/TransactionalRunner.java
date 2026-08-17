@@ -25,4 +25,8 @@ public abstract class TransactionalRunner {
     protected void transactional(Runnable procedure) {
         new TransactionTemplate(txManager).executeWithoutResult(_ -> procedure.run());
     }
+
+    protected <T> T transactional(Supplier<T> procedure) {
+        return new TransactionTemplate(txManager).execute(_ -> procedure.get());
+    }
 }

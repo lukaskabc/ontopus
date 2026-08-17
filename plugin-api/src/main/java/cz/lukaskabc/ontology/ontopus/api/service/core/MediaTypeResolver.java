@@ -2,7 +2,9 @@ package cz.lukaskabc.ontology.ontopus.api.service.core;
 
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +29,16 @@ public interface MediaTypeResolver {
      * @return the media type if resolved
      */
     Optional<MediaType> resolveMediaType(String fileExtension);
+
+    /**
+     * Tries to resolve the file extension of the URI.
+     *
+     * @param uri the URI to search file extension for
+     * @return resolved MediaType
+     */
+    default Optional<MediaType> resolveSuffixType(URI uri) {
+        final String extension = StringUtils.getFilenameExtension(uri.getPath());
+
+        return Optional.ofNullable(extension).flatMap(this::resolveMediaType);
+    }
 }

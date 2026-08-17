@@ -1,10 +1,12 @@
 package cz.lukaskabc.ontology.ontopus.core_model.util;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
+import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.lang.Contract;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -121,6 +123,32 @@ public class StringUtils extends org.springframework.util.StringUtils {
         final String deduplicated = MINUS_PLUS.matcher(formatted).replaceAll("-");
 
         return StringUtils.sanitize(deduplicated);
+    }
+
+    /** @see #withoutSuffix(URI) */
+    public static ResourceURI withoutSuffix(ResourceURI original) {
+        return new ResourceURI(withoutSuffix(original.toURI()));
+    }
+
+    /**
+     * Removes the file extension from the URI.
+     *
+     * @param original the URI from which the extension should be removed
+     * @return URI with file extension removed
+     */
+    public static URI withoutSuffix(URI original) {
+        final String fileExt = org.springframework.util.StringUtils.getFilenameExtension(original.getPath());
+        if (fileExt == null) {
+            return original;
+        }
+
+        String originalPath = original.getPath();
+        String newPath = originalPath.substring(0, originalPath.length() - fileExt.length() - 1);
+
+        return UriComponentsBuilder.fromUri(original)
+                .replacePath(newPath)
+                .build()
+                .toUri();
     }
 
     /**

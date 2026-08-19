@@ -1,0 +1,19 @@
+{
+  "ontopus.plugin.alias": {
+    "uri-alias-mapping": {
+      "title": "URI Aliases",
+      "description": "OntoPuS will redirect incoming requests according to the aliases specified below.  \n`Resource -> Alias`  \nThe resource must not match any identifier which exists in a published ontology.",
+      "items.fields": {
+        "title": "Alias",
+        "resource": {
+          "title": "Resource",
+          "placeholder": "The resource that should be redirected."
+        },
+        "alias": {
+          "title": "Destination",
+          "placeholder": "Where should request be redirected."
+        }
+      }
+    }
+  }
+}

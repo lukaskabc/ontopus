@@ -1,0 +1,19 @@
+{
+  "$translationRoot": "ontopus.plugin.alias.uri-alias-mapping",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "resource": {
+        "type": "string"
+      },
+      "alias": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "resource",
+      "alias"
+    ]
+  }
+}

@@ -67,6 +67,9 @@ ENTRYPOINT ["java", \
 "-XX:+UseStringDeduplication", \
 "-jar", "./core.jar"]
 
+HEALTHCHECK --interval=15s --timeout=5s --start-period=15s \
+    CMD ["sh", "-c", "wget -q -T 5 --spider --header \"Host: $(echo $ONTOPUS_SYSTEM_URI | awk -F/ '{print \\$3}')\" http://127.0.0.1:$SERVER_PORT/dcat/catalog"]
+
 FROM ontopus-base AS ontopus-base-fe
 # OntoPuS Core, Core model, plugin API and frontend, with no additional plugins
 USER ontopus:ontopus

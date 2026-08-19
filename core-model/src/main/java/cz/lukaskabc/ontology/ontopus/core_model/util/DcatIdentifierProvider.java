@@ -13,6 +13,10 @@ import java.util.UUID;
 
 @Component
 public class DcatIdentifierProvider {
+    public static final String CATALOG_PATH = "/catalog";
+    public static final String VERSION_SERIES_PATH = "/version-series/";
+    public static final String VERSION_ARTIFACT_PATH = "/version-artifact/";
+
     private static void requireNotBlank(String string, String valueName) {
         if (!StringUtils.hasText(string)) {
             throw new IdentifierGenerationException("Given string value cannot be blank!", valueName);
@@ -38,7 +42,7 @@ public class DcatIdentifierProvider {
 
     public OntopusCatalogURI getCatalogUri() {
         final URI uri =
-                UriComponentsBuilder.fromUri(baseUri).path("/catalog").build().toUri();
+                UriComponentsBuilder.fromUri(baseUri).path(CATALOG_PATH).build().toUri();
         return new OntopusCatalogURI(uri);
     }
 
@@ -49,7 +53,7 @@ public class DcatIdentifierProvider {
         final String safeLabel = StringUtils.sanitize(title);
         final String safeVersion = StringUtils.sanitize(version);
         final URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .path("/version-artifact/")
+                .path(VERSION_ARTIFACT_PATH)
                 .path(safeLabel)
                 .path("/")
                 .path(safeVersion)
@@ -65,7 +69,7 @@ public class DcatIdentifierProvider {
         final UUID uuid = uuidFor(ontologyURI);
         final String safeLabel = StringUtils.sanitize(title);
         final URI uri = UriComponentsBuilder.fromUri(baseUri)
-                .path("/version-series/")
+                .path(VERSION_SERIES_PATH)
                 .path(safeLabel)
                 .path("/")
                 .path(uuid.toString())

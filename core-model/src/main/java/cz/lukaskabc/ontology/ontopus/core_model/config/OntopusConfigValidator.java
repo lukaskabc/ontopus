@@ -1,7 +1,10 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
+import org.springframework.web.util.UriComponentsBuilder;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.net.URI;
 import java.util.Objects;
 
 public class OntopusConfigValidator implements ConstraintValidator<ValidOntopusConfig, OntopusConfig> {
@@ -19,6 +22,10 @@ public class OntopusConfigValidator implements ConstraintValidator<ValidOntopusC
         return true;
     }
 
+    private boolean ensureURIHasNoTrailingSlash(URI uri) {
+        return !UriComponentsBuilder.fromUri(uri).fragment(null).toUriString().endsWith("/");
+    }
+
     /**
      * Implements the validation logic. The state of {@code value} must not be altered.
      *
@@ -31,6 +38,8 @@ public class OntopusConfigValidator implements ConstraintValidator<ValidOntopusC
     @Override
     public boolean isValid(OntopusConfig value, ConstraintValidatorContext context) {
         Objects.requireNonNull(value, "OntopusConfig must not be null");
-        return ensureDcatUriIsNotSystemUriPrefix(value, context);
+        return ensureDcatUriIsNotSystemUriPrefix(value, context)
+                && ensureURIHasNoTrailingSlash(value.getSystemUri())
+                && ensureURIHasNoTrailingSlash(value.getDcatCatalog().getBaseUri());
     }
 }

@@ -14,8 +14,8 @@
     <!--
     This module generates the documentation for the project
     Execute with:
-        compile -Pconfiguration-doc -pl config-doc-gen -am
-    Dont mind the compilation failure, check the generated CONFIGURATION.md file in the root of the project
+        compile -pl config-doc-gen -am -Pconfiguration-doc -Dmaven.test.skip=true -Dmaven.build.cache.enabled=false
+    Check the generated CONFIGURATION.md file in the root of the project
     -->
 
     <profiles>
@@ -34,6 +34,17 @@
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus</groupId>
                     <artifactId>model</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus</groupId>
+                    <artifactId>plugin-api</artifactId>
+                </dependency>
+
+                <!-- When adding new project to document, add dependency here -->
+                <!-- and add source in build-helper-maven-plugin plugin below! -->
+                <dependency>
+                    <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
+                    <artifactId>alias-plugin</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>cz.lukaskabc.ontology.ontopus.plugin</groupId>
@@ -61,6 +72,8 @@
                                     <sources>
                                         <source>../core/src/main/java</source>
                                         <source>../core-model/src/main/java</source>
+
+                                        <source>../plugins/alias/src/main/java</source>
                                         <source>../plugins/widoco/src/main/java</source>
                                         <source>../plugins/git/src/main/java</source>
                                     </sources>

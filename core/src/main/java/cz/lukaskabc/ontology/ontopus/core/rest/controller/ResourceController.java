@@ -6,6 +6,8 @@ import cz.lukaskabc.ontology.ontopus.core.service.ResourceService;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.ResourceURI;
 import cz.lukaskabc.ontology.ontopus.core_model.util.VaryHeaderBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Primary;
@@ -27,6 +29,7 @@ import java.time.Duration;
 @NullMarked
 @Controller
 public class ResourceController {
+    private static final Logger log = LogManager.getLogger(ResourceController.class);
     private final ResourceService resourceService;
     private final Duration cacheControlMaxAge;
 
@@ -64,6 +67,8 @@ public class ResourceController {
             HttpServletRequest request) {
         final String decodedUrl = decodeUrl(request);
         final ResourceURI requestedURI = new ResourceURI(decodedUrl);
+
+        log.debug("Processing request for resource: <{}>", requestedURI);
 
         final ResponseEntity<? extends StreamingResponseBody> response =
                 resourceService.findResource(requestedURI, requestedTypes);

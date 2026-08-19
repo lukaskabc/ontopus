@@ -20,6 +20,7 @@
 | ```ONTOPUS_DEFAULT_MAX_PAGE_SIZE``` | Default value: ```100```<br>0 < value |
 | ```ONTOPUS_FILES_DEFAULT_GLOB_PATTERN``` | Default value: ```**.{nt,rdf,ttl,trig,trigs,brf,ttls}``` |
 | ```ONTOPUS_FRONTEND_INDEX_FILE``` |  |
+| ```ONTOPUS_PLUGIN_ALIAS_GLOBAL_ALIASES``` | Global URI aliases that should be always registered.<p>By default, maps the System URI, DCAT base URI, and the DCAT base URI with '/version-series' and<br>'/version-artifact' suffixes to the DCAT catalog URI (DCAT base URI + '/catalog').<br>Default value: ```Redirects root system URI and root of DCAT entities identifiers to DCAT catalog.``` |
 | ```ONTOPUS_PLUGIN_GIT_TIMEOUT``` | Default value: ```15``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL``` | Default value: ```https://github.com/dgarijo/Widoco/releases/download/v{version}/widoco-{version}-jar-with-dependencies_JDK-17.jar``` |
 | ```ONTOPUS_PLUGIN_WIDOCO_DOWNLOAD_URL_PARAMETERS``` | Widoco version to automatically download<br>Default value: ```Map.of("version", "1.4.25")``` |

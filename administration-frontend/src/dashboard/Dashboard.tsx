@@ -61,7 +61,7 @@ export default function Dashboard() {
     >
       <TransparentPaper>
         <DialogsProvider>
-          <Container maxWidth="lg" sx={{ mt: 5 }}>
+          <Container maxWidth="lg" sx={{ my: 5 }}>
             <AlertErrorsStack>
               <Switch>
                 <Route path={'/ontologies'} nest>

@@ -92,12 +92,7 @@ export default function PublishStepper({ params }: PublishStepperProps) {
         <AlertErrorsStack>
           <PromiseArea area={PUBLISH_STEPPER_IMPORT_FORM_PROMISE_AREA}>
             <StagedForm key={'PublishStepper-StagedForm' + stagedFormElementKey} resetForm={onImportProcessReset}>
-              <Button
-                variant={'outlined'}
-                color={'error'}
-                style={{ display: 'block', marginLeft: 'auto' }}
-                onClick={onAbort}
-              >
+              <Button variant={'outlined'} color={'error'} style={{ transform: 'translateY(-100%)' }} onClick={onAbort}>
                 {t('publish.button.abort')}
               </Button>
             </StagedForm>

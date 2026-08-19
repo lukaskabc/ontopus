@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
+import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -110,7 +111,11 @@ public class OntopusConfig {
     }
 
     public void setSystemUri(URI systemUri) {
-        this.systemUri = systemUri;
+        if (systemUri.toString().endsWith("/")) {
+            this.systemUri = StringUtils.withoutTrailingSlash(systemUri);
+        } else {
+            this.systemUri = systemUri;
+        }
     }
 
     public static class Database {
@@ -279,8 +284,8 @@ public class OntopusConfig {
                 throw new InitializationException("DCAT base URI must not contain a fragment!");
             }
 
-            if (!baseUri.toString().endsWith("/")) {
-                baseUri = URI.create(baseUri + "/");
+            if (baseUri.toString().endsWith("/")) {
+                baseUri = StringUtils.withoutTrailingSlash(baseUri);
             }
 
             this.baseUri = baseUri;

@@ -117,7 +117,20 @@ public class AdditionalFilesAnnotationInjectionService implements OntologyAnnota
         return FileUtils.forceRelativePath(sourceStr.substring(commonPrefix));
     }
 
-    protected Set<Path> resolveProperty(ImportProcessContext context, URI property) {
+    @Nullable protected Path resolvePathInContext(String path, ImportProcessContext context) {
+        try {
+            final Path filePath = Path.of(path);
+            final Path safeSource = FileUtils.resolvePath(context.getTempFolder(), filePath);
+            if (safeSource.toFile().isFile()) {
+                return filePath;
+            }
+        } catch (Exception e) {
+            // fail to resolve path results in null returned
+        }
+        return null;
+    }
+
+    Set<Path> resolveProperty(ImportProcessContext context, URI property) {
         return ontologyService
                 .findValue(
                         context.getTemporaryDatabaseContext(),
@@ -125,13 +138,14 @@ public class AdditionalFilesAnnotationInjectionService implements OntologyAnnota
                         new ResourceURI(property))
                 .stream()
                 .map(str -> {
-                    try {
-
-                        return Path.of(str);
-                    } catch (Exception e) {
-                        log.debug("Skipping ontology property <{}>, invalid path: '{}'", property, str);
-                        return null;
+                    final Path resolvedPath = resolvePathInContext(str, context);
+                    if (resolvedPath == null) {
+                        log.debug(
+                                "Skipping ontology property <{}>, failed to resolve path to a local file: {}",
+                                property,
+                                str);
                     }
+                    return resolvedPath;
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());

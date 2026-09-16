@@ -1,0 +1,24 @@
+{
+  "ui:enableMarkdownInDescription": true,
+  "ui:orderable": false,
+  "items": {
+    "ui:field": "LayoutGridField",
+    "ui:layoutGrid": {
+      "ui:row": {
+        "spacing": 2,
+        "className": "row",
+        "children": [
+          {
+            "ui:columns": {
+              "size": 6,
+              "children": [
+                "resource",
+                "alias"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

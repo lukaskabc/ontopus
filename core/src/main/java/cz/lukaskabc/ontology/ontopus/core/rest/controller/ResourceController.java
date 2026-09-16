@@ -9,12 +9,10 @@ import cz.lukaskabc.ontology.ontopus.core_model.util.VaryHeaderBuilder;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
@@ -62,8 +60,7 @@ public class ResourceController {
     public ResponseEntity<StreamingResponseBodyAdapter> getResource(
             @RequestHeader(name = "Accept", required = false) MediaType @Nullable [] requestedTypes,
             HttpServletRequest request) {
-        final String decodedUrl = decodeUrl(request);
-        final ResourceURI requestedURI = new ResourceURI(decodedUrl);
+        final ResourceURI requestedURI = getResourceURI(request);
 
         final ResponseEntity<? extends StreamingResponseBody> response =
                 resourceService.findResource(requestedURI, requestedTypes);
@@ -89,5 +86,14 @@ public class ResourceController {
         }
 
         return ResponseEntity.status(response.getStatusCode()).headers(headers).body(adaptedBody);
+    }
+
+    private ResourceURI getResourceURI(HttpServletRequest request) {
+        try {
+            final String decodedUrl = decodeUrl(request);
+            return new ResourceURI(decodedUrl);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

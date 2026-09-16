@@ -21,12 +21,14 @@ import FileField from '@/publish/fields/FileField.tsx'
 import VersionUriField from '@/publish/fields/VersionUriField.tsx'
 import MultilingualStringField from '@/publish/fields/MultilingualStringField.tsx'
 import AutocompleteWidget from '@/publish/widgets/AutocompleteWidget.tsx'
+import LayoutGridField from '@/publish/fields/LayoutGridField.tsx'
 
 const WIDGETS: RegistryWidgetsType = {
   autocompleteWidget: AutocompleteWidget,
 }
 
 const FIELDS: RegistryFieldsType = {
+  LayoutGridField,
   fileField: FileField,
   versionUriField: VersionUriField,
   multilingualStringField: MultilingualStringField,

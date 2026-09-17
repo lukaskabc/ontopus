@@ -5,7 +5,7 @@
       "description": "OntoPuS will redirect incoming requests according to the aliases specified below.  \n`Resource -> Alias`  \nThe resource must not match any identifier which exists in a published ontology.",
       "fields": {
         "configuredAliases": {
-          "title": "Application-configured aliases",
+          "title": "Application aliases",
           "description": "These aliases are configured in the application configuration and cannot be changed through the UI.",
           "items.title": "Configured alias",
           "items.fields": {
@@ -18,7 +18,8 @@
           }
         },
         "aliases": {
-          "title": "Editable aliases",
+          "title": "Aliases",
+          "description": "Global resource aliases. The application will redirect requests for matching resources to the specified destinations. Every address is normalized to 'http' scheme without trailing slash and fragments. Fragments (parts of the URI after '#') are never sent to the server by clients.",
           "items.title": "Alias",
           "items.fields": {
             "resource": {

@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Repository
 public class URIAliasMappingRepository {
@@ -19,6 +21,17 @@ public class URIAliasMappingRepository {
     @Transactional
     public Optional<URI> findAliasFor(URI resource) {
         return Optional.ofNullable(dao.findAliasFor(resource));
+    }
+
+    @Transactional
+    public Stream<URIAliasMapping> findAll() {
+        return dao.findAll();
+    }
+
+    @Transactional
+    public void replaceAll(Set<URIAliasMapping> mappings) {
+        dao.removeAll();
+        mappings.forEach(this::save);
     }
 
     @Transactional

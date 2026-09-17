@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @SparqlResultSetMapping(
         name = URIAliasMappingDao.URI_ALIAS_MAPPING_NAME,
@@ -47,6 +48,32 @@ public class URIAliasMappingDao {
                 .setParameter("context", CONTEXT)
                 .setParameter("hasAlias", Vocabulary.u_p_ontopus_hasAlias)
                 .setParameter("resource", resource)::getSingleResult);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Stream<URIAliasMapping> findAll() {
+        try {
+            return em.createNativeQuery("""
+					    SELECT ?resource ?alias FROM ?context WHERE {
+					        ?resource ?hasAlias ?alias .
+					    }
+					""", URI_ALIAS_MAPPING_NAME)
+                    .setParameter("context", CONTEXT)
+                    .setParameter("hasAlias", Vocabulary.u_p_ontopus_hasAlias)
+                    .getResultStream();
+        } catch (Exception e) {
+            throw AbstractDao.persistenceException(log, "Failed to fetch URI alias mappings", e);
+        }
+    }
+
+    public void removeAll() {
+        try {
+            em.createNativeQuery("DROP GRAPH ?context")
+                    .setParameter("context", CONTEXT)
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw AbstractDao.persistenceException(log, "Failed to remove all URI Alias Mappings", e);
+        }
     }
 
     public void save(URIAliasMapping aliasMapping) {

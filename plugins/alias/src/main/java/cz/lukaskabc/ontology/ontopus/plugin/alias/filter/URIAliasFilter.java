@@ -2,6 +2,7 @@ package cz.lukaskabc.ontology.ontopus.plugin.alias.filter;
 
 import cz.lukaskabc.ontology.ontopus.api.service.core.MediaTypeResolver;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.core_model.util.UriUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.alias.persistence.service.AliasService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -40,7 +41,7 @@ public class URIAliasFilter extends OncePerRequestFilter {
         final Optional<String> fileSuffix = getFileSuffix(requested);
 
         if (fileSuffix.isPresent()) {
-            requested = StringUtils.withoutSuffix(requested);
+            requested = UriUtils.withoutSuffix(requested);
         }
 
         final Optional<URI> alias = aliasService.findAliasFor(requested);

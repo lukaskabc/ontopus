@@ -1,7 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.core_model.config;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
-import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.core_model.util.UriUtils;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -112,7 +112,7 @@ public class OntopusConfig {
 
     public void setSystemUri(URI systemUri) {
         if (systemUri.toString().endsWith("/")) {
-            this.systemUri = StringUtils.withoutTrailingSlash(systemUri);
+            this.systemUri = UriUtils.withoutTrailingSlash(systemUri);
         } else {
             this.systemUri = systemUri;
         }
@@ -285,7 +285,7 @@ public class OntopusConfig {
             }
 
             if (baseUri.toString().endsWith("/")) {
-                baseUri = StringUtils.withoutTrailingSlash(baseUri);
+                baseUri = UriUtils.withoutTrailingSlash(baseUri);
             }
 
             this.baseUri = baseUri;

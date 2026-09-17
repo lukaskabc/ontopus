@@ -23,7 +23,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.request_mapping.MappingTyp
 import cz.lukaskabc.ontology.ontopus.core_model.service.ContextToControllerMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.ResourceInContextMappingService;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
-import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
+import cz.lukaskabc.ontology.ontopus.core_model.util.UriUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -102,7 +102,7 @@ public class ResourceService {
         final MediaType[] mediaTypes =
                 suffixType.map(type -> new MediaType[] {type}).orElse(requestedTypes);
         final ResourceURI resourceURI =
-                suffixType.isPresent() ? StringUtils.withoutSuffix(requestedResource) : requestedResource;
+                suffixType.isPresent() ? UriUtils.withoutSuffix(requestedResource) : requestedResource;
 
         replaceUniversalMediaType(mediaTypes);
 

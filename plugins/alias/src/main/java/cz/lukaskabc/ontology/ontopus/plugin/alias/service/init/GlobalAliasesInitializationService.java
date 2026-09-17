@@ -24,7 +24,7 @@ public class GlobalAliasesInitializationService implements InitializationService
     public void initialize() {
         if (!config.getGlobalAliases().isEmpty()) {
             log.debug("Registering global URI aliases...");
-            config.getGlobalAliases().forEach(aliasService::createTemporaryMapping);
+            config.getGlobalAliases().forEach(aliasService::createStaticMapping);
         }
     }
 }

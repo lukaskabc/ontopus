@@ -1,19 +1,42 @@
 {
   "$translationRoot": "ontopus.plugin.alias.uri-alias-mapping",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "resource": {
-        "type": "string"
-      },
-      "alias": {
-        "type": "string"
+  "type": "object",
+  "properties": {
+    "configuredAliases": {
+      "type": "array",
+      "readOnly": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "string"
+          },
+          "alias": {
+            "type": "string"
+          }
+        }
       }
     },
-    "required": [
-      "resource",
-      "alias"
-    ]
-  }
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "string"
+          },
+          "alias": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resource",
+          "alias"
+        ]
+      }
+    }
+  },
+  "required": [
+    "aliases"
+  ]
 }

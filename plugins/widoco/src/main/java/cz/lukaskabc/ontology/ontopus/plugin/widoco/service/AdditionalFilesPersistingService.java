@@ -27,11 +27,14 @@ public class AdditionalFilesPersistingService {
     private static final Logger log = LogManager.getLogger(AdditionalFilesPersistingService.class);
     public static final Object FILE_PATHS_ADDITIONAL_PROPERTY = new Object();
 
-    protected void copyFile(Path source, Path destinationDirectory) {
-        log.trace("Moving additional file from {} to {}", source, destinationDirectory);
+    protected void copyFile(Path source, Path destination) {
+        log.trace("Copying additional file from {} to {}", source, destination);
         try {
-            Files.createDirectories(destinationDirectory);
-            Files.copy(source, destinationDirectory, StandardCopyOption.REPLACE_EXISTING, LinkOption.NOFOLLOW_LINKS);
+            final Path destinationDirectory = destination.getParent();
+            if (destinationDirectory != null) {
+                Files.createDirectories(destinationDirectory);
+            }
+            Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING, LinkOption.NOFOLLOW_LINKS);
         } catch (IOException e) {
             throw log.throwing(InternalException.builder()
                     .errorType(Vocabulary.u_i_ontopus_problem_file_processing)

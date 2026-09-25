@@ -197,6 +197,16 @@ ontopus:Webhook rdf:type owl:Class ;
                      rdfs:comment "A webhook configuration for a version series."@en ;
                      rdfs:label "Webhook"@en .
 
+###  http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitHub
+<http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitHub> rdf:type owl:Class ;
+                     rdfs:comment "A GitHub webhook configuration."@en ;
+                     rdfs:label "GitHub Webhook"@en .
+
+###  http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitLab
+<http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitLab> rdf:type owl:Class ;
+                     rdfs:comment "A GitLab webhook configuration."@en ;
+                     rdfs:label "GitLab Webhook"@en .
+
 ###  http://ontology.lukaskabc.cz/application/ontopus/ProblemDetail
 ontopus:ProblemDetail rdf:type owl:Class ;
                       rdfs:subClassOf hydra:Error ;

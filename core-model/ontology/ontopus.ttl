@@ -30,9 +30,9 @@
                                                     rdfs:label "OntoPuS" ;
                                                     rdfs:label "OntoPuS"@cs ;
                                                     rdfs:label "OntoPuS"@en ;
-                                                    foaf:logo "../../administration-frontend/src/assets/logo.svg" ;
-                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.1.1> ;
-                                                    owl:versionInfo "Version 0.1.1"@en .
+                                                    <http://schema.org/logo> "../../administration-frontend/src/assets/logo.svg" ;
+                                                    owl:versionIRI <http://ontology.lukaskabc.cz/application/ontopus/0.3.0> ;
+                                                    owl:versionInfo "Version 0.3.0"@en .
 
 hydra:Error a hydra:Class ;
     rdfs:label "Error" ;
@@ -194,18 +194,20 @@ ontopus:VersionSeries rdf:type owl:Class ;
 
 ###  http://ontology.lukaskabc.cz/application/ontopus/Webhook
 ontopus:Webhook rdf:type owl:Class ;
-                     rdfs:comment "A webhook configuration for a version series."@en ;
-                     rdfs:label "Webhook"@en .
+                rdfs:comment "A webhook configuration for a version series."@en ;
+                rdfs:label "Webhook"@en .
 
 ###  http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitHub
 <http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitHub> rdf:type owl:Class ;
-                     rdfs:comment "A GitHub webhook configuration."@en ;
-                     rdfs:label "GitHub Webhook"@en .
+                                                                  rdfs:subClassOf ontopus:Webhook ;
+                                                                  rdfs:comment "A GitHub webhook configuration."@en ;
+                                                                  rdfs:label "GitHub Webhook"@en .
 
 ###  http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitLab
 <http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitLab> rdf:type owl:Class ;
-                     rdfs:comment "A GitLab webhook configuration."@en ;
-                     rdfs:label "GitLab Webhook"@en .
+                                                                  rdfs:subClassOf ontopus:Webhook ;
+                                                                  rdfs:comment "A GitLab webhook configuration."@en ;
+                                                                  rdfs:label "GitLab Webhook"@en .
 
 ###  http://ontology.lukaskabc.cz/application/ontopus/ProblemDetail
 ontopus:ProblemDetail rdf:type owl:Class ;

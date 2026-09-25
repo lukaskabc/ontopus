@@ -8,7 +8,9 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.VersionSeries;
 import cz.lukaskabc.ontology.ontopus.core_model.model.util.ImportProcessContextRequest;
 import cz.lukaskabc.ontology.ontopus.core_model.service.VersionSeriesService;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.GitWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
+import cz.lukaskabc.ontology.ontopus.plugin.git.model.GitlabWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +26,7 @@ import java.util.concurrent.Future;
 public class WebhookHandler {
     private static final Logger log = LogManager.getLogger(WebhookHandler.class);
 
-    private static boolean refDoesNotMatch(GithubWebhook webhook, @Nullable String ref) {
+    private static boolean refDoesNotMatch(GitWebhook<?> webhook, @Nullable String ref) {
         if (webhook.getRef() == null) {
             return false;
         }
@@ -59,17 +61,26 @@ public class WebhookHandler {
     }
 
     public ResponseEntity<Void> handleGHEvent(GithubWebhook webhook, GithubPushEvent pushEvent) {
-        if (pushEvent.getRef() == null) {
-            log.warn("Received push event with null ref, ignoring");
+        return handlePushEvent(webhook, pushEvent.getRef(), "GitHub");
+    }
+
+    public ResponseEntity<Void> handleGLEvent(GitlabWebhook webhook, @Nullable String ref) {
+        return handlePushEvent(webhook, ref, "GitLab");
+    }
+
+    private ResponseEntity<Void> handlePushEvent(GitWebhook<?> webhook, @Nullable String ref, String provider) {
+        if (ref == null) {
+            log.warn("Received {} push event with null ref, ignoring", provider);
             return ResponseEntity.noContent().build();
         }
-        if (refDoesNotMatch(webhook, pushEvent.getRef())) {
+        if (refDoesNotMatch(webhook, ref)) {
             log.debug(
-                    "Received push event with ref '{}' that does not match required pattern, ignoring",
-                    pushEvent.getRef());
+                    "Received {} push event with ref '{}' that does not match required pattern, ignoring",
+                    provider,
+                    ref);
             return ResponseEntity.noContent().build();
         }
-        log.info("Received push event with ref '{}'", pushEvent.getRef());
+        log.info("Received {} push event with ref '{}'", provider, ref);
         initiateImport(webhook.getVersionSeries());
         return ResponseEntity.accepted().build();
     }

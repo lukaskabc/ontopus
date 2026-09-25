@@ -1,19 +1,18 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
 import cz.lukaskabc.ontology.ontopus.core_model.exception.*;
-import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubPushEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubRefEventBase;
+import cz.lukaskabc.ontology.ontopus.plugin.git.webhook.AbstractWebhookController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +23,6 @@ import tools.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -39,11 +36,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 @RestController
 @RequestMapping(GithubWebhookController.PATH)
-public class GithubWebhookController {
+public class GithubWebhookController extends AbstractWebhookController<GithubWebhookURI, GithubWebhook> {
     public static final String PATH = "/public/plugin/git/webhook/github";
-    private static final int MAX_GH_PAYLOAD = 1; // payloads are capped at 25 MB, allowing 1 MB at most, only small
-    // events should be sent
-    private static final int REQUEST_BODY_CACHE_LIMIT = MAX_GH_PAYLOAD * 1024 * 1024; // bytes
     private static final String SIGNATURE_HEADER_PREFIX = "sha256=";
     private static final Logger log = LogManager.getLogger(GithubWebhookController.class);
     private static final String ALGORITHM = "HmacSHA256";
@@ -80,21 +74,10 @@ public class GithubWebhookController {
             boolean isSignatureValid = MessageDigest.isEqual(expectedSignature, eventSignature);
 
             if (!isSignatureValid) {
-                throw OntopusSecurityException.builder()
-                        .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
-                        .internalMessage("Invalid X-Hub-Signature-256")
-                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                        .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
-                        .build();
+                throw invalidSignature("Invalid X-Hub-Signature-256");
             }
         } catch (InvalidKeyException e) {
-            throw OntopusSecurityException.builder()
-                    .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
-                    .internalMessage("Failed to calculate webhook signature")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
-                    .cause(e)
-                    .build();
+            throw invalidSignature("Failed to calculate webhook signature", e);
         }
     }
 
@@ -103,28 +86,15 @@ public class GithubWebhookController {
                 || secret.isEmpty()
                 || eventSignature == null
                 || !eventSignature.startsWith(SIGNATURE_HEADER_PREFIX)) {
-            throw OntopusSecurityException.builder()
-                    .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
-                    .internalMessage("Missing X-Hub-Signature-256 or invalid signature header")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature")
-                    .build();
+            throw invalidSignature("Missing X-Hub-Signature-256 or invalid signature header");
         }
         final byte[] signature = HexFormat.of().parseHex(eventSignature.substring(SIGNATURE_HEADER_PREFIX.length()));
         validate(signature, secret, bodyBuffer);
     }
 
-    private final WebhookHandler webhookHandler;
-
-    private final ObjectMapper objectMapper;
-
-    private final GithubWebhookService service;
-
     public GithubWebhookController(
             WebhookHandler webhookHandler, ObjectMapper objectMapper, GithubWebhookService service) {
-        this.webhookHandler = webhookHandler;
-        this.objectMapper = objectMapper;
-        this.service = service;
+        super(webhookHandler, objectMapper, service, log, "GithubWebhook");
     }
 
     @Operation(
@@ -142,14 +112,7 @@ public class GithubWebhookController {
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Void> handleEvent(
             @RequestParam("series") VersionSeriesURI series, HttpServletRequest httpRequest) throws Exception {
-        if (httpRequest.getContentLength() > REQUEST_BODY_CACHE_LIMIT || httpRequest.getContentLength() < 0) {
-            throw ValidationExceptionBuilderStages.start()
-                    .statusCode(HttpStatus.BAD_REQUEST)
-                    .errorType(Vocabulary.u_i_ontopus_problem_too_large)
-                    .internalMessage("Request body is too large")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .build();
-        }
+        validateContentLength(httpRequest);
 
         final GithubEvent type = getEventType(httpRequest);
         if (type == null) {
@@ -160,23 +123,9 @@ public class GithubWebhookController {
                     .build();
         }
 
-        final GithubWebhook webhook = service.findByVersionSeries(series)
-                .orElseThrow(() -> log.throwing(NotFoundException.builder()
-                        .internalMessage("GithubWebhook is not configured for version series " + series)
-                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                        .build()));
-        final ByteBuffer bodyBuffer =
-                ByteBuffer.allocate(Math.min(httpRequest.getContentLength(), REQUEST_BODY_CACHE_LIMIT));
-
-        try (final ReadableByteChannel bodyChannel = Channels.newChannel(httpRequest.getInputStream())) {
-            int added;
-            do {
-                added = bodyChannel.read(bodyBuffer);
-            } while (added > 0 && bodyBuffer.hasRemaining());
-            bodyBuffer.flip();
-        }
-
-        validateRequest(httpRequest, webhook, bodyBuffer);
+        ValidatedRequest<GithubWebhook> validatedRequest = prepareRequest(series, httpRequest);
+        GithubWebhook webhook = validatedRequest.webhook();
+        ByteBuffer bodyBuffer = validatedRequest.body();
 
         return switch (type) {
             case CREATE -> handleGHEvent(bodyBuffer, webhook, GithubCreateEvent.class, webhookHandler::handleGHEvent);
@@ -195,15 +144,12 @@ public class GithubWebhookController {
                 webhook.getEvent().name(),
                 webhook.getVersionSeries());
 
-        final T payload = objectMapper.readValue(
-                bodyBuffer.array(),
-                bodyBuffer.arrayOffset() + bodyBuffer.position(),
-                bodyBuffer.remaining(),
-                payloadClass);
+        final T payload = readPayload(bodyBuffer, payloadClass);
         return handler.apply(webhook, payload);
     }
 
-    private void validateRequest(HttpServletRequest request, GithubWebhook webhook, ByteBuffer bodyBuffer)
+    @Override
+    protected void validateRequest(HttpServletRequest request, GithubWebhook webhook, ByteBuffer bodyBuffer)
             throws Exception {
         final String secret = webhook.getSecret();
         final String eventSignature = request.getHeader("X-Hub-Signature-256");

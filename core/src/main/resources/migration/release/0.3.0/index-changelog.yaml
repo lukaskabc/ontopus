@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kbss-cvut/ontology-migration-tool/refs/heads/main/src/main/resources/changelog-scheme.json
+
+changelog:
+  - changeSet:
+      id: v0.3.0_00
+      changes:
+        # Rename generic Webhook class to specific GitHub webhook class
+        - type: renameResource
+          graph: "http://ontology.lukaskabc.cz/application/ontopus/Webhook"
+          oldIri: "http://ontology.lukaskabc.cz/application/ontopus/Webhook"
+          newIri: "http://ontology.lukaskabc.cz/application/ontopus/Webhook/GitHub"
+

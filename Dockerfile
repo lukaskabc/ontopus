@@ -12,7 +12,8 @@ RUN npm ci
 
 COPY administration-frontend .
 
-RUN npm run build -- --base=/admin/
+ARG ONTOPUS_VERSION
+RUN VITE_ONTOPUS_VERSION="${ONTOPUS_VERSION}" npm run build -- --base=/admin/
 
 FROM maven:3-eclipse-temurin-25-alpine AS backend
 

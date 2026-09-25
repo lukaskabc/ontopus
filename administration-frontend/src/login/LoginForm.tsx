@@ -11,8 +11,20 @@ import { useTranslation } from 'react-i18next'
 import type { AuthResponse } from '@toolpad/core'
 import { useLocation } from '@/utils/hooks.ts'
 import AlertErrorsStack from '@/components/AlertErrorsStack.tsx'
+import Typography from '@mui/material/Typography'
+import Constants from '@/Constants.ts'
 
 const credentialsProvider = { id: 'credentials', name: 'Username and Password' }
+
+function LoginFooter() {
+  const { t } = useTranslation()
+
+  return (
+    <Typography component={'footer'} variant={'body2'} color={'textSecondary'} style={{ height: 0 }}>
+      {t('login.version', { version: Constants.APPLICATION_VERSION })}
+    </Typography>
+  )
+}
 
 export default function LoginForm() {
   const { t, i18n } = useTranslation()
@@ -56,6 +68,7 @@ export default function LoginForm() {
           slots={{
             passwordField: PasswordField,
             emailField: UsernameField,
+            signUpLink: LoginFooter,
           }}
           slotProps={{
             submitButton: {

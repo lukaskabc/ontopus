@@ -23,6 +23,7 @@
   "login": {
     "error": "Login failed. Please check your credentials and try again.",
     "button.submit": "Login",
+    "version": "v{{version}}",
     "field": {
       "password.title": "Password",
       "username.title": "Username"

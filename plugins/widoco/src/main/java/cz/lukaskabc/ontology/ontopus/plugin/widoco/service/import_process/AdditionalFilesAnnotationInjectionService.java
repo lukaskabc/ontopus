@@ -120,7 +120,15 @@ public class AdditionalFilesAnnotationInjectionService implements OntologyAnnota
     @Nullable protected Path resolvePathInContext(String path, ImportProcessContext context) {
         try {
             final Path filePath = Path.of(path);
-            final Path safeSource = FileUtils.resolvePath(context.getTempFolder(), filePath);
+            final Path tempFolder = context.getTempFolder();
+            final Path ontologyFile = context.getOntologyFilePath();
+            final Path baseDirectory = ontologyFile == null
+                    ? tempFolder
+                    : ontologyFile.toFile().isFile()
+                            ? Objects.requireNonNull(
+                                    ontologyFile.getParent(), "Ontology file does not have a parent directory")
+                            : ontologyFile;
+            final Path safeSource = FileUtils.resolvePath(tempFolder, baseDirectory, filePath);
             if (safeSource.toFile().isFile()) {
                 return filePath;
             }

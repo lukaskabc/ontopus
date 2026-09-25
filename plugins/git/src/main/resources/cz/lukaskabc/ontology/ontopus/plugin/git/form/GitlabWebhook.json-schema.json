@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "webhook": {
+      "$translationRoot": "ontopus.plugin.git.webhook.gitlab",
+      "type": "array",
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "null",
+            "description": ""
+          },
+          "uri": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "content-type": {
+            "type": "string",
+            "const": "application/json"
+          },
+          "secret": {
+            "type": "string",
+            "pattern": "^whsec_.+"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "PUSH",
+              "TAG_PUSH"
+            ]
+          },
+          "ref": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "required": [
+          "secret",
+          "event"
+        ]
+      }
+    }
+  }
+}

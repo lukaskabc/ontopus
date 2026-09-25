@@ -1,30 +1,13 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
-import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
-import cz.lukaskabc.ontology.ontopus.core_model.service.base.BaseService;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.persistence.repository.GithubWebhookRepository;
+import cz.lukaskabc.ontology.ontopus.plugin.git.webhook.WebhookService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
-public class GithubWebhookService extends BaseService<GithubWebhookURI, GithubWebhook, GithubWebhookRepository> {
+public class GithubWebhookService extends WebhookService<GithubWebhookURI, GithubWebhook, GithubWebhookRepository> {
     public GithubWebhookService(GithubWebhookRepository repository) {
         super(repository);
-    }
-
-    @Transactional
-    public void deleteByVersionSeries(VersionSeriesURI artifactIdentifier) {
-        final GithubWebhook toDelete =
-                repository.findByVersionSeries(artifactIdentifier).orElseThrow();
-        Objects.requireNonNull(toDelete.getIdentifier(), "GithubWebhook identifier must not be null");
-        repository.deleteById(toDelete.getIdentifier());
-    }
-
-    public Optional<GithubWebhook> findByVersionSeries(VersionSeriesURI versionSeriesURI) {
-        return repository.findByVersionSeries(versionSeriesURI);
     }
 }

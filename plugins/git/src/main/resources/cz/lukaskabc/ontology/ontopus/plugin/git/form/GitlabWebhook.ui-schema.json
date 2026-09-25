@@ -19,13 +19,7 @@
       "event": {
         "ui:enumNames": {
           "PUSH": "Push",
-          "CREATE": "Create"
-        }
-      },
-      "refType": {
-        "ui:enumNames": {
-          "BRANCH": "Branch",
-          "TAG": "Tag"
+          "TAG_PUSH": "Tag push"
         }
       }
     }

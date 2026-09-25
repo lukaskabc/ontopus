@@ -1,19 +1,17 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.gitlab;
 
-import cz.lukaskabc.ontology.ontopus.core_model.exception.*;
-import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.core_model.util.StringUtils;
 import cz.lukaskabc.ontology.ontopus.plugin.git.github.WebhookHandler;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GitlabWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.gitlab.GitlabEvent;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.gitlab.GitlabPushEvent;
+import cz.lukaskabc.ontology.ontopus.plugin.git.webhook.AbstractWebhookController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.Nullable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,20 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 import tools.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.time.Duration;
 import java.util.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 @RestController
 @RequestMapping(GitlabWebhookController.PATH)
-public class GitlabWebhookController {
+public class GitlabWebhookController extends AbstractWebhookController<GitlabWebhookURI, GitlabWebhook> {
     public static final String PATH = "/public/plugin/git/webhook/gitlab";
     static final String ID_HEADER = "webhook-id";
     static final String TIMESTAMP_HEADER = "webhook-timestamp";
@@ -44,8 +38,6 @@ public class GitlabWebhookController {
     private static final String EVENT_HEADER = "x-gitlab-event";
     private static final String SIGNING_TOKEN_PREFIX = "whsec_";
     private static final String SIGNATURE_PREFIX = "v1,";
-    private static final Duration TIMESTAMP_TOLERANCE = Duration.ofMinutes(5);
-    private static final int REQUEST_BODY_CACHE_LIMIT = 1024 * 1024;
     private static final Logger log = LogManager.getLogger(GitlabWebhookController.class);
 
     static byte[] computeSignatureBytes(String signingToken, String messageId, String timestamp, ByteBuffer body)
@@ -60,36 +52,6 @@ public class GitlabWebhookController {
         hmac.update(body);
         body.rewind();
         return hmac.doFinal();
-    }
-
-    private static OntopusSecurityException invalidSignature(String message) {
-        return invalidSignature(message, null);
-    }
-
-    private static OntopusSecurityException invalidSignature(String message, @Nullable Exception cause) {
-        var builder = OntopusSecurityException.builder()
-                .errorType(Vocabulary.u_i_ontopus_problem_invalid_signature)
-                .internalMessage(message)
-                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                .titleMessageCode("ontopus.plugin.git.error.security.invalid-signature");
-
-        if (cause != null) {
-            builder.cause(cause);
-        }
-
-        return builder.build();
-    }
-
-    private static ByteBuffer readBody(HttpServletRequest request) throws IOException {
-        ByteBuffer body = ByteBuffer.allocate(Math.min(request.getContentLength(), REQUEST_BODY_CACHE_LIMIT));
-        try (ReadableByteChannel channel = Channels.newChannel(request.getInputStream())) {
-            int read;
-            do {
-                read = channel.read(body);
-            } while (read > 0 && body.hasRemaining());
-            body.flip();
-        }
-        return body;
     }
 
     static void validateEventSignature(
@@ -120,26 +82,9 @@ public class GitlabWebhookController {
         }
     }
 
-    private static void validateRequest(HttpServletRequest request, GitlabWebhook webhook, ByteBuffer bodyBuffer) {
-        validateEventSignature(
-                webhook.getSecret(),
-                request.getHeader(ID_HEADER),
-                request.getHeader(TIMESTAMP_HEADER),
-                request.getHeader(SIGNATURE_HEADER),
-                bodyBuffer);
-    }
-
-    private final WebhookHandler webhookHandler;
-
-    private final ObjectMapper objectMapper;
-
-    private final GitlabWebhookService service;
-
     public GitlabWebhookController(
             WebhookHandler webhookHandler, ObjectMapper objectMapper, GitlabWebhookService service) {
-        this.webhookHandler = webhookHandler;
-        this.objectMapper = objectMapper;
-        this.service = service;
+        super(webhookHandler, objectMapper, service, log, "GitlabWebhook");
     }
 
     @Operation(
@@ -156,24 +101,11 @@ public class GitlabWebhookController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> handleEvent(@RequestParam("series") VersionSeriesURI series, HttpServletRequest request)
             throws Exception {
-        if (request.getContentLength() > REQUEST_BODY_CACHE_LIMIT || request.getContentLength() < 0) {
-            throw ValidationExceptionBuilderStages.start()
-                    .statusCode(HttpStatus.BAD_REQUEST)
-                    .errorType(Vocabulary.u_i_ontopus_problem_too_large)
-                    .internalMessage("Request body is too large")
-                    .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                    .build();
-        }
+        validateContentLength(request);
 
-        GitlabWebhook webhook = service.findByVersionSeries(series)
-                .orElseThrow(() -> log.throwing(NotFoundException.builder()
-                        .internalMessage("GitlabWebhook is not configured for version series " + series)
-                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                        .build()));
-
-        final ByteBuffer body = readBody(request);
-
-        validateRequest(request, webhook, body);
+        ValidatedRequest<GitlabWebhook> validatedRequest = prepareRequest(series, request);
+        GitlabWebhook webhook = validatedRequest.webhook();
+        ByteBuffer body = validatedRequest.body();
 
         GitlabEvent event = GitlabEvent.fromHeader(request.getHeader(EVENT_HEADER));
         if (event == null) {
@@ -181,9 +113,18 @@ public class GitlabWebhookController {
         }
         if (event != webhook.getEvent()) return ResponseEntity.noContent().build();
 
-        GitlabPushEvent payload = objectMapper.readValue(
-                body.array(), body.arrayOffset() + body.position(), body.remaining(), GitlabPushEvent.class);
+        GitlabPushEvent payload = readPayload(body, GitlabPushEvent.class);
 
         return webhookHandler.handleGLEvent(webhook, payload.getRef());
+    }
+
+    @Override
+    protected void validateRequest(HttpServletRequest request, GitlabWebhook webhook, ByteBuffer bodyBuffer) {
+        validateEventSignature(
+                webhook.getSecret(),
+                request.getHeader(ID_HEADER),
+                request.getHeader(TIMESTAMP_HEADER),
+                request.getHeader(SIGNATURE_HEADER),
+                bodyBuffer);
     }
 }

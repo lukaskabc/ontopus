@@ -367,6 +367,10 @@ ontopus-problem:too-large rdf:type ontopus:ProblemDetail ;
                              rdfs:label "Too large"@en ;
                              rdfs:comment "The submitted request is too large to process."@en .
 
+ontopus-problem:length-required rdf:type ontopus:ProblemDetail ;
+                             rdfs:label "Length required"@en ;
+                             rdfs:comment "The server requires the content length."@en .
+
 ontopus-problem:id-generation rdf:type ontopus:ProblemDetail ;
                              rdfs:label "ID generation error"@en ;
                              rdfs:comment "Failed to generate a new unique identifier for an entity."@en .

@@ -1,5 +1,6 @@
 package cz.lukaskabc.ontology.ontopus.tests.plugin.alias.persistence.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -7,11 +8,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import cz.lukaskabc.ontology.ontopus.plugin.alias.model.URIAliasMapping;
 import cz.lukaskabc.ontology.ontopus.plugin.alias.persistence.dao.URIAliasMappingDao;
 import cz.lukaskabc.ontology.ontopus.tests.persistence.BaseDaoTest;
+import cz.lukaskabc.ontology.ontopus.tests.util.EntityGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
+import java.util.List;
 
 @Import(URIAliasMappingDao.class)
 public class URIAliasMappingDaoTest extends BaseDaoTest {
@@ -31,6 +35,26 @@ public class URIAliasMappingDaoTest extends BaseDaoTest {
 
         final URI alias = transactional(() -> sut.findAliasFor(URI.create("http://example.com/resource")));
         assertEquals(mapping.getAlias(), alias);
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @Test
+    void findAllReturnsAllMappings() {
+        List<URIAliasMapping> mappings = EntityGenerator.aliasMappings();
+
+        transactional(() -> mappings.forEach(sut::save));
+
+        assertThat(sut.findAll()).containsExactlyInAnyOrderElementsOf(mappings);
+    }
+
+    @Test
+    void removeAllRemovesAllMappings() {
+        List<URIAliasMapping> mappings = EntityGenerator.aliasMappings();
+
+        transactional(() -> mappings.forEach(sut::save));
+        transactional(() -> sut.removeAll());
+
+        assertThat(sut.findAll()).isEmpty();
     }
 
     @Test

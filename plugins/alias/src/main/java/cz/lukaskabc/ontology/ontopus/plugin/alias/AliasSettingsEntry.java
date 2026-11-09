@@ -21,10 +21,10 @@ import java.util.Set;
 @Component
 public class AliasSettingsEntry implements SettingsEntry {
     private static JsonForm makeJsonForm() {
-        final JsonNode schema =
-                JsonResourceLoader.loadJsonSchema(URIAliasPlugin.FORMS_PATH, URIAliasMapping.class.getSimpleName());
-        final JsonNode uiSchema =
-                JsonResourceLoader.loadUiSchema(URIAliasPlugin.FORMS_PATH, URIAliasMapping.class.getSimpleName());
+        final JsonNode schema = JsonResourceLoader.loadJsonSchema(
+                URIAliasPlugin.FORM_RESOURCE_PATH, URIAliasMapping.class.getSimpleName());
+        final JsonNode uiSchema = JsonResourceLoader.loadUiSchema(
+                URIAliasPlugin.FORM_RESOURCE_PATH, URIAliasMapping.class.getSimpleName());
         return new JsonForm(schema, uiSchema, null);
     }
 

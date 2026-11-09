@@ -11,7 +11,7 @@ services:
     hostname: "ontopus"
     domainname: "ontopus"
     ports:
-      - "8080:8080"
+      - "${SERVER_PORT}:8080"
       - "5005:5005"
     depends_on:
       graphdb:

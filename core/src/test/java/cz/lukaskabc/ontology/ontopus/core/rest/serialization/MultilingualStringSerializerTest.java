@@ -36,9 +36,7 @@ class MultilingualStringSerializerTest {
         final JsonNode node = mapper.readTree(json);
 
         assertEquals("Hello", node.get("en").asString());
-        assertEquals(
-                "Fallback",
-                node.get(MultilingualStringDeserializer.NO_LANGUAGE_KEY).asString());
+        assertEquals("Fallback", node.get(MultilingualString.NO_LANG).asString());
         assertEquals(2, node.size());
     }
 
@@ -64,16 +62,13 @@ class MultilingualStringSerializerTest {
         final String json = mapper.writeValueAsString(value);
         final JsonNode node = mapper.readTree(json);
 
-        assertTrue(node.has(MultilingualStringDeserializer.NO_LANGUAGE_KEY));
-        assertEquals(
-                "no language tag",
-                node.get(MultilingualStringDeserializer.NO_LANGUAGE_KEY).asString());
+        assertTrue(node.has(MultilingualString.NO_LANG));
+        assertEquals("no language tag", node.get(MultilingualString.NO_LANG).asString());
     }
 
     @BeforeEach
     void setUp() {
         SimpleModule module = new SimpleModule();
-        module.addSerializer(MultilingualString.class, new MultilingualStringSerializer());
         mapper = JsonMapper.builder().addModule(module).build();
     }
 

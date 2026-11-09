@@ -6,7 +6,8 @@ import java.util.List;
 
 /** Allows specifying global URI to URI alias mappings */
 public class URIAliasPlugin implements Plugin {
-    public static final String FORMS_PATH = "form";
+    public static final String RESOURCE_PATH = "cz/lukaskabc/ontology/ontopus/plugin/alias";
+    public static final String FORM_RESOURCE_PATH = RESOURCE_PATH + "/form";
     /**
      * List of packages that should be scanned by JOPA for entity declarations.
      *

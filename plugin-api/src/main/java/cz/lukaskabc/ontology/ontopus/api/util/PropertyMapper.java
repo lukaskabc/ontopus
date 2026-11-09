@@ -50,7 +50,7 @@ public class PropertyMapper {
             return !StringUtils.hasText(sequence);
         }
         if (value instanceof MultilingualString multilingualString) {
-            return multilingualString.getValue().isEmpty();
+            return multilingualString.isEmpty();
         }
         return value == null;
     }
@@ -71,7 +71,7 @@ public class PropertyMapper {
             current = new MultilingualString();
         }
 
-        current.getValue().putAll(multilingualString.getValue());
+        current.putAll(multilingualString);
 
         setter.accept(current);
     }

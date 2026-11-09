@@ -37,17 +37,17 @@
         <spotless.ratchetFrom>HEAD</spotless.ratchetFrom>
 
         <!-- Dependency versions -->
-        <error-prone.version>2.50.0</error-prone.version>
+        <error-prone.version>2.52.0</error-prone.version>
         <jackson.annotations.version>2.22</jackson.annotations.version>
-        <jackson.version>3.2.1</jackson.version>
+        <jackson.version>3.2.4</jackson.version>
         <java.version>25</java.version>
-        <jopa.version>2.11.2</jopa.version>
-        <nullaway.version>0.13.8</nullaway.version>
-        <org.immutables.version>2.12.2</org.immutables.version>
-        <rdf4j.version>5.3.2</rdf4j.version> <!-- TODO: update to 6.0.0 -->
-        <spring.boot.version>4.1.0</spring.boot.version>
-        <jopa.spring.transactions.version>0.5.0</jopa.spring.transactions.version>
-        <spring.doc.version>3.0.3</spring.doc.version>
+        <jopa.version>3.0.0</jopa.version>
+        <nullaway.version>0.14.3</nullaway.version>
+        <org.immutables.version>2.12.3</org.immutables.version>
+        <rdf4j.version>6.1.0</rdf4j.version>
+        <spring.boot.version>4.1.2</spring.boot.version>
+        <jopa.spring.transactions.version>0.6.0</jopa.spring.transactions.version>
+        <spring.doc.version>3.2.0</spring.doc.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
     </properties>
     <!-- spotless:on -->
@@ -304,7 +304,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.15.0</version>
+                    <version>3.16.0</version>
                     <configuration>
                         <!-- Fork must be true for Java 16+ JVM args to be passed to Javac properly -->
                         <fork>true</fork>
@@ -387,7 +387,7 @@
                 <!-- https://github.com/diffplug/spotless/tree/main/plugin-maven -->
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.11.0</version>
                 <configuration>
                     <ratchetFrom>${spotless.ratchetFrom}</ratchetFrom>
                     <formats>

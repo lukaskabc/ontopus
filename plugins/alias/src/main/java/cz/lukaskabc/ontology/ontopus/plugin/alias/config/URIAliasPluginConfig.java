@@ -21,7 +21,7 @@ public class URIAliasPluginConfig {
         final URI dcatUri = config.getDcatCatalog().getBaseUri();
         final URI catalog = URI.create(dcatUri + DcatIdentifierProvider.CATALOG_PATH);
         Map<URI, URI> aliases = new HashMap<>();
-        aliases.put(config.getSystemUri(), catalog);
+        aliases.put(config.getSystemUri(), URI.create(config.getSystemUri() + "/admin"));
         aliases.put(dcatUri, catalog);
         aliases.put(URI.create(dcatUri + DcatIdentifierProvider.VERSION_SERIES_PATH), catalog);
         aliases.put(URI.create(dcatUri + DcatIdentifierProvider.VERSION_ARTIFACT_PATH), catalog);

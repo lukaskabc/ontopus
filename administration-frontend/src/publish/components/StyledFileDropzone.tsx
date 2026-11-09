@@ -1,4 +1,4 @@
-import type { FunctionComponent } from 'preact'
+import type { FunctionComponent, InputHTMLAttributes } from 'preact'
 import { type DropzoneOptions, useDropzone } from 'react-dropzone'
 import { useMemo } from 'preact/hooks'
 import { type Theme } from '@mui/material'
@@ -65,7 +65,7 @@ export const StyledFileDropzone: FunctionComponent<StyledFileDropzoneProps> = (p
 
   return (
     <div {...getRootProps({ style })}>
-      <input {...getInputProps()} />
+      <input {...(getInputProps() as InputHTMLAttributes)} />
       <CloudUploadIcon fontSize={'large'} color={'primary'} />
       <p style={{ textAlign: 'center' }}>
         {props.text}

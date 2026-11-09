@@ -33,7 +33,7 @@ function OptionalErrorTypeLink({ error, children }: HasErrorProp & HasChildren) 
 }
 
 function ErrorAlertTitle({ error }: HasErrorProp) {
-  let title = null
+  let title
   if (error instanceof OntopusProblemDetail && error.title) {
     title = error.title
   } else {

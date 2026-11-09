@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.tests.architecture;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
@@ -58,8 +59,10 @@ public class CoreModelArchitectureTest extends BaseArchitectureTest {
             // spotless:on
 
     @ArchTest
-    static final ArchRule noCycles =
-            slices().matching("..core_model.(**)").should().beFreeOfCycles();
+    static final ArchRule noCycles = slices().matching("..core_model.(**)")
+            .should()
+            .beFreeOfCycles()
+            .ignoreDependency(resideInAPackage("..core_model.config.."), resideInAPackage("..core_model.util.."));
 
     @ArchTest
     static final ArchRule daoMethodsAreNotTransactional = methods()

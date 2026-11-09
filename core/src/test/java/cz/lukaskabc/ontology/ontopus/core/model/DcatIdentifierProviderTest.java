@@ -7,13 +7,14 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.OntologyVersionURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionArtifactURI;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
+import cz.lukaskabc.ontology.ontopus.core_model.util.DcatIdentifierProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
 class DcatIdentifierProviderTest {
-    private cz.lukaskabc.ontology.ontopus.core_model.util.DcatIdentifierProvider provider;
+    private DcatIdentifierProvider provider;
 
     @Test
     void getVersionArtifactUriReturnsStableIdentifier() {
@@ -49,6 +50,6 @@ class DcatIdentifierProviderTest {
     void setUp() {
         OntopusConfig config = new OntopusConfig();
         config.getDcatCatalog().setBaseUri(URI.create("http://example.com/my/path"));
-        provider = new cz.lukaskabc.ontology.ontopus.core_model.util.DcatIdentifierProvider(config);
+        provider = new DcatIdentifierProvider(config);
     }
 }

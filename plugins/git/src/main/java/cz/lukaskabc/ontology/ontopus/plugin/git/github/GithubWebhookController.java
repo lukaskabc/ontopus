@@ -1,6 +1,7 @@
 package cz.lukaskabc.ontology.ontopus.plugin.git.github;
 
-import cz.lukaskabc.ontology.ontopus.core_model.exception.*;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.OntopusException;
+import cz.lukaskabc.ontology.ontopus.core_model.exception.ValidationException;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.GithubWebhook;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.github.GithubCreateEvent;
@@ -94,7 +95,7 @@ public class GithubWebhookController extends AbstractWebhookController<GithubWeb
 
     public GithubWebhookController(
             WebhookHandler webhookHandler, ObjectMapper objectMapper, GithubWebhookService service) {
-        super(webhookHandler, objectMapper, service, log, "GithubWebhook");
+        super(webhookHandler, objectMapper, service, "GithubWebhook");
     }
 
     @Operation(

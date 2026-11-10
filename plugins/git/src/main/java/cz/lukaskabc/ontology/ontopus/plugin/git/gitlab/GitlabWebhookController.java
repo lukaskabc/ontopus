@@ -84,7 +84,7 @@ public class GitlabWebhookController extends AbstractWebhookController<GitlabWeb
 
     public GitlabWebhookController(
             WebhookHandler webhookHandler, ObjectMapper objectMapper, GitlabWebhookService service) {
-        super(webhookHandler, objectMapper, service, log, "GitlabWebhook");
+        super(webhookHandler, objectMapper, service, "GitlabWebhook");
     }
 
     @Operation(

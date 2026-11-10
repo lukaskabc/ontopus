@@ -9,7 +9,6 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.TypedIdentifier;
 import cz.lukaskabc.ontology.ontopus.core_model.model.id.VersionSeriesURI;
 import cz.lukaskabc.ontology.ontopus.plugin.git.github.WebhookHandler;
 import cz.lukaskabc.ontology.ontopus.plugin.git.model.Webhook;
-import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import tools.jackson.databind.ObjectMapper;
@@ -57,29 +56,25 @@ public abstract class AbstractWebhookController<I extends TypedIdentifier, W ext
 
     private final ObjectMapper objectMapper;
     private final WebhookService<I, W, ?> service;
-    private final Logger log;
     private final String webhookType;
 
     protected AbstractWebhookController(
             WebhookHandler webhookHandler,
             ObjectMapper objectMapper,
             WebhookService<I, W, ?> service,
-            Logger log,
             String webhookType) {
         this.webhookHandler = webhookHandler;
         this.objectMapper = objectMapper;
         this.service = service;
-        this.log = log;
         this.webhookType = webhookType;
     }
 
     protected final ValidatedRequest<W> prepareRequest(VersionSeriesURI series, HttpServletRequest request)
             throws Exception {
-        W webhook = service.findByVersionSeries(series)
-                .orElseThrow(() -> log.throwing(NotFoundException.builder()
-                        .internalMessage(webhookType + " is not configured for version series " + series)
-                        .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
-                        .build()));
+        W webhook = service.findByVersionSeries(series).orElseThrow(() -> NotFoundException.builder()
+                .internalMessage(webhookType + " is not configured for version series " + series)
+                .detailMessageArguments(OntopusException.EMPTY_ARGUMENTS)
+                .build());
         ByteBuffer body = readBody(request);
         validateRequest(request, webhook, body);
         return new ValidatedRequest<>(webhook, body);

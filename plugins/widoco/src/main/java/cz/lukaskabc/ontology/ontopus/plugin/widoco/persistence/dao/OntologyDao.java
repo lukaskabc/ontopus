@@ -54,7 +54,7 @@ public class OntologyDao {
 					            ?ontologyURI ?hasPreferredNamespace ?preferredNamespace .
 					        }
 					    }
-					    BIND(COALESCE(?preferredNamespace, ?ontologyURI) AS ?namespace)
+					    BIND(COALESCE(IRI(?preferredNamespace), ?ontologyURI) AS ?namespace)
 					}
 					""", URI.class)
                     .setParameter("versionArtifactType", VersionArtifact_.entityClassIRI)

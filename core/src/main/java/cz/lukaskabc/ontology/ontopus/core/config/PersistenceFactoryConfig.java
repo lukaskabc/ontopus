@@ -11,45 +11,45 @@ import cz.cvut.kbss.ontodriver.rdf4j.config.Rdf4jOntoDriverProperties;
 import cz.lukaskabc.ontology.ontopus.core.PluginRegistryBeanRegistryPostProcessor;
 import cz.lukaskabc.ontology.ontopus.core.util.JopaEntityPackagesHolder;
 import cz.lukaskabc.ontology.ontopus.core_model.config.OntopusConfig;
-import cz.lukaskabc.ontology.ontopus.core_model.exception.InitializationException;
 import cz.lukaskabc.ontology.ontopus.core_model.generated.Vocabulary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jspecify.annotations.Nullable;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 @Configuration
+@Profile("!test")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PersistenceFactoryConfig {
+    public static final String ENTITY_MANAGER_FACTORY_BEAN_NAME = "entityManagerFactory";
 
     private static final Logger log = LogManager.getLogger(PersistenceFactoryConfig.class);
 
-    @Nullable protected EntityManagerFactory factory;
+    /** Forces entity manager factory bean creation */
+    @Bean
+    static BeanPostProcessor persistenceInitializer(BeanFactory beanFactory) {
+        beanFactory.getBean(PersistenceFactoryConfig.ENTITY_MANAGER_FACTORY_BEAN_NAME);
+        return new BeanPostProcessor() {};
+    }
 
     protected final OntopusConfig serverConfig;
+
     protected final DefaultListableBeanFactory defaultListableBeanFactory;
 
     public PersistenceFactoryConfig(OntopusConfig serverConfig, DefaultListableBeanFactory defaultListableBeanFactory) {
         this.serverConfig = serverConfig;
         this.defaultListableBeanFactory = defaultListableBeanFactory;
-    }
-
-    @PreDestroy
-    private void close() {
-        if (factory != null && factory.isOpen()) {
-            factory.close();
-        }
     }
 
     protected Map<String, String> createFactoryProperties() {
@@ -78,10 +78,10 @@ public class PersistenceFactoryConfig {
         return properties;
     }
 
-    @Bean
+    @Bean(destroyMethod = "close", name = ENTITY_MANAGER_FACTORY_BEAN_NAME)
     @Primary
-    public @Nullable EntityManagerFactory entityManagerFactory() {
-        return factory;
+    public EntityManagerFactory entityManagerFactory() {
+        return initializeFactory();
     }
 
     /**
@@ -95,15 +95,6 @@ public class PersistenceFactoryConfig {
         final JopaEntityPackagesHolder holder = defaultListableBeanFactory.getBean(JopaEntityPackagesHolder.class);
         defaultListableBeanFactory.destroySingleton(JopaEntityPackagesHolder.BEAN_NAME); // not needed anymore
         return holder.packagesToScan();
-    }
-
-    @PostConstruct
-    private void init() {
-        try {
-            this.factory = initializeFactory();
-        } catch (Exception e) {
-            throw log.throwing(new InitializationException("Failed to initialize JOPA persistence factory", e));
-        }
     }
 
     protected EntityManagerFactory initializeFactory() {

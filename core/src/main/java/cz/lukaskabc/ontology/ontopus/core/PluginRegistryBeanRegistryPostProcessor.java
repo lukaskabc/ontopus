@@ -15,6 +15,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.JacksonException;
@@ -31,6 +32,7 @@ import java.util.*;
  * classes are also registered in the application context under their names.
  */
 @Component
+@Profile("!test")
 public class PluginRegistryBeanRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
     private static final Logger log = LogManager.getLogger(PluginRegistryBeanRegistryPostProcessor.class);
 
@@ -52,7 +54,11 @@ public class PluginRegistryBeanRegistryPostProcessor implements BeanDefinitionRe
     private final ObjectMapper objectMapper;
 
     public PluginRegistryBeanRegistryPostProcessor() {
-        this.plugins = ServiceLoader.load(Plugin.class);
+        this(ServiceLoader.load(Plugin.class));
+    }
+
+    public PluginRegistryBeanRegistryPostProcessor(Iterable<Plugin> plugins) {
+        this.plugins = plugins;
         this.objectMapper = new ObjectMapper();
 
         log.info("Discovering plugins");

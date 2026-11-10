@@ -6,4 +6,4 @@ import cz.lukaskabc.ontology.ontopus.tests.persistence.BaseDaoTest;
 import org.springframework.context.annotation.Import;
 
 @Import({TestJsonConfig.class, SystemConfig.class})
-public class BaseIntegrationTest extends BaseDaoTest {}
+public abstract class CoreBaseIntegrationTest extends BaseDaoTest {}

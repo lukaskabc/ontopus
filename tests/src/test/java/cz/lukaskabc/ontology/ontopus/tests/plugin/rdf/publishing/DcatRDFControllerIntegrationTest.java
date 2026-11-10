@@ -16,7 +16,7 @@ import cz.lukaskabc.ontology.ontopus.core_model.model.id.*;
 import cz.lukaskabc.ontology.ontopus.core_model.model.ontology.*;
 import cz.lukaskabc.ontology.ontopus.plugin.rdf.publishing.DcatRDFController;
 import cz.lukaskabc.ontology.ontopus.tests.config.TestJsonConfig;
-import cz.lukaskabc.ontology.ontopus.tests.integration.BaseIntegrationTest;
+import cz.lukaskabc.ontology.ontopus.tests.integration.CoreBaseIntegrationTest;
 import cz.lukaskabc.ontology.ontopus.tests.util.EntityAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Import(DcatRDFController.class)
-public class DcatRDFControllerIntegrationTest extends BaseIntegrationTest {
+public class DcatRDFControllerIntegrationTest extends CoreBaseIntegrationTest {
     @Autowired
     DcatRDFController sut;
 
